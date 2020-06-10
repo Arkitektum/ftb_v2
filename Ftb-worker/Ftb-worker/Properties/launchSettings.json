@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "Ftb_worker": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
