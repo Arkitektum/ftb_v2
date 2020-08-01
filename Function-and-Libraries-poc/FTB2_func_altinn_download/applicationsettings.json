@@ -1,0 +1,15 @@
+{
+  "ProcessingSettings": {
+    "ServiceCodes": [ "1234", "4321" ]
+  },
+  "AltinnDownloadQueueConnectionSettings": {
+    "UserName": "",
+    "Password": "",
+    "EndpointUrl": "https://tt02.altinn.no/ArchiveExternal/DownloadQueueExternalBasic.svc"
+  },
+  "AltinnServiceOwnerConnectionSettings": {
+    "UserName": "",
+    "Password": "",
+    "EndpointUrl": "https://tt02.altinn.no/ArchiveExternal/ServiceOwnerArchiveExternalStreamedbasic.svc"
+  }
+}
