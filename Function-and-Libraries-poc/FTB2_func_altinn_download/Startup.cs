@@ -19,7 +19,6 @@ namespace FTB2_func_altinn_download
                 .AddEnvironmentVariables()
                 .Build();
 
-            
             builder.Services.AddEnqueuedItemsProcessor(configuration);
         }
     }

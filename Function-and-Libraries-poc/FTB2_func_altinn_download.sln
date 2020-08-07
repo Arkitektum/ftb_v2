@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTB2_func_altinn_download", "FTB2_func_altinn_download\FTB2_func_altinn_download.csproj", "{54B4A33E-8E1D-4F84-BA13-72156F63C847}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FTB2_func_altinn_download", "FTB2_func_altinn_download\FTB2_func_altinn_download.csproj", "{54B4A33E-8E1D-4F84-BA13-72156F63C847}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltinnWebServices", "AltinnWebServices\AltinnWebServices.csproj", "{57167BF2-8B9B-4B67-B90B-FFC1ADC15AC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AltinnWebServices", "AltinnWebServices\AltinnWebServices.csproj", "{57167BF2-8B9B-4B67-B90B-FFC1ADC15AC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ftb_FormDownloader", "Ftb_FormDowloader\Ftb_FormDownloader.csproj", "{8E898215-0ECE-4CA2-A7B7-8A216A778C61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_FormDownloader", "Ftb_FormDowloader\Ftb_FormDownloader.csproj", "{8E898215-0ECE-4CA2-A7B7-8A216A778C61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ftb_BlobRepository", "Ftb_BlobRepository\Ftb_BlobRepository.csproj", "{CECB08B3-A489-438B-A070-DC051CAABED3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_BlobRepository", "Ftb_BlobRepository\Ftb_BlobRepository.csproj", "{CECB08B3-A489-438B-A070-DC051CAABED3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ftb_DbRepository", "Ftb_DbRepository\Ftb_DbRepository.csproj", "{9CA95107-62B6-4ED2-94E9-008167483BF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_DbRepository", "Ftb_DbRepository\Ftb_DbRepository.csproj", "{9CA95107-62B6-4ED2-94E9-008167483BF6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_QueueRepository", "Ftb_QueueRepository\Ftb_QueueRepository.csproj", "{4310C59B-A7D0-46D2-B16D-7B956012F59E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb2_IntegrationTest", "Ftb2_Test\Ftb2_IntegrationTest.csproj", "{42A1805A-EEA8-4482-9184-E82251D41D7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{9CA95107-62B6-4ED2-94E9-008167483BF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CA95107-62B6-4ED2-94E9-008167483BF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CA95107-62B6-4ED2-94E9-008167483BF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4310C59B-A7D0-46D2-B16D-7B956012F59E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4310C59B-A7D0-46D2-B16D-7B956012F59E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4310C59B-A7D0-46D2-B16D-7B956012F59E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4310C59B-A7D0-46D2-B16D-7B956012F59E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42A1805A-EEA8-4482-9184-E82251D41D7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42A1805A-EEA8-4482-9184-E82251D41D7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42A1805A-EEA8-4482-9184-E82251D41D7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42A1805A-EEA8-4482-9184-E82251D41D7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
