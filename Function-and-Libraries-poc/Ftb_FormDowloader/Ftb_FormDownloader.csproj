@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AltinnWebServices\AltinnWebServices.csproj" />
+    <ProjectReference Include="..\Ftb_QueueRepository\Ftb_QueueRepository.csproj" />
   </ItemGroup>
 
 </Project>

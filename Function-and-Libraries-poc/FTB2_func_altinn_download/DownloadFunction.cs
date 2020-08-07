@@ -14,9 +14,9 @@ namespace FTB2_func_altinn_download
 {
     public class DownloadFunction
     {
-        private readonly EnqueuedItemsProcessor _enqueuedItemsProcessor;
+        private readonly AltinnMetadataItemsProcessor _enqueuedItemsProcessor;
 
-        public DownloadFunction(EnqueuedItemsProcessor enqueuedItemsProcessor)
+        public DownloadFunction(AltinnMetadataItemsProcessor enqueuedItemsProcessor)
         {
             _enqueuedItemsProcessor = enqueuedItemsProcessor;
         }
@@ -30,9 +30,7 @@ namespace FTB2_func_altinn_download
             log.LogInformation("C# HTTP trigger function processed a request.");
             try
             {
-
-            _enqueuedItemsProcessor.DownloadEnqueuedItems();
-
+                await _enqueuedItemsProcessor.EnqueueMetadataFromAltinnDownloadQueue();
             }
             catch (Exception ex)
             {

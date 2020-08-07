@@ -48,6 +48,6 @@ namespace AltinnWebServices
     {
         Organisation,
         Person,
-        Selfregistereduser
+        SelfRegisteredUser
     }
 }
