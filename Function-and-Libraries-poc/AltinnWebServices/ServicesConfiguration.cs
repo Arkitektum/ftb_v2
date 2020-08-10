@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AltinnWebServices
 {
-    public static class IServicesCollectionExtension
+    public static class ServicesConfiguration
     {
         public static IServiceCollection AddAltinnWebServices(this IServiceCollection services)
         {
