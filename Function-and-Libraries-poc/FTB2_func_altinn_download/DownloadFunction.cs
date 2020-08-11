@@ -9,16 +9,19 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Ftb_FormDownloader;
 using System.Web.Http;
+using Ftb_DbRepository;
 
 namespace FTB2_func_altinn_download
 {
     public class DownloadFunction
     {
-        private readonly AltinnMetadataItemsProcessor _enqueuedItemsProcessor;
+        private readonly IEnqueuedItemsProcessor _enqueuedItemsProcessor;
+        private readonly IFormMetadataRepository _formMetadataRepository;
 
-        public DownloadFunction(AltinnMetadataItemsProcessor enqueuedItemsProcessor)
+        public DownloadFunction(IEnqueuedItemsProcessor enqueuedItemsProcessor, IFormMetadataRepository formMetadataRepository)
         {
             _enqueuedItemsProcessor = enqueuedItemsProcessor;
+            _formMetadataRepository = formMetadataRepository;
         }
 
 
@@ -30,6 +33,9 @@ namespace FTB2_func_altinn_download
             log.LogInformation("C# HTTP trigger function processed a request.");
             try
             {
+
+                _formMetadataRepository.GetByReference("AR6503662");
+
                 await _enqueuedItemsProcessor.EnqueueMetadataFromAltinnDownloadQueue();
             }
             catch (Exception ex)

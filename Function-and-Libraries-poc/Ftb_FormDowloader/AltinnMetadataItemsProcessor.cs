@@ -16,9 +16,7 @@ namespace Ftb_FormDownloader
 
         private List<IArchivedItemMetadata> _downloadedMetadataItems;
 
-        public AltinnMetadataItemsProcessor(IAltinnDownloaderService altinnDownloaderService
-                                          , IQueueClient queueClient
-                                          , ILogger<AltinnMetadataItemsProcessor> logger)
+        public AltinnMetadataItemsProcessor(IAltinnDownloaderService altinnDownloaderService, IQueueClient queueClient, ILogger<AltinnMetadataItemsProcessor> logger)
         {
             _logger = logger;
             _altinnDownloaderService = altinnDownloaderService;

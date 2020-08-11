@@ -15,5 +15,9 @@
     "UserName": "DIBK",
     "Password": "3Uaf9zQ6",
     "EndpointUrl": "https://tt02.altinn.no/ArchiveExternal/ServiceOwnerArchiveExternalStreamedbasic.svc"
+  },
+  "ConnectionStrings": {
+    "FtbDb": "Server=.\\SQLExpress;Database=kommit-adapter-altinn-svarut;Trusted_Connection=True;"
   }
+
 }

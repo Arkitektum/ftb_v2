@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ftb_DbRepository
+namespace MetadataEnqueuer
 {
     public class Class1
     {

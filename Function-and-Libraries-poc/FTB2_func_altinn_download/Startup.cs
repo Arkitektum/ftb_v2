@@ -4,6 +4,7 @@ using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Ftb_DbRepository;
 
 [assembly: FunctionsStartup(typeof(FTB2_func_altinn_download.Startup))]
 namespace FTB2_func_altinn_download
@@ -20,6 +21,7 @@ namespace FTB2_func_altinn_download
                 .Build();
 
             builder.Services.AddEnqueuedItemsProcessor(configuration);
+            builder.Services.AddFtbDbRepository(configuration.GetConnectionString("FtbDb"));
         }
     }
 }
