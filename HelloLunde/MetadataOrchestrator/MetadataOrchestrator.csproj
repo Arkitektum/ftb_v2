@@ -4,4 +4,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MetadataEnqueuer\MetadataEnqueuer.csproj" />
+    <ProjectReference Include="..\MetadataProvider\MetadataProvider.csproj" />
+  </ItemGroup>
+
 </Project>
