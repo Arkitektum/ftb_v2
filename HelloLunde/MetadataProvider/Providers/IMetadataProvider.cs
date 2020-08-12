@@ -1,9 +1,8 @@
-﻿using System;
+﻿using MetadataProvider.Models;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace MetadataProvider
+namespace MetadataProvider.Providers
 {
     public interface IMetadataProvider
     {

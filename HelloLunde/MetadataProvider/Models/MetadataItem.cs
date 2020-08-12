@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MetadataProvider
+﻿namespace MetadataProvider.Models
 {
     public class MetadataItem
     {

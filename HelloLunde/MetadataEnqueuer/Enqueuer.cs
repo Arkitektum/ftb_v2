@@ -1,21 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
+﻿using System.Threading.Tasks;
 
 namespace MetadataEnqueuer
 {
     public class Enqueuer : IEnqueuer
     {
-        public Enqueuer(IOptions<QueueSettings> queueSettings)
-        {
+        private readonly IQueueClient _queueClient;
 
+        public Enqueuer(IQueueClient queueClient)
+        {
+            _queueClient = queueClient;
         }
 
-        public Task Enqueue(string metadataItemAsJson)
+        public async Task Enqueue(string metadataItemAsJson)
         {
-            throw new NotImplementedException();
+            await _queueClient.EnqueueMessage(metadataItemAsJson);
         }
     }
 }

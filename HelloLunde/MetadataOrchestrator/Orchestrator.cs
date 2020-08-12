@@ -5,20 +5,20 @@ using System.Threading.Tasks;
 
 namespace MetadataOrchestrator
 {
-    public class Orchestrator
+    public class Orchestrator : IOrchestrator
     {
-        private readonly IMetadataProvider _metadataProvider;
+        private readonly IMetadataProviderFactory _metadataProviderFactory;
         private readonly IEnqueuer _enqueuer;
 
-        public Orchestrator(IMetadataProvider metadataProvider, IEnqueuer enqueuer)
+        public Orchestrator(IMetadataProviderFactory providerFactory, IEnqueuer enqueuer)
         {
-            _metadataProvider = metadataProvider;
+            _metadataProviderFactory = providerFactory;
             _enqueuer = enqueuer;
         }
 
         public async Task EnqueueMetadata()
         {
-            var result = await _metadataProvider.GetMetadata();
+            var result = await _metadataProviderFactory.GetProvider().GetMetadata();
 
             foreach (var item in result)
             {

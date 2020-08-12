@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MetadataProvider.Models;
+using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace MetadataProvider
+namespace MetadataProvider.Providers
 {
+    [ProviderType(Id = "QueueProvider")]
     public class MetadataQueueProvider : IMetadataProvider
     {
         public Task<IEnumerable<MetadataItem>> GetMetadata()
