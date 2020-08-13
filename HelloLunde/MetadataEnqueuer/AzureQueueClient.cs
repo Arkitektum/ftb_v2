@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +11,9 @@ namespace MetadataEnqueuer
 
         public AzureQueueClient(IOptions<QueueSettings> options)
         {
+            if (string.IsNullOrEmpty(options?.Value?.ConnectionString) || string.IsNullOrEmpty(options?.Value?.QueueName))
+                throw new ArgumentException("Ensure that QueueSettings is configured");
+
             _options = options;
         }
         public async Task EnqueueMessage(string messageAsJson)
