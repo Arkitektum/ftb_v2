@@ -26,7 +26,7 @@ namespace MetadataProvider.Providers
 
         private int[] GenerateRandomComicNumbers()
         {
-            var numberOfComics = new Random().Next(10);
+            var numberOfComics = new Random().Next(4);
 
             int[] comicNumbers = new int[numberOfComics];
 
