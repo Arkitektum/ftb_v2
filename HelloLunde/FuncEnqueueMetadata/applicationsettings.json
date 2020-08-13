@@ -1,6 +1,6 @@
 {
   "MetadataProviderSettings": {
-    "ProviderType": "StaticProvider"
+    "ProviderType": "ApiProvider"
   },
   "QueueSettings": {
     "ConnectionString": "Endpoint=sb://ftb-test.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=pcgBRJia0MKp7pELy8W5rBaIQMeZyKVnH0h3gdhROzA=",

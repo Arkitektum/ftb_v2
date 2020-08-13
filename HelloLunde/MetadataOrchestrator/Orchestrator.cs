@@ -1,5 +1,6 @@
 ﻿using MetadataEnqueuer;
 using MetadataProvider;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -20,10 +21,11 @@ namespace MetadataOrchestrator
         {
             var result = await _metadataProviderFactory.GetProvider().GetMetadata();
 
-            foreach (var item in result)
-            {
-                await _enqueuer.Enqueue(JsonSerializer.Serialize(item));
-            }
+            var listOfTasks = new List<Task>();
+            foreach (var item in result)            
+                listOfTasks.Add(_enqueuer.Enqueue(JsonSerializer.Serialize(item)));
+
+            await Task.WhenAll(listOfTasks);
         }
     }
 }

@@ -3,9 +3,6 @@ using MetadataProvider;
 using MetadataProvider.Providers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MetadataOrchestrator
 {
@@ -16,7 +13,8 @@ namespace MetadataOrchestrator
             services.AddScoped<IOrchestrator, Orchestrator>();
             services.AddScoped<IMetadataProviderFactory, MetadataProviderFactory>();
             services.AddScoped<IMetadataProvider, MetadataStaticProvider>();
-            services.AddScoped<IMetadataProvider, MetadataQueueProvider>();
+            services.AddScoped<IMetadataProvider, MetadataApiProvider>();
+            services.AddHttpClient<XkcdService>();
 
             services.AddScoped<IEnqueuer, Enqueuer>();
             services.AddScoped<IQueueClient, AzureQueueClient>();
