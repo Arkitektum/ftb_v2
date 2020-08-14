@@ -16,6 +16,7 @@ namespace FuncEnqueueMetadata
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(options.AppDirectory)
                 .AddJsonFile("applicationsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
