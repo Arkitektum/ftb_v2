@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -12,12 +13,22 @@ namespace Distributor
     public class EmailDistributor : IDistributor
     {
         private readonly IOptionsMonitor<DistributorSettings> _options;
-        public EmailDistributor(IOptionsMonitor<DistributorSettings> options)
+        private readonly ILogger _log;
+        public EmailDistributor(IOptionsMonitor<DistributorSettings> options
+                              , ILogger<EmailDistributor> log)
         {
             _options = options;
+            _log = log;
         }
-        public async Task Distribute(string distributionMessage)
+        public async Task Distribute(string emailReceiverAddress)
         {
+            string receiver = emailReceiverAddress != null && emailReceiverAddress.Trim().Length > 0 ? emailReceiverAddress : _options.CurrentValue.EmailReceiverAddress;
+            _log.LogInformation($"Distribute message: emailReceiverAddress: {emailReceiverAddress}");
+            _log.LogInformation("Distribute message: host {0}, sender {1}, receiver {2}"
+                                        , _options.CurrentValue.SMTPHost
+                                        , _options.CurrentValue.EmailSenderAddress
+                                        , receiver);
+
             var smtpClient = new SmtpClient(_options.CurrentValue.SMTPHost)
             {
                 Port = 587,
@@ -25,7 +36,7 @@ namespace Distributor
                 EnableSsl = true,
             };
 
-            smtpClient.Send(_options.CurrentValue.EmailSenderAddress, _options.CurrentValue.EmailReceiverAddress, _options.CurrentValue.Subject, _options.CurrentValue.Message);
+            smtpClient.Send(_options.CurrentValue.EmailSenderAddress, receiver, _options.CurrentValue.Subject, _options.CurrentValue.Message);
         }
     }
 }

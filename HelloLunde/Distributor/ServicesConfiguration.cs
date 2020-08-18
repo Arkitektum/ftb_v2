@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
+using Microsoft.Extensions.Logging;
 
 namespace Distributor
 {
@@ -12,6 +12,10 @@ namespace Distributor
             services.AddOptions<DistributorSettings>().Configure<IConfiguration>((settings, config) =>
             {
                 configuration.GetSection("DistributorSettings").Bind(settings);
+            }); 
+            services.AddOptions<ServiceBusSettings>().Configure<IConfiguration>((settings, config) =>
+            {
+                configuration.GetSection("ServiceBusSettings").Bind(settings);
             });
 
             return services;

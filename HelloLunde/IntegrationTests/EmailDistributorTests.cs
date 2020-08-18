@@ -1,4 +1,5 @@
 using Distributor;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
@@ -10,9 +11,10 @@ namespace IntegrationTests
     {
         private readonly IDistributor _distributor;
 
-        public EmailDistributorTests(IOptionsMonitor<DistributorSettings> options)
+        public EmailDistributorTests(IOptionsMonitor<DistributorSettings> options
+            , ILogger<EmailDistributor> log)
         {
-            EmailDistributor ed = new EmailDistributor(options);
+            EmailDistributor ed = new EmailDistributor(options, log);
             _distributor = ed;
         }
         [Fact]

@@ -8,8 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-[assembly: FunctionsStartup(typeof(FuncDistributor.Startup))]
-namespace FuncDistributor
+[assembly: FunctionsStartup(typeof(FuncDistribution.Startup))]
+namespace FuncDistribution
 {
     public class Startup : FunctionsStartup
     {
@@ -18,7 +18,7 @@ namespace FuncDistributor
             var options = builder.Services.BuildServiceProvider().GetService<IOptions<ExecutionContextOptions>>().Value;
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(options.AppDirectory)
-                .AddJsonFile("applicationsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
 
