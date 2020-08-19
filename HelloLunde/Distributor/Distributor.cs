@@ -12,7 +12,7 @@ namespace Distributor
 
         }
 
-        public Task Distribute(string distributionMessage)
+        public Task Distribute(string emailReceiverAddress, string title, string message)
         {
             throw new NotImplementedException();
         }

@@ -20,7 +20,7 @@ namespace IntegrationTests
         [Fact]
         public async Task SendEmailTest()
         {
-            await _distributor.Distribute("asdasd");
+            await _distributor.Distribute("<receiver>","<title>","<message>");
 
         }
     }

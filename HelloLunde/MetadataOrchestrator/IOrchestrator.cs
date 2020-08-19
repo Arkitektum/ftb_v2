@@ -4,6 +4,6 @@ namespace MetadataOrchestrator
 {
     public interface IOrchestrator
     {
-        Task EnqueueMetadata();
+        Task EnqueueMetadata(string addToQueueMessage);
     }
 }

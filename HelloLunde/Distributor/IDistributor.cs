@@ -7,6 +7,6 @@ namespace Distributor
 {
     public interface IDistributor
     {
-        Task Distribute(string distributionMessage);
+        Task Distribute(string receiverAddress, string title, string message);
     }
 }

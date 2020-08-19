@@ -1,6 +1,8 @@
 ﻿using MetadataEnqueuer;
 using MetadataProvider;
+using MetadataProvider.Models;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -17,12 +19,18 @@ namespace MetadataOrchestrator
             _enqueuer = enqueuer;
         }
 
-        public async Task EnqueueMetadata()
+        public async Task EnqueueMetadata(string addToQueueMessage)
         {
             var result = await _metadataProviderFactory.GetProvider().GetMetadata();
+            List<MetadataItem> metadataItems = new List<MetadataItem>();
+            foreach (var comicItem in result)
+            {
+                MetadataItem item = new MetadataItem() { emailTo = addToQueueMessage, comicItem = comicItem };
+                metadataItems.Add(item);
+            }
 
             var listOfTasks = new List<Task>();
-            foreach (var item in result)            
+            foreach (var item in metadataItems)
                 listOfTasks.Add(_enqueuer.Enqueue(JsonSerializer.Serialize(item)));
 
             await Task.WhenAll(listOfTasks);

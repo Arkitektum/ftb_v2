@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 namespace MetadataProvider.Providers
 {
     [ProviderType(Id = "ApiProvider")]
-    public class MetadataApiProvider : IMetadataProvider
+    public class ComicApiProvider : IComicProvider
     {
         private readonly XkcdService _xkcdService;
 
-        public MetadataApiProvider(XkcdService xkcdService)
+        public ComicApiProvider(XkcdService xkcdService)
         {
             _xkcdService = xkcdService;
         }
-        public async Task<IEnumerable<MetadataItem>> GetMetadata()
+        public async Task<IEnumerable<ComicItem>> GetMetadata()
         {
-            var listOfTasks = new List<Task<MetadataItem>>();
+            var listOfTasks = new List<Task<ComicItem>>();
 
             foreach (var comicNumber in GenerateRandomComicNumbers())
                 listOfTasks.Add(_xkcdService.GetComic(comicNumber));

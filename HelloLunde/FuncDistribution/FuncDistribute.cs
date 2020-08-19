@@ -4,6 +4,7 @@ using Microsoft.Azure.Amqp.Framing;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace FuncDistribution
@@ -21,19 +22,21 @@ namespace FuncDistribution
         }
 
         [FunctionName("FuncDistribute")]
-        public void Run([ServiceBusTrigger("%integrationQueueName%"
-                        , Connection = "integrationQueueConnectionString")]string myQueueItem)
+        public void Run([ServiceBusTrigger("%queueName%"
+                        , Connection = "queueConnectionString")]string myQueueItem)
         {
             try
             {
-                string emailTo = "";
-                JObject jObj = JObject.Parse(myQueueItem);
-                object input = jObj["emailTo"];
-                if (input != null)
-                    emailTo = input.ToString();
+                dynamic queueMessage = JsonConvert.DeserializeObject(myQueueItem);
+                string emailTo = queueMessage.emailTo;
+                string comicItemTitle = queueMessage.comicItem.Safe_Title;
+                string message = queueMessage.comicItem.Transcript 
+                                + System.Environment.NewLine 
+                                + System.Environment.NewLine 
+                                + queueMessage.comicItem.Img;
 
                 _log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
-                _distributor.Distribute(emailTo);
+                _distributor.Distribute(emailTo, comicItemTitle, message);
             }
             catch (Exception e)
             {

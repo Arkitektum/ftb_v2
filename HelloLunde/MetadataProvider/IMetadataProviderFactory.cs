@@ -4,6 +4,6 @@ namespace MetadataProvider
 {
     public interface IMetadataProviderFactory
     {
-        IMetadataProvider GetProvider();
+        IComicProvider GetProvider();
     }
 }

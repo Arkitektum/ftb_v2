@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 namespace MetadataProvider.Providers
 {
     [ProviderType(Id = "StaticProvider")]
-    public class MetadataStaticProvider : IMetadataProvider
+    public class ComicStaticProvider : IComicProvider
     {
-        public Task<IEnumerable<MetadataItem>> GetMetadata()
+        public Task<IEnumerable<ComicItem>> GetMetadata()
         {
             return GetStaticContent();
         }
 
-        private async Task<IEnumerable<MetadataItem>> GetStaticContent()
+        private async Task<IEnumerable<ComicItem>> GetStaticContent()
         {
-            var result = new List<MetadataItem>
+            var result = new List<ComicItem>
             {
-                new MetadataItem() { 
+                new ComicItem() { 
                     Month = "11", 
                     Num=666, 
                     Year="2009", 

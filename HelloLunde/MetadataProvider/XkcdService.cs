@@ -18,14 +18,14 @@ namespace MetadataProvider
             Client = client;
         }
 
-        public async Task<MetadataItem> GetComic(int number)
+        public async Task<ComicItem> GetComic(int number)
         {
             var response = await Client.GetAsync($"/{number}/info.0.json");
 
             response.EnsureSuccessStatusCode();
 
             using var responseStream = await response.Content.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<MetadataItem>(responseStream, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true});
+            return await JsonSerializer.DeserializeAsync<ComicItem>(responseStream, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true});
         }
     }
 }

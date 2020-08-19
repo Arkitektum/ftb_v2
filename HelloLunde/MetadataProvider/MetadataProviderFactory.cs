@@ -8,10 +8,10 @@ namespace MetadataProvider
 {
     public class MetadataProviderFactory : IMetadataProviderFactory
     {
-        private readonly IEnumerable<IMetadataProvider> metadataProviders;
+        private readonly IEnumerable<IComicProvider> metadataProviders;
         private readonly IOptions<ProviderSettings> options;
 
-        public MetadataProviderFactory(IEnumerable<IMetadataProvider> metadataProviders, IOptions<ProviderSettings> options)
+        public MetadataProviderFactory(IEnumerable<IComicProvider> metadataProviders, IOptions<ProviderSettings> options)
         {
             this.metadataProviders = metadataProviders;
 
@@ -21,7 +21,7 @@ namespace MetadataProvider
             this.options = options;
         }
 
-        public IMetadataProvider GetProvider()
+        public IComicProvider GetProvider()
         {
             foreach (var item in metadataProviders)
             {

@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace MetadataProvider.Providers
 {
-    public interface IMetadataProvider
+    public interface IComicProvider
     {
-        Task<IEnumerable<MetadataItem>> GetMetadata();
+        Task<IEnumerable<ComicItem>> GetMetadata();
 
     }
 }

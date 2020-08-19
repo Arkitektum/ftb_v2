@@ -12,8 +12,8 @@ namespace MetadataOrchestrator
         {
             services.AddScoped<IOrchestrator, Orchestrator>();
             services.AddScoped<IMetadataProviderFactory, MetadataProviderFactory>();
-            services.AddScoped<IMetadataProvider, MetadataStaticProvider>();
-            services.AddScoped<IMetadataProvider, MetadataApiProvider>();
+            services.AddScoped<IComicProvider, ComicStaticProvider>();
+            services.AddScoped<IComicProvider, ComicApiProvider>();
             services.AddHttpClient<XkcdService>();
 
             services.AddScoped<IEnqueuer, Enqueuer>();
