@@ -1,23 +1,21 @@
-using System;
 using Distributor;
-using Microsoft.Azure.Amqp.Framing;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace FuncDistribution
 {
     public  class FuncDistribute
     {
-        private readonly IDistributor _distributor;
+        private readonly IEnumerable<IDistributor> _distributors;
         private readonly ILogger<FuncDistribute> _log;
 
-        public FuncDistribute(IDistributor distributor,
+        public FuncDistribute(IEnumerable<IDistributor> distributors,
                               ILogger<FuncDistribute> log)
         {
-            _distributor = distributor;
+            _distributors = distributors;
             _log = log;
         }
 
@@ -36,7 +34,11 @@ namespace FuncDistribution
                                 + queueMessage.comicItem.Img;
 
                 _log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
-                _distributor.Distribute(emailTo, comicItemTitle, message);
+
+                foreach(var distributor in _distributors)
+                {
+                    distributor.Distribute(emailTo, comicItemTitle, message);
+                }
             }
             catch (Exception e)
             {

@@ -6,7 +6,7 @@ namespace MetadataOrchestrator
 {
     public interface IOrchestrator
     {
-        Task<IEnumerable<MetadataItem>> EnqueueMetadata(string addToQueueMessage);
+        Task<IEnumerable<MetadataItem>> RetreiveMetadata(string addToQueueMessage);
         
     }
 }

@@ -1,9 +1,6 @@
-﻿using MetadataEnqueuer;
-using MetadataProvider;
+﻿using MetadataProvider;
 using MetadataProvider.Models;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MetadataOrchestrator
@@ -11,15 +8,13 @@ namespace MetadataOrchestrator
     public class Orchestrator : IOrchestrator
     {
         private readonly IMetadataProviderFactory _metadataProviderFactory;
-        private readonly IEnqueuer _enqueuer;
 
-        public Orchestrator(IMetadataProviderFactory providerFactory, IEnqueuer enqueuer)
+        public Orchestrator(IMetadataProviderFactory providerFactory)
         {
             _metadataProviderFactory = providerFactory;
-            _enqueuer = enqueuer;
         }
 
-        public async Task<IEnumerable<MetadataItem>> EnqueueMetadata(string addToQueueMessage)
+        public async Task<IEnumerable<MetadataItem>> RetreiveMetadata(string addToQueueMessage)
         {
             var result = await _metadataProviderFactory.GetProvider().GetMetadata();
             var metadataItems = new List<MetadataItem>();

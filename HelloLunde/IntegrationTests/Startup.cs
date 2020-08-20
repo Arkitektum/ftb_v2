@@ -22,7 +22,7 @@ namespace IntegrationTests
            {
                services.AddScoped<IDistributor, EmailDistributor>();
                services.AddOptions();
-               services.AddOptions<DistributorSettings>().Configure<IConfiguration>((settings, config) =>
+               services.AddOptions<EmailDistributorSettings>().Configure<IConfiguration>((settings, config) =>
                {
                    hostContext.Configuration.GetSection("DistributorSettings").Bind(settings);
                });

@@ -1,7 +1,6 @@
 using MetadataOrchestrator;
 using MetadataProvider.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.ServiceBus;
@@ -9,8 +8,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace FuncEnqueueMetadata
@@ -35,12 +32,16 @@ namespace FuncEnqueueMetadata
             
             dynamic requestBody = JsonConvert.DeserializeObject(content);
             string emailTo = requestBody.emailTo;
-            var result = await _orchestrator.EnqueueMetadata(emailTo);
+            var result = await _orchestrator.RetreiveMetadata(emailTo);
+
+            var tasks = new List<Task>();
 
             foreach (var item in result)
             {
-                await queueCollector.AddAsync(item);
+                tasks.Add(queueCollector.AddAsync(item));                
             }
+
+            await Task.WhenAll(tasks);
         }
     }
 }

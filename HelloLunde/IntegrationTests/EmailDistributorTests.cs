@@ -11,7 +11,7 @@ namespace IntegrationTests
     {
         private readonly IDistributor _distributor;
 
-        public EmailDistributorTests(IOptionsMonitor<DistributorSettings> options
+        public EmailDistributorTests(IOptionsMonitor<EmailDistributorSettings> options
             , ILogger<EmailDistributor> log)
         {
             EmailDistributor ed = new EmailDistributor(options, log);
