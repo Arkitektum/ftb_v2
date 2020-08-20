@@ -11,7 +11,7 @@ namespace Distributor
         public HttpClient Client { get; }
         public SlackClient(HttpClient client)
         {
-            client.BaseAddress = new Uri("https://hooks.slack.com/services/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");
+            client.BaseAddress = new Uri("");
             Client = client;
         }
         
