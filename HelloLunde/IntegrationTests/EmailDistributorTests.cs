@@ -20,7 +20,14 @@ namespace IntegrationTests
         [Fact]
         public async Task SendEmailTest()
         {
-            await _distributor.Distribute("<receiver>","<title>","<message>");
+            dynamic myDynamic = new System.Dynamic.ExpandoObject();
+
+            myDynamic.emailTo = "<receiver>";
+            myDynamic.comicItem.Safe_Title = "<title>";
+            myDynamic.comicItem.Transcript = "<message>";
+
+
+            await _distributor.Distribute(myDynamic);
 
         }
     }

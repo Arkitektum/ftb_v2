@@ -17,10 +17,19 @@ namespace Distributor
             _options = options;
             _log = log;
         }
-        public async Task Distribute(string emailReceiverAddress, string title, string message)
+
+        public async Task Distribute(dynamic distributionElement)
+        {
+            string emailTo = distributionElement.emailTo;
+            string comicItemTitle = distributionElement.comicItem.Safe_Title;
+            string message = distributionElement.comicItem.Transcript;
+
+            await Distribute(emailTo, comicItemTitle, message);
+        }
+        private async Task Distribute(string emailReceiverAddress, string title, string message)
         {
             string emailSubjectPrefix = "Test from Azure functions: ";
-            string receiver = emailReceiverAddress != null && emailReceiverAddress.Trim().Length > 0 
+            string receiver = emailReceiverAddress != null && emailReceiverAddress.Trim().Length > 0
                             ? emailReceiverAddress : _options.CurrentValue.EmailReceiverAddress;
 
             _log.LogInformation($"Distribute message: emailReceiverAddress: {emailReceiverAddress}");

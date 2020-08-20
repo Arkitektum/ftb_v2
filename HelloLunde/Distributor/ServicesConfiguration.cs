@@ -20,9 +20,9 @@ namespace Distributor
             {
                 configuration.GetSection("EmailDistributorSettings").Bind(settings);
             });
-            services.AddOptions<SlackSettings>().Configure<IConfiguration>((settings, config) =>
+            services.AddOptions<SlackDistributorSettings>().Configure<IConfiguration>((settings, config) =>
             {
-                configuration.GetSection("SlackSettings").Bind(settings);
+                configuration.GetSection("SlackDistributorSettings").Bind(settings);
             });
 
 

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Distributor
 {
-    public class SlackSettings
+    public class SlackDistributorSettings
     {
         public string WebHook { get; set; }
     }

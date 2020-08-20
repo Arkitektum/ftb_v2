@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace Distributor
 {
@@ -6,17 +7,23 @@ namespace Distributor
     public class SlackDistributor : IDistributor
     {
         private readonly SlackClient _client;
+        private readonly IOptions<SlackDistributorSettings> _options;
 
-        public SlackDistributor(SlackClient client)
+        public SlackDistributor(SlackClient client, IOptions<SlackDistributorSettings> options)
         {
             _client = client;
+            _options = options;
         }
-        public async Task Distribute(string receiverAddress, string title, string message)
-        {
-            //Format slack payload
-            var payload = new SlackPayload() { Text = $"{title} \n{message}" };
 
-            await _client.SendMessage(payload);
+        public async Task Distribute(dynamic distributionElement)
+        {
+            string comicItemTitle = distributionElement.comicItem.Safe_Title;
+            string imageLink = distributionElement.comicItem.Img;
+
+            var payload = new SlackPayload() { Text = $"{comicItemTitle} \n{imageLink}" };
+
+            await _client.SendMessage(_options.Value.WebHook, payload);
+
         }
     }
 }

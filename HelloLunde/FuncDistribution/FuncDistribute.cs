@@ -26,18 +26,12 @@ namespace FuncDistribution
             try
             {
                 dynamic queueMessage = JsonConvert.DeserializeObject(myQueueItem);
-                string emailTo = queueMessage.emailTo;
-                string comicItemTitle = queueMessage.comicItem.Safe_Title;
-                string message = queueMessage.comicItem.Transcript 
-                                + System.Environment.NewLine 
-                                + System.Environment.NewLine 
-                                + queueMessage.comicItem.Img;
 
                 _log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
 
                 foreach(var distributor in _distributors)
                 {
-                    distributor.Distribute(emailTo, comicItemTitle, message);
+                    distributor.Distribute(queueMessage);
                 }
             }
             catch (Exception e)
