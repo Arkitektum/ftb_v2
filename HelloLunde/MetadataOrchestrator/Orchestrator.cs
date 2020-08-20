@@ -19,21 +19,17 @@ namespace MetadataOrchestrator
             _enqueuer = enqueuer;
         }
 
-        public async Task EnqueueMetadata(string addToQueueMessage)
+        public async Task<IEnumerable<MetadataItem>> EnqueueMetadata(string addToQueueMessage)
         {
             var result = await _metadataProviderFactory.GetProvider().GetMetadata();
-            List<MetadataItem> metadataItems = new List<MetadataItem>();
+            var metadataItems = new List<MetadataItem>();
             foreach (var comicItem in result)
             {
-                MetadataItem item = new MetadataItem() { emailTo = addToQueueMessage, comicItem = comicItem };
+                var item = new MetadataItem() { emailTo = addToQueueMessage, comicItem = comicItem };
                 metadataItems.Add(item);
             }
 
-            var listOfTasks = new List<Task>();
-            foreach (var item in metadataItems)
-                listOfTasks.Add(_enqueuer.Enqueue(JsonSerializer.Serialize(item)));
-
-            await Task.WhenAll(listOfTasks);
+            return metadataItems;
         }
     }
 }

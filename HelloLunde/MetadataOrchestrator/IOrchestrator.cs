@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using MetadataProvider.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MetadataOrchestrator
 {
     public interface IOrchestrator
     {
-        Task EnqueueMetadata(string addToQueueMessage);
+        Task<IEnumerable<MetadataItem>> EnqueueMetadata(string addToQueueMessage);
+        
     }
 }
