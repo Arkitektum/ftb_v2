@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -8,10 +9,13 @@ namespace Distributor
 {
     public class SlackClient
     {
+        private readonly IOptions<SlackSettings> _options;
+
         public HttpClient Client { get; }
-        public SlackClient(HttpClient client)
+        public SlackClient(HttpClient client, IOptions<SlackSettings> options)
         {
-            client.BaseAddress = new Uri("");
+            _options = options;
+            client.BaseAddress = new Uri(_options.Value.WebHook);
             Client = client;
         }
         
