@@ -1,6 +1,7 @@
 ﻿using FtB_CommonModel.Factories;
 using FtB_CommonModel.Forms;
 using FtB_CommonModel.Models;
+using FtB_DistributionForwarding.Forms;
 using System;
 using System.Collections.Generic;
 using System.Text;

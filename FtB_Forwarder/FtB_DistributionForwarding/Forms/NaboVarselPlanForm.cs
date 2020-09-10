@@ -7,6 +7,9 @@ namespace FtB_DistributionForwarding.Forms
 {
     public class NaboVarselPlanForm : DistributionForm
     {
+       
+
+        //no.kxml.skjema.dibk.nabovarselPlan
         public override void Process()
         {
             Console.WriteLine("Spesialhåndtering av skjema for NABOVARSELPLAN");
@@ -17,5 +20,6 @@ namespace FtB_DistributionForwarding.Forms
             base.OptionalMethod();
             Console.WriteLine("Valgfri metode implementert for skjema NABOVARSELPLAN");
         }
+
     }
 }

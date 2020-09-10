@@ -8,4 +8,8 @@
     <ProjectReference Include="..\FtB_CommonModel\FtB_CommonModel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DataModels\" />
+  </ItemGroup>
+
 </Project>
