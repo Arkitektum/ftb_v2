@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FtB_CommonModel\FtB_CommonModel.csproj" />
+    <ProjectReference Include="..\FtB_DistributionForwarding\FtB_DistributionForwarding.csproj" />
+    <ProjectReference Include="..\FtB_NotificationForwarding\FtB_NotificationForwarding.csproj" />
+    <ProjectReference Include="..\FtB_ShipmentForwarding\FtB_ShipmentForwarding.csproj" />
+  </ItemGroup>
+
+</Project>
