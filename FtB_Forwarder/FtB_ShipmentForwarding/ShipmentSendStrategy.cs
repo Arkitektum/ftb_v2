@@ -5,22 +5,23 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_DistributionForwarding
+namespace FtB_ShipmentForwarding
 {
-    public class DistributionSender : SendBase, ISender
+    public class ShipmentSendStrategy : SendStrategyBase, ISender
     {
-        public DistributionSender(FormBase form) : base(form)
+        public ShipmentSendStrategy(FormBase form) : base(form)
         {
 
         }
         public override void ForwardToReceiver()
         {
-            Console.WriteLine("Sender skjema til DISTRIBUTION");
+            Console.WriteLine("Sender skjema til SHIPMENT");
         }
 
         public override void GetFormsAndAttachmentsFromBlobStorage()
         {
-            Console.WriteLine("Henter skjema og vedlegg for DISTRIBUTION");
+            Console.WriteLine("Ikke implementert ennå....");
+            //Console.WriteLine("Henter skjema og vedlegg for SHIPMENT");
         }
     }
 }

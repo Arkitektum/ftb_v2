@@ -7,9 +7,9 @@ using System.Text;
 
 namespace FtB_NotificationForwarding
 {
-    public class NotificationPreparer : PrepareBase, IPrepare
+    public class NotificationPrepareStrategy : PrepareStrategyBase, IPrepare
     {
-        public NotificationPreparer(FormBase form) : base(form)
+        public NotificationPrepareStrategy(FormBase form) : base(form)
         {
 
         }

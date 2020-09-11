@@ -5,22 +5,22 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_NotificationForwarding
+namespace FtB_DistributionForwarding
 {
-    public class NotificationSender : SendBase, ISender
+    public class DistributionSendStrategy : SendStrategyBase, ISender
     {
-        public NotificationSender(FormBase form) : base(form)
+        public DistributionSendStrategy(FormBase form) : base(form)
         {
 
         }
         public override void ForwardToReceiver()
         {
-            Console.WriteLine("Sender skjema til NOTIFICATION");
+            Console.WriteLine("Sender skjema til DISTRIBUTION");
         }
 
         public override void GetFormsAndAttachmentsFromBlobStorage()
         {
-            Console.WriteLine("Henter skjema og vedlegg for NOTIFICATION");
+            Console.WriteLine("Henter skjema og vedlegg for DISTRIBUTION");
         }
     }
 }

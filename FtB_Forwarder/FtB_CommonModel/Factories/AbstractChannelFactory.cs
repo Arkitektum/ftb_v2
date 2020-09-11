@@ -7,8 +7,8 @@ namespace FtB_CommonModel.Factories
 {
     public abstract class AbstractChannelFactory
     {
-        public abstract PrepareBase CreatePrepareBase(Forms.FormBase form);
-        public abstract SendBase CreateSendBase(Forms.FormBase form);
-        public abstract Reportbase CreateReportBase();
+        public abstract PrepareStrategyBase CreatePrepareBase(Forms.FormBase form);
+        public abstract SendStrategyBase CreateSendBase(Forms.FormBase form);
+        public abstract ReportStrategyBase CreateReportBase();
     }
 }

@@ -4,10 +4,10 @@ using System;
 
 namespace FtB_CommonModel.Models
 {
-    public abstract class PrepareBase : IProcess
+    public abstract class PrepareStrategyBase : IProcess
     {
         FormBase _formBeingProcessed;
-        public PrepareBase(FormBase form)
+        public PrepareStrategyBase(FormBase form)
         {
             _formBeingProcessed = form;
         }

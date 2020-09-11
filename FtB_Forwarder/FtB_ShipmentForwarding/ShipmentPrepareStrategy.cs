@@ -7,9 +7,9 @@ using System.Text;
 
 namespace FtB_ShipmentForwarding
 {
-    public class ShipmentPrepareer : PrepareBase, IPrepare
+    public class ShipmentPrepareStrategy : PrepareStrategyBase, IPrepare
     {
-        public ShipmentPrepareer(FormBase form) : base(form)
+        public ShipmentPrepareStrategy(FormBase form) : base(form)
         {
 
         }

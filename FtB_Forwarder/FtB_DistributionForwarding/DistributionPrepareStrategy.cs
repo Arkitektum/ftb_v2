@@ -7,9 +7,9 @@ using System.Text;
 
 namespace FtB_DistributionForwarding
 {
-    public class DistributionPreparer : PrepareBase, IPrepare
+    public class DistributionPrepareStrategy : PrepareStrategyBase, IPrepare
     {
-        public DistributionPreparer(FormBase form) : base(form)
+        public DistributionPrepareStrategy(FormBase form) : base(form)
         {
             
         }

@@ -3,10 +3,10 @@ using FtB_CommonModel.Interfaces;
 
 namespace FtB_CommonModel.Models
 {
-    public abstract class SendBase : IProcess
+    public abstract class SendStrategyBase : IProcess
     {
         FormBase _formBeingProcessed;
-        public SendBase(FormBase form)
+        public SendStrategyBase(FormBase form)
         {
             _formBeingProcessed = form;
         }
