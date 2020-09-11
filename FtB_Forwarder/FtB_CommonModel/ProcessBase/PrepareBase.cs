@@ -1,12 +1,13 @@
 ﻿using FtB_CommonModel.Forms;
+using FtB_CommonModel.Interfaces;
 using System;
 
 namespace FtB_CommonModel.Models
 {
-    public abstract class PrepareForwarding
+    public abstract class PrepareBase : IProcess
     {
-        Form _formBeingProcessed;
-        public PrepareForwarding(Form form)
+        FormBase _formBeingProcessed;
+        public PrepareBase(FormBase form)
         {
             _formBeingProcessed = form;
         }
@@ -22,7 +23,12 @@ namespace FtB_CommonModel.Models
         }
         public void ProcessForm()
         {
-            _formBeingProcessed.Process();
+            _formBeingProcessed.ProcessPrepareStep();
+        }
+
+        public void Exceute()
+        {
+            throw new NotImplementedException();
         }
     }
 }

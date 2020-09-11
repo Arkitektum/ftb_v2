@@ -5,24 +5,14 @@ using System.Text;
 
 namespace FtB_DistributionForwarding.Forms
 {
-    public class DistributionForm : Form
+    public abstract class DistributionForm : FormBase
     {
-        public override string GetMunicipalityCode()
+        public override void ProcessPrepareStep()
         {
             throw new NotImplementedException();
         }
 
-        public override string GetName()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string GetSchemaFile()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Process()
+        public override void ProcessSendStep()
         {
             throw new NotImplementedException();
         }

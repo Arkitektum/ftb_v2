@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FtB_NotificationForwarding
 {
-    public class NotificationReportForwarder : ReportForwarding
+    public class NotificationReporter : Reportbase
     {
     }
 }

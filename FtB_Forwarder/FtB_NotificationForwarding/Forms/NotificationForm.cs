@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_ShipmentForwarding.Forms
+namespace FtB_NotificationForwarding.Forms
 {
-    public class FerdigAttestForm : FormBase
+    public class NotificationForm : FormBase
     {
         public override void InitiateForm(string formDataAsXml)
         {
@@ -14,7 +14,7 @@ namespace FtB_ShipmentForwarding.Forms
 
         public override void ProcessPrepareStep()
         {
-            Console.WriteLine("Spesialhåndtering av skjema for FERDIGATTEST");
+            throw new NotImplementedException();
         }
 
         public override void ProcessSendStep()
