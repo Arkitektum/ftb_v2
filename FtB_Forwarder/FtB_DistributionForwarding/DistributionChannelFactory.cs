@@ -9,9 +9,9 @@ namespace FtB_DistributionForwarding
 {
     public class DistributionChannelFactory : AbstractChannelFactory
     {
-        public override PrepareBase CreatePrepareBase(FormBase form)
+        public override PrepareStrategyBase CreatePrepareBase(FormBase form)
         {
-            return new DistributionPreparer(form);
+            return new DistributionPrepareStrategy(form);
         }
         //public override PrepareForwarding CreateAnnslessPrepareForwarding(Form form)
         //{
@@ -19,14 +19,14 @@ namespace FtB_DistributionForwarding
         //}
 
 
-        public override SendBase CreateSendBase(FormBase form)
+        public override SendStrategyBase CreateSendBase(FormBase form)
         {
-            return new DistributionSender(form);
+            return new DistributionSendStrategy(form);
         }
 
-        public override Reportbase CreateReportBase()
+        public override ReportStrategyBase CreateReportBase()
         {
-            return new DistributionReporter();
+            return new DistributionReportStrategy();
         }
     }
 }

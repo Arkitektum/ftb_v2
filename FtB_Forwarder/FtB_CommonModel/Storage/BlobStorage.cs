@@ -10,7 +10,7 @@ namespace FtB_CommonModel.Storage
     public class BlobStorage
     {
         private BlobServiceClient _blobServiceClient;
-        private BlobClient _blobClient;
+        //private BlobClient _blobClient;
         BlobContainerClient _containerClient;
         
         private readonly string _azureBlobConnectionString = "UseDevelopmentStorage=true";

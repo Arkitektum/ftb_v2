@@ -9,19 +9,19 @@ namespace FtB_ShipmentForwarding
 {
     public class ShipmentChannelFactory : AbstractChannelFactory
     {
-        public override PrepareBase CreatePrepareBase(FormBase form)
+        public override PrepareStrategyBase CreatePrepareBase(FormBase form)
         {
-            return new ShipmentPrepareer(form);
+            return new ShipmentPrepareStrategy(form);
         }
 
-        public override SendBase CreateSendBase(FormBase form)
+        public override SendStrategyBase CreateSendBase(FormBase form)
         {
-            return new ShipmentSender(form);
+            return new ShipmentSendStrategy(form);
         }
 
-        public override Reportbase CreateReportBase()
+        public override ReportStrategyBase CreateReportBase()
         {
-            return new ShipmentReporter();
+            return new ShipmentReportStrategy();
         }
     }
 }

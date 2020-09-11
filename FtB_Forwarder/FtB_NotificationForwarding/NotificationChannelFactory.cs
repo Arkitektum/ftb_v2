@@ -9,19 +9,19 @@ namespace FtB_NotificationForwarding
 {
     public class NotificationChannelFactory : AbstractChannelFactory
     {
-        public override PrepareBase CreatePrepareBase(FormBase form)
+        public override PrepareStrategyBase CreatePrepareBase(FormBase form)
         {
-            return new NotificationPreparer(form);
+            return new NotificationPrepareStrategy(form);
         }
 
-        public override SendBase CreateSendBase(FormBase form)
+        public override SendStrategyBase CreateSendBase(FormBase form)
         {
-            return new NotificationSender(form);
+            return new NotificationSendStrategy(form);
         }
 
-        public override Reportbase CreateReportBase()
+        public override ReportStrategyBase CreateReportBase()
         {
-            return new NotificationReporter();
+            return new NotificationReportStrategy();
         }
     }
 }

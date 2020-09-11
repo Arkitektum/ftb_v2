@@ -10,8 +10,8 @@ namespace FtB_InitiateForwarding
 {
     public class Forwarder
     {
-        private PrepareBase _prepareForwarding;
-        private SendBase _exceuteForwarding;
+        private PrepareStrategyBase _prepareForwarding;
+        private SendStrategyBase _exceuteForwarding;
         public Forwarder(AbstractChannelFactory channel, FormBase form)
         {
             _prepareForwarding = channel.CreatePrepareBase(form);

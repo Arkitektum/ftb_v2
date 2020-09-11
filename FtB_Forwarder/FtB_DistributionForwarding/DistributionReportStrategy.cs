@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_ShipmentForwarding
+namespace FtB_DistributionForwarding
 {
-    public class ShipmentReporter : Reportbase
+    public class DistributionReportStrategy : ReportStrategyBase
     {
     }
 }

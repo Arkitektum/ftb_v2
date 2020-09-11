@@ -2,7 +2,7 @@
 
 namespace FtB_CommonModel.Models
 {
-    public abstract class Reportbase : IProcess
+    public abstract class ReportStrategyBase : IProcess
     {
         public void Exceute()
         {
