@@ -5,27 +5,27 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_DistributionForwarding
+namespace FtB_ShipmentForwarding
 {
-    public class DistributionPrepareForwarder : PrepareForwarding, IPrepare
+    public class ShipmentPrepareer : PrepareBase, IPrepare
     {
-        public DistributionPrepareForwarder(Form form) : base(form)
+        public ShipmentPrepareer(FormBase form) : base(form)
         {
-            
+
         }
         public override void CreateSubmittalDatabaseStatus(string archiveReference)
         {
-            Console.WriteLine("Oppretter databasestatus for DISTRIBUTION");
+            Console.WriteLine("Oppretter databasestatus for SHIPMENT");
         }
 
         public override void ReadReceiverInformation(string archiveReference)
         {
-            Console.WriteLine("Leser mottakerinformasjon for DISTRIBUTION");
+            Console.WriteLine("Leser mottakerinformasjon for SHIPMENT");
         }
 
         public void TransformSubmittalToForwardingMessage()
         {
-            Console.WriteLine("Transformerer innsending til (antall) mottakere for DISTRIBUTION");
+            Console.WriteLine("Transformerer innsending til (antall) mottakere for SHIPMENT");
         }
     }
 }

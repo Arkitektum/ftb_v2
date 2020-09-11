@@ -10,12 +10,12 @@ namespace FtB_InitiateForwarding
 {
     public class Forwarder
     {
-        private PrepareForwarding _prepareForwarding;
-        private ExceuteForwarding _exceuteForwarding;
-        public Forwarder(AbstractProcessStepFactory channel, Form form)
+        private PrepareBase _prepareForwarding;
+        private SendBase _exceuteForwarding;
+        public Forwarder(AbstractChannelFactory channel, FormBase form)
         {
-            _prepareForwarding = channel.CreatePrepareForwarding(form);
-            _exceuteForwarding = channel.CreateExceuteForwarding(form);
+            _prepareForwarding = channel.CreatePrepareBase(form);
+            _exceuteForwarding = channel.CreateSendBase(form);
         }
 
         public void PrepareFormForForwarding()
@@ -27,6 +27,7 @@ namespace FtB_InitiateForwarding
             _prepareForwarding.CreateSubmittalDatabaseStatus("");
 
             _prepareForwarding.ProcessForm();
+            _prepareForwarding.Exceute();
         }
         public void ExecuteForwarding()
         {

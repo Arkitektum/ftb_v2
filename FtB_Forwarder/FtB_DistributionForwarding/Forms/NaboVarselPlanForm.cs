@@ -1,16 +1,18 @@
 ﻿using FtB_CommonModel.Forms;
+using FtB_CommonModel.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace FtB_DistributionForwarding.Forms
 {
-    public class NaboVarselPlanForm : DistributionForm
+    public class NaboVarselPlanForm : DistributionForm, IForm
     {
-       
 
-        //no.kxml.skjema.dibk.nabovarselPlan
-        public override void Process()
+
+        private no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType _form;
+
+        public override void ProcessPrepareStep()
         {
             Console.WriteLine("Spesialhåndtering av skjema for NABOVARSELPLAN");
             this.OptionalMethod();
@@ -21,5 +23,9 @@ namespace FtB_DistributionForwarding.Forms
             Console.WriteLine("Valgfri metode implementert for skjema NABOVARSELPLAN");
         }
 
+        public override void InitiateForm(string formDataAsXml)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

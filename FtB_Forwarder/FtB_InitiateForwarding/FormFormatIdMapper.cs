@@ -12,21 +12,26 @@ namespace FtB_InitiateForwarding
 {
     public class FormFormatIdMapper
     {
-        public Form Form { get; private set; }
-        public AbstractProcessStepFactory ProcessChannel { get; private set; }
+        public FormBase Form { get; private set; }
+        public AbstractChannelFactory Channel { get; private set; }
 
         public FormFormatIdMapper(string formatID)
         {
             if (formatID.Equals("6325"))
             {
                 Form = new NaboVarselPlanForm();
-                ProcessChannel = new DistributionChannelFactory();
+                Channel = new DistributionChannelFactory();
 
+            }
+            else if (formatID.Equals("12345"))
+            {
+            //    Form = new NokoLittNyttDistributionForm();
+            //    ProcessChannel = new NokLittNyttDistributionChannelFactory();
             }
             else if (formatID.Equals("6173"))
             {
                 Form = new SvarPaaNabovarselForm();
-                ProcessChannel = new NotificationChannelFactory();
+                Channel = new NotificationChannelFactory();
             }
             else
             {

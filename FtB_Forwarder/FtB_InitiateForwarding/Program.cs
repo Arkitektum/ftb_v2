@@ -15,26 +15,10 @@ namespace FtB_InitiateForwarding
         {
             Console.WriteLine("Oppstart");
 
-            if (args != null || args.Length == 2)
+            if (args != null || args.Length == 1)
             {
-                string formatID = args[0];
-                string processStep = args[1];
-                Console.WriteLine("formatID: " + formatID + ", processStep: " + processStep);
-
-                FormFormatIdMapper mapper = new FormFormatIdMapper(formatID);
-                Forwarder channelForwarder = new Forwarder(mapper.ProcessChannel, mapper.Form);
-            
-                switch (processStep)
-                {
-                    case "P":
-                        channelForwarder.PrepareFormForForwarding();
-                        break;
-                    case "E":
-                        channelForwarder.ExecuteForwarding();
-                        break;
-                    default:
-                        break;
-                }
+                string archiveReference = args[0];
+                new Execute(archiveReference);
             }
             else
             {

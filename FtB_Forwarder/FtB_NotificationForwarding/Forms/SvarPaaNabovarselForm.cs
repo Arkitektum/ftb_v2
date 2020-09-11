@@ -5,26 +5,21 @@ using System.Text;
 
 namespace FtB_NotificationForwarding.Forms
 {
-    public class SvarPaaNabovarselForm : Form
+    public class SvarPaaNabovarselForm : FormBase
     {
-        public override string GetMunicipalityCode()
+        public override void InitiateForm(string formDataAsXml)
         {
             throw new NotImplementedException();
         }
 
-        public override string GetName()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string GetSchemaFile()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Process()
+        public override void ProcessPrepareStep()
         {
             Console.WriteLine("Spesialhåndtering av skjema for SVARPÅNABOVARSEL");
+        }
+
+        public override void ProcessSendStep()
+        {
+            throw new NotImplementedException();
         }
     }
 }

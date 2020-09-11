@@ -7,21 +7,21 @@ using System.Text;
 
 namespace FtB_ShipmentForwarding
 {
-    public class ShipmentChannelFactory : AbstractProcessStepFactory
+    public class ShipmentChannelFactory : AbstractChannelFactory
     {
-        public override PrepareForwarding CreatePrepareForwarding(Form form)
+        public override PrepareBase CreatePrepareBase(FormBase form)
         {
-            return new ShipmentPrepareForwarder(form);
+            return new ShipmentPrepareer(form);
         }
 
-        public override ExceuteForwarding CreateExceuteForwarding(Form form)
+        public override SendBase CreateSendBase(FormBase form)
         {
-            return new ShipmentExecuteForwarder();
+            return new ShipmentSender(form);
         }
 
-        public override ReportForwarding CreateReportForwarding()
+        public override Reportbase CreateReportBase()
         {
-            return new ShipmentReportForwarder();
+            return new ShipmentReporter();
         }
     }
 }

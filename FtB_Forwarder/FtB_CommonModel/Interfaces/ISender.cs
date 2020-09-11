@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FtB_CommonModel.Models
 {
-    public interface IExecute
+    public interface ISender
     {
         void ForwardToReceiver();
     }

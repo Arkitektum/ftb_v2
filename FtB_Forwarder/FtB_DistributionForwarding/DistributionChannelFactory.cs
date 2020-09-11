@@ -7,21 +7,26 @@ using System.Text;
 
 namespace FtB_DistributionForwarding
 {
-    public class DistributionChannelFactory : AbstractProcessStepFactory
+    public class DistributionChannelFactory : AbstractChannelFactory
     {
-        public override PrepareForwarding CreatePrepareForwarding(Form form)
+        public override PrepareBase CreatePrepareBase(FormBase form)
         {
-            return new DistributionPrepareForwarder(form);
+            return new DistributionPreparer(form);
+        }
+        //public override PrepareForwarding CreateAnnslessPrepareForwarding(Form form)
+        //{
+        //    return new AnnslessDistributionPrepareForwarder(form);
+        //}
+
+
+        public override SendBase CreateSendBase(FormBase form)
+        {
+            return new DistributionSender(form);
         }
 
-        public override ExceuteForwarding CreateExceuteForwarding(Form form)
+        public override Reportbase CreateReportBase()
         {
-            return new DistributionExecuteForwarder();
-        }
-
-        public override ReportForwarding CreateReportForwarding()
-        {
-            return new DistributionReportForwarder();
+            return new DistributionReporter();
         }
     }
 }
