@@ -7,14 +7,14 @@ using System.Text;
 namespace FtB_DistributionForwarding.Strategies
 
 {
-    public class DistributionDefaultReportStrategy : ReportStrategyBase
+    public class DefaultDistributionReportStrategy : BaseReportStrategy
     {
         /// <summary>
         /// Scope for this class:
         /// - Protected methods for common functionality for the DistributionDefaultReportStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DistributionDefaultReportStrategy(IForm form) : base(form)
+        public DefaultDistributionReportStrategy(IForm form) : base(form)
         {
 
         }

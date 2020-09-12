@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FtB_DistributionForwarding.Strategies
 {
-    public class DistributionDefaultPrepareStrategy : PrepareStrategyBase
+    public class DefaultDistributionPrepareStrategy : BasePrepareStrategy
     {
         /// <summary>
         /// Scope for this class:
@@ -14,7 +14,7 @@ namespace FtB_DistributionForwarding.Strategies
         /// - Public orchestrator methode Execute() 
         /// </summary>
         private readonly string _archiveReference;
-        public DistributionDefaultPrepareStrategy(IForm form) : base(form)
+        public DefaultDistributionPrepareStrategy(IForm form) : base(form)
         {
             //_archiveReference = form.
         }

@@ -3,7 +3,7 @@ using System;
 
 namespace FtB_Common
 {
-    public abstract class PrepareStrategyBase : IStrategy
+    public abstract class BasePrepareStrategy : IStrategy
     {
         /// <summary>
         /// Scope for this class:
@@ -13,7 +13,7 @@ namespace FtB_Common
         /// </summary>
 
         IForm _formBeingProcessed;
-        public PrepareStrategyBase(IForm form)
+        public BasePrepareStrategy(IForm form)
         {
             _formBeingProcessed = form;
         }

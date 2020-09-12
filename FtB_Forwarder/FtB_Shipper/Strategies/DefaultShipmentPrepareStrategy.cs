@@ -6,14 +6,14 @@ using System.Text;
 
 namespace FtB_ShipmentForwarding.Strategies
 {
-    public class ShipmentDefaultPrepareStrategy : PrepareStrategyBase
+    public class DefaultShipmentPrepareStrategy : BasePrepareStrategy
     {
         /// <summary>
         /// Scope for this class:
         /// - Protected methods for common functionality for the ShipmentDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public ShipmentDefaultPrepareStrategy(IForm form) : base(form)
+        public DefaultShipmentPrepareStrategy(IForm form) : base(form)
         {
 
         }

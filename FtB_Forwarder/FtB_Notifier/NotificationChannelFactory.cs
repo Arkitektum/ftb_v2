@@ -13,19 +13,19 @@ namespace FtB_NotificationForwarding
         public override IStrategy CreatePrepareStrategy(IForm form)
         {
             return (form.GetPrepareStrategy() != null
-                ? form.GetPrepareStrategy() : new NotificationDefaultPrepareStrategy(form));
+                ? form.GetPrepareStrategy() : new DefaultNotificationPrepareStrategy(form));
         }
 
         public override IStrategy CreateSendStrategy(IForm form)
         {
             return (form.GetPrepareStrategy() != null
-                ? form.GetPrepareStrategy() : new NotificationDefaultSendStrategy(form));
+                ? form.GetPrepareStrategy() : new DefaultNotificationSendStrategy(form));
         }
 
         public override IStrategy CreateReportStrategy(IForm form)
         {
             return (form.GetPrepareStrategy() != null
-                ? form.GetPrepareStrategy() : new NotificationDefaultReportStrategy(form));
+                ? form.GetPrepareStrategy() : new DefaultNotificationReportStrategy(form));
         }
     }
 }

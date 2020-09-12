@@ -6,11 +6,11 @@ using System.Text;
 
 namespace FtB_ShipmentForwarding.Strategies
 {
-    public class ShipmentDefaultReportStrategy : ReportStrategyBase
+    public class DefaultShipmentReportStrategy : BaseReportStrategy
     {
         private IForm form;
 
-        public ShipmentDefaultReportStrategy(IForm form) : base(form)
+        public DefaultShipmentReportStrategy(IForm form) : base(form)
         {
             this.form = form;
         }
