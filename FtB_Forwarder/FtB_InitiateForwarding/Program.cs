@@ -1,5 +1,4 @@
-﻿using FtB_CommonModel.Factories;
-using FtB_DistributionForwarding;
+﻿using FtB_DistributionForwarding;
 using FtB_DistributionForwarding.Forms;
 using FtB_NotificationForwarding;
 using FtB_NotificationForwarding.Forms;
@@ -18,7 +17,7 @@ namespace FtB_InitiateForwarding
             if (args != null || args.Length == 1)
             {
                 string archiveReference = args[0];
-                new Execute(archiveReference);
+                new ArchivedItemQueueProcessor(archiveReference);
             }
             else
             {

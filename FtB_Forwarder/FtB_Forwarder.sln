@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_NotificationForwarding"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_DistributionForwarding", "FtB_DistributionForwarding\FtB_DistributionForwarding.csproj", "{93565D6C-067C-4678-ABD9-601AAC0E0029}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_CommonModel", "FtB_CommonModel\FtB_CommonModel.csproj", "{3646904E-BC65-4152-AFE7-8DBE216930C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Common", "FtB_Common\FtB_Common.csproj", "{3646904E-BC65-4152-AFE7-8DBE216930C5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FtB_FuncForwarding", "FtB_FuncForwarding\FtB_FuncForwarding.csproj", "{A42B80B8-77DE-48F0-9988-5F512CBE98DA}"
 EndProject

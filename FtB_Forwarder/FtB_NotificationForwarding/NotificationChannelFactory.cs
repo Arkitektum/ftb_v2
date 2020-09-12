@@ -1,6 +1,7 @@
-﻿using FtB_CommonModel.Factories;
-using FtB_CommonModel.Forms;
-using FtB_CommonModel.Models;
+﻿using FtB_Common;
+using FtB_Common.Factories;
+using FtB_Common.Interfaces;
+using FtB_NotificationForwarding.Strategies;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,19 +10,22 @@ namespace FtB_NotificationForwarding
 {
     public class NotificationChannelFactory : AbstractChannelFactory
     {
-        public override PrepareStrategyBase CreatePrepareBase(FormBase form)
+        public override IStrategy CreatePrepareStrategy(IForm form)
         {
-            return new NotificationPrepareStrategy(form);
+            return (form.GetPrepareStrategy() != null
+                ? form.GetPrepareStrategy() : new NotificationDefaultPrepareStrategy(form));
         }
 
-        public override SendStrategyBase CreateSendBase(FormBase form)
+        public override IStrategy CreateSendStrategy(IForm form)
         {
-            return new NotificationSendStrategy(form);
+            return (form.GetPrepareStrategy() != null
+                ? form.GetPrepareStrategy() : new NotificationDefaultSendStrategy(form));
         }
 
-        public override ReportStrategyBase CreateReportBase()
+        public override IStrategy CreateReportStrategy(IForm form)
         {
-            return new NotificationReportStrategy();
+            return (form.GetPrepareStrategy() != null
+                ? form.GetPrepareStrategy() : new NotificationDefaultReportStrategy(form));
         }
     }
 }

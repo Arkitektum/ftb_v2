@@ -1,15 +1,12 @@
-﻿using FtB_CommonModel.Forms;
-using FtB_CommonModel.Interfaces;
+﻿using FtB_Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace FtB_DistributionForwarding.Forms
 {
-    public class NaboVarselPlanForm : DistributionForm, IForm
+    public class NaboVarselPlanForm : DistributionBaseForm, IForm
     {
-
-
         private no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType _form;
 
         public override void ProcessPrepareStep()
@@ -24,6 +21,16 @@ namespace FtB_DistributionForwarding.Forms
         }
 
         public override void InitiateForm(string formDataAsXml)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IStrategy GetPrepareStrategy()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IStrategy GetSendStrategy()
         {
             throw new NotImplementedException();
         }
