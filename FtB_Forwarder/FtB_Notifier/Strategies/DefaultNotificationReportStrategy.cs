@@ -6,14 +6,14 @@ using System.Text;
 
 namespace FtB_NotificationForwarding.Strategies
 {
-    public class NotificationDefaultReportStrategy : ReportStrategyBase
+    public class DefaultNotificationReportStrategy : BaseReportStrategy
     {
         /// <summary>
         /// Scope for this class:
         /// - Protected methods for common functionality for the NotificationDefaultReportStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public NotificationDefaultReportStrategy(IForm form) : base(form)
+        public DefaultNotificationReportStrategy(IForm form) : base(form)
         {
 
         }

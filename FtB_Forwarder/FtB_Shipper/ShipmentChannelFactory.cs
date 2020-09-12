@@ -13,19 +13,19 @@ namespace FtB_ShipmentForwarding
         public override IStrategy CreatePrepareStrategy(IForm form)
         {
             return (form.GetPrepareStrategy() != null
-                ? form.GetPrepareStrategy() : new ShipmentDefaultPrepareStrategy(form));
+                ? form.GetPrepareStrategy() : new DefaultShipmentPrepareStrategy(form));
         }
 
         public override IStrategy CreateSendStrategy(IForm form)
         {
             return (form.GetPrepareStrategy() != null
-                ? form.GetPrepareStrategy() : new ShipmentDefaultSendStrategy(form));
+                ? form.GetPrepareStrategy() : new DefaultShipmentSendStrategy(form));
         }
 
         public override IStrategy CreateReportStrategy(IForm form)
         {
             return (form.GetPrepareStrategy() != null
-                ? form.GetPrepareStrategy() : new ShipmentDefaultReportStrategy(form));
+                ? form.GetPrepareStrategy() : new DefaultShipmentReportStrategy(form));
         }
 
 

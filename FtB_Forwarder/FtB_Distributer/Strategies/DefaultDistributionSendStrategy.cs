@@ -1,19 +1,19 @@
-﻿using FtB_Common;
+﻿    using FtB_Common;
 using FtB_Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_ShipmentForwarding.Strategies
+namespace FtB_DistributionForwarding.Strategies
 {
-    public class ShipmentDefaultSendStrategy : SendStrategyBase
+    public class DefaultDistributionSendStrategy : BaseSendStrategy
     {
         /// <summary>
         /// Scope for this class:
-        /// - Protected methods for common functionality for the ShipmentDefaultSendStrategy
+        /// - Protected methods for common functionality for the DistributionDefaultSendStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public ShipmentDefaultSendStrategy(IForm form) : base(form)
+        public DefaultDistributionSendStrategy(IForm form) : base(form)
         {
 
         }
@@ -25,13 +25,12 @@ namespace FtB_ShipmentForwarding.Strategies
 
         public override void ForwardToReceiver()
         {
-            Console.WriteLine("Sender skjema til SHIPMENT");
+            Console.WriteLine("Sender skjema til DISTRIBUTION");
         }
 
         public override void GetFormsAndAttachmentsFromBlobStorage()
         {
-            Console.WriteLine("Ikke implementert ennå....");
-            //Console.WriteLine("Henter skjema og vedlegg for SHIPMENT");
+            Console.WriteLine("Henter skjema og vedlegg for DISTRIBUTION");
         }
     }
 }

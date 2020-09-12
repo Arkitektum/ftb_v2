@@ -2,10 +2,10 @@
 
 namespace FtB_Common
 {
-    public abstract class SendStrategyBase : IStrategy
+    public abstract class BaseSendStrategy : IStrategy
     {
         IForm _formBeingProcessed;
-        public SendStrategyBase(IForm form)
+        public BaseSendStrategy(IForm form)
         {
             _formBeingProcessed = form;
         }

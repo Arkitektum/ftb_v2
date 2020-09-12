@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FtB_Common
 {
-    public abstract class StrategyBase
+    public abstract class BaseStrategy
     {
     }
 }
