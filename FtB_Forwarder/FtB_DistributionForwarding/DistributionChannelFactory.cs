@@ -1,6 +1,7 @@
-﻿using FtB_CommonModel.Factories;
-using FtB_CommonModel.Forms;
-using FtB_CommonModel.Models;
+﻿using FtB_Common;
+using FtB_Common.Factories;
+using FtB_Common.Interfaces;
+using FtB_DistributionForwarding.Strategies;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,24 +10,22 @@ namespace FtB_DistributionForwarding
 {
     public class DistributionChannelFactory : AbstractChannelFactory
     {
-        public override PrepareStrategyBase CreatePrepareBase(FormBase form)
+        public override IStrategy CreatePrepareStrategy(IForm form)
         {
-            return new DistributionPrepareStrategy(form);
-        }
-        //public override PrepareForwarding CreateAnnslessPrepareForwarding(Form form)
-        //{
-        //    return new AnnslessDistributionPrepareForwarder(form);
-        //}
-
-
-        public override SendStrategyBase CreateSendBase(FormBase form)
-        {
-            return new DistributionSendStrategy(form);
+            return (form.GetPrepareStrategy() != null 
+                ? form.GetPrepareStrategy() : new DistributionDefaultPrepareStrategy(form));
         }
 
-        public override ReportStrategyBase CreateReportBase()
+        public override IStrategy CreateSendStrategy(IForm form)
         {
-            return new DistributionReportStrategy();
+            return (form.GetPrepareStrategy() != null
+                ? form.GetPrepareStrategy() : new DistributionDefaultSendStrategy(form));
+        }
+
+        public override IStrategy CreateReportStrategy(IForm form)
+        {
+            return (form.GetPrepareStrategy() != null
+                ? form.GetPrepareStrategy() : new DistributionDefaultReportStrategy(form));
         }
     }
 }

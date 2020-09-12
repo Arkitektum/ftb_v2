@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FtB_CommonModel\FtB_CommonModel.csproj" />
+    <ProjectReference Include="..\FtB_Common\FtB_Common.csproj" />
     <ProjectReference Include="..\FtB_DistributionForwarding\FtB_DistributionForwarding.csproj" />
     <ProjectReference Include="..\FtB_NotificationForwarding\FtB_NotificationForwarding.csproj" />
     <ProjectReference Include="..\FtB_ShipmentForwarding\FtB_ShipmentForwarding.csproj" />

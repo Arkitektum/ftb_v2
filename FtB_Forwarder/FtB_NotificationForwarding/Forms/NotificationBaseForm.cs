@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_ShipmentForwarding.Forms
+namespace FtB_NotificationForwarding.Forms
 {
-    public class FerdigAttestForm : BaseForm, IForm
+    public class NotificationBaseForm : BaseForm
     {
         public override IStrategy GetPrepareStrategy()
         {
@@ -25,7 +25,7 @@ namespace FtB_ShipmentForwarding.Forms
 
         public override void ProcessPrepareStep()
         {
-            Console.WriteLine("Spesialhåndtering av skjema for FERDIGATTEST");
+            throw new NotImplementedException();
         }
 
         public override void ProcessSendStep()

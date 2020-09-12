@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FtB_ShipmentForwarding.Forms
 {
-    public class FerdigAttestForm : BaseForm, IForm
+    public class ShipmentBaseForm : BaseForm
     {
         public override IStrategy GetPrepareStrategy()
         {
@@ -25,7 +25,7 @@ namespace FtB_ShipmentForwarding.Forms
 
         public override void ProcessPrepareStep()
         {
-            Console.WriteLine("Spesialhåndtering av skjema for FERDIGATTEST");
+            throw new NotImplementedException();
         }
 
         public override void ProcessSendStep()

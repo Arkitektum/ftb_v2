@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FtB_CommonModel\FtB_CommonModel.csproj" />
+    <ProjectReference Include="..\FtB_Common\FtB_Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
