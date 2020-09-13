@@ -24,7 +24,7 @@ namespace FtB_ShipmentForwarding.Strategies
 
         public override void Exceute()
         {
-            throw new NotImplementedException();
+            _formBeingProcessed.ProcessCustomPrepareStep();
         }
 
         protected override void ReadReceiverInformation(string archiveReference)

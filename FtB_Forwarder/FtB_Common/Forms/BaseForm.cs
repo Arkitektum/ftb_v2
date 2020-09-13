@@ -17,8 +17,9 @@ namespace FtB_Common.Forms
 
         public abstract IStrategy GetCustomizedPrepareStrategy();
         public abstract IStrategy GetCustomizedSendStrategy();
-        public abstract void ProcessPrepareStep();
-        public abstract void ProcessSendStep();
+        //public abstract void ProcessPrepareStep();
+        //public abstract void ProcessSendStep();
+        //public abstract void ProcessReportStep();
 
         public virtual void OptionalMethod()
         {

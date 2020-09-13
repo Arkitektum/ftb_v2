@@ -16,7 +16,7 @@ namespace FtB_ShipmentForwarding.Mappers
                 case "6173":
                     return new FerdigAttestForm();
                 case "12345":
-                    //form = new NokLittNyShipmentForm();
+                    //return new AnnetSkjemaAvTypeShipmentForm();
                     return null;
                 default:
                     return null;

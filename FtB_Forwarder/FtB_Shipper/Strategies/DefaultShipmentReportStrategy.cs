@@ -22,7 +22,7 @@ namespace FtB_ShipmentForwarding.Strategies
         /// </summary>
         public override void Exceute()
         {
-            throw new NotImplementedException();
+            _formBeingProcessed.ProcessCustomReportStep();
         }
     }
 }

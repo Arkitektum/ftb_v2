@@ -17,7 +17,7 @@ namespace FtB_DistributionForwarding.Mappers
                 case "6325":
                     return new NaboVarselPlanForm();
                 case "12345":
-                    //form = new NokLittNyDistributionForm();
+                    //return new AnnetSkjemaAvTypeDistributionForm();
                     return null;
                 default:
                     return null;

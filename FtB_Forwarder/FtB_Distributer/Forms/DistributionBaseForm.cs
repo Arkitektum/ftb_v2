@@ -7,14 +7,5 @@ namespace FtB_DistributionForwarding.Forms
 {
     public abstract class DistributionBaseForm : BaseForm
     {
-        public override void ProcessPrepareStep()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void ProcessSendStep()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -9,5 +9,8 @@ namespace FtB_Common.Interfaces
         IStrategy GetCustomizedPrepareStrategy();
         IStrategy GetCustomizedSendStrategy();
         IStrategy GetCustomizedReportStrategy();
+        void ProcessCustomPrepareStep();
+        void ProcessCustomSendStep();
+        void ProcessCustomReportStep();
     }
 }

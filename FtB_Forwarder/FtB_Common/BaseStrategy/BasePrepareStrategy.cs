@@ -3,7 +3,7 @@ using System;
 
 namespace FtB_Common
 {
-    public abstract class BasePrepareStrategy : IStrategy
+    public abstract class BasePrepareStrategy : BaseStrategy, IStrategy
     {
         /// <summary>
         /// Scope for this class:
@@ -12,7 +12,6 @@ namespace FtB_Common
         /// - Protected implementation methods for common functionality for the "Prepare" strategy/process
         /// </summary>
 
-        IForm _formBeingProcessed;
         public BasePrepareStrategy(IForm form)
         {
             _formBeingProcessed = form;
@@ -28,10 +27,5 @@ namespace FtB_Common
         {
             Console.WriteLine("Felles funksjonalitet for både DISTRIBUTION, NOTIFICATION og SHIPMENT");
         }
-        protected void ProcessForm()
-        {
-            //_formBeingProcessed.ProcessPrepareStep();
-        }
-
     }
 }

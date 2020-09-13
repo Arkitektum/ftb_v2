@@ -22,15 +22,5 @@ namespace FtB_NotificationForwarding.Forms
         {
             throw new NotImplementedException();
         }
-
-        public override void ProcessPrepareStep()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void ProcessSendStep()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

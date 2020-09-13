@@ -2,9 +2,8 @@
 
 namespace FtB_Common
 {
-    public abstract class BaseSendStrategy : IStrategy
+    public abstract class BaseSendStrategy : BaseStrategy, IStrategy
     {
-        IForm _formBeingProcessed;
         public BaseSendStrategy(IForm form)
         {
             _formBeingProcessed = form;
@@ -14,9 +13,5 @@ namespace FtB_Common
 
         public abstract void ForwardToReceiver();
         public abstract void GetFormsAndAttachmentsFromBlobStorage();
-        public void ProcessForm()
-        {
-            //_formBeingProcessed.ProcessSendStep();
-        }
     }
 }

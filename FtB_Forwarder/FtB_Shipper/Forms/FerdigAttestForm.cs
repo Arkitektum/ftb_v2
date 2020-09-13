@@ -28,12 +28,17 @@ namespace FtB_ShipmentForwarding.Forms
             throw new NotImplementedException();
         }
 
-        public override void ProcessPrepareStep()
+        public void ProcessCustomPrepareStep()
         {
-            Console.WriteLine("Spesialhåndtering av skjema for FERDIGATTEST");
+            throw new NotImplementedException();
         }
 
-        public override void ProcessSendStep()
+        public void ProcessCustomReportStep()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ProcessCustomSendStep()
         {
             throw new NotImplementedException();
         }
