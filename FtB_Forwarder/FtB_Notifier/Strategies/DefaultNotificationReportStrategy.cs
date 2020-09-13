@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FtB_NotificationForwarding.Strategies
 {
-    public class DefaultNotificationReportStrategy : BaseReportStrategy
+    public class DefaultNotificationReportStrategy : ReportStrategyBase
     {
         /// <summary>
         /// Scope for this class:

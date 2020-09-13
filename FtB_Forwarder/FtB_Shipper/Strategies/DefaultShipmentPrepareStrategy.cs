@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FtB_ShipmentForwarding.Strategies
 {
-    public class DefaultShipmentPrepareStrategy : BasePrepareStrategy
+    public class DefaultShipmentPrepareStrategy : PrepareStrategyBase
     {
         /// <summary>
         /// Scope for this class:

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FtB_Common.Factories
 {
-    public abstract class AbstractChannelFactory
+    public abstract class ChannelFactoryBase
     {
         public abstract IStrategy CreatePrepareStrategy(IForm form);
         public abstract IStrategy CreateSendStrategy(IForm form);

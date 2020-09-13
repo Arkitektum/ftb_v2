@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FtB_DistributionForwarding.Forms
 {
-    public class NaboVarselPlanForm : DistributionBaseForm, IForm
+    public class NaboVarselPlanForm : DistributionFormBase, IForm
     {
         private no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType _form;
 

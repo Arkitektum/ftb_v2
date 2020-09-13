@@ -7,7 +7,7 @@ using System.Text;
 namespace FtB_DistributionForwarding.Strategies
 
 {
-    public class DefaultDistributionReportStrategy : BaseReportStrategy
+    public class DefaultDistributionReportStrategy : ReportStrategyBase
     {
         /// <summary>
         /// Scope for this class:

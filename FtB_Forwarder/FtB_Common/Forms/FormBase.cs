@@ -4,7 +4,7 @@ using System;
 
 namespace FtB_Common.Forms
 {
-    public abstract class BaseForm
+    public abstract class FormBase
     {
         public string Name { get; protected set; }
         public string ReceiverIdentifer { get; protected set; }

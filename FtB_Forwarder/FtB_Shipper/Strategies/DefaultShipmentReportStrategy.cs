@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FtB_ShipmentForwarding.Strategies
 {
-    public class DefaultShipmentReportStrategy : BaseReportStrategy
+    public class DefaultShipmentReportStrategy : ReportStrategyBase
     {
         private IForm form;
 

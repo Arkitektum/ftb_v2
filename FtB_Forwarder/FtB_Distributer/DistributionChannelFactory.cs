@@ -8,7 +8,7 @@ using System.Text;
 
 namespace FtB_DistributionForwarding
 {
-    public class DistributionChannelFactory : AbstractChannelFactory
+    public class DistributionChannelFactory : ChannelFactoryBase
     {
         public override IStrategy CreatePrepareStrategy(IForm form)
         {
