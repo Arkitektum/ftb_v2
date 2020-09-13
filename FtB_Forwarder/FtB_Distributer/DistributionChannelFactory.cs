@@ -12,20 +12,20 @@ namespace FtB_DistributionForwarding
     {
         public override IStrategy CreatePrepareStrategy(IForm form)
         {
-            return (form.GetPrepareStrategy() != null 
-                ? form.GetPrepareStrategy() : new DefaultDistributionPrepareStrategy(form));
+            return (form.GetCustomizedPrepareStrategy() != null 
+                ? form.GetCustomizedPrepareStrategy() : new DefaultDistributionPrepareStrategy(form));
         }
 
         public override IStrategy CreateSendStrategy(IForm form)
         {
-            return (form.GetPrepareStrategy() != null
-                ? form.GetPrepareStrategy() : new DefaultDistributionSendStrategy(form));
+            return (form.GetCustomizedSendStrategy() != null
+                ? form.GetCustomizedSendStrategy() : new DefaultDistributionSendStrategy(form));
         }
 
         public override IStrategy CreateReportStrategy(IForm form)
         {
-            return (form.GetPrepareStrategy() != null
-                ? form.GetPrepareStrategy() : new DefaultDistributionReportStrategy(form));
+            return (form.GetCustomizedReportStrategy() != null
+                ? form.GetCustomizedReportStrategy() : new DefaultDistributionReportStrategy(form));
         }
     }
 }

@@ -8,12 +8,17 @@ namespace FtB_NotificationForwarding.Forms
 {
     public class SvarPaaNabovarselForm : BaseForm, IForm
     {
-        public override IStrategy GetPrepareStrategy()
+        public override IStrategy GetCustomizedPrepareStrategy()
         {
             throw new NotImplementedException();
         }
 
-        public override IStrategy GetSendStrategy()
+        public IStrategy GetCustomizedReportStrategy()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IStrategy GetCustomizedSendStrategy()
         {
             throw new NotImplementedException();
         }
