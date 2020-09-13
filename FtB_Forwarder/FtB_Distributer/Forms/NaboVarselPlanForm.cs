@@ -25,12 +25,17 @@ namespace FtB_DistributionForwarding.Forms
             throw new NotImplementedException();
         }
 
-        public override IStrategy GetPrepareStrategy()
+        public override IStrategy GetCustomizedPrepareStrategy()
         {
             throw new NotImplementedException();
         }
 
-        public override IStrategy GetSendStrategy()
+        public override IStrategy GetCustomizedSendStrategy()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IStrategy GetCustomizedReportStrategy()
         {
             throw new NotImplementedException();
         }

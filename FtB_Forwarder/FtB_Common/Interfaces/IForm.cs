@@ -6,7 +6,8 @@ namespace FtB_Common.Interfaces
 {
     public interface IForm
     {
-        IStrategy GetPrepareStrategy();
-        IStrategy GetSendStrategy();
+        IStrategy GetCustomizedPrepareStrategy();
+        IStrategy GetCustomizedSendStrategy();
+        IStrategy GetCustomizedReportStrategy();
     }
 }

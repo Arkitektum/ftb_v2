@@ -15,8 +15,8 @@ namespace FtB_Common.Forms
 
         public abstract void InitiateForm(string formDataAsXml);
 
-        public abstract IStrategy GetPrepareStrategy();
-        public abstract IStrategy GetSendStrategy();
+        public abstract IStrategy GetCustomizedPrepareStrategy();
+        public abstract IStrategy GetCustomizedSendStrategy();
         public abstract void ProcessPrepareStep();
         public abstract void ProcessSendStep();
 
