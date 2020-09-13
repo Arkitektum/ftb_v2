@@ -2,9 +2,9 @@
 
 namespace FtB_Common
 {
-    public abstract class BaseReportStrategy : BaseStrategy, IStrategy
+    public abstract class ReportStrategyBase : StrategyBase, IStrategy
     {
-        public BaseReportStrategy(IForm form)
+        public ReportStrategyBase(IForm form)
         {
             _formBeingProcessed = form;
         }

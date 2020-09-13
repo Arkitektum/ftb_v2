@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FtB_DistributionForwarding.Strategies
 {
-    public class DefaultDistributionSendStrategy : BaseSendStrategy
+    public class DefaultDistributionSendStrategy : SendStrategyBase
     {
         /// <summary>
         /// Scope for this class:

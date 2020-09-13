@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FtB_ShipmentForwarding.Forms
 {
-    public class ShipmentBaseForm : BaseForm
+    public class ShipmentFormBase : FormBase
     {
         public override IStrategy GetCustomizedPrepareStrategy()
         {

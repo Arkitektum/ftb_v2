@@ -8,7 +8,7 @@ using System.Text;
 
 namespace FtB_NotificationForwarding
 {
-    public class NotificationChannelFactory : AbstractChannelFactory
+    public class NotificationChannelFactory : ChannelFactoryBase
     {
         public override IStrategy CreatePrepareStrategy(IForm form)
         {

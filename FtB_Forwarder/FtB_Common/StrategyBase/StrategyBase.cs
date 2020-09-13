@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FtB_Common
 {
-    public abstract class BaseStrategy
+    public abstract class StrategyBase
     {
         protected IForm _formBeingProcessed;
     }

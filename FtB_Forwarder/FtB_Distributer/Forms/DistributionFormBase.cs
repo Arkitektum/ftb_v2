@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FtB_DistributionForwarding.Forms
 {
-    public abstract class DistributionBaseForm : BaseForm
+    public abstract class DistributionFormBase : FormBase
     {
     }
 }

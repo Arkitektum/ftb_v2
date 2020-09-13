@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FtB_DistributionForwarding.Strategies
 {
-    public class DefaultDistributionPrepareStrategy : BasePrepareStrategy
+    public class DefaultDistributionPrepareStrategy : PrepareStrategyBase
     {
         /// <summary>
         /// Scope for this class:
@@ -28,6 +28,7 @@ namespace FtB_DistributionForwarding.Strategies
             ReadReceiverInformation("archiveReference");
             base.CommonFunction();
             _formBeingProcessed.ProcessCustomPrepareStep();
+            base.ReadFromSubmittalQueue("st");
             throw new NotImplementedException();
         }
 

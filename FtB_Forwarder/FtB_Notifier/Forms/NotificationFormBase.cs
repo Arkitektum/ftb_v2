@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FtB_NotificationForwarding.Forms
 {
-    public class NotificationBaseForm : BaseForm
+    public class NotificationFormBase : FormBase
     {
         public override IStrategy GetCustomizedPrepareStrategy()
         {
