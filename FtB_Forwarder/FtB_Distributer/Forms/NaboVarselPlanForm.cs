@@ -9,11 +9,6 @@ namespace FtB_DistributionForwarding.Forms
     {
         private no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType _form;
 
-        public override void ProcessPrepareStep()
-        {
-            Console.WriteLine("Spesialhåndtering av skjema for NABOVARSELPLAN");
-            this.OptionalMethod();
-        }
         public override void OptionalMethod()
         {
             base.OptionalMethod();
@@ -36,6 +31,21 @@ namespace FtB_DistributionForwarding.Forms
         }
 
         public IStrategy GetCustomizedReportStrategy()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ProcessCustomPrepareStep()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ProcessCustomSendStep()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ProcessCustomReportStep()
         {
             throw new NotImplementedException();
         }

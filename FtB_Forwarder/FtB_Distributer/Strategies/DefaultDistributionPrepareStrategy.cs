@@ -27,11 +27,13 @@ namespace FtB_DistributionForwarding.Strategies
         {
             ReadReceiverInformation("archiveReference");
             base.CommonFunction();
+            _formBeingProcessed.ProcessCustomPrepareStep();
             throw new NotImplementedException();
         }
 
         protected override void ReadReceiverInformation(string archiveReference)
         {
+            
             Console.WriteLine("Leser mottakerinformasjon for DISTRIBUTION");
         }
 

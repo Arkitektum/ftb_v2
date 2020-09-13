@@ -19,7 +19,7 @@ namespace FtB_NotificationForwarding.Strategies
         }
         public override void Exceute()
         {
-            throw new NotImplementedException();
+            _formBeingProcessed.ProcessCustomReportStep();
         }
     }
 }

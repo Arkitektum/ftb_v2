@@ -16,7 +16,7 @@ namespace FtB_NotificationForwarding.Mappers
                 case "6173":
                     return new SvarPaaNabovarselForm();
                 case "12345":
-                    //form = new NokLittNyNotificationForm();
+                    //return new AnnetSkjemaAvTypeNotificationForm();
                     return null;
                 default:
                     return null;
