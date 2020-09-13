@@ -11,7 +11,7 @@ namespace FtB_InitiateForwarding
 {
     public static class FormatIdToChannelMapper
     {
-        public static AbstractChannelFactory GetChannel(string formatID)
+        public static AbstractChannelFactory GetChannelFactory(string formatID)
         {
             //Les dette fra konfigurasjon i stedet fra casen under
             switch (formatID)
