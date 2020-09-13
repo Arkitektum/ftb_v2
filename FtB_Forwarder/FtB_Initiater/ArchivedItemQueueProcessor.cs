@@ -18,22 +18,27 @@ namespace FtB_InitiateForwarding
         public ArchivedItemQueueProcessor(string archiveReference)
         {
             string formatID = BlobOperations.GetFormatIdFromStoredBlob(archiveReference);
-            var channel = FormatIdToChannelMapper.GetChannel(formatID);
+            var channelFactory = FormatIdToChannelMapper.GetChannelFactory(formatID);
             IForm formBeingProcessed;
-            if (channel is DistributionChannelFactory)
+            if (channelFactory is DistributionChannelFactory)
             {
                 formBeingProcessed = FormatIdToDistributionFormMapper.GetForm(formatID);
             }
-            else if (channel is NotificationChannelFactory)
+            else if (channelFactory is NotificationChannelFactory)
             {
                 formBeingProcessed = FormatIdToNotificationFormMapper.GetForm(formatID);
             }
-            else //if (channel is ShipmentChannelFactory)
+            else if (channelFactory is ShipmentChannelFactory)
             {
                 formBeingProcessed = FormatIdToShipmentFormMapper.GetForm(formatID);
             }
-            PrepareStrategyRunner prepareStrategyRunner = new PrepareStrategyRunner(channel, formBeingProcessed);
-            prepareStrategyRunner.Execute();
+            else
+            {
+                throw new ArgumentException("Invalid channelFactory.");
+            }
+
+            IStrategy strategy = channelFactory.CreatePrepareStrategy(formBeingProcessed);
+            strategy.Exceute();
         }
     }
 }
