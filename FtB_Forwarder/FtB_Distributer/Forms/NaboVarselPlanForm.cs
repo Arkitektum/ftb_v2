@@ -1,12 +1,12 @@
-﻿using FtB_Common.Interfaces;
+﻿using FtB_Common.Forms;
+using FtB_Common.Interfaces;
 using FtB_Common.Utils;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FtB_DistributionForwarding.Forms
 {
     //public class NaboVarselPlanForm<T> : DistributionFormBase<T>, IForm
+    [FormDataFormat(DataFormatId = "1234", DataFormatVersion ="6543")]
     public class NaboVarselPlanForm : DistributionFormBase, IForm
     {
         private no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType _form;
