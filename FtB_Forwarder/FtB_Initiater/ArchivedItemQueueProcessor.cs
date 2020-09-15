@@ -1,5 +1,5 @@
-﻿using FtB_Common;
-using FtB_Common.Interfaces;
+﻿using FtB_Common.Interfaces;
+using FtB_Common.Mappers;
 using FtB_Common.Storage;
 using FtB_DistributionForwarding;
 using FtB_DistributionForwarding.Mappers;
@@ -8,26 +8,34 @@ using FtB_NotificationForwarding.Mappers;
 using FtB_ShipmentForwarding;
 using FtB_ShipmentForwarding.Mappers;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FtB_InitiateForwarding
 {
     public class ArchivedItemQueueProcessor
     {
-        public ArchivedItemQueueProcessor(string archiveReference)
+        private readonly FormatIdToFormMapper _formatIdToDistribution;
+
+        public ArchivedItemQueueProcessor(FormatIdToFormMapper formatIdToDistribution)
+        {
+            _formatIdToDistribution = formatIdToDistribution;
+        }
+        public void ExecuteProcessingStrategy(string archiveReference)
         {
             try
             {
                 BlobOperations blob = new BlobOperations(archiveReference);
                 string serviceCode = blob.GetServiceCodeFromStoredBlob();
                 string formatId = blob.GetFormatIdFromStoredBlob();
+
+                //Berre for å teste DI.. :-)
+                //string serviceCode = "4655";
+                //string formatId = "1234";
+
                 var channelFactory = FormatIdToChannelMapper.GetChannelFactory(serviceCode);
                 IForm formBeingProcessed;
                 if (channelFactory is DistributionChannelFactory)
                 {
-                    //var mapper = new FormatIdToDistributionFormMapper2();
-                    formBeingProcessed = FormatIdToDistributionFormMapper.GetForm(formatId);
+                    formBeingProcessed = _formatIdToDistribution.GetForm(formatId);
                 }
                 else if (channelFactory is NotificationChannelFactory)
                 {

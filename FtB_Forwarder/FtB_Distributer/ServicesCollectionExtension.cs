@@ -1,18 +1,16 @@
-﻿using FtB_Common.Interfaces;
+﻿using FtB_Common.Mappers;
 using FtB_DistributionForwarding.Forms;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FtB_Distributer
 {
     public static class ServicesConfiguration
     {
-        public static IServiceCollection AddDistributorPrepareService(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDistributorPrepareService(this IServiceCollection services)
         {
-            //services.AddScoped<IForm, NaboVarselPlanForm>();
+            services.AddScoped<FormatIdToFormMapper>();
+            services.AddScoped<NaboVarselPlanForm>();
             //services.AddScoped<IForm, NaboVarselForm>();
             //services.AddScoped<IForm, NokoAnnaPlanForm>();
             return services;
