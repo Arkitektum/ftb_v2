@@ -4,10 +4,8 @@ using System;
 
 namespace FtB_Common.Forms
 {
-    //public abstract class FormBase<T> : IFormDataRepo<T>
-    public abstract class FormBase : IFormDataRepo
+    public abstract class FormBase : IForm
     {
-        //public FormBase(IFormDataRepo<T> formDataRepo)
         public FormBase()
         {
 
@@ -19,13 +17,18 @@ namespace FtB_Common.Forms
         public string DataFormatVersion { get; protected set; }
         public string SchemaFile { get; protected set; }
 
-        public abstract void InitiateForm(string formDataAsXml);
+        public abstract void InitiateForm(string archiveReference);
 
         public abstract IStrategy GetCustomizedPrepareStrategy();
         public abstract IStrategy GetCustomizedSendStrategy();
-        //public abstract void ProcessPrepareStep();
-        //public abstract void ProcessSendStep();
-        //public abstract void ProcessReportStep();
+        public abstract IStrategy GetCustomizedReportStrategy();
+
+        public virtual void ProcessPrepareStep()
+        { }
+        public virtual void ProcessSendStep()
+        { }
+        public virtual void ProcessReportStep()
+        { }
 
         public virtual void OptionalMethod()
         {
@@ -34,6 +37,11 @@ namespace FtB_Common.Forms
 
         //public T GetFormData(string archiveReference)
         public void GetFormData(string archiveReference)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetFormatId()
         {
             throw new NotImplementedException();
         }

@@ -20,7 +20,7 @@ namespace FtB_ShipmentForwarding.Strategies
 
         public override void Exceute()
         {
-            _formBeingProcessed.ProcessCustomSendStep();
+            _formBeingProcessed.ProcessSendStep();
         }
 
         public override void ForwardToReceiver()

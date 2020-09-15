@@ -19,7 +19,7 @@ namespace FtB_NotificationForwarding.Strategies
         }
         public override void Exceute()
         {
-            _formBeingProcessed.ProcessCustomReportStep();
+            _formBeingProcessed.ProcessReportStep();
         }
     }
 }

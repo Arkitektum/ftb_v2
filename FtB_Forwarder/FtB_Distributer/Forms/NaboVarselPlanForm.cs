@@ -1,31 +1,27 @@
 ﻿using FtB_Common.Forms;
 using FtB_Common.Interfaces;
-using FtB_Common.Utils;
 using System;
 
 namespace FtB_DistributionForwarding.Forms
 {
     //public class NaboVarselPlanForm<T> : DistributionFormBase<T>, IForm
-    [FormDataFormat(DataFormatId = "1234", DataFormatVersion ="6543")]
+    [FormDataFormat(DataFormatId = "1234", DataFormatVersion = "6543")]
     public class NaboVarselPlanForm : DistributionFormBase, IForm
     {
         private no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType _form;
+        private readonly IFormDataRepo<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType> _dataRepo;
 
-        public NaboVarselPlanForm() : base()
+        public NaboVarselPlanForm(IFormDataRepo<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType> dataRepo) : base()
         {
             Name = "Distribusjon av nabovarsel for plan";
             SchemaFile = "nabovarselPlan.xsd";
+            _dataRepo = dataRepo;
         }
 
         public string GetFormatId()
         {
             return _form.dataFormatId;
         }
-        private void Data()
-        {
-            //_form = SerializeUtil.DeserializeFromString<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>(formDataAsXml);
-        }
-
 
         public override void OptionalMethod()
         {
@@ -33,10 +29,10 @@ namespace FtB_DistributionForwarding.Forms
             Console.WriteLine("Valgfri metode implementert for skjema NABOVARSELPLAN");
         }
 
-        public override void InitiateForm(string formDataAsXml)
+        public override void InitiateForm(string archiveReference)
         {
-
-            _form = SerializeUtil.DeserializeFromString<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>(formDataAsXml);
+            _form = _dataRepo.GetFormData(archiveReference);
+            //_form = SerializeUtil.DeserializeFromString<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>(formDataAsXml);
         }
 
         public override IStrategy GetCustomizedPrepareStrategy()
@@ -49,14 +45,14 @@ namespace FtB_DistributionForwarding.Forms
             throw new NotImplementedException();
         }
 
-        public IStrategy GetCustomizedReportStrategy()
+        public override IStrategy GetCustomizedReportStrategy()
         {
             throw new NotImplementedException();
         }
 
         public void ProcessCustomPrepareStep()
         {
-            
+
         }
 
         public void ProcessCustomSendStep()

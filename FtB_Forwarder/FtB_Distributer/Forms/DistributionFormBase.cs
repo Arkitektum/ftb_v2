@@ -8,8 +8,7 @@ namespace FtB_DistributionForwarding.Forms
 {
     //public abstract class DistributionFormBase<T> : FormBase<T>
     public abstract class DistributionFormBase : FormBase
-    {
-        //public DistributionFormBase(IFormDataRepo<T> formDataRepo) : base(formDataRepo)
+    {        
         public DistributionFormBase() : base()
         {
 
