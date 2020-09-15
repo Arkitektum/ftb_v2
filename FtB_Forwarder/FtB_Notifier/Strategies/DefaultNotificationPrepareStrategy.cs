@@ -24,7 +24,7 @@ namespace FtB_NotificationForwarding.Strategies
 
         public override void Exceute()
         {
-            _formBeingProcessed.ProcessCustomPrepareStep();
+            _formBeingProcessed.ProcessPrepareStep();
         }
 
         protected override void ReadReceiverInformation(string archiveReference)

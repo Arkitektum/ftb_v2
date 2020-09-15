@@ -20,7 +20,7 @@ namespace FtB_DistributionForwarding.Strategies
         }
         public override void Exceute()
         {
-            _formBeingProcessed.ProcessCustomReportStep();
+            _formBeingProcessed.ProcessReportStep();
         }
     }
 }

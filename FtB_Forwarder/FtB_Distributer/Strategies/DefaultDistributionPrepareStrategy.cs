@@ -27,7 +27,7 @@ namespace FtB_DistributionForwarding.Strategies
         {
             ReadReceiverInformation("archiveReference");
             base.CommonFunction();
-            _formBeingProcessed.ProcessCustomPrepareStep();
+            _formBeingProcessed.ProcessPrepareStep();
             base.ReadFromSubmittalQueue("st");
         }
 
