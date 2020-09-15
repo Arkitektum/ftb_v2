@@ -1,4 +1,6 @@
-﻿using FtB_Common.Mappers;
+﻿using FtB_Common.FormDataRepositories;
+using FtB_Common.Interfaces;
+using FtB_Common.Mappers;
 using FtB_DistributionForwarding.Forms;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +13,7 @@ namespace FtB_Distributer
         {
             services.AddScoped<FormatIdToFormMapper>();
             services.AddScoped<NaboVarselPlanForm>();
+            services.AddScoped(typeof(IFormDataRepo<>), typeof(FormDataRepository<>));
             //services.AddScoped<IForm, NaboVarselForm>();
             //services.AddScoped<IForm, NokoAnnaPlanForm>();
             return services;
