@@ -10,43 +10,28 @@ namespace FtB_Common.Storage
     public class BlobStorage
     {
         private BlobServiceClient _blobServiceClient;
-        //private BlobClient _blobClient;
         BlobContainerClient _containerClient;
         
         private readonly string _azureBlobConnectionString = "UseDevelopmentStorage=true";
+        //TODO: Get StorageConnectionString from Configuration
+        //_azureBlobConnectionString = "StorageConnectionString"; From Configuration
 
         //public ILogger Logger { private get; set; }
         public BlobStorage(string containerName)
         {
-            //_azureBlobConnectionString = "StorageConnectionString";
             _blobServiceClient = new BlobServiceClient(_azureBlobConnectionString);
             _containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
         }
 
-        public string GetBlobName(string archiveReference)
+        public BlobContainerClient GetBlobContainerClient()
         {
-            try
-            {
-                string lastFormatId;
-                Console.WriteLine("Listing blobs...");
-
-                Azure.Pageable<BlobItem> list = _containerClient.GetBlobs();
-
-                foreach (BlobItem blobItem in list)
-                {
-                    Console.WriteLine("\t" + blobItem.Name);
-                    lastFormatId = blobItem.Name;
-                }
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-
-            return "545454";
+            return _containerClient;
         }
+        public Azure.Pageable<BlobItem> GetBlobContainerItems()
+        {
+            return _containerClient.GetBlobs();
+        }
+
         /*
         public async Task<CloudBlobContainer> SetUpBlobContainerAsync(string containerName)
         {

@@ -8,6 +8,10 @@ namespace FtB_NotificationForwarding.Forms
 {
     public class NotificationFormBase : FormBase
     {
+        public NotificationFormBase() : base()
+        {
+
+        }
         public override IStrategy GetCustomizedPrepareStrategy()
         {
             throw new NotImplementedException();

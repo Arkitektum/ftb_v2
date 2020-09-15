@@ -17,28 +17,40 @@ namespace FtB_InitiateForwarding
     {
         public ArchivedItemQueueProcessor(string archiveReference)
         {
-            string formatID = BlobOperations.GetFormatIdFromStoredBlob(archiveReference);
-            var channelFactory = FormatIdToChannelMapper.GetChannelFactory(formatID);
-            IForm formBeingProcessed;
-            if (channelFactory is DistributionChannelFactory)
+            try
             {
-                formBeingProcessed = FormatIdToDistributionFormMapper.GetForm(formatID);
+                BlobOperations blob = new BlobOperations(archiveReference);
+                string serviceCode = blob.GetServiceCodeFromStoredBlob();
+                var channelFactory = FormatIdToChannelMapper.GetChannelFactory(serviceCode);
+                string formatId = blob.GetFormatIdFromStoredBlob();
+                IForm formBeingProcessed;
+                if (channelFactory is DistributionChannelFactory)
+                {
+                    //var mapper = new FormatIdToDistributionFormMapper2();
+                    formBeingProcessed = FormatIdToDistributionFormMapper.GetForm(formatId);
+                }
+                else if (channelFactory is NotificationChannelFactory)
+                {
+                    formBeingProcessed = FormatIdToNotificationFormMapper.GetForm(formatId);
+                }
+                else if (channelFactory is ShipmentChannelFactory)
+                {
+                    formBeingProcessed = FormatIdToShipmentFormMapper.GetForm(formatId);
+                }
+                else
+                {
+                    throw new ArgumentException("Invalid channelFactory.");
+                }
+
+                IStrategy strategy = channelFactory.CreatePrepareStrategy(formBeingProcessed);
+                strategy.Exceute();
             }
-            else if (channelFactory is NotificationChannelFactory)
+            catch (Exception)
             {
-                formBeingProcessed = FormatIdToNotificationFormMapper.GetForm(formatID);
-            }
-            else if (channelFactory is ShipmentChannelFactory)
-            {
-                formBeingProcessed = FormatIdToShipmentFormMapper.GetForm(formatID);
-            }
-            else
-            {
-                throw new ArgumentException("Invalid channelFactory.");
+
+                throw;
             }
 
-            IStrategy strategy = channelFactory.CreatePrepareStrategy(formBeingProcessed);
-            strategy.Exceute();
         }
     }
 }

@@ -4,8 +4,14 @@ using System;
 
 namespace FtB_Common.Forms
 {
-    public abstract class FormBase
+    //public abstract class FormBase<T> : IFormDataRepo<T>
+    public abstract class FormBase : IFormDataRepo
     {
+        //public FormBase(IFormDataRepo<T> formDataRepo)
+        public FormBase()
+        {
+
+        }
         public string Name { get; protected set; }
         public string ReceiverIdentifer { get; protected set; }
         public ReceiverType ReceiverType { get; protected set; }
@@ -24,6 +30,12 @@ namespace FtB_Common.Forms
         public virtual void OptionalMethod()
         {
             Console.WriteLine("Felles valgfri metode som kan kjøres for skjemaer");
+        }
+
+        //public T GetFormData(string archiveReference)
+        public void GetFormData(string archiveReference)
+        {
+            throw new NotImplementedException();
         }
     }
 }

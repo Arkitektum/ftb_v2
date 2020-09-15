@@ -1,13 +1,31 @@
 ﻿using FtB_Common.Interfaces;
+using FtB_Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace FtB_DistributionForwarding.Forms
 {
+    //public class NaboVarselPlanForm<T> : DistributionFormBase<T>, IForm
     public class NaboVarselPlanForm : DistributionFormBase, IForm
     {
         private no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType _form;
+
+        public NaboVarselPlanForm() : base()
+        {
+            Name = "Distribusjon av nabovarsel for plan";
+            SchemaFile = "nabovarselPlan.xsd";
+        }
+
+        public string GetFormatId()
+        {
+            return _form.dataFormatId;
+        }
+        private void Data()
+        {
+            //_form = SerializeUtil.DeserializeFromString<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>(formDataAsXml);
+        }
+
 
         public override void OptionalMethod()
         {
@@ -17,7 +35,8 @@ namespace FtB_DistributionForwarding.Forms
 
         public override void InitiateForm(string formDataAsXml)
         {
-            throw new NotImplementedException();
+
+            _form = SerializeUtil.DeserializeFromString<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>(formDataAsXml);
         }
 
         public override IStrategy GetCustomizedPrepareStrategy()
