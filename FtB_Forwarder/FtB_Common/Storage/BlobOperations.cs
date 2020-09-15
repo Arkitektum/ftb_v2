@@ -1,16 +1,59 @@
-﻿using System;
+﻿using FtB_Common.BusinessModels;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace FtB_Common.Storage
 {
-    public static class BlobOperations
+    public class BlobOperations
     {
-        public static string GetFormatIdFromStoredBlob(string archiveReference)
+        ArchivedItemInformation _archivedItem = new ArchivedItemInformation();
+        BlobStorage _blobStorage;
+
+        public BlobOperations(string containerName)
         {
-            BlobStorage _blobStorage = new BlobStorage(archiveReference);
-            string formatID = _blobStorage.GetBlobName(archiveReference);
-            return "6325";
+            _blobStorage = new BlobStorage(containerName);
+            InitiateObjectFromBlob(containerName);
+        }
+
+        private void InitiateObjectFromBlob(string containerName)
+        {
+            try
+            {
+                containerName = containerName.ToLower();
+                var blobContainerClient = _blobStorage.GetBlobContainerClient();
+                var stream = new MemoryStream();
+                System.Xml.Serialization.XmlSerializer _serializer = new System.Xml.Serialization.XmlSerializer(_archivedItem.GetType());
+
+                foreach (var blobItem in _blobStorage.GetBlobContainerItems())
+                {
+                    if (blobItem.Name.StartsWith("ArchivedItemInformation"))
+                    {
+                        var client = blobContainerClient.GetBlobClient(blobItem.Name);
+                        client.DownloadToAsync(stream);
+                        _serializer.Deserialize(stream);
+                    }
+                }
+                throw new ArgumentException($"Error when retrieving service code from BlobStorage (container name {containerName})");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public string GetServiceCodeFromStoredBlob()
+        {
+            return _archivedItem.ServiceCode;
+        }
+        public string GetFormatIdFromStoredBlob()
+        {
+            return _archivedItem.DataFormatID;
+        }
+        public int GetFormatVersionIdFromStoredBlob()
+        {
+            return _archivedItem.DataFormatVersionID;
         }
     }
 }

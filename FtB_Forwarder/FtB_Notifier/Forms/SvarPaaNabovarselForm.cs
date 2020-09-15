@@ -23,6 +23,11 @@ namespace FtB_NotificationForwarding.Forms
             throw new NotImplementedException();
         }
 
+        public string GetFormatId()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void InitiateForm(string formDataAsXml)
         {
             throw new NotImplementedException();

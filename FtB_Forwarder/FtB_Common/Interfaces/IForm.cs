@@ -12,5 +12,6 @@ namespace FtB_Common.Interfaces
         void ProcessCustomPrepareStep();
         void ProcessCustomSendStep();
         void ProcessCustomReportStep();
+        string GetFormatId();
     }
 }

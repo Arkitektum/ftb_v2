@@ -8,6 +8,10 @@ namespace FtB_ShipmentForwarding.Forms
 {
     public class ShipmentFormBase : FormBase
     {
+        public ShipmentFormBase() : base()
+        {
+
+        }
         public override IStrategy GetCustomizedPrepareStrategy()
         {
             throw new NotImplementedException();
