@@ -41,7 +41,7 @@ namespace FtB_DistributionForwarding.Forms
 
         public override IStrategy GetCustomizedPrepareStrategy()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public override IStrategy GetCustomizedSendStrategy()
@@ -56,7 +56,7 @@ namespace FtB_DistributionForwarding.Forms
 
         public void ProcessCustomPrepareStep()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void ProcessCustomSendStep()

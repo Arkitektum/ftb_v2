@@ -29,7 +29,6 @@ namespace FtB_DistributionForwarding.Strategies
             base.CommonFunction();
             _formBeingProcessed.ProcessCustomPrepareStep();
             base.ReadFromSubmittalQueue("st");
-            throw new NotImplementedException();
         }
 
         protected override void ReadReceiverInformation(string archiveReference)

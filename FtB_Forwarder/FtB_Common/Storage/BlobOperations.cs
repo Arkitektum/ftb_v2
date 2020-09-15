@@ -1,8 +1,10 @@
 ﻿using FtB_Common.BusinessModels;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FtB_Common.Storage
 {
@@ -14,32 +16,42 @@ namespace FtB_Common.Storage
         public BlobOperations(string containerName)
         {
             _blobStorage = new BlobStorage(containerName);
-            InitiateObjectFromBlob(containerName);
+            InitiateObjectFromBlobAsync(containerName).GetAwaiter().GetResult();
         }
 
-        private void InitiateObjectFromBlob(string containerName)
+        private async Task InitiateObjectFromBlobAsync(string containerName)
         {
             try
             {
                 containerName = containerName.ToLower();
                 var blobContainerClient = _blobStorage.GetBlobContainerClient();
+                string archivedItemInfoSerialized = JsonConvert.SerializeObject(_archivedItem);
                 var stream = new MemoryStream();
-                System.Xml.Serialization.XmlSerializer _serializer = new System.Xml.Serialization.XmlSerializer(_archivedItem.GetType());
-
                 foreach (var blobItem in _blobStorage.GetBlobContainerItems())
                 {
                     if (blobItem.Name.StartsWith("ArchivedItemInformation"))
                     {
                         var client = blobContainerClient.GetBlobClient(blobItem.Name);
-                        client.DownloadToAsync(stream);
-                        _serializer.Deserialize(stream);
+                        StringBuilder sb = new StringBuilder();
+                        if (await client.ExistsAsync())
+                        {
+                            var response = await client.DownloadAsync();
+                            using (var streamReader = new StreamReader(response.Value.Content))
+                            {
+                                while (!streamReader.EndOfStream)
+                                {
+                                    sb.Append(await streamReader.ReadLineAsync());
+                                }
+                            }
+
+                        }
+                        _archivedItem = JsonConvert.DeserializeObject<ArchivedItemInformation>(sb.ToString());
                     }
                 }
-                throw new ArgumentException($"Error when retrieving service code from BlobStorage (container name {containerName})");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 

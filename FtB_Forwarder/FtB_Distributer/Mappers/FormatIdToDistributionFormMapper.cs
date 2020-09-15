@@ -39,7 +39,7 @@ namespace FtB_DistributionForwarding.Mappers
             //This can be used to initiate the form
             switch (formatID)
             {
-                case "6326":
+                case "6303":
                     //return new NaboVarselPlanForm<T> formDataRepo);
                     return new NaboVarselPlanForm();
                 case "12345":

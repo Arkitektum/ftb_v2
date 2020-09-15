@@ -21,8 +21,8 @@ namespace FtB_InitiateForwarding
             {
                 BlobOperations blob = new BlobOperations(archiveReference);
                 string serviceCode = blob.GetServiceCodeFromStoredBlob();
-                var channelFactory = FormatIdToChannelMapper.GetChannelFactory(serviceCode);
                 string formatId = blob.GetFormatIdFromStoredBlob();
+                var channelFactory = FormatIdToChannelMapper.GetChannelFactory(serviceCode);
                 IForm formBeingProcessed;
                 if (channelFactory is DistributionChannelFactory)
                 {

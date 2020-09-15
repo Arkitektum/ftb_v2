@@ -19,7 +19,7 @@ namespace FtB_InitiateForwarding
             //Eks. "NotificationChannelForms": "6173,6444"
             switch (serviceCode)
             {
-                case "6325":
+                case "4655":
                     return new DistributionChannelFactory();
                 case "6173":
                     return new NotificationChannelFactory();
