@@ -11,9 +11,8 @@ namespace FtB_Common.Storage
     {
         private BlobServiceClient _blobServiceClient;
         BlobContainerClient _containerClient;
-        
-        //private readonly string _azureBlobConnectionString = "UseDevelopmentStorage=true"; 
-        private readonly string _azureBlobConnectionString = "DefaultEndpointsProtocol=https;AccountName=dibk;AccountKey=S3ZGxAoRiyxpRQHUdR9A7YE4W+qIW9qf9wRKxnwF6XYZO7BfRvd/9qLcIgTDoOkh5UAenm76nYbaUEl00IMBhg==;EndpointSuffix=core.windows.net";         //TODO: Get StorageConnectionString from Configuration
+
+        private readonly string _azureBlobConnectionString = "UseDevelopmentStorage=true";         
         //_azureBlobConnectionString = "StorageConnectionString"; From Configuration
 
         //public ILogger Logger { private get; set; }
