@@ -4,10 +4,8 @@ using System.Text;
 
 namespace FtB_Common.Interfaces
 {
-    public interface IFormDataRepo<T>
-    //public interface IFormDataRepo
+    public interface IFormDataRepo
     {
-        T GetFormData(string archiveReference);
-        //T GetFormData(string archiveReference);
+        string GetFormData(string archiveReference);
     }
 }

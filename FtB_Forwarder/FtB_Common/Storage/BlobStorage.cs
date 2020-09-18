@@ -12,25 +12,36 @@ namespace FtB_Common.Storage
         private BlobServiceClient _blobServiceClient;
         BlobContainerClient _containerClient;
         
-        private readonly string _azureBlobConnectionString = "UseDevelopmentStorage=true";
-        //TODO: Get StorageConnectionString from Configuration
+        //private readonly string _azureBlobConnectionString = "UseDevelopmentStorage=true"; 
+        private readonly string _azureBlobConnectionString = "DefaultEndpointsProtocol=https;AccountName=dibk;AccountKey=S3ZGxAoRiyxpRQHUdR9A7YE4W+qIW9qf9wRKxnwF6XYZO7BfRvd/9qLcIgTDoOkh5UAenm76nYbaUEl00IMBhg==;EndpointSuffix=core.windows.net";         //TODO: Get StorageConnectionString from Configuration
         //_azureBlobConnectionString = "StorageConnectionString"; From Configuration
 
         //public ILogger Logger { private get; set; }
-        public BlobStorage(string containerName)
+        public BlobStorage()
         {
             _blobServiceClient = new BlobServiceClient(_azureBlobConnectionString);
-            _containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
         }
 
-        public BlobContainerClient GetBlobContainerClient()
+        public  BlobContainerClient GetBlobContainerClient(string containerName)
         {
-            return _containerClient;
+            if (_containerClient == null)
+            {
+                _containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+            }
+            return _blobServiceClient.GetBlobContainerClient(containerName);
         }
-        public Azure.Pageable<BlobItem> GetBlobContainerItems()
+        
+        public Azure.Pageable<BlobItem> GetBlobContainerItems(string containerName)
         {
+            _containerClient = GetBlobContainerClient(containerName);
             return _containerClient.GetBlobs();
         }
+
+
+
+
+
+
 
         /*
         public async Task<CloudBlobContainer> SetUpBlobContainerAsync(string containerName)

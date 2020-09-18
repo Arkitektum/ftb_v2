@@ -1,4 +1,5 @@
-﻿using FtB_Distributer;
+﻿using FtB_Common.Storage;
+using FtB_Distributer;
 using FtB_InitiateForwarding;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,8 @@ namespace FtB_FuncForwarding
         {
             builder.Services.AddScoped<ArchivedItemQueueProcessor>();
             builder.Services.AddDistributorPrepareService();
+            builder.Services.AddScoped<BlobStorage>();
+            builder.Services.AddScoped<IBlobOperations>();
         }
     }
 }

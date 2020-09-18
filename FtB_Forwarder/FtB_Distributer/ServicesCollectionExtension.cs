@@ -13,7 +13,7 @@ namespace FtB_Distributer
         {
             services.AddScoped<FormatIdToFormMapper>();
             services.AddScoped<NaboVarselPlanForm>();
-            services.AddScoped(typeof(IFormDataRepo<>), typeof(FormDataRepository<>));
+            services.AddScoped<IFormDataRepo, FormDataRepository>();
             //services.AddScoped<IForm, NaboVarselForm>();
             //services.AddScoped<IForm, NokoAnnaPlanForm>();
             return services;
