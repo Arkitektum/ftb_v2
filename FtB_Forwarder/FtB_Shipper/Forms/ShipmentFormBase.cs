@@ -6,9 +6,9 @@ using System.Text;
 
 namespace FtB_ShipmentForwarding.Forms
 {
-    public class ShipmentFormBase : FormBase
+    public class ShipmentFormBase<T> : FormBase<T>
     {
-        public ShipmentFormBase() : base()
+        public ShipmentFormBase(IFormDataRepo dataRepo) : base(dataRepo)
         {
 
         }

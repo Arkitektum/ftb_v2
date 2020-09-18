@@ -6,11 +6,11 @@ using System.Text;
 
 namespace FtB_ShipmentForwarding.Forms
 {
-    public class FerdigAttestForm : ShipmentFormBase, IForm
+    public class FerdigAttestForm : ShipmentFormBase<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
-        public override IStrategy GetCustomizedPrepareStrategy()
+        public FerdigAttestForm(IFormDataRepo dataRepo) : base(dataRepo)
         {
-            throw new NotImplementedException();
+
         }
 
         public IStrategy GetCustomizedReportStrategy()

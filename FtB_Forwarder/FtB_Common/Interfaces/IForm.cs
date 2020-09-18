@@ -13,5 +13,6 @@ namespace FtB_Common.Interfaces
         void ProcessSendStep();
         void ProcessReportStep();
         string GetFormatId();
+        void LoadFormData(string archiveReference);
     }
 }

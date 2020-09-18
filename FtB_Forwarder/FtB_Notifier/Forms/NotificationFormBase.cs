@@ -6,9 +6,9 @@ using System.Text;
 
 namespace FtB_NotificationForwarding.Forms
 {
-    public class NotificationFormBase : FormBase
+    public class NotificationFormBase<T> : FormBase<T>
     {
-        public NotificationFormBase() : base()
+        public NotificationFormBase(IFormDataRepo dataRepo) : base(dataRepo)
         {
 
         }

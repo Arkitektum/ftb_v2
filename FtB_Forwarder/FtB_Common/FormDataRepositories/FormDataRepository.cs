@@ -1,4 +1,5 @@
 ﻿using FtB_Common.Interfaces;
+using FtB_Common.Storage;
 using FtB_Common.Utils;
 using System;
 using System.Collections.Generic;
@@ -6,14 +7,18 @@ using System.Text;
 
 namespace FtB_Common.FormDataRepositories
 {
-    public class FormDataRepository<T> : IFormDataRepo<T>
+    public class FormDataRepository : IFormDataRepo
     {
-        public T GetFormData(string archiveReference)
+        private readonly IBlobOperations _blobOperations;
+        public FormDataRepository(IBlobOperations blobOperations)
         {
-            //Get data from somewhere
-            var data = "fdasfasfasdfdsafasfds";
+            _blobOperations = blobOperations;
+        }
 
-            return SerializeUtil.DeserializeFromString<T>(data);
+
+        public string GetFormData(string archiveReference)
+        {
+            return _blobOperations.GetFormdata(archiveReference);
         }
     }
 }

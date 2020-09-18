@@ -6,8 +6,12 @@ using System.Text;
 
 namespace FtB_NotificationForwarding.Forms
 {
-    public class SvarPaaNabovarselForm : NotificationFormBase, IForm
+    public class SvarPaaNabovarselForm : NotificationFormBase<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
     {
+        public SvarPaaNabovarselForm(IFormDataRepo dataRepo) : base(dataRepo)
+        {
+
+        }
         public override IStrategy GetCustomizedPrepareStrategy()
         {
             throw new NotImplementedException();

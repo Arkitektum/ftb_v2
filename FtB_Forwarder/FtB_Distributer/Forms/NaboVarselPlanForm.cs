@@ -4,22 +4,20 @@ using System;
 
 namespace FtB_DistributionForwarding.Forms
 {
-    //public class NaboVarselPlanForm<T> : DistributionFormBase<T>, IForm
-    [FormDataFormat(DataFormatId = "1234", DataFormatVersion = "6543")]
-    public class NaboVarselPlanForm : DistributionFormBase, IForm
+    [FormDataFormat(DataFormatId = "6303", DataFormatVersion = "44820")]
+    public class NaboVarselPlanForm : DistributionFormBase<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
         private no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType _form;
-        private readonly IFormDataRepo<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType> _dataRepo;
+        //private readonly IFormDataRepo<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType> _dataRepo;
 
-        public NaboVarselPlanForm(IFormDataRepo<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType> dataRepo) : base()
+        public NaboVarselPlanForm(IFormDataRepo dataRepo) : base(dataRepo)
         {
             Name = "Distribusjon av nabovarsel for plan";
-            SchemaFile = "nabovarselPlan.xsd";
-            _dataRepo = dataRepo;
+            SchemaFile = "nabovarselPlan.xsd";            
         }
 
         public string GetFormatId()
-        {
+        {            
             return _form.dataFormatId;
         }
 
@@ -31,8 +29,7 @@ namespace FtB_DistributionForwarding.Forms
 
         public override void InitiateForm(string archiveReference)
         {
-            _form = _dataRepo.GetFormData(archiveReference);
-            //_form = SerializeUtil.DeserializeFromString<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>(formDataAsXml);
+            
         }
 
         public override IStrategy GetCustomizedPrepareStrategy()

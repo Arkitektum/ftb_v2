@@ -1,4 +1,5 @@
-﻿using FtB_Distributer;
+﻿using FtB_Common.Storage;
+using FtB_Distributer;
 using FtB_DistributionForwarding;
 using FtB_DistributionForwarding.Forms;
 using FtB_NotificationForwarding;
@@ -17,9 +18,13 @@ namespace FtB_InitiateForwarding
 
             var serviceProvider = new ServiceCollection()
             .AddScoped<ArchivedItemQueueProcessor>()
+            .AddScoped<IBlobOperations, BlobOperations>()
+            .AddScoped<BlobStorage>()
             .AddDistributorPrepareService()
             .BuildServiceProvider();
-
+            
+            //.AddScoped<BlobStorage>()
+            //.AddScoped<BlobOperations>()
 
             Console.WriteLine("Oppstart");
 

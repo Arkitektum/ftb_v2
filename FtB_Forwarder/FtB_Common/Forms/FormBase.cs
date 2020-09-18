@@ -1,14 +1,18 @@
 ﻿using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
+using FtB_Common.Utils;
 using System;
 
 namespace FtB_Common.Forms
 {
-    public abstract class FormBase : IForm
+    public abstract class FormBase<T> : IForm
     {
-        public FormBase()
-        {
+        protected T _form;
+        private readonly IFormDataRepo _repo;
 
+        public FormBase(IFormDataRepo repo)
+        {
+            _repo = repo;
         }
         public string Name { get; protected set; }
         public string ReceiverIdentifer { get; protected set; }
@@ -45,5 +49,13 @@ namespace FtB_Common.Forms
         {
             throw new NotImplementedException();
         }
+
+
+        public void LoadFormData(string archiveReference)
+        {
+            var data = _repo.GetFormData(archiveReference);
+            _form = SerializeUtil.DeserializeFromString<T>(data);
+        }
+        
     }
 }

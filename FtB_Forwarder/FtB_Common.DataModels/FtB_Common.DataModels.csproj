@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>FtB_Common.DataModels</AssemblyName>
+    <RootNamespace>FtB_Common.DataModels</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="VarselOppstartPlanarbeid\nabovarselPlan.xsd" />
+    <None Remove="VarselOppstartPlanarbeid\nabovarselsvarPlan.xsd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="VarselOppstartPlanarbeid\nabovarselPlan.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VarselOppstartPlanarbeid\nabovarselsvarPlan.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="VarselOppstartPlanarbeid\NabovarselPlan.cs">
+      <DependentUpon>nabovarselPlan.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="VarselOppstartPlanarbeid\NabovarselsvarPlan.cs">
+      <DependentUpon>nabovarselsvarPlan.xsd</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>
