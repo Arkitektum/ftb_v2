@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
@@ -12,20 +12,14 @@
   <ItemGroup>
     <ProjectReference Include="..\FtB_Common\FtB_Common.csproj" />
     <ProjectReference Include="..\FtB_DistributionDataModels\FtB_DistributionDataModels.csproj" />
-    <ProjectReference Include="..\FtB_Preparator\FtB_Preparator.csproj" />
+    <ProjectReference Include="..\FtB_PrepareSending\FtB_PrepareSending.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="local.settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Mappers\" />
   </ItemGroup>
 </Project>

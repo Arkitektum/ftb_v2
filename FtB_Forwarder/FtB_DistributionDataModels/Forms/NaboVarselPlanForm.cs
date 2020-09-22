@@ -4,12 +4,9 @@ using System;
 
 namespace FtB_DistributionDataModels.Forms
 {
-    [FormDataFormat(DataFormatId = "6303", DataFormatVersion = "44820")]
+    [FormDataFormat(DataFormatId = "6325", DataFormatVersion = "44824")]
     public class NaboVarselPlanForm : DistributionFormBase<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
-        private no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType _form;
-        //private readonly IFormDataRepo<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType> _dataRepo;
-
         public NaboVarselPlanForm(IFormDataRepo dataRepo) : base(dataRepo)
         {
             Name = "Distribusjon av nabovarsel for plan";

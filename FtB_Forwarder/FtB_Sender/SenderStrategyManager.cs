@@ -1,6 +1,6 @@
 ﻿using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
-using FtB_Preparator.Strategies;
+using FtB_Sender.Strategies;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -9,25 +9,24 @@ using System.Text;
 
 namespace FtB_Preparator
 {
-    public class ServiceCodeToPrepareStrategyManager : ServiceCodeToStrategyManagerBase
+    public class SenderStrategyManager : StrategyManagerBase
     {
-
-        public ServiceCodeToPrepareStrategyManager(IConfiguration configuration) : base(configuration)
+        public SenderStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
         public IStrategy GetPrepareStrategy(string serviceCode, IForm form)
         {
             if (_distributionServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultDistributionPrepareStrategy(form);
+                return new DefaultDistributionSendStrategy(form);
             }
             else if (_notificationServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultNotificationPrepareStrategy(form);
+                return new DefaultNotificationSendStrategy(form);
             }
             else if (_shipmentServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultShipmentPrepareStrategy(form);
+                return new DefaultShipmentSendStrategy(form);
             }
             else
             {

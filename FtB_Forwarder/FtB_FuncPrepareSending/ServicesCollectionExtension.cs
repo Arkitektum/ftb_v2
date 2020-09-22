@@ -2,11 +2,11 @@
 using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_DistributionDataModels.Forms;
-using FtB_Preparator;
+using FtB_PrepareSending;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FtB_FuncPrepareProcess
+namespace FtB_FuncPrepareSending
 {
     public static class ServicesConfiguration
     {
@@ -14,9 +14,9 @@ namespace FtB_FuncPrepareProcess
         {
             services.AddScoped<FormatIdToFormMapper>();
             services.AddScoped<NaboVarselPlanForm>();
-            services.AddScoped<IFormDataRepo, FormDataRepository>();
-            services.AddScoped<ServiceCodeToPrepareStrategyManager>();
             //services.AddScoped<IForm, NokoAnnaPlanForm>();
+            services.AddScoped<IFormDataRepo, FormDataRepository>();
+            services.AddScoped<PreparatorStrategyManager>();
             return services;
         }
 

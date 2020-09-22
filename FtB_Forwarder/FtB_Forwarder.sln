@@ -5,13 +5,13 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Common", "FtB_Common\FtB_Common.csproj", "{3646904E-BC65-4152-AFE7-8DBE216930C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncPrepareProcess", "FtB_FuncPrepareProcess\FtB_FuncPrepareProcess.csproj", "{A42B80B8-77DE-48F0-9988-5F512CBE98DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncPrepareSending", "FtB_FuncPrepareSending\FtB_FuncPrepareSending.csproj", "{A42B80B8-77DE-48F0-9988-5F512CBE98DA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_NotificationDataModels", "FtB_NotificationDataModels\FtB_NotificationDataModels.csproj", "{37F7F0E0-9BBA-4768-9319-232EB41CA78C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_ShipmentDataModels", "FtB_ShipmentDatamodels\FtB_ShipmentDataModels.csproj", "{6E9BC8BB-EBD2-4066-B7F6-3DD407D3A356}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Preparator", "FtB_Preparator\FtB_Preparator.csproj", "{7A8729FA-330C-47D3-8D52-F57A1824F5F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_PrepareSending", "FtB_PrepareSending\FtB_PrepareSending.csproj", "{7A8729FA-330C-47D3-8D52-F57A1824F5F5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Sender", "FtB_Sender\FtB_Sender.csproj", "{6CEAD2AA-4E58-40C7-B4C6-27102AB03AED}"
 EndProject

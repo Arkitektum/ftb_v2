@@ -9,27 +9,22 @@ using System.Text;
 
 namespace FtB_Preparator
 {
-    public class ServiceCodeToReporterStrategyManager : ServiceCodeToStrategyManagerBase
+    public class ReporterStrategyManager : StrategyManagerBase
     {
-
-        public ServiceCodeToReporterStrategyManager(IConfiguration configuration) : base(configuration)
+        public ReporterStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
         public IStrategy GetPrepareStrategy(string serviceCode, IForm form)
         {
-            List<string> distributionServiceCodeList = Configuration["DistributionServiceCodes"].Split(',').ToList();
-            List<string> notificationServiceCodeList = Configuration["NotificationServiceCodes"].Split(',').ToList();
-            List<string> shipmentServiceCodeList = Configuration["ShipmentServiceCodes"].Split(',').ToList();
-
-            if (distributionServiceCodeList.Contains(serviceCode))
+            if (_distributionServiceCodeList.Contains(serviceCode))
             {
                 return new DefaultDistributionReportStrategy(form);
             }
-            else if (notificationServiceCodeList.Contains(serviceCode))
+            else if (_notificationServiceCodeList.Contains(serviceCode))
             {
                 return new DefaultNotificationReportStrategy(form);
             }
-            else if (shipmentServiceCodeList.Contains(serviceCode))
+            else if (_shipmentServiceCodeList.Contains(serviceCode))
             {
                 return new DefaultShipmentReportStrategy(form);
             }

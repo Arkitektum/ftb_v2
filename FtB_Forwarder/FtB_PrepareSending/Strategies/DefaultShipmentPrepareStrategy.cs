@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_Preparator.Strategies
+namespace FtB_PrepareSending.Strategies
 {
     public class DefaultShipmentPrepareStrategy : PrepareStrategyBase
     {

@@ -1,10 +1,9 @@
 ﻿using FtB_Common.Storage;
-using FtB_FuncPrepareProcess;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly: FunctionsStartup(typeof(FtB_FuncPrepareProcess.Startup))]
-namespace FtB_FuncPrepareProcess
+[assembly: FunctionsStartup(typeof(FtB_FuncPrepareSending.Startup))]
+namespace FtB_FuncPrepareSending
 {
     public class Startup : FunctionsStartup
     {
@@ -12,6 +11,7 @@ namespace FtB_FuncPrepareProcess
         {
             builder.Services.AddScoped<ArchivedItemQueueProcessor>();
             builder.Services.AddDistributorPrepareService();
+            builder.Services.AddScoped<IBlobOperations, BlobOperations>();
             builder.Services.AddScoped<BlobStorage>();
             //builder.Services.AddScoped<IBlobOperations>();
         }

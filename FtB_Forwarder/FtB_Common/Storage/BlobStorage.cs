@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,14 +12,11 @@ namespace FtB_Common.Storage
     {
         private BlobServiceClient _blobServiceClient;
         BlobContainerClient _containerClient;
-
-        private readonly string _azureBlobConnectionString = "UseDevelopmentStorage=true";         
-        //_azureBlobConnectionString = "StorageConnectionString"; From Configuration
-
+        
         //public ILogger Logger { private get; set; }
-        public BlobStorage()
+        public BlobStorage(IConfiguration configuration)
         {
-            _blobServiceClient = new BlobServiceClient(_azureBlobConnectionString);
+            _blobServiceClient = new BlobServiceClient(configuration["AzureBlobConnectionString"]);
         }
 
         public  BlobContainerClient GetBlobContainerClient(string containerName)

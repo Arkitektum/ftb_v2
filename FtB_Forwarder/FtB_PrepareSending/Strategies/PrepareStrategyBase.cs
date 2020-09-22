@@ -2,7 +2,7 @@
 using FtB_Common.Interfaces;
 using System;
 
-namespace FtB_Preparator
+namespace FtB_PrepareSending.Strategies
 {
     public abstract class PrepareStrategyBase : StrategyBase, IStrategy
     {

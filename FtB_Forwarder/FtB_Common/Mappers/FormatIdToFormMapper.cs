@@ -1,6 +1,7 @@
 ﻿using FtB_Common.Forms;
 using FtB_Common.Interfaces;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -12,6 +13,7 @@ namespace FtB_Common.Mappers
 
         public FormatIdToFormMapper(IServiceProvider services)
         {
+            Debug.WriteLine("Constructor FormatIdToFormMapper");
             _services = services;
         }
 

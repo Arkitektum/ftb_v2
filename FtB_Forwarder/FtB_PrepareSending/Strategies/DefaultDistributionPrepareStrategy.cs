@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_Preparator.Strategies
+namespace FtB_PrepareSending.Strategies
 {
     public class DefaultDistributionPrepareStrategy : PrepareStrategyBase
     {
@@ -13,7 +13,6 @@ namespace FtB_Preparator.Strategies
         /// - Protected methods for common functionality for the DistributionDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        private readonly string _archiveReference;
         public DefaultDistributionPrepareStrategy(IForm form) : base(form)
         {
             //_archiveReference = form.
