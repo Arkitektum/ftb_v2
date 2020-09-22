@@ -12,16 +12,6 @@ namespace FtB_ShipmentDataModels.Forms
 
         }
 
-        public IStrategy GetCustomizedReportStrategy()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IStrategy GetCustomizedSendStrategy()
-        {
-            throw new NotImplementedException();
-        }
-
         public string GetFormatId()
         {
             throw new NotImplementedException();

@@ -12,20 +12,6 @@ namespace FtB_NotificationDataModels.Forms
         {
 
         }
-        public override IStrategy GetCustomizedPrepareStrategy()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IStrategy GetCustomizedReportStrategy()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IStrategy GetCustomizedSendStrategy()
-        {
-            throw new NotImplementedException();
-        }
 
         public string GetFormatId()
         {

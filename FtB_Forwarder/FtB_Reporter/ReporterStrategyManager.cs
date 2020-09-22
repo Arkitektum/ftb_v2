@@ -1,4 +1,5 @@
-﻿using FtB_Common.Interfaces;
+﻿using FtB_Common.BusinessModels;
+using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_Reporter.Strategies;
 using Microsoft.Extensions.Configuration;
@@ -7,14 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FtB_Preparator
+namespace FtB_Reporter
 {
     public class ReporterStrategyManager : StrategyManagerBase
     {
         public ReporterStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
-        public IStrategy GetPrepareStrategy(string serviceCode, IForm form)
+        public IStrategy<FinishedQueueItem> GetReportStrategy(string serviceCode, IForm form)
         {
             if (_distributionServiceCodeList.Contains(serviceCode))
             {

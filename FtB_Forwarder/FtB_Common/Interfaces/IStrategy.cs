@@ -4,8 +4,8 @@ using System.Text;
 
 namespace FtB_Common.Interfaces
 {
-    public interface IStrategy
+    public interface IStrategy<T>
     {
-        void Exceute();
+        List<T> Exceute();
     }
 }

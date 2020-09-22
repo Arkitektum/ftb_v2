@@ -1,4 +1,5 @@
-﻿using FtB_Common.Interfaces;
+﻿using FtB_Common.BusinessModels;
+using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_PrepareSending.Strategies;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +15,7 @@ namespace FtB_PrepareSending
         public PreparatorStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
-        public IStrategy GetPrepareStrategy(string serviceCode, IForm form)
+        public IStrategy<SendQueueItem> GetPrepareStrategy(string serviceCode, IForm form)
         {
             if (_distributionServiceCodeList.Contains(serviceCode))
             {

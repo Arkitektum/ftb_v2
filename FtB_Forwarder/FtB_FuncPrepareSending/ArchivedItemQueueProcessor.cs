@@ -1,9 +1,11 @@
-﻿using FtB_Common.Interfaces;
+﻿using FtB_Common.BusinessModels;
+using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_Common.Storage;
 using FtB_PrepareSending;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 
 namespace FtB_FuncPrepareSending
 {
@@ -19,7 +21,7 @@ namespace FtB_FuncPrepareSending
             _blobOperations = blobOperations;
             _strategyManager = strategyManager;
         }
-        public void ExecuteProcessingStrategy(string archiveReference)
+        public List<SendQueueItem> ExecuteProcessingStrategy(string archiveReference)
         {
             try
             {
@@ -33,8 +35,10 @@ namespace FtB_FuncPrepareSending
                 formBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
                 formBeingProcessed.LoadFormData(archiveReference);
 
-                IStrategy strategy = _strategyManager.GetPrepareStrategy(serviceCode, formBeingProcessed);    //channelFactory.CreatePrepareStrategy(formBeingProcessed);
-                strategy.Exceute();
+                var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formBeingProcessed);    //channelFactory.CreatePrepareStrategy(formBeingProcessed);
+                
+                return strategy.Exceute(); // Alle prefille osv ferdig, og liste av "SendQueueItem" kan returneres
+
             }
             catch (Azure.RequestFailedException rfEx)
             {

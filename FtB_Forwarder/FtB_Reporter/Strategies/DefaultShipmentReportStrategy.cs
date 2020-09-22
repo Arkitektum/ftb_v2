@@ -1,4 +1,5 @@
 ﻿using FtB_Common;
+using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,11 @@ namespace FtB_Reporter.Strategies
         /// - Protected methods for common functionality for the ShipmentDefaultReportStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public override void Exceute()
+   
+        public override List<FinishedQueueItem> Exceute()
         {
             _formBeingProcessed.ProcessReportStep();
+            return null;
         }
     }
 }

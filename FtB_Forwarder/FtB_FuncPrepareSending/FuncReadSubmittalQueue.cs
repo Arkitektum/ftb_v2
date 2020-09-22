@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Azure.WebJobs.ServiceBus;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -24,13 +26,25 @@ namespace FtB_FuncPrepareSending
         }
 
         [FunctionName("FuncReadSubmittalQueue")]
-        public void Run([ServiceBusTrigger("%queueName%", Connection = "queueConnectionString")]string myQueueItem, ILogger log)
+        public void Run([ServiceBusTrigger("%SubmittalQueueName%", Connection = "queueConnectionString")]string myQueueItem, ILogger log,
+            [ServiceBus("%SendingQueueName%", Connection = "queueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<SendQueueItem> queueCollector)
         {
             Debug.WriteLine("Method Run");
             SubmittalQueueItem queueItemJson = JsonConvert.DeserializeObject<SubmittalQueueItem>(myQueueItem);
             string archiveReference = queueItemJson.ArchiveReference;
-            _queueProcessor.ExecuteProcessingStrategy(archiveReference);
+            //_queueProcessor.ExecuteProcessingStrategy(archiveReference);
             log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
+
+            var result = _queueProcessor.ExecuteProcessingStrategy(archiveReference);
+
+            var tasks = new List<Task>();
+
+            foreach (var item in result)
+            {
+                tasks.Add(queueCollector.AddAsync(item));
+            }
+
+            Task.WhenAll(tasks);
         }
 
         //[FunctionName("HttpTriggerCSharp")]

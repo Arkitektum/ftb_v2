@@ -1,4 +1,5 @@
 ﻿using FtB_Common;
+using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -18,11 +19,11 @@ namespace FtB_Sender.Strategies
 
         }
 
-        public override void Exceute()
+        public override List<ReportQueueItem> Exceute()
         {
             _formBeingProcessed.ProcessSendStep();
+            return null;
         }
-
         public override void ForwardToReceiver()
         {
             Console.WriteLine("Sender skjema til SHIPMENT");

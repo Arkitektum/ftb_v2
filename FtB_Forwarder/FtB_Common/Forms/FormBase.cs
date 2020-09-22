@@ -23,10 +23,6 @@ namespace FtB_Common.Forms
 
         public abstract void InitiateForm(string archiveReference);
 
-        public abstract IStrategy GetCustomizedPrepareStrategy();
-        public abstract IStrategy GetCustomizedSendStrategy();
-        public abstract IStrategy GetCustomizedReportStrategy();
-
         public virtual void ProcessPrepareStep()
         { }
         public virtual void ProcessSendStep()

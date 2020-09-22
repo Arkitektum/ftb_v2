@@ -1,4 +1,5 @@
 ﻿using FtB_Common;
+using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,10 @@ namespace FtB_PrepareSending.Strategies
             Console.WriteLine("Oppretter databasestatus for SHIPMENT");
         }
 
-        public override void Exceute()
+        public override List<SendQueueItem> Exceute()
         {
             _formBeingProcessed.ProcessPrepareStep();
+            return null;
         }
 
         protected override void ReadReceiverInformation(string archiveReference)

@@ -1,4 +1,5 @@
-﻿using FtB_Common.Interfaces;
+﻿using FtB_Common.BusinessModels;
+using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_Sender.Strategies;
 using Microsoft.Extensions.Configuration;
@@ -7,14 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FtB_Preparator
+namespace FtB_Sender
 {
     public class SenderStrategyManager : StrategyManagerBase
     {
         public SenderStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
-        public IStrategy GetPrepareStrategy(string serviceCode, IForm form)
+        public IStrategy<ReportQueueItem> GetSendStrategy(string serviceCode, IForm form)
         {
             if (_distributionServiceCodeList.Contains(serviceCode))
             {

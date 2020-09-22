@@ -1,14 +1,17 @@
 ﻿using FtB_Common;
+using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
+using System.Collections.Generic;
 
-namespace FtB_Reporter
+namespace FtB_Reporter.Strategies
 {
-    public abstract class ReportStrategyBase : StrategyBase, IStrategy
+    public abstract class ReportStrategyBase : StrategyBase, IStrategy<FinishedQueueItem>
     {
         public ReportStrategyBase(IForm form)
         {
             _formBeingProcessed = form;
         }
-        public abstract void Exceute();
+
+        public abstract List<FinishedQueueItem> Exceute();
     }
 }

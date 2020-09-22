@@ -29,21 +29,6 @@ namespace FtB_DistributionDataModels.Forms
             
         }
 
-        public override IStrategy GetCustomizedPrepareStrategy()
-        {
-            return null;
-        }
-
-        public override IStrategy GetCustomizedSendStrategy()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IStrategy GetCustomizedReportStrategy()
-        {
-            throw new NotImplementedException();
-        }
-
         public void ProcessCustomPrepareStep()
         {
 

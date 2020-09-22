@@ -12,20 +12,6 @@ namespace FtB_ShipmentDataModels.Forms
         {
 
         }
-        public override IStrategy GetCustomizedPrepareStrategy()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IStrategy GetCustomizedReportStrategy()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IStrategy GetCustomizedSendStrategy()
-        {
-            throw new NotImplementedException();
-        }
 
         public override void InitiateForm(string formDataAsXml)
         {

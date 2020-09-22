@@ -1,4 +1,5 @@
 ﻿using FtB_Common;
+using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -13,21 +14,31 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the DistributionDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
+        private string _archiveReference;
         public DefaultDistributionPrepareStrategy(IForm form) : base(form)
         {
             //_archiveReference = form.
         }
         protected override void CreateSubmittalDatabaseStatus(string archiveReference)
         {
+            _archiveReference = archiveReference;
             Console.WriteLine("Oppretter databasestatus for DISTRIBUTION");
         }
 
-        public override void Exceute()
+        public override List<SendQueueItem> Exceute()
         {
             ReadReceiverInformation("archiveReference");
             base.CommonFunction();
-            _formBeingProcessed.ProcessPrepareStep();
+            _formBeingProcessed.ProcessPrepareStep(); // Må returnere List<SendQueueItem> 
             base.ReadFromSubmittalQueue("st");
+            return new List<SendQueueItem>()
+            {
+                new SendQueueItem(){ArchiveReference = _archiveReference, PrefillId = "Pref1000"},
+                new SendQueueItem(){ArchiveReference = _archiveReference, PrefillId = "Pref2000"},
+                new SendQueueItem(){ArchiveReference = _archiveReference, PrefillId = "Pref3000"},
+                new SendQueueItem(){ArchiveReference = _archiveReference, PrefillId = "Pref4000"}
+            };
+            
         }
 
         protected override void ReadReceiverInformation(string archiveReference)

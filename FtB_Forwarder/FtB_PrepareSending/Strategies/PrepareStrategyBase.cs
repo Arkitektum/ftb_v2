@@ -1,10 +1,12 @@
 ﻿using FtB_Common;
+using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using System;
+using System.Collections.Generic;
 
 namespace FtB_PrepareSending.Strategies
 {
-    public abstract class PrepareStrategyBase : StrategyBase, IStrategy
+    public abstract class PrepareStrategyBase : StrategyBase, IStrategy<SendQueueItem>
     {
         /// <summary>
         /// Scope for this class:
@@ -17,7 +19,6 @@ namespace FtB_PrepareSending.Strategies
         {
             _formBeingProcessed = form;
         }
-        public abstract void Exceute();
         protected abstract void ReadReceiverInformation(string archiveReference);
         protected abstract void CreateSubmittalDatabaseStatus(string archiveReference);
         protected void ReadFromSubmittalQueue(string archiveReference)
@@ -28,5 +29,7 @@ namespace FtB_PrepareSending.Strategies
         {
             Console.WriteLine("Felles funksjonalitet for både DISTRIBUTION, NOTIFICATION og SHIPMENT");
         }
+
+        public abstract List<SendQueueItem> Exceute();
     }
 }
