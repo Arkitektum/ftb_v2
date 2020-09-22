@@ -16,7 +16,7 @@ namespace FtB_FuncPrepareSending
             services.AddScoped<NaboVarselPlanForm>();
             //services.AddScoped<IForm, NokoAnnaPlanForm>();
             services.AddScoped<IFormDataRepo, FormDataRepository>();
-            services.AddScoped<PreparatorStrategyManager>();
+            services.AddScoped<PrepareSendingStrategyManager>();
             return services;
         }
 

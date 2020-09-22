@@ -9,7 +9,7 @@ namespace FtB_FuncPrepareSending
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddScoped<ArchivedItemQueueProcessor>();
+            builder.Services.AddScoped<SubmittalQueueProcessor>();
             builder.Services.AddDistributorPrepareService();
             builder.Services.AddScoped<IBlobOperations, BlobOperations>();
             builder.Services.AddScoped<BlobStorage>();

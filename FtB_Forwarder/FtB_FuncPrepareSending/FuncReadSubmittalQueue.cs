@@ -17,9 +17,9 @@ namespace FtB_FuncPrepareSending
 {
     public class FuncReadSubmittalQueue
     {
-        private readonly ArchivedItemQueueProcessor _queueProcessor;
+        private readonly SubmittalQueueProcessor _queueProcessor;
 
-        public FuncReadSubmittalQueue(ArchivedItemQueueProcessor queueProcessor)
+        public FuncReadSubmittalQueue(SubmittalQueueProcessor queueProcessor)
         {
             Debug.WriteLine("Method FuncReadSubmittalQueue");
             _queueProcessor = queueProcessor;

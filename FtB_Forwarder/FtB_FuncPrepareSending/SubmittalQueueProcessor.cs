@@ -9,13 +9,13 @@ using System.Collections.Generic;
 
 namespace FtB_FuncPrepareSending
 {
-    public class ArchivedItemQueueProcessor
+    public class SubmittalQueueProcessor
     {
         private readonly FormatIdToFormMapper _formatIdToFormMapper;
         private readonly IBlobOperations _blobOperations;
-        private readonly PreparatorStrategyManager _strategyManager;
+        private readonly PrepareSendingStrategyManager _strategyManager;
 
-        public ArchivedItemQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, PreparatorStrategyManager strategyManager)
+        public SubmittalQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, PrepareSendingStrategyManager strategyManager)
         {
             _formatIdToFormMapper = formatIdToFormMapper;
             _blobOperations = blobOperations;
@@ -27,14 +27,11 @@ namespace FtB_FuncPrepareSending
             {
                 string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(archiveReference);
                 string formatId = _blobOperations.GetFormatIdFromStoredBlob(archiveReference);
-
-                //Berre for å teste DI.. :-)
-                //string serviceCode = "4655";
-                //string formatId = "1234";
                 IForm formBeingProcessed;
                 formBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
                 formBeingProcessed.LoadFormData(archiveReference);
-
+                formBeingProcessed.ArchiveReference = archiveReference;
+                
                 var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formBeingProcessed);    //channelFactory.CreatePrepareStrategy(formBeingProcessed);
                 
                 return strategy.Exceute(); // Alle prefille osv ferdig, og liste av "SendQueueItem" kan returneres

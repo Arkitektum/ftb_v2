@@ -14,10 +14,12 @@ namespace FtB_PrepareSending.Strategies
         /// - Public abstract process steps methodes 
         /// - Protected implementation methods for common functionality for the "Prepare" strategy/process
         /// </summary>
+        protected string _archiveReference;
 
         public PrepareStrategyBase(IForm form)
         {
             _formBeingProcessed = form;
+            _archiveReference = form.ArchiveReference;
         }
         protected abstract void ReadReceiverInformation(string archiveReference);
         protected abstract void CreateSubmittalDatabaseStatus(string archiveReference);

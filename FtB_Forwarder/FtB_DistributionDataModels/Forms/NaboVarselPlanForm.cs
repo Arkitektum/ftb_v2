@@ -13,9 +13,10 @@ namespace FtB_DistributionDataModels.Forms
             SchemaFile = "nabovarselPlan.xsd";            
         }
 
+        
         public string GetFormatId()
         {            
-            return _form.dataFormatId;
+            return _dataForm.dataFormatId;
         }
 
         public override void OptionalMethod()

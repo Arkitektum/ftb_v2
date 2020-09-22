@@ -10,9 +10,9 @@ using System.Text;
 
 namespace FtB_PrepareSending
 {
-    public class PreparatorStrategyManager : StrategyManagerBase
+    public class PrepareSendingStrategyManager : StrategyManagerBase
     {
-        public PreparatorStrategyManager(IConfiguration configuration) : base(configuration)
+        public PrepareSendingStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
         public IStrategy<SendQueueItem> GetPrepareStrategy(string serviceCode, IForm form)

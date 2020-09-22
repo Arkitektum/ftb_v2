@@ -14,14 +14,10 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the DistributionDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        private string _archiveReference;
-        public DefaultDistributionPrepareStrategy(IForm form) : base(form)
-        {
-            //_archiveReference = form.
-        }
+        public DefaultDistributionPrepareStrategy(IForm form) : base(form) { }
+        
         protected override void CreateSubmittalDatabaseStatus(string archiveReference)
         {
-            _archiveReference = archiveReference;
             Console.WriteLine("Oppretter databasestatus for DISTRIBUTION");
         }
 

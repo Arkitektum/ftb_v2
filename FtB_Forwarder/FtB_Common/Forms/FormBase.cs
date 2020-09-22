@@ -7,7 +7,7 @@ namespace FtB_Common.Forms
 {
     public abstract class FormBase<T> : IForm
     {
-        protected T _form;
+        protected T _dataForm;
         private readonly IFormDataRepo _repo;
 
         public FormBase(IFormDataRepo repo)
@@ -20,6 +20,7 @@ namespace FtB_Common.Forms
         public string DataFormatId { get; protected set; }
         public string DataFormatVersion { get; protected set; }
         public string SchemaFile { get; protected set; }
+        public string ArchiveReference { get; set; }
 
         public abstract void InitiateForm(string archiveReference);
 
@@ -35,22 +36,10 @@ namespace FtB_Common.Forms
             Console.WriteLine("Felles valgfri metode som kan kjøres for skjemaer");
         }
 
-        //public T GetFormData(string archiveReference)
-        public void GetFormData(string archiveReference)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetFormatId()
-        {
-            throw new NotImplementedException();
-        }
-
-
         public void LoadFormData(string archiveReference)
         {
             var data = _repo.GetFormData(archiveReference);
-            _form = SerializeUtil.DeserializeFromString<T>(data);
+            _dataForm = SerializeUtil.DeserializeFromString<T>(data);
         }
         
     }

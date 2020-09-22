@@ -9,7 +9,7 @@ namespace FtB_Common.Interfaces
         void ProcessPrepareStep();
         void ProcessSendStep();
         void ProcessReportStep();
-        string GetFormatId();
         void LoadFormData(string archiveReference);
+        string ArchiveReference { get; set; }
     }
 }
