@@ -1,0 +1,1 @@
+﻿dotnet-svcutil https://tt02.altinn.no/ServiceEngineExternal/PreFillBasic.svc?wsdl -n "*,AltinnWebServices.WS.Prefill" -d "..\Prefill" -o ".\Prefill.cs"
