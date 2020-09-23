@@ -14,7 +14,7 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the DistributionDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultDistributionPrepareStrategy(IFormLogic form) : base(form) { }
+        public DefaultDistributionPrepareStrategy(IFormLogic formLogic) : base(formLogic) { }
         
         protected override void CreateSubmittalDatabaseStatus(string archiveReference)
         {
@@ -25,11 +25,10 @@ namespace FtB_PrepareSending.Strategies
         {
             base.Exceute();
             List<SendQueueItem> sendQueueItems = new List<SendQueueItem>();
-            int nummer = 1000; //Used for testing
-            foreach (var receiver in _receivers)
+            foreach (var receiver in Receivers)
             {
-                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = _archiveReference, PrefillId = "Pref" + nummer.ToString(), ReceiverName = receiver });
-                nummer++; //Used for testing
+
+                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverType = receiver.Type.ToString() , ReceiverId = receiver.Id });
             }
 
             return sendQueueItems;

@@ -15,7 +15,7 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected implementation methods for common functionality for the "Prepare" strategy/process
         /// </summary>
 
-        public PrepareStrategyBase(IFormLogic form) : base(form)
+        public PrepareStrategyBase(IFormLogic formLogic) : base(formLogic)
         {
         }
 
@@ -29,18 +29,18 @@ namespace FtB_PrepareSending.Strategies
         public virtual List<SendQueueItem> Exceute()
         {
             ExampleCommonFunction();
-            _formBeingProcessed.InitiateForm();
-            _formBeingProcessed.ProcessPrepareStep();
+            FormLogicBeingProcessed.InitiateForm();
+            FormLogicBeingProcessed.ProcessPrepareStep();
             SetReceivers();
             return null;
         }
         private void SetReceivers()
         {
-            foreach (var receiver in _formBeingProcessed.ReceiverIdentifers)
+            foreach (var receiver in FormLogicBeingProcessed.Receivers)
             {
-                if (!_receivers.Contains(receiver)) //Remove duplicate receivers
+                if (!Receivers.Contains(receiver)) //Remove duplicate receivers
                 {
-                    _receivers.Add(receiver);
+                    Receivers.Add(receiver);
                 }
                 
             }

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace FtB_Common.BusinessModels
 {
-    public enum ReceiverType
+    public class Receiver
     {
-        Privatperson,
-        Foretak
+        public ReceiverType Type { get; set; }
+        public string Id { get; set; }
     }
 }

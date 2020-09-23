@@ -15,19 +15,19 @@ namespace FtB_Sender
         public SenderStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
-        public IStrategy<ReportQueueItem> GetSendStrategy(string serviceCode, IFormLogic form)
+        public IStrategy<ReportQueueItem> GetSendStrategy(string serviceCode, IFormLogic formLogic)
         {
-            if (_distributionServiceCodeList.Contains(serviceCode))
+            if (DistributionServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultDistributionSendStrategy(form);
+                return new DefaultDistributionSendStrategy(formLogic);
             }
-            else if (_notificationServiceCodeList.Contains(serviceCode))
+            else if (NotificationServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultNotificationSendStrategy(form);
+                return new DefaultNotificationSendStrategy(formLogic);
             }
-            else if (_shipmentServiceCodeList.Contains(serviceCode))
+            else if (ShipmentServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultShipmentSendStrategy(form);
+                return new DefaultShipmentSendStrategy(formLogic);
             }
             else
             {

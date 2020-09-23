@@ -7,7 +7,7 @@ namespace FtB_Sender.Strategies
 {
     public abstract class SendStrategyBase : StrategyBase, IStrategy<ReportQueueItem>
     {
-        public SendStrategyBase(IFormLogic form) : base(form)
+        public SendStrategyBase(IFormLogic formLogic) : base(formLogic)
         {
         }
 

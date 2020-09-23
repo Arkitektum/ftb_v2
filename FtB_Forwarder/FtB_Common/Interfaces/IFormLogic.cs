@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FtB_Common.BusinessModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,7 +12,7 @@ namespace FtB_Common.Interfaces
         void ProcessReportStep();
         void LoadFormData(string archiveReference);
         string ArchiveReference { get; set; }
-        List<string> ReceiverIdentifers { get; set; }
+        List<Receiver> Receivers { get; set; }
         void InitiateForm();
     }
 }

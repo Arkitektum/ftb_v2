@@ -14,7 +14,7 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the ShipmentDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultShipmentPrepareStrategy(IFormLogic form) : base(form) { }
+        public DefaultShipmentPrepareStrategy(IFormLogic formLogic) : base(formLogic) { }
 
         protected override void CreateSubmittalDatabaseStatus(string archiveReference)
         {
@@ -23,7 +23,7 @@ namespace FtB_PrepareSending.Strategies
 
         public override List<SendQueueItem> Exceute()
         {
-            _formBeingProcessed.ProcessPrepareStep();
+            FormLogicBeingProcessed.ProcessPrepareStep();
             return null;
         }
     }

@@ -11,7 +11,7 @@ namespace FtB_Common.Storage
     public class BlobStorage
     {
         private BlobServiceClient _blobServiceClient;
-        BlobContainerClient _containerClient;
+        private BlobContainerClient _containerClient;
         
         //public ILogger Logger { private get; set; }
         public BlobStorage(IConfiguration configuration)

@@ -15,19 +15,19 @@ namespace FtB_Reporter
         public ReporterStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
-        public IStrategy<FinishedQueueItem> GetReportStrategy(string serviceCode, IFormLogic form)
+        public IStrategy<FinishedQueueItem> GetReportStrategy(string serviceCode, IFormLogic formLogic)
         {
-            if (_distributionServiceCodeList.Contains(serviceCode))
+            if (DistributionServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultDistributionReportStrategy(form);
+                return new DefaultDistributionReportStrategy(formLogic);
             }
-            else if (_notificationServiceCodeList.Contains(serviceCode))
+            else if (NotificationServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultNotificationReportStrategy(form);
+                return new DefaultNotificationReportStrategy(formLogic);
             }
-            else if (_shipmentServiceCodeList.Contains(serviceCode))
+            else if (ShipmentServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultShipmentReportStrategy(form);
+                return new DefaultShipmentReportStrategy(formLogic);
             }
             else
             {

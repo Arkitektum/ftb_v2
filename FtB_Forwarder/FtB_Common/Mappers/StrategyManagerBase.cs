@@ -8,15 +8,15 @@ namespace FtB_Common.Mappers
 {
     public abstract class StrategyManagerBase
     {
-        protected List<string> _distributionServiceCodeList = new List<string>();
-        protected List<string> _notificationServiceCodeList = new List<string>();
-        protected List<string> _shipmentServiceCodeList = new List<string>();
+        protected List<string> DistributionServiceCodeList = new List<string>();
+        protected List<string> NotificationServiceCodeList = new List<string>();
+        protected List<string> ShipmentServiceCodeList = new List<string>();
 
         public StrategyManagerBase(IConfiguration configuration)
         {
-            _distributionServiceCodeList = configuration["DistributionServiceCodes"].Split(',').ToList();
-            _notificationServiceCodeList = configuration["NotificationServiceCodes"].Split(',').ToList();
-            _shipmentServiceCodeList = configuration["ShipmentServiceCodes"].Split(',').ToList();
+            DistributionServiceCodeList = configuration["DistributionServiceCodes"].Split(',').ToList();
+            NotificationServiceCodeList = configuration["NotificationServiceCodes"].Split(',').ToList();
+            ShipmentServiceCodeList = configuration["ShipmentServiceCodes"].Split(',').ToList();
         }
     }
 }

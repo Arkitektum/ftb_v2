@@ -14,11 +14,11 @@ namespace FtB_Sender.Strategies
         /// - Protected methods for common functionality for the ShipmentDefaultSendStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultShipmentSendStrategy(IFormLogic form) : base(form) { }
+        public DefaultShipmentSendStrategy(IFormLogic formLogic) : base(formLogic) { }
 
         public override List<ReportQueueItem> Exceute()
         {
-            _formBeingProcessed.ProcessSendStep();
+            FormLogicBeingProcessed.ProcessSendStep();
             return null;
         }
         public override void ForwardToReceiver()

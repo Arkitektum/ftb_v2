@@ -1,4 +1,5 @@
-﻿using FtB_Common.Interfaces;
+﻿using FtB_Common.BusinessModels;
+using FtB_Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,14 +8,14 @@ namespace FtB_Common
 {
     public abstract class StrategyBase
     {
-        protected IFormLogic _formBeingProcessed;
-        protected string _archiveReference;
-        protected List<string> _receivers;
-        public StrategyBase(IFormLogic form)
+        protected IFormLogic FormLogicBeingProcessed;
+        protected string ArchiveReference;
+        protected List<Receiver> Receivers;
+        public StrategyBase(IFormLogic formLogic)
         {
-            _formBeingProcessed = form;
-            _archiveReference = form.ArchiveReference;
-            _receivers = form.ReceiverIdentifers;
+            FormLogicBeingProcessed = formLogic;
+            ArchiveReference = formLogic.ArchiveReference;
+            Receivers = formLogic.Receivers;
         }
     }
 }

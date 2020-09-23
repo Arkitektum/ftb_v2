@@ -7,7 +7,7 @@ namespace FtB_Reporter.Strategies
 {
     public abstract class ReportStrategyBase : StrategyBase, IStrategy<FinishedQueueItem>
     {
-        public ReportStrategyBase(IFormLogic form) : base(form)
+        public ReportStrategyBase(IFormLogic formLogic) : base(formLogic)
         {
         }
 

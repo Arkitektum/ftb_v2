@@ -14,11 +14,11 @@ namespace FtB_Reporter.Strategies
         /// - Protected methods for common functionality for the NotificationDefaultReportStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultNotificationReportStrategy(IFormLogic form) : base(form) { }
+        public DefaultNotificationReportStrategy(IFormLogic formLogic) : base(formLogic) { }
 
         public override List<FinishedQueueItem> Exceute()
         {
-            _formBeingProcessed.ProcessReportStep();
+            FormLogicBeingProcessed.ProcessReportStep();
             return null;
         }
     }

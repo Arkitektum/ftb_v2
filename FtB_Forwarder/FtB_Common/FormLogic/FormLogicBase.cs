@@ -8,21 +8,21 @@ namespace FtB_Common.FormLogic
 {
     public abstract class FormLogicBase<T> : IFormLogic
     {
-        protected T _dataForm;
+        protected T DataForm;
         private readonly IFormDataRepo _repo;
 
         public FormLogicBase(IFormDataRepo repo)
         {
             _repo = repo;
-            ReceiverIdentifers = new List<string>();
+            Receivers = new List<Receiver>();
         }
         public string Name { get; protected set; }
-        public List<string> ReceiverIdentifers { get; set; }
         public ReceiverType ReceiverType { get; set; }
         public string DataFormatId { get; set; }
         public string DataFormatVersion { get; set; }
         public string SchemaFile { get; set; }
         public string ArchiveReference { get; set; }
+        public List<Receiver> Receivers { get; set; }
 
         public abstract void InitiateForm();
 
@@ -41,7 +41,7 @@ namespace FtB_Common.FormLogic
         public void LoadFormData(string archiveReference)
         {
             var data = _repo.GetFormData(archiveReference);
-            _dataForm = SerializeUtil.DeserializeFromString<T>(data);
+            DataForm = SerializeUtil.DeserializeFromString<T>(data);
         }
 
     }

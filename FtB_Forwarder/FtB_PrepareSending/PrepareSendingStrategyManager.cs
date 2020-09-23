@@ -15,19 +15,19 @@ namespace FtB_PrepareSending
         public PrepareSendingStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
-        public IStrategy<SendQueueItem> GetPrepareStrategy(string serviceCode, IFormLogic form)
+        public IStrategy<SendQueueItem> GetPrepareStrategy(string serviceCode, IFormLogic formLogic)
         {
-            if (_distributionServiceCodeList.Contains(serviceCode))
+            if (DistributionServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultDistributionPrepareStrategy(form);
+                return new DefaultDistributionPrepareStrategy(formLogic);
             }
-            else if (_notificationServiceCodeList.Contains(serviceCode))
+            else if (NotificationServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultNotificationPrepareStrategy(form);
+                return new DefaultNotificationPrepareStrategy(formLogic);
             }
-            else if (_shipmentServiceCodeList.Contains(serviceCode))
+            else if (ShipmentServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultShipmentPrepareStrategy(form);
+                return new DefaultShipmentPrepareStrategy(formLogic);
             }
             else
             {

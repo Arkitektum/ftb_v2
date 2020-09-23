@@ -10,7 +10,7 @@ namespace FtB_Reporter.Strategies
     public class DefaultShipmentReportStrategy : ReportStrategyBase
     {
 
-        public DefaultShipmentReportStrategy(IFormLogic form) : base(form) { }
+        public DefaultShipmentReportStrategy(IFormLogic formLogic) : base(formLogic) { }
 
         /// <summary>
         /// Scope for this class:
@@ -20,7 +20,7 @@ namespace FtB_Reporter.Strategies
    
         public override List<FinishedQueueItem> Exceute()
         {
-            _formBeingProcessed.ProcessReportStep();
+            FormLogicBeingProcessed.ProcessReportStep();
             return null;
         }
     }

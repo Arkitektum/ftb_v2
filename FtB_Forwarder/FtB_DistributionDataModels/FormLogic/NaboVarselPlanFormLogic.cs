@@ -1,4 +1,5 @@
-﻿using FtB_Common.FormLogic;
+﻿using FtB_Common.BusinessModels;
+using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using System;
 
@@ -14,16 +15,26 @@ namespace FtB_DistributionDataModels.FormLogic
         }
 
 
-        private void GetReceivers()
+        public void GetReceivers()
         {
-            foreach (var beroertPart in _dataForm.beroerteParter)
+            foreach (var beroertPart in DataForm.beroerteParter)
             {
-                ReceiverIdentifers.Add(beroertPart.navn);
-            }
+                Enum.TryParse(beroertPart.partstype.kodeverdi, out ReceiverType receiverType);
+                string id;
+                if (receiverType.Equals(ReceiverType.Privatperson))
+                {
+                    id = beroertPart.foedselsnummer;
+                }
+                else
+                {
+                    id = beroertPart.organisasjonsnummer;
+                }
+                Receivers.Add(new Receiver() { Type = receiverType, Id = id });
+                }
         }
         public string GetFormatId()
         {
-            return _dataForm.dataFormatId;
+            return DataForm.dataFormatId;
         }
 
         public override void OptionalMethod()
