@@ -18,17 +18,32 @@ namespace FtB_PrepareSending.Strategies
         public PrepareStrategyBase(IForm form) : base(form)
         {
         }
-        protected abstract void ReadReceiverInformation(string archiveReference);
+
         protected abstract void CreateSubmittalDatabaseStatus(string archiveReference);
-        protected void ReadFromSubmittalQueue(string archiveReference)
-        {
-            Console.WriteLine("Fellesmetode: Leser fra innsendingskø for både DISTRIBUTION, NOTIFICATION og SHIPMENT");
-        }
-        protected void CommonFunction()
+
+        protected void ExampleCommonFunction()
         {
             Console.WriteLine("Felles funksjonalitet for både DISTRIBUTION, NOTIFICATION og SHIPMENT");
         }
 
-        public abstract List<SendQueueItem> Exceute();
+        public virtual List<SendQueueItem> Exceute()
+        {
+            ExampleCommonFunction();
+            _formBeingProcessed.InitiateForm();
+            _formBeingProcessed.ProcessPrepareStep();
+            SetReceivers();
+            return null;
+        }
+        private void SetReceivers()
+        {
+            foreach (var receiver in _formBeingProcessed.ReceiverIdentifers)
+            {
+                if (!_receivers.Contains(receiver)) //Remove duplicate receivers
+                {
+                    _receivers.Add(receiver);
+                }
+                
+            }
+        }
     }
 }

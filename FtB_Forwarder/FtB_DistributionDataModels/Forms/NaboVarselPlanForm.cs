@@ -36,20 +36,5 @@ namespace FtB_DistributionDataModels.Forms
         {
             GetReceivers();
         }
-
-        public void ProcessCustomPrepareStep()
-        {
-
-        }
-
-        public void ProcessCustomSendStep()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ProcessCustomReportStep()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

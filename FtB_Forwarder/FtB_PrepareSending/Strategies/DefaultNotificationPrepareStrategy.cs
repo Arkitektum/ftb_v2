@@ -26,16 +26,5 @@ namespace FtB_PrepareSending.Strategies
             _formBeingProcessed.ProcessPrepareStep();
             return null;
         }
-
-        protected override void ReadReceiverInformation(string archiveReference)
-        {
-            Console.WriteLine("Leser mottakerinformasjon for NOTIFICATION");
-        }
-
-        public void TransformSubmittalToForwardingMessage()
-        {
-            Console.WriteLine("Transformerer innsending til (antall) mottakere for NOTIFICATION");
-        }
-
     }
 }

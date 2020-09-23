@@ -9,7 +9,6 @@ namespace FtB_Reporter.Strategies
     {
         public ReportStrategyBase(IForm form) : base(form)
         {
-            _formBeingProcessed = form;
         }
 
         public abstract List<FinishedQueueItem> Exceute();

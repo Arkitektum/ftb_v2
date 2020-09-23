@@ -16,20 +16,5 @@ namespace FtB_ShipmentDataModels.Forms
         {
             throw new NotImplementedException();
         }
-
-        public void ProcessCustomPrepareStep()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ProcessCustomReportStep()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ProcessCustomSendStep()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
