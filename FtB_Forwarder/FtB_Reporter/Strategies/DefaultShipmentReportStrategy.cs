@@ -9,12 +9,8 @@ namespace FtB_Reporter.Strategies
 {
     public class DefaultShipmentReportStrategy : ReportStrategyBase
     {
-        private IForm form;
 
-        public DefaultShipmentReportStrategy(IForm form) : base(form)
-        {
-            this.form = form;
-        }
+        public DefaultShipmentReportStrategy(IForm form) : base(form) { }
 
         /// <summary>
         /// Scope for this class:

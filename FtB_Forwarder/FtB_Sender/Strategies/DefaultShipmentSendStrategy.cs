@@ -14,10 +14,7 @@ namespace FtB_Sender.Strategies
         /// - Protected methods for common functionality for the ShipmentDefaultSendStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultShipmentSendStrategy(IForm form) : base(form)
-        {
-
-        }
+        public DefaultShipmentSendStrategy(IForm form) : base(form) { }
 
         public override List<ReportQueueItem> Exceute()
         {

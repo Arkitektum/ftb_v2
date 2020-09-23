@@ -2,6 +2,7 @@
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
 using System;
+using System.Collections.Generic;
 
 namespace FtB_Common.Forms
 {
@@ -13,16 +14,17 @@ namespace FtB_Common.Forms
         public FormBase(IFormDataRepo repo)
         {
             _repo = repo;
+            ReceiverIdentifers = new List<string>();
         }
         public string Name { get; protected set; }
-        public string ReceiverIdentifer { get; protected set; }
-        public ReceiverType ReceiverType { get; protected set; }
-        public string DataFormatId { get; protected set; }
-        public string DataFormatVersion { get; protected set; }
-        public string SchemaFile { get; protected set; }
+        public List<string> ReceiverIdentifers { get; set; }
+        public ReceiverType ReceiverType { get; set; }
+        public string DataFormatId { get; set; }
+        public string DataFormatVersion { get; set; }
+        public string SchemaFile { get; set; }
         public string ArchiveReference { get; set; }
 
-        public abstract void InitiateForm(string archiveReference);
+        public abstract void InitiateForm();
 
         public virtual void ProcessPrepareStep()
         { }
@@ -41,6 +43,6 @@ namespace FtB_Common.Forms
             var data = _repo.GetFormData(archiveReference);
             _dataForm = SerializeUtil.DeserializeFromString<T>(data);
         }
-        
+
     }
 }

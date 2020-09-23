@@ -7,15 +7,17 @@ namespace FtB_Sender.Strategies
 {
     public abstract class SendStrategyBase : StrategyBase, IStrategy<ReportQueueItem>
     {
-        public SendStrategyBase(IForm form)
+        public SendStrategyBase(IForm form) : base(form)
         {
-            _formBeingProcessed = form;
         }
-
 
         public abstract void ForwardToReceiver();
         public abstract void GetFormsAndAttachmentsFromBlobStorage();
 
-        public abstract List<ReportQueueItem> Exceute();
+        public virtual List<ReportQueueItem> Exceute()
+        {
+            return null;
+             //_formBeingProcessed.ReceiverIdentifers.Add("Ole Brumm");
+        }
     }
 }

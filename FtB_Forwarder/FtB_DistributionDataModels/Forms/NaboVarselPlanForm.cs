@@ -14,6 +14,13 @@ namespace FtB_DistributionDataModels.Forms
         }
 
         
+        private void GetReceivers()
+        {
+            foreach (var beroertPart in _dataForm.beroerteParter)
+            {
+                ReceiverIdentifers.Add(beroertPart.navn);
+            }
+        }
         public string GetFormatId()
         {            
             return _dataForm.dataFormatId;
@@ -25,9 +32,9 @@ namespace FtB_DistributionDataModels.Forms
             Console.WriteLine("Valgfri metode implementert for skjema NABOVARSELPLAN");
         }
 
-        public override void InitiateForm(string archiveReference)
+        public override void InitiateForm()
         {
-            
+            GetReceivers();
         }
 
         public void ProcessCustomPrepareStep()

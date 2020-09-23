@@ -6,12 +6,15 @@ using System.Text;
 
 namespace FtB_DistributionDataModels.Forms
 {
-    //public abstract class DistributionFormBase<T> : FormBase<T>
     public abstract class DistributionFormBase<T> : FormBase<T>
     {        
         public DistributionFormBase(IFormDataRepo repo) : base(repo)
         {
 
         }
+        public override void InitiateForm()
+        { }
+
+
     }
 }

@@ -18,11 +18,6 @@ namespace FtB_NotificationDataModels.Forms
             throw new NotImplementedException();
         }
 
-        public override void InitiateForm(string formDataAsXml)
-        {
-            throw new NotImplementedException();
-        }
-
         public void ProcessCustomPrepareStep()
         {
             throw new NotImplementedException();

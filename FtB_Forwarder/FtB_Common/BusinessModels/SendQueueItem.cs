@@ -8,5 +8,6 @@ namespace FtB_Common.BusinessModels
     {
         public string ArchiveReference { get; set; }
         public string PrefillId { get; set; }
+        public string ReceiverName { get; set; }
     }
 }

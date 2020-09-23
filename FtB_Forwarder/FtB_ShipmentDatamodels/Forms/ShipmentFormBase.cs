@@ -13,7 +13,7 @@ namespace FtB_ShipmentDataModels.Forms
 
         }
 
-        public override void InitiateForm(string formDataAsXml)
+        public override void InitiateForm()
         {
             throw new NotImplementedException();
         }

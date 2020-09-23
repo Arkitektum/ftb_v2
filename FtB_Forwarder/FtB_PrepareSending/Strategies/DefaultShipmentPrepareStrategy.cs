@@ -14,10 +14,8 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the ShipmentDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultShipmentPrepareStrategy(IForm form) : base(form)
-        {
+        public DefaultShipmentPrepareStrategy(IForm form) : base(form) { }
 
-        }
         protected override void CreateSubmittalDatabaseStatus(string archiveReference)
         {
             Console.WriteLine("Oppretter databasestatus for SHIPMENT");

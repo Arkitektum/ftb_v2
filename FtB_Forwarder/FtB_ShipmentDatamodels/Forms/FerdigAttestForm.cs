@@ -17,11 +17,6 @@ namespace FtB_ShipmentDataModels.Forms
             throw new NotImplementedException();
         }
 
-        public override void InitiateForm(string formDataAsXml)
-        {
-            throw new NotImplementedException();
-        }
-
         public void ProcessCustomPrepareStep()
         {
             throw new NotImplementedException();

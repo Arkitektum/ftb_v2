@@ -21,19 +21,18 @@ namespace FtB_FuncPrepareSending
             _blobOperations = blobOperations;
             _strategyManager = strategyManager;
         }
-        public List<SendQueueItem> ExecuteProcessingStrategy(string archiveReference)
+        public List<SendQueueItem> ExecuteProcessingStrategy(SubmittalQueueItem submittalQueueItem)
         {
             try
             {
-                string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(archiveReference);
-                string formatId = _blobOperations.GetFormatIdFromStoredBlob(archiveReference);
+                string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(submittalQueueItem.ArchiveReference);
+                string formatId = _blobOperations.GetFormatIdFromStoredBlob(submittalQueueItem.ArchiveReference);
                 IForm formBeingProcessed;
                 formBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
-                formBeingProcessed.LoadFormData(archiveReference);
-                formBeingProcessed.ArchiveReference = archiveReference;
+                formBeingProcessed.LoadFormData(submittalQueueItem.ArchiveReference);
+                formBeingProcessed.ArchiveReference = submittalQueueItem.ArchiveReference;
                 
                 var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formBeingProcessed);    //channelFactory.CreatePrepareStrategy(formBeingProcessed);
-                
                 return strategy.Exceute(); // Alle prefille osv ferdig, og liste av "SendQueueItem" kan returneres
 
             }

@@ -11,5 +11,7 @@ namespace FtB_Common.Interfaces
         void ProcessReportStep();
         void LoadFormData(string archiveReference);
         string ArchiveReference { get; set; }
+        List<string> ReceiverIdentifers { get; set; }
+        void InitiateForm();
     }
 }

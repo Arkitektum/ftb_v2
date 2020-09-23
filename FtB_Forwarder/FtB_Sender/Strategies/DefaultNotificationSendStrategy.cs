@@ -14,14 +14,12 @@ namespace FtB_Sender.Strategies
         /// - Protected methods for common functionality for the NotificationDefaultSendStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultNotificationSendStrategy(IForm form) : base(form)
-        {
-
-        }
+        public DefaultNotificationSendStrategy(IForm form) : base(form) { }
 
         public override List<ReportQueueItem> Exceute()
         {
             _formBeingProcessed.ProcessSendStep();
+
             return null;
         }
         public override void ForwardToReceiver()

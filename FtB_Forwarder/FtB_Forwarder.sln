@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Reporter", "FtB_Reporte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_DistributionDataModels", "FtB_DistributionDataModels\FtB_DistributionDataModels.csproj", "{005220A0-051C-470F-9507-6DBE42FB743A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FtB_FuncSender", "FtB_FuncSender\FtB_FuncSender.csproj", "{765AEB19-E5A8-4DAB-89CF-1CDDDAF83B16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{005220A0-051C-470F-9507-6DBE42FB743A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{005220A0-051C-470F-9507-6DBE42FB743A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{005220A0-051C-470F-9507-6DBE42FB743A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{765AEB19-E5A8-4DAB-89CF-1CDDDAF83B16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{765AEB19-E5A8-4DAB-89CF-1CDDDAF83B16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{765AEB19-E5A8-4DAB-89CF-1CDDDAF83B16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{765AEB19-E5A8-4DAB-89CF-1CDDDAF83B16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

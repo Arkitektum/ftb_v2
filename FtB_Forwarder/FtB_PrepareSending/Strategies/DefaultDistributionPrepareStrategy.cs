@@ -25,15 +25,18 @@ namespace FtB_PrepareSending.Strategies
         {
             ReadReceiverInformation("archiveReference");
             base.CommonFunction();
+            _formBeingProcessed.InitiateForm();
             _formBeingProcessed.ProcessPrepareStep(); // Må returnere List<SendQueueItem> 
             base.ReadFromSubmittalQueue("st");
-            return new List<SendQueueItem>()
+
+            List<SendQueueItem> liste = new List<SendQueueItem>();
+            int nummer = 1000; //Used for testing
+            foreach (var receiver in _formBeingProcessed.ReceiverIdentifers)
             {
-                new SendQueueItem(){ArchiveReference = _archiveReference, PrefillId = "Pref1000"},
-                new SendQueueItem(){ArchiveReference = _archiveReference, PrefillId = "Pref2000"},
-                new SendQueueItem(){ArchiveReference = _archiveReference, PrefillId = "Pref3000"},
-                new SendQueueItem(){ArchiveReference = _archiveReference, PrefillId = "Pref4000"}
-            };
+                liste.Add(new SendQueueItem() { ArchiveReference = _archiveReference, PrefillId = "Pref"+ nummer.ToString(), ReceiverName = receiver });
+                nummer++; //Used for testing
+            }
+            return liste;
             
         }
 

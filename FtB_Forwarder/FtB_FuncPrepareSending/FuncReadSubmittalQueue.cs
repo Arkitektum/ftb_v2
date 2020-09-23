@@ -29,13 +29,11 @@ namespace FtB_FuncPrepareSending
         public void Run([ServiceBusTrigger("%SubmittalQueueName%", Connection = "queueConnectionString")]string myQueueItem, ILogger log,
             [ServiceBus("%SendingQueueName%", Connection = "queueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<SendQueueItem> queueCollector)
         {
-            Debug.WriteLine("Method Run");
-            SubmittalQueueItem queueItemJson = JsonConvert.DeserializeObject<SubmittalQueueItem>(myQueueItem);
-            string archiveReference = queueItemJson.ArchiveReference;
-            //_queueProcessor.ExecuteProcessingStrategy(archiveReference);
+            Debug.WriteLine("Method FuncReadSubmittalQueue.Run");
+            SubmittalQueueItem submittalQueueItem = JsonConvert.DeserializeObject<SubmittalQueueItem>(myQueueItem);
             log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
 
-            var result = _queueProcessor.ExecuteProcessingStrategy(archiveReference);
+            var result = _queueProcessor.ExecuteProcessingStrategy(submittalQueueItem);
 
             var tasks = new List<Task>();
 

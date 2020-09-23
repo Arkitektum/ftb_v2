@@ -14,15 +14,17 @@ namespace FtB_Sender.Strategies
         /// - Protected methods for common functionality for the DistributionDefaultSendStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultDistributionSendStrategy(IForm form) : base(form)
-        {
-
-        }
+        public DefaultDistributionSendStrategy(IForm form) : base(form) { }
 
         public override List<ReportQueueItem> Exceute()
         {
+            //_formBeingProcessed.InitiateForm();
             _formBeingProcessed.ProcessSendStep();
-            return null;
+
+            return new List<ReportQueueItem>()
+            {
+                new ReportQueueItem(){ArchiveReference = _archiveReference, ReceiverIdentifiers = _formBeingProcessed.ReceiverIdentifers }
+            };
         }
         public override void ForwardToReceiver()
         {
