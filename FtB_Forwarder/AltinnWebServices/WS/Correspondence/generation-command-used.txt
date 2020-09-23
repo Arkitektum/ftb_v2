@@ -1,0 +1,1 @@
+﻿dotnet-svcutil https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc?wsdl -n "*,AltinnWebServices.WS.Correspondence" -d "..\Correspondence" -o ".\Correspondence.cs"
