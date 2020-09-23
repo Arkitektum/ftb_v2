@@ -1,0 +1,1 @@
+﻿dotnet-svcutil https://tt02.altinn.no/ArchiveExternal/DownloadQueueExternalBasic.svc?wsdl -n "*,AltinnWebServices.AltinnDownloadQueueWS" -d ".\AltinnWebServices\WS\AltinnDownloadQueue" -o ".\AltinnDownloadQueueWS.cs"

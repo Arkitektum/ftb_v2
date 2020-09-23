@@ -1,0 +1,15 @@
+{
+  "providerId": "Microsoft.Tools.ServiceModel.Svcutil",
+  "version": "2.0.1",
+  "options": {
+    "inputs": [
+      "https://tt02.altinn.no/ArchiveExternal/ServiceOwnerArchiveExternalStreamedbasic.svc?wsdl"
+    ],
+    "namespaceMappings": [
+      "*, AltinnWebServices.WS.ServiceOwnerArchiveExternalStreamed"
+    ],
+    "outputFile": "ServiceOwnerArchiveExternalStreamed.cs",
+    "targetFramework": "netcoreapp3.1",
+    "typeReuseMode": "All"
+  }
+}
