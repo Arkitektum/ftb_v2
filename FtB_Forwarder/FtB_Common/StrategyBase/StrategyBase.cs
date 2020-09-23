@@ -7,10 +7,10 @@ namespace FtB_Common
 {
     public abstract class StrategyBase
     {
-        protected IForm _formBeingProcessed;
+        protected IFormLogic _formBeingProcessed;
         protected string _archiveReference;
         protected List<string> _receivers;
-        public StrategyBase(IForm form)
+        public StrategyBase(IFormLogic form)
         {
             _formBeingProcessed = form;
             _archiveReference = form.ArchiveReference;

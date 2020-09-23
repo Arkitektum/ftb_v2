@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FtB_Common.Interfaces
 {
-    public interface IForm
+    public interface IFormLogic
     {
         void ProcessPrepareStep();
         void ProcessSendStep();

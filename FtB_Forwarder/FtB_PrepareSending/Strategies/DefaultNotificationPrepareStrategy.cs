@@ -14,7 +14,7 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the NotificationDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultNotificationPrepareStrategy(IForm form) : base(form) { }
+        public DefaultNotificationPrepareStrategy(IFormLogic form) : base(form) { }
 
         protected override void CreateSubmittalDatabaseStatus(string archiveReference)
         {

@@ -15,7 +15,7 @@ namespace FtB_Reporter
         public ReporterStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
-        public IStrategy<FinishedQueueItem> GetReportStrategy(string serviceCode, IForm form)
+        public IStrategy<FinishedQueueItem> GetReportStrategy(string serviceCode, IFormLogic form)
         {
             if (_distributionServiceCodeList.Contains(serviceCode))
             {

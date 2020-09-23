@@ -1,19 +1,19 @@
-﻿using FtB_Common.Forms;
+﻿using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using System;
 
-namespace FtB_DistributionDataModels.Forms
+namespace FtB_DistributionDataModels.FormLogic
 {
     [FormDataFormat(DataFormatId = "6325", DataFormatVersion = "44824")]
-    public class NaboVarselPlanForm : DistributionFormBase<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
+    public class NaboVarselPlanFormLogic : DistributionFormLogicBase<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
-        public NaboVarselPlanForm(IFormDataRepo dataRepo) : base(dataRepo)
+        public NaboVarselPlanFormLogic(IFormDataRepo dataRepo) : base(dataRepo)
         {
             Name = "Distribusjon av nabovarsel for plan";
-            SchemaFile = "nabovarselPlan.xsd";            
+            SchemaFile = "nabovarselPlan.xsd";
         }
 
-        
+
         private void GetReceivers()
         {
             foreach (var beroertPart in _dataForm.beroerteParter)
@@ -22,7 +22,7 @@ namespace FtB_DistributionDataModels.Forms
             }
         }
         public string GetFormatId()
-        {            
+        {
             return _dataForm.dataFormatId;
         }
 

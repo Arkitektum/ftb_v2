@@ -15,7 +15,7 @@ namespace FtB_Sender
         public SenderStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
-        public IStrategy<ReportQueueItem> GetSendStrategy(string serviceCode, IForm form)
+        public IStrategy<ReportQueueItem> GetSendStrategy(string serviceCode, IFormLogic form)
         {
             if (_distributionServiceCodeList.Contains(serviceCode))
             {

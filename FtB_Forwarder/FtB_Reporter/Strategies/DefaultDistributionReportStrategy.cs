@@ -15,7 +15,7 @@ namespace FtB_Reporter.Strategies
         /// - Protected methods for common functionality for the DistributionDefaultReportStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultDistributionReportStrategy(IForm form) : base(form) { }
+        public DefaultDistributionReportStrategy(IFormLogic form) : base(form) { }
 
         public override List<FinishedQueueItem> Exceute()
         {

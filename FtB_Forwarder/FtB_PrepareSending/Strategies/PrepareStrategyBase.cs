@@ -15,7 +15,7 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected implementation methods for common functionality for the "Prepare" strategy/process
         /// </summary>
 
-        public PrepareStrategyBase(IForm form) : base(form)
+        public PrepareStrategyBase(IFormLogic form) : base(form)
         {
         }
 

@@ -14,7 +14,7 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the DistributionDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultDistributionPrepareStrategy(IForm form) : base(form) { }
+        public DefaultDistributionPrepareStrategy(IFormLogic form) : base(form) { }
         
         protected override void CreateSubmittalDatabaseStatus(string archiveReference)
         {

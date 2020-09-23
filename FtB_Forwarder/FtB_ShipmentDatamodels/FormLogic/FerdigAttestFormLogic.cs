@@ -3,11 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_ShipmentDataModels.Forms
+namespace FtB_ShipmentDataModels.FormLogic
 {
-    public class FerdigAttestForm : ShipmentFormBase<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
+    public class FerdigAttestFormLogic : ShipmentFormLogicBase<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
-        public FerdigAttestForm(IFormDataRepo dataRepo) : base(dataRepo)
+        public FerdigAttestFormLogic(IFormDataRepo dataRepo) : base(dataRepo)
         {
 
         }

@@ -1,4 +1,4 @@
-﻿using FtB_Common.Forms;
+﻿using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using System;
 using System.Diagnostics;
@@ -17,22 +17,22 @@ namespace FtB_Common.Mappers
             _services = services;
         }
 
-        public IForm GetForm(string formatId)
+        public IFormLogic GetForm(string formatId)
         {
             //Retrieves classes implementing IForm, having FormDataFormatAttribute and filtering by its DataFormatId
-            var type = typeof(IForm);
+            var type = typeof(IFormLogic);
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(p => type.IsAssignableFrom(p))
                 .Where(t => t.IsDefined(typeof(FormDataFormatAttribute), false))
                 .Where(t => t.GetCustomAttribute<FormDataFormatAttribute>().DataFormatId == formatId);
 
-            IForm formInstance = null;
+            IFormLogic formInstance = null;
             if (types.Count() > 0)
             {
                 //Resolves an instance of the class
                 var formType = types.FirstOrDefault();
-                formInstance = _services.GetService(formType) as IForm;
+                formInstance = _services.GetService(formType) as IFormLogic;
             }
 
             return formInstance;

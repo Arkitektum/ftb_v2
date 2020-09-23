@@ -15,7 +15,7 @@ namespace FtB_PrepareSending
         public PrepareSendingStrategyManager(IConfiguration configuration) : base(configuration)
         {
         }
-        public IStrategy<SendQueueItem> GetPrepareStrategy(string serviceCode, IForm form)
+        public IStrategy<SendQueueItem> GetPrepareStrategy(string serviceCode, IFormLogic form)
         {
             if (_distributionServiceCodeList.Contains(serviceCode))
             {

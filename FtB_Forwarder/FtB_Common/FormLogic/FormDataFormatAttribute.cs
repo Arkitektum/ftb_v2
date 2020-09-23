@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FtB_Common.Forms
+namespace FtB_Common.FormLogic
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class FormDataFormatAttribute : Attribute
