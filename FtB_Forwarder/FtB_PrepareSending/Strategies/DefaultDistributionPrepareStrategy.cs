@@ -14,7 +14,7 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the DistributionDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultDistributionPrepareStrategy(IForm form) : base(form) { }
+        public DefaultDistributionPrepareStrategy(IFormLogic form) : base(form) { }
         
         protected override void CreateSubmittalDatabaseStatus(string archiveReference)
         {
@@ -23,37 +23,16 @@ namespace FtB_PrepareSending.Strategies
 
         public override List<SendQueueItem> Exceute()
         {
-            ReadReceiverInformation("archiveReference");
-            base.CommonFunction();
-            _formBeingProcessed.InitiateForm();
-            _formBeingProcessed.ProcessPrepareStep(); // Må returnere List<SendQueueItem> 
-            base.ReadFromSubmittalQueue("st");
-
-            List<SendQueueItem> liste = new List<SendQueueItem>();
+            base.Exceute();
+            List<SendQueueItem> sendQueueItems = new List<SendQueueItem>();
             int nummer = 1000; //Used for testing
-            foreach (var receiver in _formBeingProcessed.ReceiverIdentifers)
+            foreach (var receiver in _receivers)
             {
-                liste.Add(new SendQueueItem() { ArchiveReference = _archiveReference, PrefillId = "Pref"+ nummer.ToString(), ReceiverName = receiver });
+                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = _archiveReference, PrefillId = "Pref" + nummer.ToString(), ReceiverName = receiver });
                 nummer++; //Used for testing
             }
-            return liste;
-            
-        }
 
-        protected override void ReadReceiverInformation(string archiveReference)
-        {
-            
-            Console.WriteLine("Leser mottakerinformasjon for DISTRIBUTION");
-        }
-
-        protected void TransformSubmittalToForwardingMessage()
-        {
-            Console.WriteLine("Transformerer innsending til (antall) mottakere for DISTRIBUTION");
-        }
-
-        public void DoSomething()
-        {
-
+            return sendQueueItems;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the NotificationDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultNotificationPrepareStrategy(IForm form) : base(form) { }
+        public DefaultNotificationPrepareStrategy(IFormLogic form) : base(form) { }
 
         protected override void CreateSubmittalDatabaseStatus(string archiveReference)
         {
@@ -26,16 +26,5 @@ namespace FtB_PrepareSending.Strategies
             _formBeingProcessed.ProcessPrepareStep();
             return null;
         }
-
-        protected override void ReadReceiverInformation(string archiveReference)
-        {
-            Console.WriteLine("Leser mottakerinformasjon for NOTIFICATION");
-        }
-
-        public void TransformSubmittalToForwardingMessage()
-        {
-            Console.WriteLine("Transformerer innsending til (antall) mottakere for NOTIFICATION");
-        }
-
     }
 }

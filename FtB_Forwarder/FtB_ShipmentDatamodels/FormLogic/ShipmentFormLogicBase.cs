@@ -1,14 +1,14 @@
-﻿using FtB_Common.Forms;
+﻿using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_NotificationDataModels.Forms
+namespace FtB_ShipmentDataModels.FormLogic
 {
-    public class NotificationFormBase<T> : FormBase<T>
+    public class ShipmentFormLogicBase<T> : FormLogicBase<T>
     {
-        public NotificationFormBase(IFormDataRepo dataRepo) : base(dataRepo)
+        public ShipmentFormLogicBase(IFormDataRepo dataRepo) : base(dataRepo)
         {
 
         }

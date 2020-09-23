@@ -26,7 +26,7 @@ namespace FtB_FuncSender
         {
             string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
             string formatId = _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
-            IForm formBeingProcessed;
+            IFormLogic formBeingProcessed;
             formBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
             formBeingProcessed.LoadFormData(sendQueueItem.ArchiveReference);
             

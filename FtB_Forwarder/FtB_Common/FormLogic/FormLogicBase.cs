@@ -4,14 +4,14 @@ using FtB_Common.Utils;
 using System;
 using System.Collections.Generic;
 
-namespace FtB_Common.Forms
+namespace FtB_Common.FormLogic
 {
-    public abstract class FormBase<T> : IForm
+    public abstract class FormLogicBase<T> : IFormLogic
     {
         protected T _dataForm;
         private readonly IFormDataRepo _repo;
 
-        public FormBase(IFormDataRepo repo)
+        public FormLogicBase(IFormDataRepo repo)
         {
             _repo = repo;
             ReceiverIdentifers = new List<string>();
