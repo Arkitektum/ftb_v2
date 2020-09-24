@@ -31,7 +31,7 @@ namespace FtB_FuncSender
             formBeingProcessed.LoadFormData(sendQueueItem.ArchiveReference);
             
             var strategy = _strategyManager.GetSendStrategy(serviceCode, formBeingProcessed);
-            return strategy.Exceute();// Alle utsendinger osv ferdig, og liste (kun én) av "ReportQueueItem" kan returneres 
+            return strategy.Exceute(sendQueueItem);// Alle utsendinger osv ferdig, og liste (kun én) av "ReportQueueItem" kan returneres 
 
 
             

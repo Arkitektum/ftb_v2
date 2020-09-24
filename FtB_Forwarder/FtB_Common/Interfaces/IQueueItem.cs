@@ -4,8 +4,7 @@ using System.Text;
 
 namespace FtB_Common.Interfaces
 {
-    public interface IStrategy<T,U>
+    public interface IQueueItem
     {
-        List<T> Exceute(U queueItem);
     }
 }

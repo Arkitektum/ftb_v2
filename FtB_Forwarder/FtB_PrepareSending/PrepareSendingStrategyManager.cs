@@ -12,22 +12,25 @@ namespace FtB_PrepareSending
 {
     public class PrepareSendingStrategyManager : StrategyManagerBase
     {
-        public PrepareSendingStrategyManager(IConfiguration configuration) : base(configuration)
+        private readonly ITableStorage _tableStorage;
+
+        public PrepareSendingStrategyManager(IConfiguration configuration, ITableStorage tableStorage) : base(configuration)
         {
+            _tableStorage = tableStorage;
         }
-        public IStrategy<SendQueueItem> GetPrepareStrategy(string serviceCode, IFormLogic formLogic)
+        public IStrategy<SendQueueItem, SubmittalQueueItem> GetPrepareStrategy(string serviceCode, IFormLogic formLogic)
         {
             if (DistributionServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultDistributionPrepareStrategy(formLogic);
+                return new DefaultDistributionPrepareStrategy(formLogic, _tableStorage);
             }
             else if (NotificationServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultNotificationPrepareStrategy(formLogic);
+                return new DefaultNotificationPrepareStrategy(formLogic, _tableStorage);
             }
             else if (ShipmentServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultShipmentPrepareStrategy(formLogic);
+                return new DefaultShipmentPrepareStrategy(formLogic, _tableStorage);
             }
             else
             {

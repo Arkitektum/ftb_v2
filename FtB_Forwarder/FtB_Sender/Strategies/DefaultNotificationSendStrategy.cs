@@ -14,9 +14,9 @@ namespace FtB_Sender.Strategies
         /// - Protected methods for common functionality for the NotificationDefaultSendStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultNotificationSendStrategy(IFormLogic formLogic) : base(formLogic) { }
+        public DefaultNotificationSendStrategy(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage) { }
 
-        public override List<ReportQueueItem> Exceute()
+        public override List<ReportQueueItem> Exceute(SendQueueItem sendQueueItem)
         {
             FormLogicBeingProcessed.ProcessSendStep();
 

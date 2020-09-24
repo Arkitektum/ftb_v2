@@ -16,7 +16,7 @@ namespace FtB_Common.Storage
         //public ILogger Logger { private get; set; }
         public BlobStorage(IConfiguration configuration)
         {
-            _blobServiceClient = new BlobServiceClient(configuration["AzureBlobConnectionString"]);
+            _blobServiceClient = new BlobServiceClient(configuration["AzureStorageConnectionString"]);
         }
 
         public  BlobContainerClient GetBlobContainerClient(string containerName)

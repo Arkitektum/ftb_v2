@@ -15,9 +15,9 @@ namespace FtB_Reporter.Strategies
         /// - Protected methods for common functionality for the DistributionDefaultReportStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultDistributionReportStrategy(IFormLogic formLogic) : base(formLogic) { }
+        public DefaultDistributionReportStrategy(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage) { }
 
-        public override List<FinishedQueueItem> Exceute()
+        public override List<FinishedQueueItem> Exceute(ReportQueueItem reportQueueItem)
         {
             FormLogicBeingProcessed.ProcessReportStep();
             return null;

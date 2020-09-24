@@ -14,20 +14,14 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the DistributionDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultDistributionPrepareStrategy(IFormLogic formLogic) : base(formLogic) { }
+        public DefaultDistributionPrepareStrategy(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage) { }
         
-        protected override void CreateSubmittalDatabaseStatus(string archiveReference)
+         public override List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {
-            Console.WriteLine("Oppretter databasestatus for DISTRIBUTION");
-        }
-
-        public override List<SendQueueItem> Exceute()
-        {
-            base.Exceute();
+            base.Exceute(submittalQueueItem);
             List<SendQueueItem> sendQueueItems = new List<SendQueueItem>();
             foreach (var receiver in Receivers)
             {
-
                 sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverType = receiver.Type.ToString() , ReceiverId = receiver.Id });
             }
 

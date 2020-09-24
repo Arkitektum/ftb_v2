@@ -6,32 +6,27 @@ using System.Collections.Generic;
 
 namespace FtB_PrepareSending.Strategies
 {
-    public abstract class PrepareStrategyBase : StrategyBase, IStrategy<SendQueueItem>
+    public abstract class PrepareStrategyBase : StrategyBase, IStrategy<SendQueueItem, SubmittalQueueItem>
     {
-        /// <summary>
-        /// Scope for this class:
-        /// - Public abstract orchestrator methode Execute() 
-        /// - Public abstract process steps methodes 
-        /// - Protected implementation methods for common functionality for the "Prepare" strategy/process
-        /// </summary>
-
-        public PrepareStrategyBase(IFormLogic formLogic) : base(formLogic)
+        private readonly ITableStorage _tableStorage;
+        public PrepareStrategyBase(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage)
         {
+            _tableStorage = tableStorage;
         }
 
-        protected abstract void CreateSubmittalDatabaseStatus(string archiveReference);
-
-        protected void ExampleCommonFunction()
+        private void CreateSubmittalDatabaseStatus(string archiveReference, int receiverCount)
         {
-            Console.WriteLine("Felles funksjonalitet for både DISTRIBUTION, NOTIFICATION og SHIPMENT");
+            _tableStorage.InsertSubmittalRecord(new SubmittalEntity(archiveReference, receiverCount) , "ftbSubmittals");
         }
 
-        public virtual List<SendQueueItem> Exceute()
+        public virtual List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {
-            ExampleCommonFunction();
             FormLogicBeingProcessed.InitiateForm();
-            FormLogicBeingProcessed.ProcessPrepareStep();
             SetReceivers();
+            
+            CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, FormLogicBeingProcessed.Receivers.Count);
+
+            FormLogicBeingProcessed.ProcessPrepareStep();
             return null;
         }
         private void SetReceivers()
@@ -42,7 +37,6 @@ namespace FtB_PrepareSending.Strategies
                 {
                     Receivers.Add(receiver);
                 }
-                
             }
         }
     }

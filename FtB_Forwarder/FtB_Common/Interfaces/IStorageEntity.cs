@@ -4,8 +4,8 @@ using System.Text;
 
 namespace FtB_Common.Interfaces
 {
-    public interface IStrategy<T,U>
+    public interface IStorageEntity
     {
-        List<T> Exceute(U queueItem);
+        List<Tuple<string, string>> GetListOfPropertiesWithValues();
     }
 }

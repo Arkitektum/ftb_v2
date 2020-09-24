@@ -14,17 +14,12 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the NotificationDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultNotificationPrepareStrategy(IFormLogic formLogic) : base(formLogic) { }
+        public DefaultNotificationPrepareStrategy(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage) { }
 
-        protected override void CreateSubmittalDatabaseStatus(string archiveReference)
+        public override List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {
-            Console.WriteLine("Oppretter databasestatus for NOTIFICATION");
-        }
+            return base.Exceute(submittalQueueItem);
 
-        public override List<SendQueueItem> Exceute()
-        {
-            FormLogicBeingProcessed.ProcessPrepareStep();
-            return null;
         }
     }
 }

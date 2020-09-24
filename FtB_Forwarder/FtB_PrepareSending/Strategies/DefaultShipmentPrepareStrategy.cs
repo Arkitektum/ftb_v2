@@ -14,14 +14,9 @@ namespace FtB_PrepareSending.Strategies
         /// - Protected methods for common functionality for the ShipmentDefaultPrepareStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultShipmentPrepareStrategy(IFormLogic formLogic) : base(formLogic) { }
+        public DefaultShipmentPrepareStrategy(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage) { }
 
-        protected override void CreateSubmittalDatabaseStatus(string archiveReference)
-        {
-            Console.WriteLine("Oppretter databasestatus for SHIPMENT");
-        }
-
-        public override List<SendQueueItem> Exceute()
+        public override List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {
             FormLogicBeingProcessed.ProcessPrepareStep();
             return null;

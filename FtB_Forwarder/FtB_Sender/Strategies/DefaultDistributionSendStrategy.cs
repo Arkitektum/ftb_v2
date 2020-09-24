@@ -14,17 +14,16 @@ namespace FtB_Sender.Strategies
         /// - Protected methods for common functionality for the DistributionDefaultSendStrategy
         /// - Public orchestrator methode Execute() 
         /// </summary>
-        public DefaultDistributionSendStrategy(IFormLogic formLogic) : base(formLogic) { }
+        public DefaultDistributionSendStrategy(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage) { }
 
-        public override List<ReportQueueItem> Exceute()
+        public override List<ReportQueueItem> Exceute(SendQueueItem sendQueueItem)
         {
-            //_formBeingProcessed.InitiateForm();
-            FormLogicBeingProcessed.ProcessSendStep();
-
-            return new List<ReportQueueItem>()
-            {
-                new ReportQueueItem(){ArchiveReference = ArchiveReference, Receivers = FormLogicBeingProcessed.Receivers }
-            };
+            //FormLogicBeingProcessed.ProcessSendStep();
+            base.Exceute(sendQueueItem);
+            Console.WriteLine($"DefaultDistributionSendStrategy: { FormLogicBeingProcessed.ArchiveReference }");
+            List<ReportQueueItem> reportQueueItems = new List<ReportQueueItem>();
+            reportQueueItems.Add(new ReportQueueItem() { ArchiveReference = ArchiveReference, Receivers = FormLogicBeingProcessed.Receivers });
+            return reportQueueItems;
         }
         public override void ForwardToReceiver()
         {

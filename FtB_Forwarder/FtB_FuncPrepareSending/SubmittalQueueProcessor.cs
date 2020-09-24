@@ -33,7 +33,7 @@ namespace FtB_FuncPrepareSending
                 formBeingProcessed.ArchiveReference = submittalQueueItem.ArchiveReference;
                 
                 var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formBeingProcessed);
-                return strategy.Exceute(); // Receivers are identified, and "SendQueueItem" can be returned
+                return strategy.Exceute(submittalQueueItem); // Receivers are identified, and "SendQueueItem" can be returned
 
             }
             catch (Azure.RequestFailedException rfEx)

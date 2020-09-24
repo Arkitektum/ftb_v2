@@ -3,10 +3,8 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.ServiceBus;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FtB_FuncSender
@@ -31,19 +29,15 @@ namespace FtB_FuncSender
         public void Run([ServiceBusTrigger("%SendingQueueName%", Connection = "queueConnectionString")] string myQueueItem, ILogger log,
             [ServiceBus("%ReportQueueName%", Connection = "queueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<ReportQueueItem> queueCollector)
         {
-            Debug.WriteLine("Method FuncReadSendQueue.Run");
             SendQueueItem sendQueueItem = JsonConvert.DeserializeObject<SendQueueItem>(myQueueItem);
             log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
 
             var result = _queueProcessor.ExecuteProcessingStrategy(sendQueueItem);
-
             var tasks = new List<Task>();
-
             foreach (var item in result)
             {
                 tasks.Add(queueCollector.AddAsync(item));
             }
-
             Task.WhenAll(tasks);
         }
     }

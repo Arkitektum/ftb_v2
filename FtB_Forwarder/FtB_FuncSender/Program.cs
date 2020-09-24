@@ -1,8 +1,8 @@
-﻿using FtB_Common.Storage;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace FtB_FuncPrepareSending
+namespace FtB_FuncSender
 {
     class Program
     {

@@ -14,7 +14,6 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "AzureBlobConnectionString": "DefaultEndpointsProtocol=https;AccountName=dibk;AccountKey=S3ZGxAoRiyxpRQHUdR9A7YE4W+qIW9qf9wRKxnwF6XYZO7BfRvd/9qLcIgTDoOkh5UAenm76nYbaUEl00IMBhg==;EndpointSuffix=core.windows.net",
     "queueConnectionString": "Endpoint=sb://sb-ftb-test.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=guT2sVAVJ1sXwb6D77YF8S1zDTvaTKpVOtRMZWE4uNg=",
-    "SubmittalQueueName": "sbq-submittal",
     "SendingQueueName": "sbq-sending",
     "ReportQueueName": "sbq-reporting",
     "DistributionServiceCodes": "5418",

@@ -5,12 +5,13 @@ using System.Collections.Generic;
 
 namespace FtB_Reporter.Strategies
 {
-    public abstract class ReportStrategyBase : StrategyBase, IStrategy<FinishedQueueItem>
+    public abstract class ReportStrategyBase : StrategyBase, IStrategy<FinishedQueueItem, ReportQueueItem>
     {
-        public ReportStrategyBase(IFormLogic formLogic) : base(formLogic)
+        public ReportStrategyBase(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage)
         {
         }
 
-        public abstract List<FinishedQueueItem> Exceute();
+        public abstract List<FinishedQueueItem> Exceute(ReportQueueItem reportQueueItem);
+
     }
 }

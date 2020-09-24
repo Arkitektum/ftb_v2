@@ -12,22 +12,24 @@ namespace FtB_Reporter
 {
     public class ReporterStrategyManager : StrategyManagerBase
     {
-        public ReporterStrategyManager(IConfiguration configuration) : base(configuration)
+        private readonly ITableStorage _tableStorage;
+        public ReporterStrategyManager(IConfiguration configuration, ITableStorage tableStorage) : base(configuration)
         {
+            _tableStorage = tableStorage;
         }
-        public IStrategy<FinishedQueueItem> GetReportStrategy(string serviceCode, IFormLogic formLogic)
+        public IStrategy<FinishedQueueItem, ReportQueueItem> GetReportStrategy(string serviceCode, IFormLogic formLogic)
         {
             if (DistributionServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultDistributionReportStrategy(formLogic);
+                return new DefaultDistributionReportStrategy(formLogic, _tableStorage);
             }
             else if (NotificationServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultNotificationReportStrategy(formLogic);
+                return new DefaultNotificationReportStrategy(formLogic, _tableStorage);
             }
             else if (ShipmentServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultShipmentReportStrategy(formLogic);
+                return new DefaultShipmentReportStrategy(formLogic, _tableStorage);
             }
             else
             {
