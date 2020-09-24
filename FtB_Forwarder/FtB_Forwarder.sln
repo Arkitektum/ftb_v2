@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Common", "FtB_Common\Ft
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncPrepareSending", "FtB_FuncPrepareSending\FtB_FuncPrepareSending.csproj", "{A42B80B8-77DE-48F0-9988-5F512CBE98DA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_NotificationDataModels", "FtB_NotificationDataModels\FtB_NotificationDataModels.csproj", "{37F7F0E0-9BBA-4768-9319-232EB41CA78C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_NotificationFormLogic", "FtB_NotificationDataModels\FtB_NotificationFormLogic.csproj", "{37F7F0E0-9BBA-4768-9319-232EB41CA78C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_ShipmentDataModels", "FtB_ShipmentDatamodels\FtB_ShipmentDataModels.csproj", "{6E9BC8BB-EBD2-4066-B7F6-3DD407D3A356}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_ShipmentFormLogic", "FtB_ShipmentDatamodels\FtB_ShipmentFormLogic.csproj", "{6E9BC8BB-EBD2-4066-B7F6-3DD407D3A356}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_PrepareSending", "FtB_PrepareSending\FtB_PrepareSending.csproj", "{7A8729FA-330C-47D3-8D52-F57A1824F5F5}"
 EndProject
@@ -17,11 +17,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Sender", "FtB_Sender\Ft
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Reporter", "FtB_Reporter\FtB_Reporter.csproj", "{38E06140-39A7-402D-825E-E32DBD1CB764}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_DistributionDataModels", "FtB_DistributionDataModels\FtB_DistributionDataModels.csproj", "{005220A0-051C-470F-9507-6DBE42FB743A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_DistributionFormLogic", "FtB_DistributionDataModels\FtB_DistributionFormLogic.csproj", "{005220A0-051C-470F-9507-6DBE42FB743A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncSender", "FtB_FuncSender\FtB_FuncSender.csproj", "{765AEB19-E5A8-4DAB-89CF-1CDDDAF83B16}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AltinnWebServices", "AltinnWebServices\AltinnWebServices.csproj", "{AA7B9543-E08C-456C-8D4C-14FDC1D34828}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_DataModels.TypeMappers", "TypeMappers\FtB_DataModels.TypeMappers.csproj", "{91B08D41-26D8-475F-A025-35CA6397AB4A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Tests", "FtB_Tests\FtB_Tests.csproj", "{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FtB_DataModels", "FtB_DataModels\FtB_DataModels.csproj", "{2CB96F88-6E43-4A47-BBB3-3A8E9C6E61D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +75,18 @@ Global
 		{AA7B9543-E08C-456C-8D4C-14FDC1D34828}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA7B9543-E08C-456C-8D4C-14FDC1D34828}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA7B9543-E08C-456C-8D4C-14FDC1D34828}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91B08D41-26D8-475F-A025-35CA6397AB4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91B08D41-26D8-475F-A025-35CA6397AB4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91B08D41-26D8-475F-A025-35CA6397AB4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91B08D41-26D8-475F-A025-35CA6397AB4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CB96F88-6E43-4A47-BBB3-3A8E9C6E61D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CB96F88-6E43-4A47-BBB3-3A8E9C6E61D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CB96F88-6E43-4A47-BBB3-3A8E9C6E61D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CB96F88-6E43-4A47-BBB3-3A8E9C6E61D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
