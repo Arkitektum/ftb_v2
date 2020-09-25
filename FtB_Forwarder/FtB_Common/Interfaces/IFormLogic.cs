@@ -5,6 +5,9 @@ using System.Text;
 
 namespace FtB_Common.Interfaces
 {
+    /// <summary>
+    /// All form data needed in processing of the form, needs to be declared here....
+    /// </summary>
     public interface IFormLogic
     {
         void ProcessPrepareStep();
