@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_ShipmentDataModels.FormLogic
+namespace FtB_ShipmentFormLogic.FormLogic
 {
     public class ShipmentFormLogicBase<T> : FormLogicBase<T>
     {

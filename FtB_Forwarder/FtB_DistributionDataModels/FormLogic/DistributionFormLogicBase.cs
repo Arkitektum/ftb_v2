@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_DistributionDataModels.FormLogic
+namespace FtB_DistributionFormLogic.FormLogic
 {
     public abstract class DistributionFormLogicBase<T> : FormLogicBase<T>
     {

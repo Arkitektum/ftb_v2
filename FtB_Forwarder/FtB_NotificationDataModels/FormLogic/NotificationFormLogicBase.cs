@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_NotificationDataModels.FormLogic
+namespace FtB_NotificationFormLogic.FormLogic
 {
     public class NotificationFormLogicBase<T> : FormLogicBase<T>
     {

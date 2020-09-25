@@ -1,7 +1,7 @@
 ﻿using FtB_Common.Interfaces;
 using System;
 
-namespace FtB_NotificationDataModels.FormLogic
+namespace FtB_NotificationFormLogic.FormLogic
 {
     public class SvarPaaNabovarselFormLogic : NotificationFormLogicBase<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
     {
