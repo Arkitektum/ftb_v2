@@ -9,6 +9,7 @@ namespace FtB_Common.Interfaces
     public interface ITableStorage
     {
         Task<TableEntity> InsertSubmittalRecord(TableEntity tableEntity, string tableName);
-        Task<TableResult> GetTableEntity(string tableName, string partitionKey, string rowKey);
+        T GetTableEntity<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity;
+        //Task<T> GetTableEntityAsync<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity;
     }
 }

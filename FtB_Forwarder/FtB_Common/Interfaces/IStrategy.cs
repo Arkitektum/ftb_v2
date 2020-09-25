@@ -6,6 +6,7 @@ namespace FtB_Common.Interfaces
 {
     public interface IStrategy<T,U>
     {
-        List<T> Exceute(U queueItem);
+        //List<T> ExceuteAndReturnList(U queueItem);
+        T Exceute(U queueItem);
     }
 }

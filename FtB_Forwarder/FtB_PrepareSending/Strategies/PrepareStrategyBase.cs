@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace FtB_PrepareSending.Strategies
 {
-    public abstract class PrepareStrategyBase : StrategyBase, IStrategy<SendQueueItem, SubmittalQueueItem>
+    public abstract class PrepareStrategyBase : StrategyBase, IStrategy<List<SendQueueItem>, SubmittalQueueItem>
     {
         private readonly ITableStorage _tableStorage;
         public PrepareStrategyBase(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage)
@@ -16,20 +16,24 @@ namespace FtB_PrepareSending.Strategies
 
         private void CreateSubmittalDatabaseStatus(string archiveReference, int receiverCount)
         {
-            _tableStorage.InsertSubmittalRecord(new SubmittalEntity(archiveReference, receiverCount) , "ftbSubmittals");
+            SubmittalEntity entity = new SubmittalEntity();
+            entity.PartitionKey = archiveReference;
+            entity.RowKey = archiveReference;
+            entity.ReceiverCount = receiverCount;
+            _tableStorage.InsertSubmittalRecord(entity, "ftbSubmittals");
         }
 
         public virtual List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {
             FormLogicBeingProcessed.InitiateForm();
-            SetReceivers();
+            RemoveDuplicateReceivers();
             
-            CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, FormLogicBeingProcessed.Receivers.Count);
+            CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
 
             FormLogicBeingProcessed.ProcessPrepareStep();
             return null;
         }
-        private void SetReceivers()
+        private void RemoveDuplicateReceivers()
         {
             foreach (var receiver in FormLogicBeingProcessed.Receivers)
             {

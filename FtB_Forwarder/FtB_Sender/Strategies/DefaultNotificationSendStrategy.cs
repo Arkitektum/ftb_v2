@@ -16,15 +16,11 @@ namespace FtB_Sender.Strategies
         /// </summary>
         public DefaultNotificationSendStrategy(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage) { }
 
-        public override List<ReportQueueItem> Exceute(SendQueueItem sendQueueItem)
+        public override List<ReportQueueItem> ExceuteAndReturnList(SendQueueItem sendQueueItem)
         {
-            FormLogicBeingProcessed.ProcessSendStep();
+            FormLogicBeingProcessed.ProcessSendStep(); //Lage og persistere prefill xml
 
-            return null;
-        }
-        public override void ForwardToReceiver()
-        {
-            Console.WriteLine("Sender skjema til NOTIFICATION");
+            return base.ExceuteAndReturnList(sendQueueItem);
         }
 
         public override void GetFormsAndAttachmentsFromBlobStorage()

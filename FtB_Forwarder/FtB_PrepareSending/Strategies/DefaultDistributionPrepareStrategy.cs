@@ -20,9 +20,10 @@ namespace FtB_PrepareSending.Strategies
         {
             base.Exceute(submittalQueueItem);
             List<SendQueueItem> sendQueueItems = new List<SendQueueItem>();
-            foreach (var receiver in Receivers)
+            foreach (var receiverVar in Receivers)
             {
-                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverType = receiver.Type.ToString() , ReceiverId = receiver.Id });
+                var receiver = new Receiver() { Type = receiverVar.Type, Id = receiverVar.Id };
+                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference,  Receiver = receiver } );
             }
 
             return sendQueueItems;

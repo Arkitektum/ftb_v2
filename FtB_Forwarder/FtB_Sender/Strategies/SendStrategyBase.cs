@@ -2,6 +2,7 @@
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FtB_Sender.Strategies
 {
@@ -14,45 +15,17 @@ namespace FtB_Sender.Strategies
             _tableStorage = tableStorage;
         }
 
-        public abstract void ForwardToReceiver();
         public abstract void GetFormsAndAttachmentsFromBlobStorage();
 
-        //private int GetSubmittalReceiverCount(string archiveReference)
-        //{
-        //    var table = _tableStorage.GetTableEntity("ftbSubmittals", archiveReference, archiveReference);
-        //    var submittalEntity = (SubmittalEntity)table.Result.Result;
-        //    return submittalEntity.ReceiverCount;
-        //}
-
-
-        private bool AllReceiversHasBeenSentTo(string archiveReference)
-        {
-            var table = _tableStorage.GetTableEntity("ftbSubmittals", archiveReference, archiveReference);
-            var submittalEntity = (SubmittalEntity)table.Result.Result;
-            return submittalEntity.ReceiverCount == submittalEntity.SentCount;
-        }
-
-        private void IncrementSubmittalSentCount(string archiveReference)
-        {
-            var table = _tableStorage.GetTableEntity("ftbSubmittals", archiveReference, archiveReference);
-            var submittalEntity = (SubmittalEntity)table.Result.Result;
-            submittalEntity.SentCount++;
-            _tableStorage.InsertSubmittalRecord(submittalEntity, "ftbSubmittals");
-        }
-
-        public virtual List<ReportQueueItem> Exceute(SendQueueItem sendQueueItem)
+        public ReportQueueItem Exceute(SendQueueItem sendQueueItem)
         {
             FormLogicBeingProcessed.InitiateForm();
-            //SetReceivers();
-            IncrementSubmittalSentCount(sendQueueItem.ArchiveReference);
-            if (AllReceiversHasBeenSentTo(sendQueueItem.ArchiveReference))
-            {
-                return new List<ReportQueueItem>()
-                {
-                    new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, Receivers = FormLogicBeingProcessed.Receivers }
-                };
-            }
-            return null;
+            return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, Receiver = sendQueueItem.Receiver };
+        }
+
+        public virtual List<ReportQueueItem> ExceuteAndReturnList(SendQueueItem sendQueueItem)
+        {
+            throw new System.NotImplementedException();
         }
 
     }

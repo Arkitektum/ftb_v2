@@ -64,33 +64,33 @@ namespace FtB_Common.Storage
             }
         }
 
-        public async Task<TableEntity> IncrementSubmittalSentCount(TableEntity entity, string tableName)
+        //public Task<bool> IncrementSubmittalSentCount(TableEntity entity, string tableName)
+        //{
+        //    CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
+        //    try
+        //    {
+        //        // Create the InsertOrReplace table operation
+        //        TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(entity);
+
+        //        // Execute the insert operation.
+        //        TableResult result = cloudTable.Execute(insertOrMergeOperation);
+        //        var insertedEntity = (TableEntity)result.Result;
+        //        return insertedEntity;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+
+        public T GetTableEntity<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity
         {
-            CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
             try
             {
-                // Create the InsertOrReplace table operation
-                TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(entity);
-
-                // Execute the insert operation.
-                TableResult result = await cloudTable.ExecuteAsync(insertOrMergeOperation);
-                var insertedEntity = (TableEntity)result.Result;
-                return insertedEntity;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public async Task<TableResult> GetTableEntity(string tableName, string partitionKey, string rowKey)
-        {
-            try
-            {
-                TableOperation retrieveOperation = TableOperation.Retrieve<TableEntity>(partitionKey, rowKey);
+                TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey, rowKey);
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
-                TableResult result = await cloudTable.ExecuteAsync(retrieveOperation);
-                return result;
+                TableResult result = cloudTable.Execute(retrieveOperation);
+                return (T)result.Result;
             }
             catch (StorageException e)
             {
@@ -99,6 +99,26 @@ namespace FtB_Common.Storage
                 throw;
             }
         }
+        //public async Task<T> GetTableEntityAsync<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity
+        //{
+        //    try
+        //    {
+        //        TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey, rowKey);
+        //        CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
+        //        TableResult result = await cloudTable.ExecuteAsync(retrieveOperation);
+        //        return (T)result.Result;
+        //    }
+        //    catch (StorageException e)
+        //    {
+        //        Console.WriteLine(e.Message);
+        //        Console.ReadLine();
+        //        throw;
+        //    }
+        //}
+
+    }
+    public class MyEntity<T>
+    {
 
     }
 }

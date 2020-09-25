@@ -10,10 +10,8 @@ namespace FtB_Common.BusinessModels
 {
     public class SubmittalEntity : TableEntity, IStorageEntity
     {
-        public SubmittalEntity(string archiveReference)
+        public SubmittalEntity()
         {
-            this.PartitionKey = archiveReference;
-            this.RowKey = archiveReference;
         }
         public SubmittalEntity(string archiveReference, int receiverCount)
         {
@@ -22,6 +20,7 @@ namespace FtB_Common.BusinessModels
             this.ReceiverCount = receiverCount;
             this.SentCount = 0;
         }
+
         public int ReceiverCount { get; set; }
         public int SentCount { get; set; }
 

@@ -2,6 +2,7 @@
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using System;
+using System.Collections.Generic;
 
 namespace FtB_DistributionFormLogic.FormLogic
 {
@@ -15,6 +16,33 @@ namespace FtB_DistributionFormLogic.FormLogic
                         
         }
 
+        private List<Receiver> receivers;
+        public override List<Receiver> Receivers
+        {
+            get
+            {
+                if (receivers == null)
+                {
+                    receivers = new List<Receiver>();
+                    foreach (var beroertPart in DataForm.beroerteParter)
+                    {
+                        Enum.TryParse(beroertPart.partstype.kodeverdi, out ReceiverType receiverType);
+                        string id;
+                        if (receiverType.Equals(ReceiverType.Privatperson))
+                        {
+                            id = beroertPart.foedselsnummer;
+                        }
+                        else
+                        {
+                            id = beroertPart.organisasjonsnummer;
+                        }
+                        receivers.Add(new Receiver() { Type = receiverType, Id = id });
+                    }
+                };
+
+                return receivers;
+            }
+        }
 
         public void GetReceivers()
         {
@@ -46,7 +74,7 @@ namespace FtB_DistributionFormLogic.FormLogic
 
         public override void InitiateForm()
         {
-            GetReceivers();
+            //GetReceivers();
         }
 
         public override void ProcessSendStep()

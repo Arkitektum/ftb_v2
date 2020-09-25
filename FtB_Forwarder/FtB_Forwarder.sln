@@ -27,7 +27,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_DataModels.TypeMappers"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Tests", "FtB_Tests\FtB_Tests.csproj", "{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FtB_DataModels", "FtB_DataModels\FtB_DataModels.csproj", "{2CB96F88-6E43-4A47-BBB3-3A8E9C6E61D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_DataModels", "FtB_DataModels\FtB_DataModels.csproj", "{2CB96F88-6E43-4A47-BBB3-3A8E9C6E61D1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncReporter", "FtB_FuncReporter\FtB_FuncReporter.csproj", "{0F1C5B80-B4E4-4A47-B08D-2FEE2B6F9DAE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FtB_MessageManager", "FtB_MessageManager\FtB_MessageManager.csproj", "{D372160F-1D7C-4FB2-B7ED-07D494FE4224}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +91,14 @@ Global
 		{2CB96F88-6E43-4A47-BBB3-3A8E9C6E61D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CB96F88-6E43-4A47-BBB3-3A8E9C6E61D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CB96F88-6E43-4A47-BBB3-3A8E9C6E61D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F1C5B80-B4E4-4A47-B08D-2FEE2B6F9DAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F1C5B80-B4E4-4A47-B08D-2FEE2B6F9DAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F1C5B80-B4E4-4A47-B08D-2FEE2B6F9DAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F1C5B80-B4E4-4A47-B08D-2FEE2B6F9DAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D372160F-1D7C-4FB2-B7ED-07D494FE4224}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D372160F-1D7C-4FB2-B7ED-07D494FE4224}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D372160F-1D7C-4FB2-B7ED-07D494FE4224}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D372160F-1D7C-4FB2-B7ED-07D494FE4224}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

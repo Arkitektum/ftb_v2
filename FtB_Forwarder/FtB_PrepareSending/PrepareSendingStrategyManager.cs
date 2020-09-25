@@ -4,6 +4,7 @@ using FtB_Common.Interfaces;
 using FtB_PrepareSending.Strategies;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 
 namespace FtB_PrepareSending
 {
@@ -15,7 +16,7 @@ namespace FtB_PrepareSending
         {
             _tableStorage = tableStorage;
         }
-        public IStrategy<SendQueueItem, SubmittalQueueItem> GetPrepareStrategy(string serviceCode, IFormLogic formLogic)
+        public IStrategy<List<SendQueueItem>, SubmittalQueueItem> GetPrepareStrategy(string serviceCode, IFormLogic formLogic)
         {
             if (DistributionServiceCodeList.Contains(serviceCode))
             {

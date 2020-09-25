@@ -8,7 +8,7 @@ namespace FtB_Common.BusinessModels
     public class SendQueueItem: IQueueItem
     {
         public string ArchiveReference { get; set; }
-        public string ReceiverType { get; set; }
-        public string ReceiverId { get; set; }
+        public Receiver Receiver { get; set; }
+        //public string ReceiverId { get; set; }
     }
 }

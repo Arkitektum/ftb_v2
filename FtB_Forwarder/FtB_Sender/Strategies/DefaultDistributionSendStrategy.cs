@@ -16,18 +16,12 @@ namespace FtB_Sender.Strategies
         /// </summary>
         public DefaultDistributionSendStrategy(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage) { }
 
-        public override List<ReportQueueItem> Exceute(SendQueueItem sendQueueItem)
+        public override List<ReportQueueItem> ExceuteAndReturnList(SendQueueItem sendQueueItem)
         {
-            //FormLogicBeingProcessed.ProcessSendStep();
-            base.Exceute(sendQueueItem);
             Console.WriteLine($"DefaultDistributionSendStrategy: { FormLogicBeingProcessed.ArchiveReference }");
-            List<ReportQueueItem> reportQueueItems = new List<ReportQueueItem>();
-            reportQueueItems.Add(new ReportQueueItem() { ArchiveReference = ArchiveReference, Receivers = FormLogicBeingProcessed.Receivers });
-            return reportQueueItems;
-        }
-        public override void ForwardToReceiver()
-        {
-            Console.WriteLine("Sender skjema til DISTRIBUTION");
+            FormLogicBeingProcessed.ProcessSendStep(); //Lage og persistere prefill xml
+            
+            return base.ExceuteAndReturnList(sendQueueItem);
         }
 
         public override void GetFormsAndAttachmentsFromBlobStorage()

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FtB_FuncReporter": {
+      "commandName": "Project",
+      "commandLineArgs": "host start --port 7803"
+    }
+  }
+}

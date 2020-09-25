@@ -22,7 +22,7 @@ namespace FtB_Common.FormLogic
         public string DataFormatVersion { get; set; }
         public string SchemaFile { get; set; }
         public string ArchiveReference { get; set; }
-        public List<Receiver> Receivers { get; set; }
+        public virtual List<Receiver> Receivers { get; set; }
 
         public abstract void InitiateForm();
 

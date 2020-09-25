@@ -16,14 +16,11 @@ namespace FtB_Sender.Strategies
         /// </summary>
         public DefaultShipmentSendStrategy(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage) { }
 
-        public override List<ReportQueueItem> Exceute(SendQueueItem sendQueueItem)
+        public override List<ReportQueueItem> ExceuteAndReturnList(SendQueueItem sendQueueItem)
         {
-            FormLogicBeingProcessed.ProcessSendStep();
-            return null;
-        }
-        public override void ForwardToReceiver()
-        {
-            Console.WriteLine("Sender skjema til SHIPMENT");
+            FormLogicBeingProcessed.ProcessSendStep(); //Lage og persistere prefill xml
+
+            return base.ExceuteAndReturnList(sendQueueItem);
         }
 
         public override void GetFormsAndAttachmentsFromBlobStorage()

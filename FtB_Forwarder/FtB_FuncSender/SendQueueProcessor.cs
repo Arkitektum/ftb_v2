@@ -22,7 +22,7 @@ namespace FtB_FuncSender
             _strategyManager = strategyManager;
         }
 
-        public List<ReportQueueItem> ExecuteProcessingStrategy(SendQueueItem sendQueueItem)
+        public ReportQueueItem ExecuteProcessingStrategy(SendQueueItem sendQueueItem)
         {
             string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
             string formatId = _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
@@ -31,10 +31,8 @@ namespace FtB_FuncSender
             formBeingProcessed.LoadFormData(sendQueueItem.ArchiveReference);
             
             var strategy = _strategyManager.GetSendStrategy(serviceCode, formBeingProcessed);
-            return strategy.Exceute(sendQueueItem);// Alle utsendinger osv ferdig, og liste (kun én) av "ReportQueueItem" kan returneres 
-
-
-            
+            var result =  strategy.Exceute(sendQueueItem);
+            return result;
         }
     }
 }
