@@ -1,10 +1,7 @@
-﻿using FtB_Common.Interfaces;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-namespace FtB_Common.Mappers
+namespace FtB_Common
 {
     public abstract class StrategyManagerBase
     {

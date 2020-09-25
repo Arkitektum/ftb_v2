@@ -1,12 +1,9 @@
-﻿using FtB_Common.BusinessModels;
+﻿using FtB_Common;
+using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
-using FtB_Common.Mappers;
 using FtB_Sender.Strategies;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace FtB_Sender
 {
