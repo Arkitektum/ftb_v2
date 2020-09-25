@@ -17,10 +17,11 @@ namespace FtB_MessageManager
 
         public async Task Send(dynamic messageElement)
         {
-            string comicItemTitle = messageElement.comicItem.Safe_Title;
-            string imageLink = messageElement.comicItem.Img;
+            //string comicItemTitle = messageElement.comicItem.Safe_Title;
+            //string imageLink = messageElement.comicItem.Img;
+            string txt = messageElement;
 
-            var payload = new SlackPayload() { Text = $"{comicItemTitle} \n{imageLink}" };
+            var payload = new SlackPayload() { Text = txt };
 
             await _client.SendMessage(_options.Value.WebHook, payload);
 

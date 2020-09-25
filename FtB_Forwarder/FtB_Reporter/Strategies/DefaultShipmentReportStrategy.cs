@@ -2,6 +2,7 @@
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using FtB_MessageManager;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,17 +13,11 @@ namespace FtB_Reporter.Strategies
     {
         private readonly IEnumerable<IMessageManager> _messageManagers;
 
-        public DefaultShipmentReportStrategy(IFormLogic formLogic, ITableStorage tableStorage, IEnumerable<IMessageManager> messageManagers) 
-            : base(formLogic, tableStorage, messageManagers)
+        public DefaultShipmentReportStrategy(IFormLogic formLogic, ITableStorage tableStorage, IEnumerable<IMessageManager> messageManagers, ILogger log) 
+            : base(formLogic, tableStorage, messageManagers, log)
         {
             _messageManagers = messageManagers;
         }
-
-        /// <summary>
-        /// Scope for this class:
-        /// - Protected methods for common functionality for the ShipmentDefaultReportStrategy
-        /// - Public orchestrator methode Execute() 
-        /// </summary>
 
         public override List<FinishedQueueItem> ExceuteAndReturnList(ReportQueueItem reportQueueItem)
         {

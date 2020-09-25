@@ -2,6 +2,7 @@
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using FtB_MessageManager;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,13 +13,8 @@ namespace FtB_Reporter.Strategies
     {
         private readonly IEnumerable<IMessageManager> _messageManagers;
 
-        /// <summary>
-        /// Scope for this class:
-        /// - Protected methods for common functionality for the NotificationDefaultReportStrategy
-        /// - Public orchestrator methode Execute() 
-        /// </summary>
-        public DefaultNotificationReportStrategy(IFormLogic formLogic, ITableStorage tableStorage, IEnumerable<IMessageManager> messageManagers)
-            : base(formLogic, tableStorage, messageManagers)
+        public DefaultNotificationReportStrategy(IFormLogic formLogic, ITableStorage tableStorage, IEnumerable<IMessageManager> messageManagers, ILogger log)
+            : base(formLogic, tableStorage, messageManagers, log)
         {
             _messageManagers = messageManagers;
         }

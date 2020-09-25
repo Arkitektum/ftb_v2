@@ -19,7 +19,7 @@ namespace FtB_FuncReporter
         {
             ReportQueueItem reportQueueItem = JsonConvert.DeserializeObject<ReportQueueItem>(myQueueItem);
             log.LogInformation($"C# ServiceBus queue trigger function processed message: {myQueueItem}");
-            var result = _queueProcessor.ExecuteProcessingStrategy(reportQueueItem);
+            var result = _queueProcessor.ExecuteProcessingStrategy(reportQueueItem, log);
         }
     }
 }

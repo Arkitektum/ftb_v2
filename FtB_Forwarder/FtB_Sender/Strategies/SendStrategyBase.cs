@@ -17,16 +17,10 @@ namespace FtB_Sender.Strategies
 
         public abstract void GetFormsAndAttachmentsFromBlobStorage();
 
-        public ReportQueueItem Exceute(SendQueueItem sendQueueItem)
+        public virtual ReportQueueItem Exceute(SendQueueItem sendQueueItem)
         {
             FormLogicBeingProcessed.InitiateForm();
             return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, Receiver = sendQueueItem.Receiver };
         }
-
-        public virtual List<ReportQueueItem> ExceuteAndReturnList(SendQueueItem sendQueueItem)
-        {
-            throw new System.NotImplementedException();
-        }
-
     }
 }

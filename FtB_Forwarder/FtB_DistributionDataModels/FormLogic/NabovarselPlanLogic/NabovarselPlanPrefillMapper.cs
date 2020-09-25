@@ -7,7 +7,9 @@ namespace FtB_DistributionFormLogic.FormLogic
     {
         public override no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType Map(no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType form, string filter)
         {
-            var berortPart = form.beroerteParter?.Where(b => b.foedselsnummer.Equals(filter) || b.organisasjonsnummer.Equals(filter)).ToList();
+            //var berortPart = form.beroerteParter?.Where(b => b.foedselsnummer.Equals(filter) || b.organisasjonsnummer.Equals(filter)).ToList();
+
+            var berortPart = form.beroerteParter?.Where(b => (b.foedselsnummer != null && b.foedselsnummer.Equals(filter)) || (b.organisasjonsnummer != null && b.organisasjonsnummer.Equals(filter))).ToList();
 
             var svarPaaNabovarsel = new no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType();
 

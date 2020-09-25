@@ -81,7 +81,8 @@ namespace FtB_DistributionFormLogic.FormLogic
         {
             //Should be injected???
             var mapper = new NabovarselPlanPrefillMapper();
-            var result = mapper.Map(this.DataForm, "naboidentifikator");
+            //TODO: Fikk feil ved kjøring: kommentert ut
+            //var result = mapper.Map(this.DataForm, "naboidentifikator");
 
             // Hått gjer me med resultatet tru?
 

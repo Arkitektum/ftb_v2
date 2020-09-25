@@ -27,11 +27,17 @@ namespace FtB_PrepareSending.Strategies
         {
             FormLogicBeingProcessed.InitiateForm();
             RemoveDuplicateReceivers();
-            
             CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
-
             FormLogicBeingProcessed.ProcessPrepareStep();
-            return null;
+
+            List<SendQueueItem> sendQueueItems = new List<SendQueueItem>();
+            foreach (var receiverVar in Receivers)
+            {
+                var receiver = new Receiver() { Type = receiverVar.Type, Id = receiverVar.Id };
+                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, Receiver = receiver });
+            }
+
+            return sendQueueItems;
         }
         private void RemoveDuplicateReceivers()
         {

@@ -18,14 +18,14 @@ namespace FtB_FuncReporter
             builder.Services.AddScoped<BlobStorage>();
 
             builder.Services.AddFtBObjects();
-            
-            //var options = builder.Services.BuildServiceProvider().GetService<IOptions<ExecutionContextOptions>>().Value;
-            //var configuration = new ConfigurationBuilder()
-            //    .SetBasePath(options.AppDirectory)
-            //    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-            //    .AddEnvironmentVariables()
-            //    .Build(); 
-            //builder.Services.AddMessageManagerService(configuration);
+
+            var options = builder.Services.BuildServiceProvider().GetService<IOptions<ExecutionContextOptions>>().Value;
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(options.AppDirectory)
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .Build();
+            builder.Services.AddMessageManagerService(configuration);
         }
     }
 }
