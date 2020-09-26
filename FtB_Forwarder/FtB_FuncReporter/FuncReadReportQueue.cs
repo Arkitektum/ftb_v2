@@ -1,4 +1,5 @@
 ﻿using FtB_Common.BusinessModels;
+using FtB_ProcessStrategies;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

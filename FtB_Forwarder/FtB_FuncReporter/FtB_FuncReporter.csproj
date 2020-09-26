@@ -12,9 +12,9 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FtB_DistributionDataModels\FtB_DistributionFormLogic.csproj" />
+    <ProjectReference Include="..\FtB_FormLogic\FtB_FormLogic.csproj" />
     <ProjectReference Include="..\FtB_MessageManager\FtB_MessageManager.csproj" />
-    <ProjectReference Include="..\FtB_Reporter\FtB_Reporter.csproj" />
+    <ProjectReference Include="..\FtB_ProcessStrategies\FtB_ProcessStrategies.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

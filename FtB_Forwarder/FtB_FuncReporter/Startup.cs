@@ -1,5 +1,6 @@
 ﻿using FtB_Common.Storage;
 using FtB_MessageManager;
+using FtB_ProcessStrategies;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Extensions.Configuration;

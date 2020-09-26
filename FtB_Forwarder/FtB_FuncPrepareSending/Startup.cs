@@ -1,4 +1,5 @@
 ﻿using FtB_Common.Storage;
+using FtB_ProcessStrategies;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 

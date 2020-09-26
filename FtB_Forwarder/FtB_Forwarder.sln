@@ -7,23 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Common", "FtB_Common\Ft
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncPrepareSending", "FtB_FuncPrepareSending\FtB_FuncPrepareSending.csproj", "{A42B80B8-77DE-48F0-9988-5F512CBE98DA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_NotificationFormLogic", "FtB_NotificationDataModels\FtB_NotificationFormLogic.csproj", "{37F7F0E0-9BBA-4768-9319-232EB41CA78C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_ProcessStrategies", "FtB_ProcessStrategies\FtB_ProcessStrategies.csproj", "{38E06140-39A7-402D-825E-E32DBD1CB764}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_ShipmentFormLogic", "FtB_ShipmentDatamodels\FtB_ShipmentFormLogic.csproj", "{6E9BC8BB-EBD2-4066-B7F6-3DD407D3A356}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_PrepareSending", "FtB_PrepareSending\FtB_PrepareSending.csproj", "{7A8729FA-330C-47D3-8D52-F57A1824F5F5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Sender", "FtB_Sender\FtB_Sender.csproj", "{6CEAD2AA-4E58-40C7-B4C6-27102AB03AED}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Reporter", "FtB_Reporter\FtB_Reporter.csproj", "{38E06140-39A7-402D-825E-E32DBD1CB764}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_DistributionFormLogic", "FtB_DistributionDataModels\FtB_DistributionFormLogic.csproj", "{005220A0-051C-470F-9507-6DBE42FB743A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FormLogic", "FtB_FormLogic\FtB_FormLogic.csproj", "{005220A0-051C-470F-9507-6DBE42FB743A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncSender", "FtB_FuncSender\FtB_FuncSender.csproj", "{765AEB19-E5A8-4DAB-89CF-1CDDDAF83B16}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AltinnWebServices", "AltinnWebServices\AltinnWebServices.csproj", "{AA7B9543-E08C-456C-8D4C-14FDC1D34828}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_DataModels.TypeMappers", "TypeMappers\FtB_DataModels.TypeMappers.csproj", "{91B08D41-26D8-475F-A025-35CA6397AB4A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Tests", "FtB_Tests\FtB_Tests.csproj", "{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}"
 EndProject
@@ -31,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_DataModels", "FtB_DataM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncReporter", "FtB_FuncReporter\FtB_FuncReporter.csproj", "{0F1C5B80-B4E4-4A47-B08D-2FEE2B6F9DAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FtB_MessageManager", "FtB_MessageManager\FtB_MessageManager.csproj", "{D372160F-1D7C-4FB2-B7ED-07D494FE4224}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_MessageManager", "FtB_MessageManager\FtB_MessageManager.csproj", "{D372160F-1D7C-4FB2-B7ED-07D494FE4224}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,22 +37,6 @@ Global
 		{A42B80B8-77DE-48F0-9988-5F512CBE98DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A42B80B8-77DE-48F0-9988-5F512CBE98DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A42B80B8-77DE-48F0-9988-5F512CBE98DA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{37F7F0E0-9BBA-4768-9319-232EB41CA78C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{37F7F0E0-9BBA-4768-9319-232EB41CA78C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{37F7F0E0-9BBA-4768-9319-232EB41CA78C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{37F7F0E0-9BBA-4768-9319-232EB41CA78C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6E9BC8BB-EBD2-4066-B7F6-3DD407D3A356}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E9BC8BB-EBD2-4066-B7F6-3DD407D3A356}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6E9BC8BB-EBD2-4066-B7F6-3DD407D3A356}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6E9BC8BB-EBD2-4066-B7F6-3DD407D3A356}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7A8729FA-330C-47D3-8D52-F57A1824F5F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7A8729FA-330C-47D3-8D52-F57A1824F5F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7A8729FA-330C-47D3-8D52-F57A1824F5F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7A8729FA-330C-47D3-8D52-F57A1824F5F5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6CEAD2AA-4E58-40C7-B4C6-27102AB03AED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CEAD2AA-4E58-40C7-B4C6-27102AB03AED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CEAD2AA-4E58-40C7-B4C6-27102AB03AED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6CEAD2AA-4E58-40C7-B4C6-27102AB03AED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{38E06140-39A7-402D-825E-E32DBD1CB764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{38E06140-39A7-402D-825E-E32DBD1CB764}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38E06140-39A7-402D-825E-E32DBD1CB764}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -79,10 +53,6 @@ Global
 		{AA7B9543-E08C-456C-8D4C-14FDC1D34828}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA7B9543-E08C-456C-8D4C-14FDC1D34828}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA7B9543-E08C-456C-8D4C-14FDC1D34828}.Release|Any CPU.Build.0 = Release|Any CPU
-		{91B08D41-26D8-475F-A025-35CA6397AB4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{91B08D41-26D8-475F-A025-35CA6397AB4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{91B08D41-26D8-475F-A025-35CA6397AB4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{91B08D41-26D8-475F-A025-35CA6397AB4A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}.Release|Any CPU.ActiveCfg = Release|Any CPU

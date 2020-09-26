@@ -1,4 +1,4 @@
-using FtB_DataModels.TypeMappers;
+using FtB_DataModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace FtB_Tests
                 organisasjonsnummer = "98765432"
             };
 
-            var result = NabovarselMappers.GetNabovarselForslagsstillerTypeMapper().Map<no.kxml.skjema.dibk.nabovarselPlan.ForslagsstillerType, no.kxml.skjema.dibk.nabovarselsvarPlan.ForslagsstillerType>(nabovarsel.forslagsstiller);
+            var result = NabovarselPlanMappers.GetNabovarselForslagsstillerTypeMapper().Map<no.kxml.skjema.dibk.nabovarselPlan.ForslagsstillerType, no.kxml.skjema.dibk.nabovarselsvarPlan.ForslagsstillerType>(nabovarsel.forslagsstiller);
             Assert.IsNotNull(result);
         }
 
@@ -127,7 +127,7 @@ namespace FtB_Tests
 
             nabovarsel.beroerteParter = berortList.ToArray();
 
-            var result = NabovarselMappers.GetNabovarselBerortPartMapper()
+            var result = NabovarselPlanMappers.GetNabovarselBerortPartMapper()
                 .Map<no.kxml.skjema.dibk.nabovarselPlan.BeroertPartType, no.kxml.skjema.dibk.nabovarselsvarPlan.BeroertPartType>(nabovarsel.beroerteParter.First());
 
             Assert.IsNotNull(result);

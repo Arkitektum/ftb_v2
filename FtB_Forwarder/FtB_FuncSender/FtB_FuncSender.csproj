@@ -12,8 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FtB_DistributionDataModels\FtB_DistributionFormLogic.csproj" />
-    <ProjectReference Include="..\FtB_Sender\FtB_Sender.csproj" />
+    <ProjectReference Include="..\FtB_FormLogic\FtB_FormLogic.csproj" />
+    <ProjectReference Include="..\FtB_ProcessStrategies\FtB_ProcessStrategies.csproj" />
   </ItemGroup>
 
   <ItemGroup>

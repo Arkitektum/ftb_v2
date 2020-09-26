@@ -2,8 +2,8 @@
 using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_Common.Storage;
-using FtB_DistributionFormLogic.FormLogic;
-using FtB_Reporter;
+using FtB_FormLogic;
+using FtB_ProcessStrategies;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FtB_FuncReporter

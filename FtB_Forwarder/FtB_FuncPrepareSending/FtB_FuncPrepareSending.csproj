@@ -11,8 +11,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FtB_Common\FtB_Common.csproj" />
-    <ProjectReference Include="..\FtB_DistributionDataModels\FtB_DistributionFormLogic.csproj" />
-    <ProjectReference Include="..\FtB_PrepareSending\FtB_PrepareSending.csproj" />
+    <ProjectReference Include="..\FtB_FormLogic\FtB_FormLogic.csproj" />
+    <ProjectReference Include="..\FtB_ProcessStrategies\FtB_ProcessStrategies.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
