@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FtB_DistributionDataModels\FtB_FormLogic.csproj" />
+    <ProjectReference Include="..\FtB_FormLogic\FtB_FormLogic.csproj" />
   </ItemGroup>
 
 </Project>
