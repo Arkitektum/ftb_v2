@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using FtB_Common.Interfaces;
+using FtB_Common.Exceptions;
 
 namespace FtB_Common.Storage
 {
@@ -42,7 +43,28 @@ namespace FtB_Common.Storage
             return storageAccount;
         }
 
-        public async Task<TableEntity> InsertSubmittalRecord(TableEntity entity, string tableName)
+        public async Task<TableEntity> InsertEntityRecordAsync(TableEntity entity, string tableName)
+        {
+            CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
+            //Create a new storage table.
+            cloudTable.CreateIfNotExists();
+
+            try
+            {
+                // Create the Insert table operation
+                TableOperation insertOperation = TableOperation.Insert(entity);
+
+                // Execute the insert operation.
+                TableResult result = await cloudTable.ExecuteAsync(insertOperation);
+                var insertedEntity = (TableEntity)result.Result;
+                return insertedEntity;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public TableEntity InsertEntityRecord(TableEntity entity, string tableName)
         {
             CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
             //Create a new storage table.
@@ -51,10 +73,10 @@ namespace FtB_Common.Storage
             try
             {
                 // Create the InsertOrReplace table operation
-                TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(entity);
+                TableOperation insertOperation = TableOperation.Insert(entity);
 
                 // Execute the insert operation.
-                TableResult result = await cloudTable.ExecuteAsync(insertOrMergeOperation);
+                TableResult result = cloudTable.Execute(insertOperation);
                 var insertedEntity = (TableEntity)result.Result;
                 return insertedEntity;
             }
@@ -64,24 +86,30 @@ namespace FtB_Common.Storage
             }
         }
 
-        //public Task<bool> IncrementSubmittalSentCount(TableEntity entity, string tableName)
-        //{
-        //    CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
-        //    try
-        //    {
-        //        // Create the InsertOrReplace table operation
-        //        TableOperation insertOrMergeOperation = TableOperation.InsertOrMerge(entity);
+        public TableEntity UpdateEntityRecord(TableEntity entity, string tableName)
+        {
+            try
+            {
+                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
+                // Create the InsertOrReplace table operation
+                TableOperation operation = TableOperation.Replace(entity);
 
-        //        // Execute the insert operation.
-        //        TableResult result = cloudTable.Execute(insertOrMergeOperation);
-        //        var insertedEntity = (TableEntity)result.Result;
-        //        return insertedEntity;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
+                // Execute the insert operation.
+                TableResult result = cloudTable.Execute(operation);
+                var insertedEntity = (TableEntity)result.Result;
+                return insertedEntity;
+            }
+            catch (StorageException ex)
+            {
+                if (ex.RequestInformation.HttpStatusCode == 412)
+                {
+                    //Console.WriteLine($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: ETag={ entity.ETag }. Optimistic concurrency violation – entity has changed since it was retrieved.");
+                    throw new TableStorageConcurrentException("Optimistic concurrency violation – entity has changed since it was retrieved.", 412);
+                }
+                else
+                    throw;
+            }
+        }
 
         public T GetTableEntity<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity
         {
@@ -115,10 +143,6 @@ namespace FtB_Common.Storage
         //        throw;
         //    }
         //}
-
-    }
-    public class MyEntity<T>
-    {
 
     }
 }

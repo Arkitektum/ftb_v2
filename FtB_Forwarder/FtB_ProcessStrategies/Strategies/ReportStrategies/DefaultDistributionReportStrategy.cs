@@ -17,9 +17,9 @@ namespace FtB_ProcessStrategies
             _messageManagers = messageManagers;
         }
 
-        public override List<FinishedQueueItem> ExceuteAndReturnList(ReportQueueItem reportQueueItem)
+        public override FinishedQueueItem Exceute(ReportQueueItem reportQueueItem)
         {
-            base.ExceuteAndReturnList(reportQueueItem);
+            base.Exceute(reportQueueItem);
             FormLogicBeingProcessed.ProcessReportStep();
             return null;
         }

@@ -20,7 +20,8 @@ namespace FtB_ProcessStrategies
         {
             if (DistributionServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultDistributionReportStrategy(formLogic, _tableStorage, messageManagers, log);
+                //return new DefaultDistributionReportStrategy(formLogic, _tableStorage, messageManagers, log);
+                return new TestReportStrategy(formLogic, _tableStorage, messageManagers, log);
             }
             else if (NotificationServiceCodeList.Contains(serviceCode))
             {

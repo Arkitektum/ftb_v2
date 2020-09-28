@@ -8,7 +8,7 @@ namespace FtB_Common
         protected List<string> DistributionServiceCodeList = new List<string>();
         protected List<string> NotificationServiceCodeList = new List<string>();
         protected List<string> ShipmentServiceCodeList = new List<string>();
-
+        
         public StrategyManagerBase(IConfiguration configuration)
         {
             DistributionServiceCodeList = configuration["DistributionServiceCodes"].Split(',').ToList();

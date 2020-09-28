@@ -19,7 +19,8 @@ namespace FtB_ProcessStrategies
         {
             if (DistributionServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultDistributionPrepareStrategy(formLogic, _tableStorage);
+                //return new DefaultDistributionPrepareStrategy(formLogic, _tableStorage);
+                return new TestPrepareStrategy(formLogic, _tableStorage);
             }
             else if (NotificationServiceCodeList.Contains(serviceCode))
             {

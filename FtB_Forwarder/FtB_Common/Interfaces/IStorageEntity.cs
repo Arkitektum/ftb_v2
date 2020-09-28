@@ -6,6 +6,6 @@ namespace FtB_Common.Interfaces
 {
     public interface IStorageEntity
     {
-        List<Tuple<string, string>> GetListOfPropertiesWithValues();
+        //List<Tuple<string, string>> GetListOfPropertiesWithValues();
     }
 }

@@ -14,18 +14,18 @@ namespace FtB_FuncReporter
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddScoped<ReportQueueProcessor>();
-            builder.Services.AddScoped<IBlobOperations, BlobOperations>();
-            builder.Services.AddScoped<BlobStorage>();
-
-            builder.Services.AddFtBObjects();
-
             var options = builder.Services.BuildServiceProvider().GetService<IOptions<ExecutionContextOptions>>().Value;
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(options.AppDirectory)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
+
+            builder.Services.AddScoped<ReportQueueProcessor>();
+            builder.Services.AddScoped<IBlobOperations, BlobOperations>();
+            builder.Services.AddScoped<BlobStorage>();
+
+            builder.Services.AddFtBObjects();
             builder.Services.AddMessageManagerService(configuration);
         }
     }

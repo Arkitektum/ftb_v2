@@ -14,19 +14,14 @@ namespace FtB_MessageManager
             services.AddScoped<IMessageManager, EmailManager>();
             services.AddScoped<IMessageManager, SlackManager>();
 
-            //services.AddOptions<MessageManagerSettings>().Configure<IConfiguration>((settings, config) =>
-            //{
-            //    configuration.GetSection("DistributorSettings").Bind(settings);
-            //});
             services.AddOptions<EmailManagerSettings>().Configure<IConfiguration>((settings, config) =>
             {
-                configuration.GetSection("EmailDistributorSettings").Bind(settings);
+                configuration.GetSection("EmailManagerSettings").Bind(settings);
             });
             services.AddOptions<SlackManagerSettings>().Configure<IConfiguration>((settings, config) =>
             {
-                configuration.GetSection("SlackDistributorSettings").Bind(settings);
+                configuration.GetSection("SlackManagerSettings").Bind(settings);
             });
-
 
             return services;
         }

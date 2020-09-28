@@ -19,6 +19,17 @@ namespace FtB_Common
             ArchiveReference = formLogic.ArchiveReference;
             Receivers = formLogic.Receivers;
         }
-
+        protected void MultipleUpTheReceiversForTheStrategy()
+        {
+            var multipleListOfReceivers = new List<Receiver>();
+            FormLogicBeingProcessed.Receivers.ForEach(delegate (Receiver receiver)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    multipleListOfReceivers.Add(new Receiver() { Type = receiver.Type, Id = receiver.Id.Substring(0,9) + i.ToString() });
+                }
+            });
+            Receivers = multipleListOfReceivers;
+        }
     }
 }

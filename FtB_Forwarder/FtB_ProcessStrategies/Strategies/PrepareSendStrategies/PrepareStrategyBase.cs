@@ -1,6 +1,7 @@
 ﻿using FtB_Common;
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace FtB_ProcessStrategies
@@ -15,17 +16,13 @@ namespace FtB_ProcessStrategies
 
         private void CreateSubmittalDatabaseStatus(string archiveReference, int receiverCount)
         {
-            SubmittalEntity entity = new SubmittalEntity();
-            entity.PartitionKey = archiveReference;
-            entity.RowKey = archiveReference;
-            entity.ReceiverCount = receiverCount;
-            _tableStorage.InsertSubmittalRecord(entity, "ftbSubmittals");
+            SubmittalEntity entity = new SubmittalEntity(archiveReference, receiverCount, DateTime.Now);
+            _tableStorage.InsertEntityRecordAsync(entity, "ftbSubmittals");
         }
 
         public virtual List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {
             FormLogicBeingProcessed.InitiateForm();
-            RemoveDuplicateReceivers();
             CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
             FormLogicBeingProcessed.ProcessPrepareStep();
 
@@ -38,7 +35,7 @@ namespace FtB_ProcessStrategies
 
             return sendQueueItems;
         }
-        private void RemoveDuplicateReceivers()
+        protected void RemoveDuplicateReceivers()
         {
             foreach (var receiver in FormLogicBeingProcessed.Receivers)
             {

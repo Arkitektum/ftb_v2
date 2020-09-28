@@ -10,6 +10,8 @@ namespace FtB_ProcessStrategies
         
          public override List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {
+            RemoveDuplicateReceivers();
+
             return base.Exceute(submittalQueueItem);
         }
     }

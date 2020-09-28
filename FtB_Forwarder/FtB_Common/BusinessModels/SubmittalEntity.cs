@@ -13,22 +13,24 @@ namespace FtB_Common.BusinessModels
         public SubmittalEntity()
         {
         }
-        public SubmittalEntity(string archiveReference, int receiverCount)
+
+        public SubmittalEntity(string archiveReference, int receiverCount, DateTime createdTimestamp)
         {
             this.PartitionKey = archiveReference;
             this.RowKey = archiveReference;
             this.ReceiverCount = receiverCount;
             this.SentCount = 0;
+            this.CreatedTimeStamp = createdTimestamp;
         }
-
         public int ReceiverCount { get; set; }
         public int SentCount { get; set; }
+        public DateTime CreatedTimeStamp { get; set; }
 
-        public List<Tuple<string,string>> GetListOfPropertiesWithValues()
-        {
-            var propertiesList = new List<Tuple<string, string>>();
-            propertiesList.Add(Tuple.Create("ReceiverCount", ReceiverCount.ToString()));
-            return propertiesList;
-        }
+        //public List<Tuple<string,string>> GetListOfPropertiesWithValues()
+        //{
+        //    var propertiesList = new List<Tuple<string, string>>();
+        //    propertiesList.Add(Tuple.Create("ReceiverCount", ReceiverCount.ToString()));
+        //    return propertiesList;
+        //}
     }
 }

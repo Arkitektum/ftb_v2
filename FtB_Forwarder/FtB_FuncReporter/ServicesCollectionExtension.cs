@@ -3,7 +3,9 @@ using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_Common.Storage;
 using FtB_FormLogic;
+using FtB_MessageManager;
 using FtB_ProcessStrategies;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FtB_FuncReporter
@@ -18,6 +20,7 @@ namespace FtB_FuncReporter
             services.AddScoped<IFormDataRepo, FormDataRepository>();
             services.AddScoped<ITableStorage, TableStorage>();
             services.AddScoped<ReporterStrategyManager>();
+
             return services;
         }
     }

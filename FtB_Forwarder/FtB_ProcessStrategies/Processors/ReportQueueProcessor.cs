@@ -35,7 +35,7 @@ namespace FtB_ProcessStrategies
             formBeingProcessed.LoadFormData(reportQueueItem.ArchiveReference);
 
             var strategy = _strategyManager.GetReportStrategy(serviceCode, formBeingProcessed, _messageManagers, log);
-            return strategy.Exceute(reportQueueItem);// Alle utsendinger osv ferdig, og liste (kun én) av "ReportQueueItem" kan returneres 
+            return strategy.Exceute(reportQueueItem);
         }
     }
 }
