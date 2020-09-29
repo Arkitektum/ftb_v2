@@ -9,9 +9,6 @@ namespace FtB_ProcessStrategies
     {
         public DefaultDistributionSendStrategy(IFormLogic formLogic, ITableStorage tableStorage, ILogger log) : base(formLogic, tableStorage, log) { }
 
-        public DefaultDistributionSendStrategy(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage) {
-            
-        }
 
         public override ReportQueueItem Exceute(SendQueueItem sendQueueItem)
         {
