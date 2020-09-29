@@ -15,7 +15,6 @@ namespace FtB_ProcessStrategies
             _prefillService = prefillService;
         }
 
-
         public override ReportQueueItem Exceute(SendQueueItem sendQueueItem)
         {
             Console.WriteLine($"DefaultDistributionSendStrategy: { FormLogicBeingProcessed.ArchiveReference }");
@@ -25,10 +24,10 @@ namespace FtB_ProcessStrategies
             FormLogicBeingProcessed.ProcessSendStep(sendQueueItem.Receiver.Id); //Lage og persistere prefill xml
 
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
-            repo.AddBytesAsBlob(base.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(FormLogicBeingProcessed.DistributionData), metaData);
+            repo.AddBytesAsBlob(FormLogicBeingProcessed.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(FormLogicBeingProcessed.DistributionData), metaData);
 
             // Send using prefill service
-            _prefillService.SendPrefill(base.ArchiveReference, sendQueueItem.Receiver.Id);
+            _prefillService.SendPrefill(FormLogicBeingProcessed.ArchiveReference, sendQueueItem.Receiver.Id);
 
             return base.Exceute(sendQueueItem);
         }
@@ -37,11 +36,5 @@ namespace FtB_ProcessStrategies
         {
             Console.WriteLine("Henter skjema og vedlegg for DISTRIBUTION");
         }
-
-
-
-
-
-
     }
 }
