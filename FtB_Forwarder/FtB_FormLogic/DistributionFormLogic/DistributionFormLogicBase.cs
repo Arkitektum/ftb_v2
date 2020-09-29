@@ -21,10 +21,10 @@ namespace FtB_FormLogic
         {
             Mapper.Map(this.DataForm, filter);
             this.DistributionData = Mapper.FormDataString;
-            var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", filter) };
-            _repo.AddBytesAsBlob(base.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(this.DistributionData), metaData);
+            //var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", filter) };
+            //_repo.AddBytesAsBlob(base.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(this.DistributionData), metaData);
             
-            _prefillService.SendPrefill(base.ArchiveReference, filter);
+            //_prefillService.SendPrefill(base.ArchiveReference, filter);
 
             base.ProcessSendStep(filter);
 

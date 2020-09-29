@@ -32,7 +32,6 @@ namespace FtB_Common.Interfaces
             }
 
             return prefillData;
-
         }
     }
 }

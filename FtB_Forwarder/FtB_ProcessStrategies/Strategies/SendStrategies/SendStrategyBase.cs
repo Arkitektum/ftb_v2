@@ -7,12 +7,12 @@ namespace FtB_ProcessStrategies
 {
     public abstract class SendStrategyBase : StrategyBase, IStrategy<ReportQueueItem, SendQueueItem>
     {
-        private readonly ITableStorage _tableStorage;
+        protected readonly IFormDataRepo repo;
         private readonly ILogger _log;
 
-        public SendStrategyBase(ITableStorage tableStorage, ILogger log) : base(tableStorage)
+        public SendStrategyBase(IFormDataRepo repo, ITableStorage tableStorage, ILogger log) : base(tableStorage)
         {
-            _tableStorage = tableStorage;
+            this.repo = repo;
             _log = log;
         }
 
