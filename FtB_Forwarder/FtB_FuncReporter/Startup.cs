@@ -27,6 +27,7 @@ namespace FtB_FuncReporter
 
             builder.Services.AddFtBObjects();
             builder.Services.AddMessageManagerService(configuration);
+            builder.Services.AddLogging();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace FtB_ProcessStrategies
 {
     public class DefaultNotificationSendStrategy : SendStrategyBase
     {
-        public DefaultNotificationSendStrategy(IFormLogic formLogic, ITableStorage tableStorage, ILogger log) : base(formLogic, tableStorage, log) { }
+        public DefaultNotificationSendStrategy( ITableStorage tableStorage, ILogger<DefaultNotificationSendStrategy> log) : base( tableStorage, log) { }
 
         public override ReportQueueItem Exceute(SendQueueItem sendQueueItem)
         {

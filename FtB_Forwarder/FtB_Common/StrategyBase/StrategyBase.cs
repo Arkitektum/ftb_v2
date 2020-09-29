@@ -8,16 +8,18 @@ namespace FtB_Common
 {
     public abstract class StrategyBase
     {
-        protected IFormLogic FormLogicBeingProcessed;
+        private IFormLogic _formLogic;
+        public IFormLogic FormLogicBeingProcessed { get => _formLogic; set { _formLogic = value; ArchiveReference = value.ArchiveReference; Receivers = value.Receivers; } }
         private readonly ITableStorage _tableStorage;
         protected string ArchiveReference;
         protected List<Receiver> Receivers;
-        public StrategyBase(IFormLogic formLogic, ITableStorage tableStorage)
+               
+        public StrategyBase(ITableStorage tableStorage)
         {
-            FormLogicBeingProcessed = formLogic;
+            //FormLogicBeingProcessed = formLogic;
             _tableStorage = tableStorage;
-            ArchiveReference = formLogic.ArchiveReference;
-            Receivers = formLogic.Receivers;
+            //ArchiveReference = formLogic.ArchiveReference;
+            //Receivers = formLogic.Receivers;
         }
         protected void MultipleUpTheReceiversForTheStrategy()
         {
@@ -31,5 +33,7 @@ namespace FtB_Common
             });
             Receivers = multipleListOfReceivers;
         }
+
+        
     }
 }

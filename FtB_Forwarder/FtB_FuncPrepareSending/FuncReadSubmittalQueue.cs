@@ -28,7 +28,7 @@ namespace FtB_FuncPrepareSending
             SubmittalQueueItem submittalQueueItem = JsonConvert.DeserializeObject<SubmittalQueueItem>(myQueueItem);
             log.LogInformation($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: C# ServiceBus queue trigger function processed message: {submittalQueueItem.ArchiveReference}");
 
-            var result = _queueProcessor.ExecuteProcessingStrategy(submittalQueueItem, log);
+            var result = _queueProcessor.ExecuteProcessingStrategy(submittalQueueItem);
             var tasks = new List<Task>();
             foreach (var item in result)
             {

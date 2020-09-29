@@ -17,7 +17,7 @@ namespace FtB_ProcessStrategies
         private readonly IEnumerable<IMessageManager> _messageManagers;
         private readonly ILogger _log;
 
-        public ReportStrategyBase(IFormLogic formLogic, ITableStorage tableStorage, ILogger log, IEnumerable<IMessageManager> messageManagers) : base(formLogic, tableStorage)
+        public ReportStrategyBase(ITableStorage tableStorage, ILogger log, IEnumerable<IMessageManager> messageManagers) : base( tableStorage)
         {
             _tableStorage = tableStorage;
             _messageManagers = messageManagers;

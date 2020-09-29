@@ -17,7 +17,7 @@ namespace FtB_ProcessStrategies
         private readonly ILogger _log;
 
         public ReportQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations
-                                    , ReporterStrategyManager strategyManager, IEnumerable<IMessageManager> messageManagers, ILogger log)
+                                    , ReporterStrategyManager strategyManager, IEnumerable<IMessageManager> messageManagers, ILogger<ReportQueueProcessor> log)
         {
             _blobOperations = blobOperations;
             _strategyManager = strategyManager;
@@ -26,7 +26,7 @@ namespace FtB_ProcessStrategies
             _formatIdToFormMapper = formatIdToFormMapper;
         }
 
-        public FinishedQueueItem ExecuteProcessingStrategy(ReportQueueItem reportQueueItem, ILogger log)
+        public FinishedQueueItem ExecuteProcessingStrategy(ReportQueueItem reportQueueItem)
         {
             string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(reportQueueItem.ArchiveReference);
             string formatId = _blobOperations.GetFormatIdFromStoredBlob(reportQueueItem.ArchiveReference);
@@ -34,7 +34,7 @@ namespace FtB_ProcessStrategies
             formBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
             formBeingProcessed.LoadFormData(reportQueueItem.ArchiveReference);
 
-            var strategy = _strategyManager.GetReportStrategy(serviceCode, formBeingProcessed, _messageManagers, log);
+            var strategy = _strategyManager.GetReportStrategy(serviceCode, formBeingProcessed);
             return strategy.Exceute(reportQueueItem);
         }
     }

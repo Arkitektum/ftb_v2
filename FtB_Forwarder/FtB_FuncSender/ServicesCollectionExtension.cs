@@ -18,9 +18,13 @@ namespace FtB_FuncSender
             //services.AddScoped<IForm, NokoAnnaPlanForm>();
             services.AddScoped<IFormDataRepo, FormDataRepository>();
             services.AddScoped<ITableStorage, TableStorage>();
-            services.AddScoped<SenderStrategyManager>();
+            
+            services.AddSendStrategies();
+
             services.AddScoped<IPrefillService, PrefillService>();
             services.AddScoped<IMessageManager, SlackManager>();
+            
+
             return services;
         }
     }

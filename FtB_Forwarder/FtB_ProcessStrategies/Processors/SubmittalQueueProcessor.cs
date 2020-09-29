@@ -22,7 +22,7 @@ namespace FtB_ProcessStrategies
             _strategyManager = strategyManager;
             _log = log;
         }
-        public List<SendQueueItem> ExecuteProcessingStrategy(SubmittalQueueItem submittalQueueItem, ILogger log)
+        public List<SendQueueItem> ExecuteProcessingStrategy(SubmittalQueueItem submittalQueueItem)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace FtB_ProcessStrategies
                 formBeingProcessed.LoadFormData(submittalQueueItem.ArchiveReference);
                 formBeingProcessed.ArchiveReference = submittalQueueItem.ArchiveReference;
                 
-                var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formBeingProcessed, log);
+                var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formBeingProcessed);
                 return strategy.Exceute(submittalQueueItem); // Receivers are identified, and "SendQueueItem" can be returned
 
             }

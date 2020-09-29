@@ -7,7 +7,7 @@ namespace FtB_ProcessStrategies
 {
     public class DefaultShipmentPrepareStrategy : PrepareStrategyBase
     {
-        public DefaultShipmentPrepareStrategy(IFormLogic formLogic, ITableStorage tableStorage, ILogger log) : base(formLogic, tableStorage, log) { }
+        public DefaultShipmentPrepareStrategy(ITableStorage tableStorage, ILogger<DefaultShipmentPrepareStrategy> log) : base(tableStorage, log) { }
 
         public override List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {

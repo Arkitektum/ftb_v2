@@ -10,7 +10,7 @@ namespace FtB_ProcessStrategies
         private readonly ITableStorage _tableStorage;
         private readonly ILogger _log;
 
-        public SendStrategyBase(IFormLogic formLogic, ITableStorage tableStorage, ILogger log) : base(formLogic, tableStorage)
+        public SendStrategyBase(ITableStorage tableStorage, ILogger log) : base(tableStorage)
         {
             _tableStorage = tableStorage;
             _log = log;

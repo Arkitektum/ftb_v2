@@ -7,7 +7,7 @@ namespace FtB_ProcessStrategies
 {
     public class TestPrepareStrategy : PrepareStrategyBase
     {
-        public TestPrepareStrategy(IFormLogic formLogic, ITableStorage tableStorage, ILogger log) : base(formLogic, tableStorage, log) { }
+        public TestPrepareStrategy(ITableStorage tableStorage, ILogger<TestPrepareStrategy> log) : base(tableStorage, log) { }
         
          public override List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {
