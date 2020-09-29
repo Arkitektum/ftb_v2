@@ -1,11 +1,14 @@
-﻿using FtB_DataModels;
+﻿using FtB_Common.Utils;
+using FtB_DataModels;
 using System.Linq;
 
 namespace FtB_FormLogic
 {
-    public class NabovarselPlanPrefillMapper : PrefillFormMapperBase<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType, no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
+    public class NabovarselPlanPrefillMapper : IFormMapper<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType, no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
     {
-        public override no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType Map(no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType form, string filter)
+        public string FormDataString { get; set; }
+
+        public no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType Map(no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType form, string filter)
         {
             //var berortPart = form.beroerteParter?.Where(b => b.foedselsnummer.Equals(filter) || b.organisasjonsnummer.Equals(filter)).ToList();
 
@@ -29,6 +32,8 @@ namespace FtB_FormLogic
             svarPaaNabovarsel.kommune = form.kommunenavn;
             svarPaaNabovarsel.fristForInnspill = form.planforslag.fristForInnspill;
             svarPaaNabovarsel.fristForInnspillSpecified = form.planforslag.fristForInnspillSpecified;
+
+            FormDataString = SerializeUtil.Serialize(svarPaaNabovarsel);
 
             return svarPaaNabovarsel;
         }

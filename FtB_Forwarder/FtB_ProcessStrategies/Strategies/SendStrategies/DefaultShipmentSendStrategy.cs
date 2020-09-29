@@ -11,7 +11,7 @@ namespace FtB_ProcessStrategies
 
         public override ReportQueueItem Exceute(SendQueueItem sendQueueItem)
         {
-            FormLogicBeingProcessed.ProcessSendStep(); //Lage og persistere prefill xml
+            FormLogicBeingProcessed.ProcessSendStep(sendQueueItem.Receiver.Id); //Lage og persistere prefill xml
 
             return base.Exceute(sendQueueItem);
         }

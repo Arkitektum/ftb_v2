@@ -15,10 +15,14 @@ namespace FtB_Common.FormDataRepositories
             _blobOperations = blobOperations;
         }
 
-
         public string GetFormData(string archiveReference)
         {
             return _blobOperations.GetFormdata(archiveReference);
+        }
+
+        public void AddBytesAsBlob(string containerName, string fileName, byte[] fileBytes, IEnumerable<KeyValuePair<string, string>> metadata = null)
+        {
+            _blobOperations.AddBytesAsBlob(containerName, fileName, fileBytes, null, metadata);
         }
     }
 }

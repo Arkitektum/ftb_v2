@@ -11,11 +11,12 @@ namespace FtB_Common.Interfaces
     public interface IFormLogic
     {
         void ProcessPrepareStep();
-        void ProcessSendStep();
+        void ProcessSendStep(string filter);
         void ProcessReportStep();
         void LoadFormData(string archiveReference);
         string ArchiveReference { get; set; }
         List<Receiver> Receivers { get; set; }
+        string DistributionData { get; set; }
         void InitiateForm();
     }
 }

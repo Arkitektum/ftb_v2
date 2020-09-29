@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -124,5 +125,44 @@ namespace FtB_Common.Storage
             }
         }
 
+        public void AddBytesAsBlob(string containerName, string identifier, byte[] fileBytes, string mimeType, IEnumerable<KeyValuePair<string, string>> metadata = null)
+        {
+            var dict = new Dictionary<string, string>();
+            foreach (var item in metadata)
+                dict.Add(item.Key, item.Value);
+
+            var client = _blobStorage.GetBlockBlobContainerClient(containerName, identifier);
+
+            using (var stream = new MemoryStream(fileBytes, false))
+            {
+                client.Upload(stream);
+            }
+
+            client.SetMetadata(dict);
+        }
+
+        public string GetBlobDataByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
+        {
+            var items = _blobStorage.GetBlobContainerItems(containerName);
+            var data = string.Empty;
+            foreach (var item in items)
+            {
+                var client = _blobStorage.GetBlockBlobContainerClient(containerName, item.Name);
+                BlobProperties properties = client.GetPropertiesAsync().GetAwaiter().GetResult();
+                
+                var t = properties.Metadata?.Where(m => metaDataFilter.All(f => m.Key == f.Key && m.Value == f.Value)).ToList();
+                if (t?.Count() == metaDataFilter.Count())
+                {
+                    var response = client.Download();
+                    
+                    using (var reader = new StreamReader(response.Value.Content))
+                    {   
+                        data = reader.ReadToEnd();
+                    }
+                    break;
+                }
+            }
+            return data;
+        }
     }
 }

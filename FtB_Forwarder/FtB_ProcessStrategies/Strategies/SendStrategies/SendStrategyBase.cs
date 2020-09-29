@@ -21,6 +21,9 @@ namespace FtB_ProcessStrategies
         public virtual ReportQueueItem Exceute(SendQueueItem sendQueueItem)
         {
             FormLogicBeingProcessed.InitiateForm();
+
+            
+
             return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, Receiver = sendQueueItem.Receiver };
         }
     }

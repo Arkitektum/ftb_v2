@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -11,12 +12,15 @@ namespace FtB_Common.Storage
     public class BlobStorage
     {
         private BlobServiceClient _blobServiceClient;
+        private readonly IConfiguration _configuration;
         private BlobContainerClient _containerClient;
+
         
         //public ILogger Logger { private get; set; }
         public BlobStorage(IConfiguration configuration)
         {
             _blobServiceClient = new BlobServiceClient(configuration["AzureStorageConnectionString"]);
+            _configuration = configuration;
         }
 
         public  BlobContainerClient GetBlobContainerClient(string containerName)
@@ -27,12 +31,18 @@ namespace FtB_Common.Storage
             }
             return _blobServiceClient.GetBlobContainerClient(containerName);
         }
-        
+
+        public BlockBlobClient GetBlockBlobContainerClient(string containerName, string blobName)
+        {
+            return new BlockBlobClient(_configuration["AzureStorageConnectionString"], containerName, blobName);
+        }
+
         public Azure.Pageable<BlobItem> GetBlobContainerItems(string containerName)
         {
             _containerClient = GetBlobContainerClient(containerName);
             return _containerClient.GetBlobs();
         }
+
 
 
 

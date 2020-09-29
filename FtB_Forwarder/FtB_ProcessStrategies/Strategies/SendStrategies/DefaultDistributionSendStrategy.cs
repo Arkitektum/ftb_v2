@@ -1,6 +1,6 @@
 ﻿using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace FtB_ProcessStrategies
@@ -9,11 +9,23 @@ namespace FtB_ProcessStrategies
     {
         public DefaultDistributionSendStrategy(IFormLogic formLogic, ITableStorage tableStorage, ILogger log) : base(formLogic, tableStorage, log) { }
 
+        public DefaultDistributionSendStrategy(IFormLogic formLogic, ITableStorage tableStorage) : base(formLogic, tableStorage) {
+            
+        }
+
         public override ReportQueueItem Exceute(SendQueueItem sendQueueItem)
         {
             Console.WriteLine($"DefaultDistributionSendStrategy: { FormLogicBeingProcessed.ArchiveReference }");
-            FormLogicBeingProcessed.ProcessSendStep(); //Lage og persistere prefill xml
+            FormLogicBeingProcessed.ProcessSendStep(sendQueueItem.Receiver.Id); //Lage og persistere prefill xml
+
+            // Get prefill data generated from formlogic
             
+            // Map to a specific type i.e. Prefill-type for altinn
+
+            // Send using prefill service
+            
+
+
             return base.Exceute(sendQueueItem);
         }
 
@@ -21,5 +33,11 @@ namespace FtB_ProcessStrategies
         {
             Console.WriteLine("Henter skjema og vedlegg for DISTRIBUTION");
         }
+
+
+
+
+
+
     }
 }

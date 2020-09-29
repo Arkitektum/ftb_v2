@@ -11,9 +11,9 @@ namespace FtB_Common
         
         public StrategyManagerBase(IConfiguration configuration)
         {
-            DistributionServiceCodeList = configuration["DistributionServiceCodes"].Split(',').ToList();
-            NotificationServiceCodeList = configuration["NotificationServiceCodes"].Split(',').ToList();
-            ShipmentServiceCodeList = configuration["ShipmentServiceCodes"].Split(',').ToList();
+            DistributionServiceCodeList = configuration["DistributionServiceCodes"]?.Split(',').ToList();
+            NotificationServiceCodeList = configuration["NotificationServiceCodes"]?.Split(',').ToList();
+            ShipmentServiceCodeList = configuration["ShipmentServiceCodes"]?.Split(',').ToList();
         }
     }
 }

@@ -3,6 +3,7 @@ using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_Common.Storage;
 using FtB_FormLogic;
+using FtB_MessageManager;
 using FtB_ProcessStrategies;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +19,8 @@ namespace FtB_FuncSender
             services.AddScoped<IFormDataRepo, FormDataRepository>();
             services.AddScoped<ITableStorage, TableStorage>();
             services.AddScoped<SenderStrategyManager>();
+            services.AddScoped<IPrefillService, PrefillService>();
+            services.AddScoped<IMessageManager, SlackManager>();
             return services;
         }
     }
