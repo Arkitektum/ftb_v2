@@ -44,23 +44,23 @@ namespace FtB_FormLogic
             }
         }
 
-        public void GetReceivers()
-        {
-            foreach (var beroertPart in DataForm.beroerteParter)
-            {
-                Enum.TryParse(beroertPart.partstype.kodeverdi, out ReceiverType receiverType);
-                string id;
-                if (receiverType.Equals(ReceiverType.Privatperson))
-                {
-                    id = beroertPart.foedselsnummer;
-                }
-                else
-                {
-                    id = beroertPart.organisasjonsnummer;
-                }
-                Receivers.Add(new Receiver() { Type = receiverType, Id = id });
-            }
-        }
+        //public void GetReceivers()
+        //{
+        //    foreach (var beroertPart in DataForm.beroerteParter)
+        //    {
+        //        Enum.TryParse(beroertPart.partstype.kodeverdi, out ReceiverType receiverType);
+        //        string id;
+        //        if (receiverType.Equals(ReceiverType.Privatperson))
+        //        {
+        //            id = beroertPart.foedselsnummer;
+        //        }
+        //        else
+        //        {
+        //            id = beroertPart.organisasjonsnummer;
+        //        }
+        //        Receivers.Add(new Receiver() { Type = receiverType, Id = id });
+        //    }
+        //}
         public string GetFormatId()
         {
             return DataForm.dataFormatId;

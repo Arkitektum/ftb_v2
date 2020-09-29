@@ -53,12 +53,14 @@ namespace FtB_ProcessStrategies
                     }
                     else
                     {
-                        throw;
+                        _log.LogError($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: Error incrementing submittal record for ID={ receiverId }. Message: { ex.Message }");
+                        throw ex;
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-
+                    _log.LogError($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: Error incrementing submittal record for ID={ receiverId }. Message: { ex.Message }");
+                    throw ex;
                 }
             } while (runAgain);
         }

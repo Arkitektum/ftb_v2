@@ -2,6 +2,7 @@
 using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_Common.Storage;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -12,14 +13,16 @@ namespace FtB_ProcessStrategies
         private readonly FormatIdToFormMapper _formatIdToFormMapper;
         private readonly IBlobOperations _blobOperations;
         private readonly PrepareSendingStrategyManager _strategyManager;
+        private readonly ILogger _log;
 
-        public SubmittalQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, PrepareSendingStrategyManager strategyManager)
+        public SubmittalQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, PrepareSendingStrategyManager strategyManager, ILogger log)
         {
             _formatIdToFormMapper = formatIdToFormMapper;
             _blobOperations = blobOperations;
             _strategyManager = strategyManager;
+            _log = log;
         }
-        public List<SendQueueItem> ExecuteProcessingStrategy(SubmittalQueueItem submittalQueueItem)
+        public List<SendQueueItem> ExecuteProcessingStrategy(SubmittalQueueItem submittalQueueItem, ILogger log)
         {
             try
             {
@@ -30,7 +33,7 @@ namespace FtB_ProcessStrategies
                 formBeingProcessed.LoadFormData(submittalQueueItem.ArchiveReference);
                 formBeingProcessed.ArchiveReference = submittalQueueItem.ArchiveReference;
                 
-                var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formBeingProcessed);
+                var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formBeingProcessed, log);
                 return strategy.Exceute(submittalQueueItem); // Receivers are identified, and "SendQueueItem" can be returned
 
             }

@@ -16,11 +16,11 @@ namespace FtB_Common.BusinessModels
 
         public SubmittalEntity(string archiveReference, int receiverCount, DateTime createdTimestamp)
         {
-            this.PartitionKey = archiveReference;
-            this.RowKey = archiveReference;
-            this.ReceiverCount = receiverCount;
-            this.SentCount = 0;
-            this.CreatedTimeStamp = createdTimestamp;
+            PartitionKey = archiveReference;
+            RowKey = archiveReference;
+            ReceiverCount = receiverCount;
+            SentCount = 0;
+            CreatedTimeStamp = createdTimestamp;
         }
         public int ReceiverCount { get; set; }
         public int SentCount { get; set; }
