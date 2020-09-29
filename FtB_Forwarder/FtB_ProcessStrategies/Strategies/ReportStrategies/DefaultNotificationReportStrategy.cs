@@ -10,8 +10,8 @@ namespace FtB_ProcessStrategies
     {
         private readonly IEnumerable<IMessageManager> _messageManagers;
 
-        public DefaultNotificationReportStrategy(IFormLogic formLogic, ITableStorage tableStorage, IEnumerable<IMessageManager> messageManagers, ILogger log)
-            : base(formLogic, tableStorage, messageManagers, log)
+        public DefaultNotificationReportStrategy(IFormLogic formLogic, ITableStorage tableStorage, ILogger log, IEnumerable<IMessageManager> messageManagers)
+            : base(formLogic, tableStorage, log, messageManagers)
         {
             _messageManagers = messageManagers;
         }

@@ -21,15 +21,15 @@ namespace FtB_ProcessStrategies
             if (DistributionServiceCodeList.Contains(serviceCode))
             {
                 //return new DefaultDistributionReportStrategy(formLogic, _tableStorage, messageManagers, log);
-                return new TestReportStrategy(formLogic, _tableStorage, messageManagers, log);
+                return new TestReportStrategy(formLogic, _tableStorage, log, messageManagers);
             }
             else if (NotificationServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultNotificationReportStrategy(formLogic, _tableStorage, messageManagers, log);
+                return new DefaultNotificationReportStrategy(formLogic, _tableStorage, log, messageManagers);
             }
             else if (ShipmentServiceCodeList.Contains(serviceCode))
             {
-                return new DefaultShipmentReportStrategy(formLogic, _tableStorage, messageManagers, log);
+                return new DefaultShipmentReportStrategy(formLogic, _tableStorage, log, messageManagers);
             }
             else
             {

@@ -24,7 +24,7 @@ namespace FtB_FuncSender
             SendQueueItem sendQueueItem = JsonConvert.DeserializeObject<SendQueueItem>(myQueueItem);
             log.LogInformation($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: C# ServiceBus queue trigger function processed message: {sendQueueItem.ArchiveReference} for {sendQueueItem.Receiver.Id}");
 
-            var result = _queueProcessor.ExecuteProcessingStrategy(sendQueueItem);
+            var result = _queueProcessor.ExecuteProcessingStrategy(sendQueueItem, log);
             if (result != null)
             {
                 queueCollector.AddAsync(result);

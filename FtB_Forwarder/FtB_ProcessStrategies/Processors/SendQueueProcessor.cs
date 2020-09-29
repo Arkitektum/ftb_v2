@@ -2,6 +2,7 @@
 using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_Common.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace FtB_ProcessStrategies
 {
@@ -18,7 +19,7 @@ namespace FtB_ProcessStrategies
             _strategyManager = strategyManager;
         }
 
-        public ReportQueueItem ExecuteProcessingStrategy(SendQueueItem sendQueueItem)
+        public ReportQueueItem ExecuteProcessingStrategy(SendQueueItem sendQueueItem, ILogger log)
         {
             string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
             string formatId = _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
@@ -26,7 +27,7 @@ namespace FtB_ProcessStrategies
             formBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
             formBeingProcessed.LoadFormData(sendQueueItem.ArchiveReference);
             
-            var strategy = _strategyManager.GetSendStrategy(serviceCode, formBeingProcessed);
+            var strategy = _strategyManager.GetSendStrategy(serviceCode, formBeingProcessed, log);
             var result =  strategy.Exceute(sendQueueItem);
             return result;
         }
