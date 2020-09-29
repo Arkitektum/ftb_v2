@@ -33,7 +33,5 @@ namespace FtB_Common
             });
             Receivers = multipleListOfReceivers;
         }
-
-        
     }
 }
