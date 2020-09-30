@@ -13,6 +13,11 @@ namespace FtB_FormLogic
 
         }
 
+        public override PrefillData GetPrefillData(string filter, string identifier)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void InitiateForm()
         {
             throw new NotImplementedException();

@@ -9,7 +9,7 @@ namespace FtB_FormLogic
     [FormDataFormat(DataFormatId = "6325", DataFormatVersion = "44824")]
     public class NaboVarselPlanFormLogic : DistributionFormLogicBase<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType, no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
     {
-        public NaboVarselPlanFormLogic(IFormDataRepo dataRepo, IPrefillService prefillService) : base(dataRepo, prefillService)
+        public NaboVarselPlanFormLogic(IFormDataRepo dataRepo, IPrefillDataProvider<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType> prefillDataProvider) : base(dataRepo, prefillDataProvider)
         {
             Name = "Distribusjon av nabovarsel for plan";
             SchemaFile = "nabovarselPlan.xsd";

@@ -1,4 +1,5 @@
-﻿using FtB_Common.BusinessModels;
+﻿using AltinnWebServices.Services;
+using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,11 +10,11 @@ namespace FtB_ProcessStrategies
 {
     public class DefaultDistributionSendStrategy : SendStrategyBase
     {
-        private readonly IPrefillService _prefillService;
+        private readonly IPrefillAdapter _prefillAdapter;
 
-        public DefaultDistributionSendStrategy(IFormDataRepo repo, ITableStorage tableStorage, IPrefillService prefillService, ILogger<DefaultDistributionSendStrategy> log) : base(repo, tableStorage, log)
+        public DefaultDistributionSendStrategy(IFormDataRepo repo, ITableStorage tableStorage, IPrefillAdapter prefillAdapter, ILogger<DefaultDistributionSendStrategy> log) : base(repo, tableStorage, log)
         {
-            _prefillService = prefillService;
+            _prefillAdapter = prefillAdapter;
         }
 
         public override ReportQueueItem Exceute(SendQueueItem sendQueueItem)
@@ -24,11 +25,30 @@ namespace FtB_ProcessStrategies
             // Map to a specific type i.e. Prefill-type for altinn
             FormLogicBeingProcessed.ProcessSendStep(sendQueueItem.Receiver.Id); //Lage og persistere prefill xml
 
+            var distributionIdentifier = Guid.NewGuid();
+            var prefillData = FormLogicBeingProcessed.GetPrefillData(sendQueueItem.Receiver.Id, distributionIdentifier.ToString());
+
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
-            repo.AddBytesAsBlob(FormLogicBeingProcessed.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(FormLogicBeingProcessed.DistributionData), metaData);
+            repo.AddBytesAsBlob(FormLogicBeingProcessed.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(prefillData.XmlDataString), metaData);
+
+
+
+            // Validate if receiver info is sufficient
+
+            // Decrypt
+
+            // Create distributionform 
+
+            // Map  from prefill-data to prefillFormTask
+
 
             // Send using prefill service
-            _prefillService.SendPrefill(FormLogicBeingProcessed.ArchiveReference, sendQueueItem.Receiver.Id);
+            _prefillAdapter.SendPrefill(prefillData);// .SendPrefill(FormLogicBeingProcessed.ArchiveReference, sendQueueItem.Receiver.Id);
+
+            // Finally persist distributionform..  and maybe a list of logentries??
+
+
+
 
             return base.Exceute(sendQueueItem);
         }
@@ -40,7 +60,7 @@ namespace FtB_ProcessStrategies
 
 
         //public void SendPrefillForm(FormData distributionServiceFormData, IPrefillForm prefillFormData, string archivereferance, IAltinnForm altinnForm)
-        //{            
+        //{
         //    try
         //    {
         //        string decryptedReportee;
@@ -48,7 +68,7 @@ namespace FtB_ProcessStrategies
         //        WS.AltinnPreFill.ReceiptExternal receiptExternal = null;
 
         //        DistributionForm dForm = _formMetadataService.InsertDistributionForm(archivereferance, prefillFormData.GetPrefillKey(), prefillFormData.GetPrefillOurReference(), altinnForm.GetName());
-        //      //  _logEntryService.Save(new LogEntry(archivereferance, $"Starter distribusjon med søknadsystemsreferanse {prefillFormData.GetPrefillOurReference()}", LogEntry.Info, LogEntry.ExternalMsg));
+        //        //  _logEntryService.Save(new LogEntry(archivereferance, $"Starter distribusjon med søknadsystemsreferanse {prefillFormData.GetPrefillOurReference()}", LogEntry.Info, LogEntry.ExternalMsg));
 
         //        // Add "dummy" distributions for combined nabovarsel distributions
         //        // ToojDo: Make this a seperate function very soon
@@ -74,7 +94,7 @@ namespace FtB_ProcessStrategies
         //        }
 
         //        prefillFormData.SetPrefillKey(dForm.Id.ToString());
-        //      //  _logEntryService.Save(new LogEntry(archivereferance, $"Dist id {prefillFormData.GetPrefillKey()} - Distribusjon av {altinnForm.GetName()} til tjeneste {prefillFormData.GetPrefillServiceCode()}/{prefillFormData.GetPrefillServiceEditionCode()}", "Info", true));
+        //        //  _logEntryService.Save(new LogEntry(archivereferance, $"Dist id {prefillFormData.GetPrefillKey()} - Distribusjon av {altinnForm.GetName()} til tjeneste {prefillFormData.GetPrefillServiceCode()}/{prefillFormData.GetPrefillServiceEditionCode()}", "Info", true));
 
 
         //        if (String.IsNullOrEmpty(prefillFormData.GetPrefillSendToReporteeId()))
@@ -92,7 +112,7 @@ namespace FtB_ProcessStrategies
 
         //        if (prefillFormData.GetPrefillSendToReporteeId().Length > 11)
         //        {
-        //          //  _logEntryService.Save(new LogEntry(archivereferance, $"Dist id {prefillFormData.GetPrefillKey()} - Dekrypterer fødselsnummer", LogEntry.Info, LogEntry.InternalMsg));
+        //            //  _logEntryService.Save(new LogEntry(archivereferance, $"Dist id {prefillFormData.GetPrefillKey()} - Dekrypterer fødselsnummer", LogEntry.Info, LogEntry.InternalMsg));
         //            decryptedReportee = _decryptionFactory.GetDecryptor().DecryptText(prefillFormData.GetPrefillSendToReporteeId());
         //            presentationReportee = "kryptert personnummer";
         //        }
@@ -151,7 +171,7 @@ namespace FtB_ProcessStrategies
 
         //        if (receiptExternal == null)
         //        {
-        //           // _logEntryService.Save(new LogEntry(archivereferance, $"Unntak ved Altinn utsendelse av {altinnForm.GetName()} til {presentationReportee}", LogEntry.Error, LogEntry.ExternalMsg));
+        //            // _logEntryService.Save(new LogEntry(archivereferance, $"Unntak ved Altinn utsendelse av {altinnForm.GetName()} til {presentationReportee}", LogEntry.Error, LogEntry.ExternalMsg));
         //            //LogEntry logSsnOrg = LogEntry.NewErrorInternal(archivereferance, $"Dist id {prefillFormData.GetPrefillKey()} - Unntak ved Altinn prefill av {altinnForm.GetName()} til >>>{decryptedReportee}<<<", ProcessLabel.AltinnDistributionPostProcess, stopWatch);
         //            //_logEntryService.Save(logSsnOrg);
         //            _formMetadataService.SaveDistributionFormStatusSubmittedPrefilledError(dForm.Id, DateTime.Now, "Unntak i Altinn prefill Web Service utsendelse");
@@ -162,7 +182,7 @@ namespace FtB_ProcessStrategies
         //            //if reportee isReservable --> todo - støttes ikke i Altinn Prefill
         //            if (distributionServiceFormData.Mainform is INabovarselDistribution && receiptExternal.ReceiptText.Contains("Reportee is reserved against electronic communication"))
         //            {
-        //               // _logEntryService.Save(new LogEntry(archivereferance, $"Dist id {prefillFormData.GetPrefillKey()} - Nabovarsel print pga. reservasjon", LogEntry.Info, LogEntry.InternalMsg));
+        //                // _logEntryService.Save(new LogEntry(archivereferance, $"Dist id {prefillFormData.GetPrefillKey()} - Nabovarsel print pga. reservasjon", LogEntry.Info, LogEntry.InternalMsg));
         //                SendNabovarselThroughPrintAndMailService(distributionServiceFormData, prefillFormData, archivereferance, altinnForm, presentationReportee, decryptedReportee, dForm);
         //            }
         //            else if (distributionServiceFormData.Mainform is INabovarselDistribution &&
@@ -191,7 +211,7 @@ namespace FtB_ProcessStrategies
 
         //            _formMetadataService.SaveDistributionFormStatusSubmittedPrefilled(dForm.Id, DistributionStatus.submittedPrefilled, receiptExternal.ReceiptId.ToString(), receiptExternal.LastChanged);
         //            _syncRecordsOfCombinedDistributions.Sync(altinnForm, dForm);
-        //           // _logEntryService.Save(new LogEntry(archivereferance, $"Dist id {prefillFormData.GetPrefillKey()} - Klar til å sende correspondence", LogEntry.Info, LogEntry.InternalMsg));
+        //            // _logEntryService.Save(new LogEntry(archivereferance, $"Dist id {prefillFormData.GetPrefillKey()} - Klar til å sende correspondence", LogEntry.Info, LogEntry.InternalMsg));
 
         //            string workflowReferenceId = "";
         //            if (receiptExternal.References.Where(r => r.ReferenceTypeName == WS.AltinnPreFill.ReferenceType.WorkFlowReference).FirstOrDefault() != null) workflowReferenceId = receiptExternal.References.Where(r => r.ReferenceTypeName == WS.AltinnPreFill.ReferenceType.WorkFlowReference).First().ReferenceValue;

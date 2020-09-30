@@ -1,4 +1,4 @@
-using FtB_DataModels;
+using FtB_DataModels.Mappers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System.Linq;

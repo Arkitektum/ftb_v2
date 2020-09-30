@@ -1,0 +1,1 @@
+﻿This should contain adapters etc for Altinn 3 services

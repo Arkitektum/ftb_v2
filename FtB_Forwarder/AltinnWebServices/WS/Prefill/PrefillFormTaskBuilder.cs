@@ -1,12 +1,11 @@
-﻿using AltinnWebServices.WS.Prefill;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using System;
 
-namespace AltinnWebServices
+namespace AltinnWebServices.WS.Prefill
 {
-    public class PrefillFormTaskBuilder
+    public class PrefillFormTaskBuilder : IPrefillFormTaskBuilder
     {
-        private readonly string _serviceOwnerCode; 
+        private readonly string _serviceOwnerCode;
 
         private PrefillFormTask _prefillForm = null;
         private readonly PrefillFormBEList _prefillFormBeList = new PrefillFormBEList();
@@ -174,7 +173,7 @@ namespace AltinnWebServices
             DateTime notificaitonAtSubmitt = DateTime.Now;
             string varslingsmal_1st_notification = notificationTemplate;
             string smsNotification = "Du har en melding fra Direktoratet for Byggkvalitet i Altinn"; //Resources.TextStrings.AltinnNotificationMessage;
-            
+
             if (string.IsNullOrEmpty(toEmail))
             {
                 receiverEndPoints.Add(new ReceiverEndPoint

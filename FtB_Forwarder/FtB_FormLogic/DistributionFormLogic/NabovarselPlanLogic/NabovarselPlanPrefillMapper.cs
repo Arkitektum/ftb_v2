@@ -1,5 +1,5 @@
 ﻿using FtB_Common.Utils;
-using FtB_DataModels;
+using FtB_DataModels.Mappers;
 using System.Linq;
 
 namespace FtB_FormLogic

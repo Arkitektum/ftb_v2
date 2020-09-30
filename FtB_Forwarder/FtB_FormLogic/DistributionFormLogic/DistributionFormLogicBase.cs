@@ -1,4 +1,4 @@
-﻿using FtB_Common.FormLogic;
+using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,14 +8,22 @@ namespace FtB_FormLogic
 {
     public abstract class DistributionFormLogicBase<T, TDistr> : FormLogicBase<T>
     {
-        private readonly IPrefillService _prefillService;
-
-        public DistributionFormLogicBase(IFormDataRepo repo, IPrefillService prefillService) : base(repo)
+        public DistributionFormLogicBase(IFormDataRepo repo, IPrefillDataProvider<TDistr> prefillDataProvider) : base(repo)
         {
-            _prefillService = prefillService;
+            PrefillDataProvider = prefillDataProvider;
         }
 
         protected virtual IFormMapper<T, TDistr> Mapper { get; set; }
+
+        protected virtual IPrefillDataProvider<TDistr> PrefillDataProvider { get; set; }
+
+        public override PrefillData GetPrefillData(string filter, string identifier)
+        {
+            Mapper.Map(this.DataForm, filter);
+            //this.DistributionData = Mapper.FormDataString;
+
+            return PrefillDataProvider.GetPrefillData(Mapper.FormDataString, identifier);
+        }
 
         public override void ProcessSendStep(string filter)
         {
@@ -23,7 +31,7 @@ namespace FtB_FormLogic
             this.DistributionData = Mapper.FormDataString;
             //var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", filter) };
             //_repo.AddBytesAsBlob(base.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(this.DistributionData), metaData);
-            
+
             //_prefillService.SendPrefill(base.ArchiveReference, filter);
 
             base.ProcessSendStep(filter);

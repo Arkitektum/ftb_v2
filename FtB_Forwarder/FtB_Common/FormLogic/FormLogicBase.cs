@@ -45,6 +45,8 @@ namespace FtB_Common.FormLogic
             var data = _repo.GetFormData(archiveReference);
             DataForm = SerializeUtil.DeserializeFromString<T>(data);
         }
+        //public abstract IFormDataValidator GetFormDataValidator();
 
+        public abstract PrefillData GetPrefillData(string filter, string identifier);
     }
 }

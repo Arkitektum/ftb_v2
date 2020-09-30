@@ -20,8 +20,8 @@ namespace AltinnWebServices.Bindings
                 case BindingType.Mtom:
                     binding = _bindings.Where(b => b is MtomBindingProvider).FirstOrDefault()?.CreateBinding();
                     break;
-                case BindingType.Normal:
-                    //What is normal? :thinking:
+                case BindingType.Basic:
+                    binding = _bindings.Where(b => b is BasicBindingProvider).FirstOrDefault()?.CreateBinding();
                     break;
                 default:
                     break;

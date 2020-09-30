@@ -3,6 +3,6 @@
     public enum BindingType
     {
         Mtom,
-        Normal
+        Basic
     }
 }

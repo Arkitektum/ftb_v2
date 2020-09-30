@@ -9,6 +9,7 @@ namespace FtB_Common.Interfaces
     public interface IPrefillService
     {
         string SendPrefill(string archiveReference, string receiver);
+        string SendPrefill(PrefillData prefillData);
     }
 
     public class PrefillService : IPrefillService
@@ -24,14 +25,23 @@ namespace FtB_Common.Interfaces
 
         public string SendPrefill(string archiveReference, string receiver)
         {
-            //Get prefill data
+            //Get prefill data using blob metadata
             var prefillData = _blobOperations.GetBlobDataByMetadata(archiveReference, new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", receiver) });
+            
+            
+            
+            
             foreach (var messageManager in _messsageManagers)
             {
                 messageManager.Send(prefillData);
             }
 
             return prefillData;
+        }
+
+        public string SendPrefill(PrefillData prefillData)
+        {
+            return string.Empty;   
         }
     }
 }
