@@ -1,4 +1,4 @@
-﻿using AltinnWebServices.Services;
+﻿using FtB_Common.Adapters;
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;

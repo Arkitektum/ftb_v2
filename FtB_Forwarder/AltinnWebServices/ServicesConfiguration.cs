@@ -1,6 +1,7 @@
 ﻿using AltinnWebServices.Bindings;
 using AltinnWebServices.Services;
 using AltinnWebServices.WS.Prefill;
+using FtB_Common.Adapters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

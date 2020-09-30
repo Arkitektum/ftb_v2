@@ -1,6 +1,6 @@
 ﻿using FtB_Common.Interfaces;
 
-namespace AltinnWebServices.Services
+namespace FtB_Common.Adapters
 {
     public interface IPrefillAdapter
     {

@@ -1,4 +1,5 @@
 ﻿using AltinnWebServices.WS.Prefill;
+using FtB_Common.Adapters;
 using FtB_Common.Interfaces;
 
 namespace AltinnWebServices.Services
