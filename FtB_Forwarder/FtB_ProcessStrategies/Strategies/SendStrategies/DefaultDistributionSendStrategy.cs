@@ -31,8 +31,6 @@ namespace FtB_ProcessStrategies
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
             repo.AddBytesAsBlob(FormLogicBeingProcessed.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(prefillData.XmlDataString), metaData);
 
-
-
             // Validate if receiver info is sufficient
 
             // Decrypt
@@ -43,13 +41,9 @@ namespace FtB_ProcessStrategies
 
 
             // Send using prefill service
-            _prefillAdapter.SendPrefill(prefillData);// .SendPrefill(FormLogicBeingProcessed.ArchiveReference, sendQueueItem.Receiver.Id);
+            var prefillResult = _prefillAdapter.SendPrefill(prefillData);// .SendPrefill(FormLogicBeingProcessed.ArchiveReference, sendQueueItem.Receiver.Id);
 
-            // Finally persist distributionform..  and maybe a list of logentries??
-
-
-
-
+            // Finally persist distributionform..  and maybe a list of logentries??            
             return base.Exceute(sendQueueItem);
         }
 

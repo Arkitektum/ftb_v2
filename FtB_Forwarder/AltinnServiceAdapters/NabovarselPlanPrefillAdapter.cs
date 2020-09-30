@@ -17,9 +17,9 @@ namespace AltinnServiceAdapters
 
     public class NabovarselPlanPrefillAdapter : IPrefillAdapter
     {
-        public void SendPrefill(PrefillData prefillData)
+        public PrefillResult SendPrefill(PrefillData prefillData)
         {
-            
+            return new PrefillResult() { ResultMessage = "Eltinn tri esså", ResultType = PrefillResultType.Ok };
         }
     }
 }

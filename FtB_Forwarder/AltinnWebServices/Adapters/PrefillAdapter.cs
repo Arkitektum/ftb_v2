@@ -15,7 +15,7 @@ namespace AltinnWebServices.Services
             _altinnPrefillClient = altinnPrefillClient;
         }
 
-        public void SendPrefill(PrefillData prefillData)
+        public PrefillResult SendPrefill(PrefillData prefillData)
         {
             _prefillFormTaskBuilder.SetupPrefillFormTask(prefillData.ServiceCode, int.Parse(prefillData.ServiceEditionCode), prefillData.Reciever, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DaysValid);
             _prefillFormTaskBuilder.AddPrefillForm(prefillData.DataFormatId, int.Parse(prefillData.DataFormatVersion), prefillData.XmlDataString, prefillData.DistributionFormId);
@@ -70,19 +70,8 @@ namespace AltinnWebServices.Services
                 prefillResult.ResultMessage = "Unknown error occurred while sending prefill";
                 prefillResult.ResultType = PrefillResultType.UnkownErrorOccured;
             }
-        }
-    }
 
-    public enum PrefillResultType
-    {
-        Ok,
-        UnkownErrorOccured,
-        ReservedReportee,
-        UnableToReachReceiver,
-    }
-    public class PrefillResult
-    {
-        public string ResultMessage { get; set; }
-        public PrefillResultType ResultType { get; set; }
+            return prefillResult;
+        }
     }
 }

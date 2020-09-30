@@ -4,6 +4,6 @@ namespace FtB_Common.Adapters
 {
     public interface IPrefillAdapter
     {
-        void SendPrefill(PrefillData prefillData);
+        PrefillResult SendPrefill(PrefillData prefillData);
     }
 }
