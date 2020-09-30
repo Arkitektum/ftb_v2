@@ -25,6 +25,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_MessageManager", "FtB_M
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{53737721-BD6F-4C5D-A34B-B1664C7847FB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_DbModels", "Ftb_DbModels\Ftb_DbModels.csproj", "{D63DCA85-F2E1-469C-8AC5-917D9A62C192}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_DbRepository", "Ftb_DbRepository\Ftb_DbRepository.csproj", "{42E18AC8-5FA1-4DB4-BEC9-23C6ECC0E66C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +75,14 @@ Global
 		{D372160F-1D7C-4FB2-B7ED-07D494FE4224}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D372160F-1D7C-4FB2-B7ED-07D494FE4224}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D372160F-1D7C-4FB2-B7ED-07D494FE4224}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D63DCA85-F2E1-469C-8AC5-917D9A62C192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D63DCA85-F2E1-469C-8AC5-917D9A62C192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D63DCA85-F2E1-469C-8AC5-917D9A62C192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D63DCA85-F2E1-469C-8AC5-917D9A62C192}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42E18AC8-5FA1-4DB4-BEC9-23C6ECC0E66C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42E18AC8-5FA1-4DB4-BEC9-23C6ECC0E66C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42E18AC8-5FA1-4DB4-BEC9-23C6ECC0E66C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42E18AC8-5FA1-4DB4-BEC9-23C6ECC0E66C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
