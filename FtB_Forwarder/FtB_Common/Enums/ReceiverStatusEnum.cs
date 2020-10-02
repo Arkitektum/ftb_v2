@@ -8,6 +8,7 @@ namespace FtB_Common.Enums
     {
         Created,
         PrefillCreated,
+        PrefillPersisted,
         PrefillSent,
         Sent
     }

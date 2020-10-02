@@ -1,7 +1,7 @@
 ﻿using FtB_Common.Adapters;
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;using FtB_Common.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,50 +24,44 @@ namespace FtB_ProcessStrategies
         {
             try
             {
-                _log.LogDebug($"{GetType().Name}: {FormLogicBeingProcessed.ArchiveReference}");
+                _log.LogDebug($"{GetType().Name}: Execute for {FormLogicBeingProcessed.ArchiveReference}");
 
-                // Get prefill data generated from formlogic
-                // Map to a specific type i.e. Prefill-type for altinn
-                FormLogicBeingProcessed.ProcessSendStep(sendQueueItem.Receiver.Id); //Lage og persistere prefill xml
+                PrefillData prefillData;
+                //Act upon RECEIVER ENTITY STATUS - Find some better way of orchestrating this than what's below....
+                /*
+                switch: receiverEntityStatus from TableStorage
+                case: Created
+                    CreatePrefillXML(sendQueueItem);
+                    prefillData = PersistPrefill(sendQueueItem);
+                    SendPrefill(sendQueueItem, prefillData);
+                    Distribute(sendQueueItem);
 
-            
-                var prefillData = GeneratePrefillData(sendQueueItem.Receiver.Id);
-                UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, FtB_Common.Enums.ReceiverStatusEnum.PrefillCreated));
+                case: PrefillCreated
+                    prefillData = PersistPrefill(sendQueueItem);
+                    SendPrefill(sendQueueItem, prefillData);
+                    Distribute(sendQueueItem);
 
-                var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
-                repo.AddBytesAsBlob(FormLogicBeingProcessed.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(prefillData.XmlDataString), metaData);
+                case: PrefillPersisted
+                    SendPrefill(sendQueueItem, prefillData);
+                    Distribute(sendQueueItem);
 
-                // Validate if receiver info is sufficient
+                case: PrefillSent
+                    Distribute(sendQueueItem);
 
-                // Decrypt
+                case: Sent
+                    Nothing
+                */
 
-                // Create distributionform 
 
 
-                // Map  from prefill-data to prefillFormTask
-                // Send using prefill service
-                var prefillResult = _prefillAdapter.SendPrefill(prefillData);// .SendPrefill(FormLogicBeingProcessed.ArchiveReference, sendQueueItem.Receiver.Id);
-                switch (prefillResult.ResultType)
-                {
-                    case PrefillResultType.Ok:
-                        UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, FtB_Common.Enums.ReceiverStatusEnum.PrefillSent));
-                        break;
-                    case PrefillResultType.UnkownErrorOccured:
-                        break;
-                    case PrefillResultType.ReservedReportee:
-                        break;
-                    case PrefillResultType.UnableToReachReceiver:
-                        break;
-                    default:
-                        break;
-                }
+                CreatePrefillXML(sendQueueItem);
 
-                //Send distribution
-                // _distributionAdapter.SendDistribution(eitEllerAnnaObjekt);
-                //receiverentity = new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, FtB_Common.Enums.ReceiverStatusEnum.Sent, DateTime.Now);
-                UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, FtB_Common.Enums.ReceiverStatusEnum.Sent));
+                prefillData = PersistPrefill(sendQueueItem);
 
-                // Finally persist distributionform..  and maybe a list of logentries??            
+                SendPrefill(sendQueueItem, prefillData);
+
+                Distribute(sendQueueItem);
+
 
                 return base.Exceute(sendQueueItem);
             }
@@ -77,6 +71,61 @@ namespace FtB_ProcessStrategies
             }
         }
 
+        private void Distribute(SendQueueItem sendQueueItem)
+        {
+            // Validate if receiver info is sufficient
+
+            // Decrypt
+
+            // Create distributionform 
+
+
+            // Map  from prefill-data to prefillFormTask
+            // Send using prefill service
+
+            // _distributionAdapter.SendDistribution(eitEllerAnnaObjekt);
+
+            // Finally persist distributionform..  and maybe a list of logentries??            
+
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, ReceiverStatusEnum.Sent));
+        }
+
+        private void SendPrefill(SendQueueItem sendQueueItem, PrefillData prefillData)
+        {
+            var prefillResult = _prefillAdapter.SendPrefill(prefillData);// .SendPrefill(FormLogicBeingProcessed.ArchiveReference, sendQueueItem.Receiver.Id);
+            switch (prefillResult.ResultType)
+            {
+                case PrefillResultType.Ok:
+                    UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillSent));
+                    break;
+                case PrefillResultType.UnkownErrorOccured:
+                    break;
+                case PrefillResultType.ReservedReportee:
+                    break;
+                case PrefillResultType.UnableToReachReceiver:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private PrefillData PersistPrefill(SendQueueItem sendQueueItem)
+        {
+            var prefillData = GeneratePrefillData(sendQueueItem.Receiver.Id);
+            var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
+            repo.AddBytesAsBlob(FormLogicBeingProcessed.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(prefillData.XmlDataString), metaData);
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillPersisted));
+
+            return prefillData;
+        }
+
+        private void CreatePrefillXML(SendQueueItem sendQueueItem)
+        {
+            // Get prefill data generated from formlogic
+            // Map to a specific type i.e. Prefill-type for altinn
+            FormLogicBeingProcessed.ProcessSendStep(sendQueueItem.Receiver.Id);
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillCreated));
+        }
         public override void GetFormsAndAttachmentsFromBlobStorage()
         {
             Console.WriteLine("Henter skjema og vedlegg for DISTRIBUTION");
