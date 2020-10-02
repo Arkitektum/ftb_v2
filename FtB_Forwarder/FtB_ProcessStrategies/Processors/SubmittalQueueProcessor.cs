@@ -15,7 +15,8 @@ namespace FtB_ProcessStrategies
         private readonly PrepareSendingStrategyManager _strategyManager;
         private readonly ILogger _log;
 
-        public SubmittalQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, PrepareSendingStrategyManager strategyManager, ILogger log)
+        public SubmittalQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, PrepareSendingStrategyManager strategyManager
+                                    , ILogger<SubmittalQueueProcessor> log)
         {
             _formatIdToFormMapper = formatIdToFormMapper;
             _blobOperations = blobOperations;
@@ -28,14 +29,16 @@ namespace FtB_ProcessStrategies
             {
                 string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(submittalQueueItem.ArchiveReference);
                 string formatId = _blobOperations.GetFormatIdFromStoredBlob(submittalQueueItem.ArchiveReference);
-                IFormLogic formBeingProcessed;
-                formBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
-                formBeingProcessed.LoadFormData(submittalQueueItem.ArchiveReference);
-                formBeingProcessed.ArchiveReference = submittalQueueItem.ArchiveReference;
-                
-                var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formBeingProcessed);
-                return strategy.Exceute(submittalQueueItem); // Receivers are identified, and "SendQueueItem" can be returned
+                IFormLogic formLogicBeingProcessed;
+                formLogicBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
+                _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {submittalQueueItem.ArchiveReference}....");
 
+                formLogicBeingProcessed.LoadFormData(submittalQueueItem.ArchiveReference);
+                formLogicBeingProcessed.ArchiveReference = submittalQueueItem.ArchiveReference;
+                
+                var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formLogicBeingProcessed);
+                _log.LogDebug($"{GetType().Name}: Executing strategy for {submittalQueueItem.ArchiveReference}....");
+                return strategy.Exceute(submittalQueueItem); // Receivers are identified, and "SendQueueItem" can be returned
             }
             catch (Azure.RequestFailedException rfEx)
             {

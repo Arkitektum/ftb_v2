@@ -10,7 +10,7 @@ namespace FtB_ProcessStrategies
         protected readonly IFormDataRepo repo;
         private readonly ILogger _log;
 
-        public SendStrategyBase(IFormDataRepo repo, ITableStorage tableStorage, ILogger log) : base(tableStorage)
+        public SendStrategyBase(IFormDataRepo repo, ITableStorage tableStorage, ILogger log) : base(tableStorage, log)
         {
             this.repo = repo;
             _log = log;

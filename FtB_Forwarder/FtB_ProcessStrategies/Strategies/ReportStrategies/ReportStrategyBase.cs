@@ -17,7 +17,7 @@ namespace FtB_ProcessStrategies
         private readonly IEnumerable<IMessageManager> _messageManagers;
         private readonly ILogger _log;
 
-        public ReportStrategyBase(ITableStorage tableStorage, ILogger log, IEnumerable<IMessageManager> messageManagers) : base( tableStorage)
+        public ReportStrategyBase(ITableStorage tableStorage, ILogger log, IEnumerable<IMessageManager> messageManagers) : base( tableStorage, log)
         {
             _tableStorage = tableStorage;
             _messageManagers = messageManagers;
@@ -25,21 +25,21 @@ namespace FtB_ProcessStrategies
         }
         private void IncrementSubmittalSentCount(string archiveReference, string receiverId)
         {
-            bool runAgain = false;
+            bool runAgain;
             do
             {
                 runAgain = false;
                 try
                 {
                     SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>("ftbSubmittals", archiveReference, archiveReference);
-                    _log.LogDebug($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: ID={ receiverId }. Before Increment for {submittalEntity.RowKey}. SentCount: { submittalEntity.SentCount }. ETag: { submittalEntity.ETag }");
+                    _log.LogDebug($"ID={receiverId}. Before Increment for {submittalEntity.RowKey}. SentCount: {submittalEntity.SentCount}. ETag: {submittalEntity.ETag}");
                     submittalEntity.SentCount++;
                     //_tableStorage.InsertSubmittalRecordAsync(submittalEntity, "ftbSubmittals");
 
                     //Log the record to be inserted
-                    _log.LogDebug($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: ID={ receiverId }. After Increment for {submittalEntity.RowKey}. SentCount: { submittalEntity.SentCount }. ETag: { submittalEntity.ETag }");
+                    _log.LogDebug($"ID={receiverId}. After Increment for {submittalEntity.RowKey}. SentCount: {submittalEntity.SentCount}. ETag: {submittalEntity.ETag}");
                     var updatedEntity = _tableStorage.UpdateEntityRecord(submittalEntity, "ftbSubmittals");
-                    _log.LogDebug($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: ID={ receiverId }. After Update for {updatedEntity.RowKey}. ETag: { updatedEntity.ETag }");
+                    _log.LogDebug($"ID={receiverId}. After Update for {updatedEntity.RowKey}. ETag: {updatedEntity.ETag}");
 
                 }
                 catch (TableStorageConcurrentException ex)
@@ -47,19 +47,19 @@ namespace FtB_ProcessStrategies
                     if (ex.HTTPStatusCode == 412)
                     {
                         int randomNumber = new Random().Next(0, 1000);
-                        _log.LogInformation($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: ID={ receiverId }. Optimistic concurrency violation – entity has changed since it was retrieved. Run again after { randomNumber.ToString() } ms.");
+                        _log.LogInformation($"ID={receiverId}. Optimistic concurrency violation – entity has changed since it was retrieved. Run again after {randomNumber.ToString()} ms.");
                         Thread.Sleep(randomNumber);
                         runAgain = true;
                     }
                     else
                     {
-                        _log.LogError($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: Error incrementing submittal record for ID={ receiverId }. Message: { ex.Message }");
+                        _log.LogError($"Error incrementing submittal record for ID={receiverId}. Message: {ex.Message}");
                         throw ex;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _log.LogError($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: Error incrementing submittal record for ID={ receiverId }. Message: { ex.Message }");
+                    _log.LogError($"Error incrementing submittal record for ID={receiverId}. Message: {ex.Message}");
                     throw ex;
                 }
             } while (runAgain);
@@ -77,21 +77,21 @@ namespace FtB_ProcessStrategies
         {
             FormLogicBeingProcessed.InitiateForm();
             IncrementSubmittalSentCount(reportQueueItem.ArchiveReference, reportQueueItem.Receiver.Id);
-            _log.LogInformation($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: ID={ reportQueueItem.Receiver.Id }. ReportStrategyBase function processed message");
+            _log.LogInformation($"ID={reportQueueItem.Receiver.Id}. ReportStrategyBase function processed message");
             if (AllReceiversHasBeenSentTo(reportQueueItem.ArchiveReference))
             {
-                _log.LogInformation($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: ID={ reportQueueItem.Receiver.Id }. ReportStrategyBase: All receivers has been processed. Sending to Slack.");
+                _log.LogInformation($"ID={reportQueueItem.Receiver.Id}. ReportStrategyBase: All receivers has been processed. Sending to Slack.");
                 foreach (var messageManager in _messageManagers)
                 {
                     if (messageManager is SlackManager)
                     {
                         //Report on Slack channel: reportQueueItem.Receivers for reportQueueItem.ArchiveReference
                         StringBuilder sb = new StringBuilder();
-                        sb.Append($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}:{ Environment.NewLine }Mottakere for arkivreferanse { reportQueueItem.ArchiveReference } er: { Environment.NewLine }");
+                        sb.Append($"{DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}:{Environment.NewLine}Mottakere for arkivreferanse {reportQueueItem.ArchiveReference} er: {Environment.NewLine}");
                         var list = Receivers;
                         foreach (var receiver in list)
                         {
-                            sb.Append($"Type\t{ receiver.Type }, Id\t{ receiver.Id }{ Environment.NewLine }");
+                            sb.Append($"Type\t{receiver.Type}, Id\t{receiver.Id}{Environment.NewLine}");
                         }
                         _log.LogDebug(sb.ToString());
                         messageManager.Send(sb.ToString());
@@ -100,7 +100,7 @@ namespace FtB_ProcessStrategies
             }
             else
             {
-                _log.LogDebug($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: ID={ reportQueueItem.Receiver.Id }. ReportStrategyBase: NOT all receivers has been processed.");
+                _log.LogDebug($"ID={reportQueueItem.Receiver.Id}. ReportStrategyBase: All receivers has NOT YET been processed.");
             }
             return null;
             

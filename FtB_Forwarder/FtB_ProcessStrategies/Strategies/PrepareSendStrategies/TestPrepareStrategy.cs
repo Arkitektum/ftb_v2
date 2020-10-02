@@ -11,7 +11,7 @@ namespace FtB_ProcessStrategies
         
          public override List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {
-            MultipleUpTheReceiversForTheStrategy();
+            //MultipleUpTheReceiversForTheStrategy();
 
             return base.Exceute(submittalQueueItem);
         }

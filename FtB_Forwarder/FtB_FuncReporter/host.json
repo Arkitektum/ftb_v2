@@ -6,6 +6,17 @@
       "samplingSettings": {
         "isEnabled": true
       }
+    },
+    "logLevel": {
+      "Default": "Error",
+      "FtB_Common": "Debug",
+      "FtB_DataModels": "Debug",
+      "Ftb_DbModels": "Debug",
+      "FtB_FormLogic": "Debug",
+      "Ftb_DbRepository": "Debug",
+      "FtB_MessageManager": "Debug",
+      "FtB_ProcessStrategies": "Debug",
+      "FtB_FuncReporter": "Debug"
     }
   }
 

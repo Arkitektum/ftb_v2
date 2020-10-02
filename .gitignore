@@ -349,3 +349,11 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+FtB_Forwarder/Ftb_DbRepository/LogEntryRepository.cs
+
+FtB_Forwarder/FtB_ProcessStrategies/Strategies/SendStrategies/HeiltSpesieltDistributionSendStrategy.cs
+
+FtB_Forwarder/FtB_ProcessStrategies/Strategies/SendStrategies/IkkjeVeldigSpesiellDistributionSendStrategy.cs
+
+FtB_Forwarder/FtB_FormLogic/DistributionFormLogic/NabovarselPlanLogic/NokoHeiltSpesieltFormLogic.cs

@@ -34,11 +34,6 @@ namespace FtB_Common.FormLogic
         public virtual void ProcessReportStep()
         { }
 
-        public virtual void OptionalMethod()
-        {
-            Console.WriteLine("Felles valgfri metode som kan kjøres for skjemaer");
-        }
-
         public void LoadFormData(string archiveReference)
         {
             this.ArchiveReference = archiveReference;

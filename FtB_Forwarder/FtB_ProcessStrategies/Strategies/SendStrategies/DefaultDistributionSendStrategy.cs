@@ -11,22 +11,26 @@ namespace FtB_ProcessStrategies
     public class DefaultDistributionSendStrategy : SendStrategyBase
     {
         private readonly IPrefillAdapter _prefillAdapter;
+        private readonly ILogger<DefaultDistributionSendStrategy> _log;
 
-        public DefaultDistributionSendStrategy(IFormDataRepo repo, ITableStorage tableStorage, IPrefillAdapter prefillAdapter, ILogger<DefaultDistributionSendStrategy> log) : base(repo, tableStorage, log)
+        public DefaultDistributionSendStrategy(IFormDataRepo repo, ITableStorage tableStorage, IPrefillAdapter prefillAdapter
+                                                , ILogger<DefaultDistributionSendStrategy> log) : base(repo, tableStorage, log)
         {
             _prefillAdapter = prefillAdapter;
+            _log = log;
         }
 
         public override ReportQueueItem Exceute(SendQueueItem sendQueueItem)
         {
-            Console.WriteLine($"DefaultDistributionSendStrategy: { FormLogicBeingProcessed.ArchiveReference }");
+            _log.LogDebug($"{GetType().Name}: {FormLogicBeingProcessed.ArchiveReference}");
 
             // Get prefill data generated from formlogic
             // Map to a specific type i.e. Prefill-type for altinn
             FormLogicBeingProcessed.ProcessSendStep(sendQueueItem.Receiver.Id); //Lage og persistere prefill xml
 
-            var distributionIdentifier = Guid.NewGuid();
-            var prefillData = FormLogicBeingProcessed.GetPrefillData(sendQueueItem.Receiver.Id, distributionIdentifier.ToString());
+            
+            var prefillData = GeneratePrefillData(sendQueueItem.Receiver.Id);
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, FtB_Common.Enums.ReceiverStatusEnum.PrefillCreated));
 
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
             repo.AddBytesAsBlob(FormLogicBeingProcessed.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(prefillData.XmlDataString), metaData);
@@ -37,19 +41,45 @@ namespace FtB_ProcessStrategies
 
             // Create distributionform 
 
+
             // Map  from prefill-data to prefillFormTask
-
-
             // Send using prefill service
             var prefillResult = _prefillAdapter.SendPrefill(prefillData);// .SendPrefill(FormLogicBeingProcessed.ArchiveReference, sendQueueItem.Receiver.Id);
+            switch (prefillResult.ResultType)
+            {
+                case PrefillResultType.Ok:
+                    break;
+                case PrefillResultType.UnkownErrorOccured:
+                    break;
+                case PrefillResultType.ReservedReportee:
+                    break;
+                case PrefillResultType.UnableToReachReceiver:
+                    break;
+                default:
+                    break;
+            }
+            //receiverentity = new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, FtB_Common.Enums.ReceiverStatusEnum.PrefillSent, DateTime.Now);
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, FtB_Common.Enums.ReceiverStatusEnum.PrefillSent));
+
+            //Send distribution
+            // _distributionAdapter.SendDistribution(eitEllerAnnaObjekt);
+            //receiverentity = new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, FtB_Common.Enums.ReceiverStatusEnum.Sent, DateTime.Now);
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, FtB_Common.Enums.ReceiverStatusEnum.Sent));
 
             // Finally persist distributionform..  and maybe a list of logentries??            
+
             return base.Exceute(sendQueueItem);
         }
 
         public override void GetFormsAndAttachmentsFromBlobStorage()
         {
             Console.WriteLine("Henter skjema og vedlegg for DISTRIBUTION");
+        }
+
+        protected virtual PrefillData GeneratePrefillData(string receiverId)
+        {
+            var distributionIdentifier = Guid.NewGuid();
+            return FormLogicBeingProcessed.GetPrefillData(receiverId, distributionIdentifier.ToString());
         }
 
 

@@ -20,7 +20,7 @@ namespace FtB_ProcessStrategies
 
         public override FinishedQueueItem Exceute(ReportQueueItem reportQueueItem)
         {
-            MultipleUpTheReceiversForTheStrategy();
+            //MultipleUpTheReceiversForTheStrategy();
 
             return base.Exceute(reportQueueItem);
         }

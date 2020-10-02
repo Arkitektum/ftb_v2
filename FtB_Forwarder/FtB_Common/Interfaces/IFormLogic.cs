@@ -18,7 +18,7 @@ namespace FtB_Common.Interfaces
         List<Receiver> Receivers { get; set; }
         string DistributionData { get; set; }
         void InitiateForm();
-        PrefillData GetPrefillData(string filter, string identifier);
+        PrefillData GetPrefillData(string receiverId, string identifier);
         //IFormDataValidator GetFormDataValidator();
     }
 }

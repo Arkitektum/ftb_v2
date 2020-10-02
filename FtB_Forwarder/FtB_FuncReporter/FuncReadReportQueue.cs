@@ -21,7 +21,7 @@ namespace FtB_FuncReporter
         public void Run([ServiceBusTrigger("%ReportQueueName%", Connection = "queueConnectionString")] string myQueueItem, ILogger log)
         {
             ReportQueueItem reportQueueItem = JsonConvert.DeserializeObject<ReportQueueItem>(myQueueItem);
-            log.LogInformation($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: {reportQueueItem.Receiver.Id }: C# ServiceBus queue trigger function processed message: {myQueueItem}");
+            log.LogInformation($"{reportQueueItem.Receiver.Id }: C# ServiceBus queue trigger function processed message: {myQueueItem}");
             var result = _queueProcessor.ExecuteProcessingStrategy(reportQueueItem);
         }
     }

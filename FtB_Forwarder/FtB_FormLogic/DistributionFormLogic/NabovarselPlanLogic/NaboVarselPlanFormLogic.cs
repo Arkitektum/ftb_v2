@@ -44,15 +44,8 @@ namespace FtB_FormLogic
             }
         }
 
-        public override void OptionalMethod()
-        {
-            base.OptionalMethod();
-            Console.WriteLine("Valgfri metode implementert for skjema NABOVARSELPLAN");
-        }
-
         public override void InitiateForm()
         {
-            //GetReceivers();
         }
     }
 }

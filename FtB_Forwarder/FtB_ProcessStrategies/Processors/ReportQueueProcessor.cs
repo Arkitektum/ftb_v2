@@ -4,6 +4,7 @@ using FtB_Common.Mappers;
 using FtB_Common.Storage;
 using FtB_MessageManager;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 
 namespace FtB_ProcessStrategies
@@ -16,8 +17,8 @@ namespace FtB_ProcessStrategies
         private readonly IEnumerable<IMessageManager> _messageManagers;
         private readonly ILogger _log;
 
-        public ReportQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations
-                                    , ReporterStrategyManager strategyManager, IEnumerable<IMessageManager> messageManagers, ILogger<ReportQueueProcessor> log)
+        public ReportQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, ReporterStrategyManager strategyManager
+                                    , IEnumerable<IMessageManager> messageManagers, ILogger<ReportQueueProcessor> log)
         {
             _blobOperations = blobOperations;
             _strategyManager = strategyManager;
@@ -30,11 +31,12 @@ namespace FtB_ProcessStrategies
         {
             string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(reportQueueItem.ArchiveReference);
             string formatId = _blobOperations.GetFormatIdFromStoredBlob(reportQueueItem.ArchiveReference);
-            IFormLogic formBeingProcessed;
-            formBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
-            formBeingProcessed.LoadFormData(reportQueueItem.ArchiveReference);
+            IFormLogic formLogicBeingProcessed;
+            formLogicBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
+            _log.LogInformation($"{GetType().Name}: LoadFormData for ArchiveReference {reportQueueItem.ArchiveReference}....");
+            formLogicBeingProcessed.LoadFormData(reportQueueItem.ArchiveReference);
 
-            var strategy = _strategyManager.GetReportStrategy(serviceCode, formBeingProcessed);
+            var strategy = _strategyManager.GetReportStrategy(serviceCode, formLogicBeingProcessed);
             return strategy.Exceute(reportQueueItem);
         }
     }

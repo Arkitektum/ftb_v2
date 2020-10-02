@@ -17,12 +17,12 @@ namespace FtB_FormLogic
 
         protected virtual IPrefillDataProvider<TDistr> PrefillDataProvider { get; set; }
 
-        public override PrefillData GetPrefillData(string filter, string identifier)
+        public override PrefillData GetPrefillData(string receiverId, string distributionFormId)
         {
-            Mapper.Map(this.DataForm, filter);
+            Mapper.Map(this.DataForm, receiverId);
             //this.DistributionData = Mapper.FormDataString;
 
-            return PrefillDataProvider.GetPrefillData(Mapper.FormDataString, identifier);
+            return PrefillDataProvider.GetPrefillData(Mapper.FormDataString, distributionFormId);
         }
 
         public override void ProcessSendStep(string filter)

@@ -9,7 +9,7 @@ namespace FtB_FormLogic
     {
         public SvarPaaNabovarselPlanType PrefillFormData { get; set; }
 
-        public PrefillData GetPrefillData(string xmlString, string identifier)
+        public PrefillData GetPrefillData(string xmlString, string distributionFormId)
         {
             PrefillFormData = SerializeUtil.DeserializeFromString<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>(xmlString);
 
@@ -18,7 +18,7 @@ namespace FtB_FormLogic
                 DataFormatId = PrefillFormData.dataFormatId,
                 DataFormatVersion = PrefillFormData.dataFormatVersion,
                 Reciever = base.GetReceiver(NabovarselPlanMappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart)),
-                DistributionFormId = identifier,
+                DistributionFormId = distributionFormId,
                 ServiceCode = "5419",
                 ServiceEditionCode = "1",
                 XmlDataString = xmlString,

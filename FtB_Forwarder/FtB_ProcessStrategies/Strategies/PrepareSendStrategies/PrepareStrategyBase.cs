@@ -1,5 +1,6 @@
 ﻿using FtB_Common;
 using FtB_Common.BusinessModels;
+using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,7 +13,7 @@ namespace FtB_ProcessStrategies
         private readonly ITableStorage _tableStorage;
         private readonly ILogger _log;
 
-        public PrepareStrategyBase(ITableStorage tableStorage, ILogger log) : base(tableStorage)
+        public PrepareStrategyBase(ITableStorage tableStorage, ILogger log) : base(tableStorage, log)
         {
             _tableStorage = tableStorage;
             _log = log;
@@ -20,12 +21,8 @@ namespace FtB_ProcessStrategies
 
         public virtual List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {
-            FormLogicBeingProcessed.InitiateForm();
-            
-            if (!ReceiversAlreadySetFromFormdata())
-            {
-                GetAllReceiversFromFormdata();
-            }
+            //FormLogicBeingProcessed.InitiateForm();
+
             CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
             CreateReceiversDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers);
             FormLogicBeingProcessed.ProcessPrepareStep();
@@ -46,11 +43,11 @@ namespace FtB_ProcessStrategies
             {
                 SubmittalEntity entity = new SubmittalEntity(archiveReference, receiverCount, DateTime.Now);
                 _tableStorage.InsertEntityRecordAsync(entity, "ftbSubmittals");
-                _log.LogDebug($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: Create submittal database status for {archiveReference} with receiver count: {receiverCount}.");
+                _log.LogDebug($"Create submittal database status for {archiveReference} with receiver count: {receiverCount}.");
             }
             catch (Exception ex)
             {
-                _log.LogError($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: Error creating submittal record for archiveReference={archiveReference}. Message: {ex.Message}");
+                _log.LogError($"Error creating submittal record for archiveReference={archiveReference}. Message: {ex.Message}");
                 throw ex;
             }
         }
@@ -61,13 +58,13 @@ namespace FtB_ProcessStrategies
             {
                 try
                 {
-                    ReceiverEntity entity = new ReceiverEntity(archiveReference, receiver.Id, "Innlest", DateTime.Now);
+                    ReceiverEntity entity = new ReceiverEntity(archiveReference, receiver.Id.Replace("/",""), ReceiverStatusEnum.Created, DateTime.Now);
                     _tableStorage.InsertEntityRecordAsync(entity, "ftbReceivers");
-                    _log.LogDebug($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: Create receiver database status for {archiveReference} and reciverId={receiver.Id}.");
+                    _log.LogInformation($"Create receiver database status for {archiveReference} and reciverId={receiver.Id}.");
                 }
                 catch (Exception ex)
                 {
-                    _log.LogError($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: Error creating receiver records for archiveReference={archiveReference} and reciverId={receiver.Id}. Message: {ex.Message}");
+                    _log.LogError($"Error creating receiver records for archiveReference={archiveReference} and reciverId={receiver.Id}. Message: {ex.Message}");
                     throw ex;
                 }
             }
@@ -82,17 +79,6 @@ namespace FtB_ProcessStrategies
                     Receivers.Add(receiver);
                 }
             }
-        }
-        protected virtual void GetAllReceiversFromFormdata()
-        {
-            foreach (var receiver in FormLogicBeingProcessed.Receivers)
-            {
-                Receivers.Add(receiver);
-            }
-        }
-        private bool ReceiversAlreadySetFromFormdata()
-        {
-            return Receivers.Count > 0;
         }
     }
 }

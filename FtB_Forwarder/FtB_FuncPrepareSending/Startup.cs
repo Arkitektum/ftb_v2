@@ -12,12 +12,8 @@ namespace FtB_FuncPrepareSending
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services.AddScoped<SubmittalQueueProcessor>();
-            builder.Services.AddDistributorPrepareService();
-            builder.Services.AddScoped<IBlobOperations, BlobOperations>();
-            builder.Services.AddScoped<BlobStorage>();
-            builder.Services.AddLogging();
-            //builder.Services.AddScoped<IBlobOperations>();
-
+            builder.Services.AddPrepareServices();
+            //builder.Services.AddLogging();
         }
     }
 }

@@ -22,7 +22,7 @@ namespace FtB_FuncSender
             [ServiceBus("%ReportQueueName%", Connection = "queueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<ReportQueueItem> queueCollector)
         {
             SendQueueItem sendQueueItem = JsonConvert.DeserializeObject<SendQueueItem>(myQueueItem);
-            log.LogInformation($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: C# ServiceBus queue trigger function processed message: {sendQueueItem.ArchiveReference} for {sendQueueItem.Receiver.Id}");
+            log.LogInformation($"C# ServiceBus queue trigger function processed message: {sendQueueItem.ArchiveReference} for {sendQueueItem.Receiver.Id}");
 
             var result = _queueProcessor.ExecuteProcessingStrategy(sendQueueItem);
             if (result != null)

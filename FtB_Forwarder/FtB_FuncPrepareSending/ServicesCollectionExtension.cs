@@ -13,12 +13,15 @@ namespace FtB_FuncPrepareSending
 {
     public static class ServicesConfiguration
     {
-        public static IServiceCollection AddDistributorPrepareService(this IServiceCollection services)
+        public static IServiceCollection AddPrepareServices(this IServiceCollection services)
         {
             services.AddScoped<FormatIdToFormMapper>();
             services.AddScoped<NaboVarselPlanFormLogic>();
             services.AddScoped<IFormDataRepo, FormDataRepository>();
             services.AddScoped<ITableStorage, TableStorage>();
+            services.AddScoped<IBlobOperations, BlobOperations>();
+            services.AddScoped<BlobStorage>();
+
             services.AddPrepareStrategies();
 
             //Test reporter

@@ -103,7 +103,7 @@ namespace FtB_Common.Storage
             {
                 if (ex.RequestInformation.HttpStatusCode == 412)
                 {
-                    //Console.WriteLine($"{ DateTime.Now:dd/MM/yyyy HH:mm:ss:fff}: ETag={ entity.ETag }. Optimistic concurrency violation – entity has changed since it was retrieved.");
+                    //Console.WriteLine($"ETag={ entity.ETag }. Optimistic concurrency violation – entity has changed since it was retrieved.");
                     throw new TableStorageConcurrentException("Optimistic concurrency violation – entity has changed since it was retrieved.", 412);
                 }
                 else
