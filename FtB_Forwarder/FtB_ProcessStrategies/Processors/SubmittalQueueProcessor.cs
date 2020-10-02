@@ -31,6 +31,7 @@ namespace FtB_ProcessStrategies
                 string formatId = _blobOperations.GetFormatIdFromStoredBlob(submittalQueueItem.ArchiveReference);
                 IFormLogic formLogicBeingProcessed;
                 formLogicBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
+                _log.LogDebug($"{Environment.NewLine}");
                 _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {submittalQueueItem.ArchiveReference}....");
 
                 formLogicBeingProcessed.LoadFormData(submittalQueueItem.ArchiveReference);
@@ -38,7 +39,7 @@ namespace FtB_ProcessStrategies
                 
                 var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formLogicBeingProcessed);
                 _log.LogDebug($"{GetType().Name}: Executing strategy for {submittalQueueItem.ArchiveReference}....");
-                return strategy.Exceute(submittalQueueItem); // Receivers are identified, and "SendQueueItem" can be returned
+                return strategy.Exceute(submittalQueueItem);
             }
             catch (Azure.RequestFailedException rfEx)
             {

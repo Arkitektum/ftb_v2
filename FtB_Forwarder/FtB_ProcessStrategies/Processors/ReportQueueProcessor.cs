@@ -33,7 +33,7 @@ namespace FtB_ProcessStrategies
             string formatId = _blobOperations.GetFormatIdFromStoredBlob(reportQueueItem.ArchiveReference);
             IFormLogic formLogicBeingProcessed;
             formLogicBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
-            _log.LogInformation($"{GetType().Name}: LoadFormData for ArchiveReference {reportQueueItem.ArchiveReference}....");
+            _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {reportQueueItem.ArchiveReference} and {reportQueueItem.Receiver.Id}....");
             formLogicBeingProcessed.LoadFormData(reportQueueItem.ArchiveReference);
 
             var strategy = _strategyManager.GetReportStrategy(serviceCode, formLogicBeingProcessed);
