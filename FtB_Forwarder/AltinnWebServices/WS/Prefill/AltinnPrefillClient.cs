@@ -19,7 +19,7 @@ namespace AltinnWebServices.WS.Prefill
         
         public AltinnPrefillClient(IBindingFactory bindingFactory, IOptions<AltinnPrefillConnectionSettings> connectionOptions)
         {
-            _client = new PreFillExternalBasicClient(bindingFactory.GetBindingFor(BindingType.Mtom), new EndpointAddress(connectionOptions.Value.EndpointUrl));
+            _client = new PreFillExternalBasicClient(bindingFactory.GetBindingFor(BindingType.Basic), new EndpointAddress(connectionOptions.Value.EndpointUrl));
             _connectionOptions = connectionOptions;
         }
 
