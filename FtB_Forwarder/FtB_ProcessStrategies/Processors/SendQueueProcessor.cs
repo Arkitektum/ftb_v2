@@ -25,16 +25,25 @@ namespace FtB_ProcessStrategies
 
         public ReportQueueItem ExecuteProcessingStrategy(SendQueueItem sendQueueItem)
         {
-            string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
-            string formatId = _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
-            IFormLogic formLogicBeingProcessed;
-            formLogicBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
-            _log.LogInformation($"{GetType().Name}: LoadFormData for ArchiveReference {sendQueueItem.ArchiveReference}....");
-            formLogicBeingProcessed.LoadFormData(sendQueueItem.ArchiveReference);
-            
-            var strategy = _strategyManager.GetSendStrategy(serviceCode, formLogicBeingProcessed);
-            var result =  strategy.Exceute(sendQueueItem);
-            return result;
+            try
+            {
+                string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
+                string formatId = _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
+                IFormLogic formLogicBeingProcessed;
+                formLogicBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
+                _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {sendQueueItem.ArchiveReference} and {sendQueueItem.Receiver.Id}....");
+                formLogicBeingProcessed.LoadFormData(sendQueueItem.ArchiveReference);
+
+                var strategy = _strategyManager.GetSendStrategy(serviceCode, formLogicBeingProcessed);
+                var result = strategy.Exceute(sendQueueItem);
+                return result;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
         }
     }
 }

@@ -27,11 +27,6 @@ namespace FtB_Common
             //Receivers = formLogic.Receivers;
         }
 
-        //public ReceiverEntity GetReceiverEntityWithLegalStoreageCharacters(string archiveReference, string receiverId)
-        //{
-        //    return new ReceiverEntity(archiveReference, receiverId.Replace("/",""));
-        //}
-
         protected void UpdateReceiverEntity(ReceiverEntity entity)
         {
             bool runAgain;
@@ -42,13 +37,12 @@ namespace FtB_Common
                 {
                     string receiverIdWithLegalStoreageCharacters = entity.RowKey.Replace("/", "");
                     ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>("ftbReceivers", entity.PartitionKey, receiverIdWithLegalStoreageCharacters);
-                    _log.LogInformation($"ID={entity.RowKey}. Before ReceiverEntity update for archiveRefrrence {entity.PartitionKey}. Status: {entity.Status}. ETag: {entity.ETag}");
+                    _log.LogTrace($"ID={entity.RowKey}. Before ReceiverEntity update for archiveRefrrence {entity.PartitionKey}. Status: {entity.Status}.");
                     receiverEntity.Status = entity.Status;
 
                     //Log the record to be inserted
-                    _log.LogDebug($"ID={entity.RowKey}. After changed entity property for {entity.PartitionKey}. Status: {entity.Status}. ETag: {entity.ETag}");
+                    _log.LogDebug($"ID={entity.RowKey}. Updating changed entity for {entity.PartitionKey} and {entity.RowKey}. Status: {entity.Status}.....");
                     var updatedEntity = _tableStorage.UpdateEntityRecord(receiverEntity, "ftbReceivers");
-                    _log.LogDebug($"ID={entity.RowKey}. After update for {entity.PartitionKey}. Status: {entity.Status}. ETag: {entity.ETag}");
                 }
                 catch (TableStorageConcurrentException ex)
                 {

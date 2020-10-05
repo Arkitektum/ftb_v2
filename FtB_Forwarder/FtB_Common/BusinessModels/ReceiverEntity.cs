@@ -20,11 +20,7 @@ namespace FtB_Common.BusinessModels
             Status = Enum.GetName(typeof(ReceiverStatusEnum), status);
             CreatedTimeStamp = createdTimestamp;
         }
-        //public ReceiverEntity(string archiveReference, string receiverId)
-        //{
-        //    PartitionKey = archiveReference;
-        //    RowKey = receiverId;
-        //}
+
         public ReceiverEntity(string archiveReference, string receiverId, ReceiverStatusEnum status)
         {
             PartitionKey = archiveReference;
