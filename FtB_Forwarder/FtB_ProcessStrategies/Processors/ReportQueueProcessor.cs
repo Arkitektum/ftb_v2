@@ -1,7 +1,9 @@
 ﻿using FtB_Common.BusinessModels;
+using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_Common.Storage;
+using FtB_FormLogic.OTSFormLogic;
 using FtB_MessageManager;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,15 +15,15 @@ namespace FtB_ProcessStrategies
     {
         private readonly FormatIdToFormMapper _formatIdToFormMapper;
         private readonly IBlobOperations _blobOperations;
-        private readonly ReporterStrategyManager _strategyManager;
+        
         private readonly IEnumerable<IMessageManager> _messageManagers;
         private readonly ILogger _log;
 
-        public ReportQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, ReporterStrategyManager strategyManager
+        public ReportQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations
                                     , IEnumerable<IMessageManager> messageManagers, ILogger<ReportQueueProcessor> log)
         {
             _blobOperations = blobOperations;
-            _strategyManager = strategyManager;
+            
             _messageManagers = messageManagers;
             _log = log;
             _formatIdToFormMapper = formatIdToFormMapper;
@@ -31,13 +33,11 @@ namespace FtB_ProcessStrategies
         {
             string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(reportQueueItem.ArchiveReference);
             string formatId = _blobOperations.GetFormatIdFromStoredBlob(reportQueueItem.ArchiveReference);
-            IFormLogic formLogicBeingProcessed;
-            formLogicBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
-            _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {reportQueueItem.ArchiveReference} and {reportQueueItem.Receiver.Id}....");
-            formLogicBeingProcessed.LoadFormData(reportQueueItem.ArchiveReference);
 
-            var strategy = _strategyManager.GetReportStrategy(serviceCode, formLogicBeingProcessed);
-            return strategy.Exceute(reportQueueItem);
+            var formLogicBeingProcessed = _formatIdToFormMapper.GetForm<FinishedQueueItem, ReportQueueItem>(formatId, FormLogicProcessingContext.Report);
+            _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {reportQueueItem.ArchiveReference} and {reportQueueItem.Receiver.Id}....");
+                        
+            return formLogicBeingProcessed.Execute(reportQueueItem);
         }
     }
 }

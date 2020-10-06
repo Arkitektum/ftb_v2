@@ -1,7 +1,9 @@
 ﻿using FtB_Common.BusinessModels;
+using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_Common.Storage;
+using FtB_FormLogic.OTSFormLogic;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,34 +14,34 @@ namespace FtB_ProcessStrategies
     {
         private readonly FormatIdToFormMapper _formatIdToFormMapper;
         private readonly IBlobOperations _blobOperations;
-        private readonly PrepareSendingStrategyManager _strategyManager;
+
         private readonly ILogger _log;
 
-        public SubmittalQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, PrepareSendingStrategyManager strategyManager
+        public SubmittalQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations
                                     , ILogger<SubmittalQueueProcessor> log)
         {
             _formatIdToFormMapper = formatIdToFormMapper;
             _blobOperations = blobOperations;
-            _strategyManager = strategyManager;
+
             _log = log;
         }
-        public List<SendQueueItem> ExecuteProcessingStrategy(SubmittalQueueItem submittalQueueItem)
+        public IEnumerable<SendQueueItem> ExecuteProcessingStrategy(SubmittalQueueItem submittalQueueItem)
         {
             try
             {
                 string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(submittalQueueItem.ArchiveReference);
                 string formatId = _blobOperations.GetFormatIdFromStoredBlob(submittalQueueItem.ArchiveReference);
-                IFormLogic formLogicBeingProcessed;
-                formLogicBeingProcessed = _formatIdToFormMapper.GetForm(formatId);
+
+                var formLogicBeingProcessed = _formatIdToFormMapper.GetForm<IEnumerable<SendQueueItem>, SubmittalQueueItem>(formatId, FormLogicProcessingContext.Prepare);
                 _log.LogDebug($"{Environment.NewLine}");
                 _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {submittalQueueItem.ArchiveReference}....");
 
-                formLogicBeingProcessed.LoadFormData(submittalQueueItem.ArchiveReference);
-                formLogicBeingProcessed.ArchiveReference = submittalQueueItem.ArchiveReference;
-                
-                var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formLogicBeingProcessed);
+                //formLogicBeingProcessed.LoadFormData(submittalQueueItem.ArchiveReference);
+                //formLogicBeingProcessed.ArchiveReference = submittalQueueItem.ArchiveReference;
+
+                //var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formLogicBeingProcessed);
                 _log.LogDebug($"{GetType().Name}: Executing strategy for {submittalQueueItem.ArchiveReference}....");
-                return strategy.Exceute(submittalQueueItem);
+                return formLogicBeingProcessed.Execute(submittalQueueItem);
             }
             catch (Azure.RequestFailedException rfEx)
             {
