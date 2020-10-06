@@ -23,8 +23,8 @@ namespace FtB_Common.Mappers
             var type = typeof(IFormLogic<T, U>);
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(p => type.IsAssignableFrom(p))
-                .Where(t => t.IsDefined(typeof(FormDataFormatAttribute), false))
+                //.Where(p => type.IsAssignableFrom(p))
+                .Where(t => t.IsDefined(typeof(FormDataFormatAttribute), true))
                 .Where(t => t.GetCustomAttribute<FormDataFormatAttribute>().DataFormatId == formatId &&  
                             t.GetCustomAttribute<FormDataFormatAttribute>().ProcessingContext == processingContext);
 
