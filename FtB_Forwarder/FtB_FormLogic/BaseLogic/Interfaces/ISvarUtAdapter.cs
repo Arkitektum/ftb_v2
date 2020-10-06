@@ -1,4 +1,4 @@
-﻿namespace FtB_FormLogic.OTSFormLogic
+﻿namespace FtB_FormLogic
 {
     public interface ISvarUtAdapter
     {

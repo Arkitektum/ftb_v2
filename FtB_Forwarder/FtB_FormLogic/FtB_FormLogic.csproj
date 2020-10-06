@@ -9,4 +9,8 @@
     <ProjectReference Include="..\FtB_DataModels\FtB_DataModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Notifications\NotificationBaseLogic\" />
+  </ItemGroup>
+
 </Project>

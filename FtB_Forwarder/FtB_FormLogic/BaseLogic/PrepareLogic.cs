@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
-namespace FtB_FormLogic.OTSFormLogic
+namespace FtB_FormLogic
 {
     public class PrepareLogic<T> : LogicBase<T>, IFormLogic<IEnumerable<SendQueueItem>, SubmittalQueueItem>
     {
@@ -17,7 +17,10 @@ namespace FtB_FormLogic.OTSFormLogic
 
         public virtual List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
         {
+            _log.LogDebug($"{GetType().Name}: Processing logic for archveReference {submittalQueueItem.ArchiveReference}....");
+            _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {submittalQueueItem.ArchiveReference}....");
             base.LoadData(submittalQueueItem.ArchiveReference);
+
             CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
             CreateReceiversDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers);
 

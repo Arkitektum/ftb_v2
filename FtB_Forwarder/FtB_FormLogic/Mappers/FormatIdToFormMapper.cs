@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-namespace FtB_Common.Mappers
+namespace FtB_FormLogic
 {
     public class FormatIdToFormMapper
     {

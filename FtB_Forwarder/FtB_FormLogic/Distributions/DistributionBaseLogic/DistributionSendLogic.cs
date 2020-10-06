@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_FormLogic.OTSFormLogic
+namespace FtB_FormLogic
 {
     public abstract class DistributionSendLogic<T> :  SendLogic<T>
     {

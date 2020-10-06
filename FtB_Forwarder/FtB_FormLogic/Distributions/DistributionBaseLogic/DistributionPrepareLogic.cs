@@ -3,7 +3,7 @@ using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace FtB_FormLogic.OTSFormLogic
+namespace FtB_FormLogic
 {
     public class DistributionPrepareLogic<T> : PrepareLogic<T>
     {

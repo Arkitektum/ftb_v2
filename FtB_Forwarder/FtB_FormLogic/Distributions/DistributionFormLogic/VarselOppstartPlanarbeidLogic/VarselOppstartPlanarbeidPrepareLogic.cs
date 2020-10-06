@@ -2,7 +2,7 @@
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace FtB_FormLogic.OTSFormLogic
+namespace FtB_FormLogic
 {
     [FormDataFormat(DataFormatId = "6325", DataFormatVersion = "44824", ProcessingContext = FormLogicProcessingContext.Prepare)]
     public class VarselOppstartPlanarbeidPrepareLogic : DistributionPrepareLogic<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>

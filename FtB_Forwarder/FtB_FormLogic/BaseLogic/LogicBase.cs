@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 
-namespace FtB_FormLogic.OTSFormLogic
+namespace FtB_FormLogic
 {
     public class LogicBase<T>
     {

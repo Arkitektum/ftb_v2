@@ -1,9 +1,7 @@
 ﻿using FtB_Common.BusinessModels;
 using FtB_Common.FormLogic;
-using FtB_Common.Interfaces;
-using FtB_Common.Mappers;
 using FtB_Common.Storage;
-using FtB_FormLogic.OTSFormLogic;
+using FtB_FormLogic;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -31,16 +29,8 @@ namespace FtB_ProcessStrategies
             {
                 string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(submittalQueueItem.ArchiveReference);
                 string formatId = _blobOperations.GetFormatIdFromStoredBlob(submittalQueueItem.ArchiveReference);
-
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetForm<IEnumerable<SendQueueItem>, SubmittalQueueItem>(formatId, FormLogicProcessingContext.Prepare);
-                _log.LogDebug($"{Environment.NewLine}");
-                _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {submittalQueueItem.ArchiveReference}....");
-
-                //formLogicBeingProcessed.LoadFormData(submittalQueueItem.ArchiveReference);
-                //formLogicBeingProcessed.ArchiveReference = submittalQueueItem.ArchiveReference;
-
-                //var strategy = _strategyManager.GetPrepareStrategy(serviceCode, formLogicBeingProcessed);
-                _log.LogDebug($"{GetType().Name}: Executing strategy for {submittalQueueItem.ArchiveReference}....");
+                
                 return formLogicBeingProcessed.Execute(submittalQueueItem);
             }
             catch (Azure.RequestFailedException rfEx)

@@ -2,7 +2,7 @@
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace FtB_FormLogic.OTSFormLogic
+namespace FtB_FormLogic
 {
     public abstract class ShipmentSendLogic<T> : SendLogic<T>
     {
@@ -24,30 +24,6 @@ namespace FtB_FormLogic.OTSFormLogic
             svarUtAdapter.Send(new SvarUtPayload() { ReceiverId = Receiver.Id, ReceiverType = Receiver.Type.ToString(), BodyText = "formadata mapping inn i HTML greier sikkert.." });
 
             return t;
-        }
-    }
-
-    public class SvarUtPayload
-    {
-        public string ReceiverId { get; set; }
-        public string ReceiverType { get; set; }
-        public string BodyText { get; set; }
-
-        // Og masse ana
-
-    }
-
-    public class SvarUtAdapter : ISvarUtAdapter
-    {
-        private readonly ILogger<SvarUtAdapter> _logger;
-
-        public SvarUtAdapter(ILogger<SvarUtAdapter> logger)
-        {
-            _logger = logger;
-        }
-        public void Send(SvarUtPayload payload)
-        {
-            _logger.LogDebug("Sender noko greier til SvarUt");
         }
     }
 }

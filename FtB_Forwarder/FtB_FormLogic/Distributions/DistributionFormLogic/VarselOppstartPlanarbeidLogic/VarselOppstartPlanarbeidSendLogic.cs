@@ -4,7 +4,7 @@ using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace FtB_FormLogic.OTSFormLogic
+namespace FtB_FormLogic
 {
     [FormDataFormat(DataFormatId = "6325", DataFormatVersion = "44824", ProcessingContext = FormLogicProcessingContext.Send)]
     public class VarselOppstartPlanarbeidSendLogic : DistributionSendLogic<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
