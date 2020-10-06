@@ -38,7 +38,11 @@ namespace AltinnWebServices.Services
             //}
             var prefillFormTask = _prefillFormTaskBuilder.Build();
 
+
+            // ********** Should have retry for communication errors  *********
             var receiptExternal = _altinnPrefillClient.SendPrefill(prefillFormTask, prefillData.DueDate);
+            // ****************************************************************
+
 
             var prefillResult = new PrefillResult();
 

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace FtB_Common.FormLogic
 {
-    public abstract class FormLogicBase<T> : IFormLogic
+    public abstract class FormLogicBase<T> //: IFormLogic
     {
         protected T DataForm;
         protected readonly IFormDataRepo _repo;

@@ -7,5 +7,15 @@ namespace FtB_Common.FormLogic
     {
         public string DataFormatId { get; set; }
         public string DataFormatVersion { get; set; }
+
+        public string ServiceCode { get; set; }
+        public FormLogicProcessingContext ProcessingContext { get; set; } 
+    }
+
+    public enum FormLogicProcessingContext
+    {
+        Prepare,
+        Send,
+        Report
     }
 }

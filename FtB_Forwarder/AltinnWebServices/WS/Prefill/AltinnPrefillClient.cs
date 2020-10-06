@@ -1,5 +1,5 @@
 ﻿using AltinnWebServices.Bindings;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.ServiceModel;
@@ -9,10 +9,10 @@ namespace AltinnWebServices.WS.Prefill
     public class AltinnPrefillClient : IAltinnPrefillClient
     {
         private PreFillExternalBasicClient _client;
-        private readonly IOptions<AltinnPrefillConnectionSettings> _connectionOptions;
-        private readonly ILogger<AltinnPrefillClient> _log;
-
-        //Move into separate class????
+        private readonly IOptions<AltinnPrefillConnectionSettings> _connectionOptions;
+        private readonly ILogger<AltinnPrefillClient> _log;
+
+        //Move into separate class????
         private readonly string _externalBatchId = Guid.NewGuid().ToString();
         private readonly bool _doSaveFormTask = true;
         private readonly bool _doinstantiateFormTask = true;
@@ -22,8 +22,8 @@ namespace AltinnWebServices.WS.Prefill
         public AltinnPrefillClient(IBindingFactory bindingFactory, IOptions<AltinnPrefillConnectionSettings> connectionOptions, ILogger<AltinnPrefillClient> log)
         {
             _client = new PreFillExternalBasicClient(bindingFactory.GetBindingFor(BindingType.Mtom), new EndpointAddress(connectionOptions.Value.EndpointUrl));
-            _connectionOptions = connectionOptions;
-            _log = log;
+            _connectionOptions = connectionOptions;
+            _log = log;
         }
 
         public ReceiptExternal SendPrefill(PrefillFormTask prefillFormTask, DateTime? dueDate)

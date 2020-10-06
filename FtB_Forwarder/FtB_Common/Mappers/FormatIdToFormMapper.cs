@@ -17,25 +17,26 @@ namespace FtB_Common.Mappers
             _services = services;
         }
 
-        public IFormLogic GetForm(string formatId)
+        public IFormLogic<T, U> GetForm<T,U>(string formatId, FormLogicProcessingContext processingContext)
         {
             //Retrieves classes implementing IForm, having FormDataFormatAttribute and filtering by its DataFormatId
-            var type = typeof(IFormLogic);
+            var type = typeof(IFormLogic<T, U>);
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(p => type.IsAssignableFrom(p))
-                .Where(t => t.IsDefined(typeof(FormDataFormatAttribute), false))
-                .Where(t => t.GetCustomAttribute<FormDataFormatAttribute>().DataFormatId == formatId);
+                //.Where(p => type.IsAssignableFrom(p))
+                .Where(t => t.IsDefined(typeof(FormDataFormatAttribute), true))
+                .Where(t => t.GetCustomAttribute<FormDataFormatAttribute>().DataFormatId == formatId &&  
+                            t.GetCustomAttribute<FormDataFormatAttribute>().ProcessingContext == processingContext);
 
-            IFormLogic formInstance = null;
+            object formInstance = null;
             if (types.Count() > 0)
             {
                 //Resolves an instance of the class
                 var formType = types.FirstOrDefault();
-                formInstance = _services.GetService(formType) as IFormLogic;
+                formInstance = _services.GetService(formType);
             }
 
-            return formInstance;
+            return formInstance as IFormLogic<T, U>;
         }
     }
 }

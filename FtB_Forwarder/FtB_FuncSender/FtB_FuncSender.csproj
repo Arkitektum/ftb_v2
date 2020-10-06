@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AltinnServiceAdapters\AltinnServiceAdapters.csproj" />
     <ProjectReference Include="..\AltinnWebServices\AltinnWebServices.csproj" />
     <ProjectReference Include="..\FtB_FormLogic\FtB_FormLogic.csproj" />
     <ProjectReference Include="..\FtB_ProcessStrategies\FtB_ProcessStrategies.csproj" />

@@ -19,7 +19,7 @@ namespace FtB_FuncReporter
             services.AddScoped<NaboVarselPlanFormLogic>();
             services.AddScoped<IFormDataRepo, FormDataRepository>();
             services.AddScoped<ITableStorage, TableStorage>();
-            services.AddReportStrategies();
+            //services.AddReportStrategies();
 
             //Test reporter
             //services.AddScoped<TestReportStrategy>();

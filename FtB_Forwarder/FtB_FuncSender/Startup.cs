@@ -1,9 +1,12 @@
-﻿using AltinnWebServices;
+using AltinnServiceAdapters;
+using AltinnWebServices;
+using FtB_Common.Adapters;
 using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Mappers;
 using FtB_Common.Storage;
 using FtB_FormLogic;
+using FtB_FormLogic.OTSFormLogic;
 using FtB_MessageManager;
 using FtB_ProcessStrategies;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
@@ -34,13 +37,15 @@ namespace FtB_FuncSender
 
 
             builder.Services.AddScoped<FormatIdToFormMapper>();
-            builder.Services.AddScoped<NaboVarselPlanFormLogic>();
+            //builder.Services.AddScoped<NaboVarselPlanFormLogic>();
+            builder.Services.AddScoped<VarselOppstartPlanarbeidSendLogic>();
             builder.Services.AddScoped<IFormDataRepo, FormDataRepository>();
             builder.Services.AddScoped<ITableStorage, TableStorage>();
-            builder.Services.AddSendStrategies();
+            //builder.Services.AddSendStrategies();
             builder.Services.AddScoped<IPrefillService, PrefillService>();
             builder.Services.AddScoped<IMessageManager, SlackManager>();
             builder.Services.AddAltinn2PrefillService(configuration);
+            builder.Services.AddScoped<IPrefillAdapter, NabovarselPlanPrefillAdapter>();
 
             builder.Services.AddScoped<IPrefillDataProvider<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>, NabovarselSvarPrefillDataProvider>();
         }

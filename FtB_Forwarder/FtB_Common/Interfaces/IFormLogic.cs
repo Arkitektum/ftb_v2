@@ -8,17 +8,22 @@ namespace FtB_Common.Interfaces
     /// <summary>
     /// All form data needed in processing of the form, needs to be declared here....
     /// </summary>
-    public interface IFormLogic
+    //public interface IFormLogic
+    //{
+    //    void ProcessPrepareStep();
+    //    void ProcessSendStep(string filter);
+    //    void ProcessReportStep();
+    //    void LoadFormData(string archiveReference);
+    //    string ArchiveReference { get; set; }
+    //    List<Receiver> Receivers { get; set; }
+    //    string DistributionData { get; set; }
+    //    void InitiateForm();
+    //    PrefillData GetPrefillData(string receiverId, string identifier);
+    //    //IFormDataValidator GetFormDataValidator();
+    //}
+
+    public interface IFormLogic<T, U>
     {
-        void ProcessPrepareStep();
-        void ProcessSendStep(string filter);
-        void ProcessReportStep();
-        void LoadFormData(string archiveReference);
-        string ArchiveReference { get; set; }
-        List<Receiver> Receivers { get; set; }
-        string DistributionData { get; set; }
-        void InitiateForm();
-        PrefillData GetPrefillData(string receiverId, string identifier);
-        //IFormDataValidator GetFormDataValidator();
+        T Execute(U input);
     }
 }

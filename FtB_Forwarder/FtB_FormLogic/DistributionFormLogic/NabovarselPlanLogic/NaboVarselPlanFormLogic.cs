@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace FtB_FormLogic
 {
-    [FormDataFormat(DataFormatId = "6325", DataFormatVersion = "44824")]
+    //[FormDataFormat(DataFormatId = "6325", DataFormatVersion = "44824")]
     public class NaboVarselPlanFormLogic : DistributionFormLogicBase<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType, no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
     {
         public NaboVarselPlanFormLogic(IFormDataRepo dataRepo, IPrefillDataProvider<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType> prefillDataProvider) : base(dataRepo, prefillDataProvider)
