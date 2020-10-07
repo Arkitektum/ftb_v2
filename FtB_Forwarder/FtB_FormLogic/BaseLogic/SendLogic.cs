@@ -18,8 +18,8 @@ namespace FtB_FormLogic
             _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {sendQueueItem.ArchiveReference}....");
             base.LoadData(sendQueueItem.ArchiveReference);
 
-            return null;
-        
+            return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, Receiver = sendQueueItem.Receiver };
+
         }
     }
 }

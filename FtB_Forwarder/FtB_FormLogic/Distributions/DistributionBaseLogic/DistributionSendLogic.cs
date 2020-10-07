@@ -24,7 +24,7 @@ namespace FtB_FormLogic
 
         public override ReportQueueItem Execute(SendQueueItem sendQueueItem)
         {
-            base.Execute(sendQueueItem);
+            var returnReportQueueItem = base.Execute(sendQueueItem);
             MapPrefillData(sendQueueItem.Receiver.Id);
 
             //Execute base logic
@@ -37,7 +37,7 @@ namespace FtB_FormLogic
 
             Distribute(sendQueueItem);
 
-            return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, Receiver = sendQueueItem.Receiver };
+            return returnReportQueueItem;
         }
 
         protected virtual void PersistPrefill(SendQueueItem sendQueueItem)
