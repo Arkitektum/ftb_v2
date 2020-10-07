@@ -30,7 +30,6 @@ namespace FtB_FormLogic
             //Execute base logic
             UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillCreated));
 
-            //prefillData = 
             PersistPrefill(sendQueueItem);
 
             SendPrefill(sendQueueItem);
@@ -82,7 +81,7 @@ namespace FtB_FormLogic
 
             // Finally persist distributionform..  and maybe a list of logentries??            
 
-            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.Sent));
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.CorrespondenceSent));
         }
         protected abstract void MapPrefillData(string receiverId);
     }

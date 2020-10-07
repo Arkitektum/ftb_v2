@@ -10,6 +10,6 @@ namespace FtB_Common.Enums
         PrefillCreated,
         PrefillPersisted,
         PrefillSent,
-        Sent
+        CorrespondenceSent
     }
 }
