@@ -1,4 +1,4 @@
-using AltinnServiceAdapters;
+using Altinn3ServiceAdapters;
 using AltinnWebServices;
 using AltinnWebServices.Services;
 using FtB_Common.Adapters;
@@ -41,9 +41,16 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<ITableStorage, TableStorage>();
             builder.Services.AddScoped<IPrefillService, PrefillService>();
             builder.Services.AddScoped<IMessageManager, SlackManager>();
+
             builder.Services.AddAltinn2PrefillService(configuration);
-            builder.Services.AddScoped<IPrefillAdapter, Altinn2PrefillAdapter>();
             builder.Services.AddScoped<IPrefillDataProvider<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>, VarselOppstartPlanarbeidPrepareDataProvider>();
+            
+            //builder.Services.AddAltinn3PrefillService(configuration);            
+            //builder.Services.AddScoped<IPrefillDataProvider<FtB_DataModels.Datamodels.NabovarelPlan.SvarPaaNabovarselPlanType>, VarselOppstartPlanarbeidPrepareAltinn3PrefillDataProvider>();
+            
+
         }
+
+
     }
 }

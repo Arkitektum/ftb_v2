@@ -16,7 +16,9 @@
       "Ftb_DbRepository": "Debug",
       "FtB_MessageManager": "Debug",
       "FtB_ProcessStrategies": "Debug",
-      "FtB_FuncSender": "Debug"
+      "FtB_FuncSender": "Debug",
+      "Altinn3ServiceAdapters": "Debug",
+      "AltinnWebServices": "Debug"
     }
   },
   "extensions": {

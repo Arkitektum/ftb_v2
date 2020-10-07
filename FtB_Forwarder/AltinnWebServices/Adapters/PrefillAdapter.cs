@@ -3,6 +3,7 @@ using FtB_Common.Adapters;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 
 namespace AltinnWebServices.Services
 {
@@ -64,6 +65,9 @@ namespace AltinnWebServices.Services
             {
                 prefillResult.ResultMessage = "Ok - Prefill sent";
                 prefillResult.ResultType = PrefillResultType.Ok;
+
+                if (receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).FirstOrDefault() != null)
+                    prefillResult.PrefillReferenceId = receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).First().ReferenceValue;
             }
             else if (receiptExternal?.ReceiptStatusCode != ReceiptStatusEnum.OK)
                 if (receiptExternal.ReceiptText.Contains("Reportee is reserved against electronic communication"))

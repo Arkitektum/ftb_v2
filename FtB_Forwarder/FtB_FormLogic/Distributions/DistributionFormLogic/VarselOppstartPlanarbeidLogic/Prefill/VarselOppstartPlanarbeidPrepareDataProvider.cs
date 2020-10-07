@@ -10,7 +10,7 @@ namespace FtB_FormLogic
         public SvarPaaNabovarselPlanType PrefillFormData { get; set; }
 
         public PrefillData GetPrefillData(string xmlString, string distributionFormId)
-        {
+        {            
             PrefillFormData = SerializeUtil.DeserializeFromString<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>(xmlString);
 
             var prefillData = new PrefillData()

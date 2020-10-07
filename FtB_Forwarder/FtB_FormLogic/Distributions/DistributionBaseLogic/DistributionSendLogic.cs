@@ -31,9 +31,9 @@ namespace FtB_FormLogic
 
             PersistPrefill(sendQueueItem);
 
-            SendPrefill(sendQueueItem);
+            var result = SendPrefill(sendQueueItem);
 
-            Distribute(sendQueueItem);
+            Distribute(sendQueueItem, result.PrefillReferenceId);
 
             return returnReportQueueItem;
         }
@@ -45,9 +45,9 @@ namespace FtB_FormLogic
             UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillPersisted));
         }
 
-        protected virtual void SendPrefill(SendQueueItem sendQueueItem)
+        protected virtual PrefillResult SendPrefill(SendQueueItem sendQueueItem)
         {
-            var prefillResult = _prefillAdapter.SendPrefill(PrefillData);
+            var prefillResult = _prefillAdapter.SendPrefill(PrefillData);            
             switch (prefillResult.ResultType)
             {
                 case PrefillResultType.Ok:
@@ -62,16 +62,17 @@ namespace FtB_FormLogic
                 default:
                     break;
             }
+            return prefillResult;
         }
 
-        protected virtual void Distribute(SendQueueItem sendQueueItem)
+        protected virtual void Distribute(SendQueueItem sendQueueItem, string prefillReference)
         {
             // Validate if receiver info is sufficient
 
             // Decrypt
 
             // Create distributionform 
-
+            var distributionFormId = this.PrefillData.DistributionFormId;
 
             // Map  from prefill-data to prefillFormTask
             // Send using prefill service
