@@ -11,7 +11,6 @@ namespace FtB_FuncPrepareSending
         public static IServiceCollection AddPrepareServices(this IServiceCollection services)
         {
             services.AddScoped<FormatIdToFormMapper>();
-            //services.AddScoped<NaboVarselPlanFormLogic>();
             services.AddScoped<VarselOppstartPlanarbeidPrepareLogic>();
             services.AddScoped<IFormDataRepo, FormDataRepository>();
             services.AddScoped<ITableStorage, TableStorage>();

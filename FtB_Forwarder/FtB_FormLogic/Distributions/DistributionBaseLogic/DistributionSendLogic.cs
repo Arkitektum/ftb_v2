@@ -24,6 +24,7 @@ namespace FtB_FormLogic
 
         public override ReportQueueItem Execute(SendQueueItem sendQueueItem)
         {
+            base.Execute(sendQueueItem);
             MapPrefillData(sendQueueItem.Receiver.Id);
 
             //Execute base logic
@@ -48,7 +49,7 @@ namespace FtB_FormLogic
 
         protected virtual void SendPrefill(SendQueueItem sendQueueItem)
         {
-            var prefillResult = _prefillAdapter.SendPrefill(PrefillData);// .SendPrefill(FormLogicBeingProcessed.ArchiveReference, sendQueueItem.Receiver.Id);
+            var prefillResult = _prefillAdapter.SendPrefill(PrefillData);
             switch (prefillResult.ResultType)
             {
                 case PrefillResultType.Ok:
@@ -83,58 +84,6 @@ namespace FtB_FormLogic
 
             UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, ReceiverStatusEnum.Sent));
         }
-
-
-
         protected abstract void MapPrefillData(string receiverId);
-
     }
-
-
-
-
-
-    //[FormDataFormat(DataFormatId = "6325", DataFormatVersion = "44824", ProcessingContext = FormLogicProcessingContext.Send)]
-    //public class VarselOppstartPlanarbeidSendLogic : VarselOppstartPlanarbeidLogic, ISendResultProvider
-    //{
-    //    private readonly ISendStrategy sendStrategy;
-    //    private readonly IFormMapper<NabovarselPlanType, SvarPaaNabovarselPlanType> formMapper;
-
-    //    //Problemstilling:
-    //    // Skal mappe frå ein type til ein anna og sende den
-    //    // Mapping er unik for denne, men utsending er felles for fleire
-
-    //    public VarselOppstartPlanarbeidSendLogic(ISendStrategy sendStrategy, IFormMapper<NabovarselPlanType, SvarPaaNabovarselPlanType> formMapper)
-    //    {   
-    //        this.sendStrategy = sendStrategy;
-    //        this.formMapper = formMapper;
-    //    }
-
-    //    private ReportQueueItem reportItem;
-    //    public override void ExecuteStrategy(object strategyTrigger)
-    //    {
-    //        formMapper.Map(base.)
-    //        reportItem = sendStrategy.Execute(strategyTrigger as SendQueueItem);
-    //    }
-
-    //    public ReportQueueItem GetResult()
-    //    {
-    //        return reportItem;
-    //    }
-    //}
-
-    //public class VarselOppstartPlanarbeidReportLogic : VarselOppstartPlanarbeidLogic
-    //{
-    //    private readonly IReportStrategy reportStrategy;
-
-    //    public VarselOppstartPlanarbeidReportLogic(IReportStrategy reportStrategy)
-    //    {
-    //        this.reportStrategy = reportStrategy;
-    //    }
-
-    //    public override void ExecuteStrategy(object strategyTrigger)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
 }

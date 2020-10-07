@@ -1,4 +1,7 @@
-﻿using FtB_Common.Storage;
+﻿using FtB_Common.FormDataRepositories;
+using FtB_Common.Interfaces;
+using FtB_Common.Storage;
+using FtB_FormLogic;
 using FtB_MessageManager;
 using FtB_ProcessStrategies;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
@@ -25,7 +28,10 @@ namespace FtB_FuncReporter
             builder.Services.AddScoped<IBlobOperations, BlobOperations>();
             builder.Services.AddScoped<BlobStorage>();
 
-            builder.Services.AddFtBObjects();
+            builder.Services.AddScoped<FormatIdToFormMapper>();
+            builder.Services.AddScoped<VarselOppstartPlanarbeidReportLogic>();
+            builder.Services.AddScoped<IFormDataRepo, FormDataRepository>();
+            builder.Services.AddScoped<ITableStorage, TableStorage>();
             builder.Services.AddMessageManagerService(configuration);
             builder.Services.AddLogging();
         }

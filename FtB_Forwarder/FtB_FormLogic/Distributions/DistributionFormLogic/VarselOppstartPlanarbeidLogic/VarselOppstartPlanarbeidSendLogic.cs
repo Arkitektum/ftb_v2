@@ -11,14 +11,14 @@ namespace FtB_FormLogic
     {
         private NabovarselPlanPrefillMapper prefillMapper;
 
-        public VarselOppstartPlanarbeidSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IPrefillAdapter prefillAdapter) : base(repo, tableStorage, log, prefillAdapter)
+        public VarselOppstartPlanarbeidSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger<VarselOppstartPlanarbeidSendLogic> log, IPrefillAdapter prefillAdapter) : base(repo, tableStorage, log, prefillAdapter)
         {
             prefillMapper = new NabovarselPlanPrefillMapper();
         }
 
         protected override void MapPrefillData(string receiverId)
         {
-            prefillMapper.Map(base.FormData, "");
+            prefillMapper.Map(base.FormData, receiverId);
             base.PrefillData = new NabovarselSvarPrefillDataProvider().GetPrefillData(prefillMapper.FormDataString, Guid.NewGuid().ToString());
         }
     }

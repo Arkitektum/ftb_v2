@@ -5,9 +5,10 @@ using System.Collections.Generic;
 
 namespace FtB_FormLogic
 {
-    public class DistributionPrepareLogic<T> : PrepareLogic<T>
+    public abstract class DistributionPrepareLogic<T> : PrepareLogic<T>
     {
         private readonly ILogger log;
+        protected  override  List<Receiver> Receivers { get => base.Receivers; set => base.Receivers = value; }
 
         public DistributionPrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log) : base(repo, tableStorage, log)
         {
@@ -19,53 +20,7 @@ namespace FtB_FormLogic
             log.LogInformation("Jau");
             return base.Exceute(submittalQueueItem);
         }
+
+        protected override  abstract void GetReceivers();
     }
-
-
-
-
-
-    //[FormDataFormat(DataFormatId = "6325", DataFormatVersion = "44824", ProcessingContext = FormLogicProcessingContext.Send)]
-    //public class VarselOppstartPlanarbeidSendLogic : VarselOppstartPlanarbeidLogic, ISendResultProvider
-    //{
-    //    private readonly ISendStrategy sendStrategy;
-    //    private readonly IFormMapper<NabovarselPlanType, SvarPaaNabovarselPlanType> formMapper;
-
-    //    //Problemstilling:
-    //    // Skal mappe frå ein type til ein anna og sende den
-    //    // Mapping er unik for denne, men utsending er felles for fleire
-
-    //    public VarselOppstartPlanarbeidSendLogic(ISendStrategy sendStrategy, IFormMapper<NabovarselPlanType, SvarPaaNabovarselPlanType> formMapper)
-    //    {   
-    //        this.sendStrategy = sendStrategy;
-    //        this.formMapper = formMapper;
-    //    }
-
-    //    private ReportQueueItem reportItem;
-    //    public override void ExecuteStrategy(object strategyTrigger)
-    //    {
-    //        formMapper.Map(base.)
-    //        reportItem = sendStrategy.Execute(strategyTrigger as SendQueueItem);
-    //    }
-
-    //    public ReportQueueItem GetResult()
-    //    {
-    //        return reportItem;
-    //    }
-    //}
-
-    //public class VarselOppstartPlanarbeidReportLogic : VarselOppstartPlanarbeidLogic
-    //{
-    //    private readonly IReportStrategy reportStrategy;
-
-    //    public VarselOppstartPlanarbeidReportLogic(IReportStrategy reportStrategy)
-    //    {
-    //        this.reportStrategy = reportStrategy;
-    //    }
-
-    //    public override void ExecuteStrategy(object strategyTrigger)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
 }

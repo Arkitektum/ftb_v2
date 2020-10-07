@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace FtB_FormLogic
 {
-    public class PrepareLogic<T> : LogicBase<T>, IFormLogic<IEnumerable<SendQueueItem>, SubmittalQueueItem>
+    public abstract class PrepareLogic<T> : LogicBase<T>, IFormLogic<IEnumerable<SendQueueItem>, SubmittalQueueItem>
     {
-        protected List<Receiver> Receivers;
+        protected virtual List<Receiver> Receivers { get; set; }
 
         public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log) : base(repo, tableStorage, log)
         {
@@ -27,8 +27,8 @@ namespace FtB_FormLogic
             List<SendQueueItem> sendQueueItems = new List<SendQueueItem>();
             foreach (var receiverVar in Receivers)
             {
-                var receiver = new Receiver() { Type = receiverVar.Type, Id = receiverVar.Id };
-                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, Receiver = receiver });
+                //var receiver = new Receiver() { Type = receiverVar.Type, Id = receiverVar.Id };
+                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, Receiver = receiverVar });
             }
 
             return sendQueueItems;
@@ -66,6 +66,8 @@ namespace FtB_FormLogic
                 }
             }
         }
+
+        protected abstract void GetReceivers();
 
         protected void RemoveDuplicateReceivers()
         {

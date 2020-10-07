@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FtB_FormLogic
 {
-    public class ReportLogic<T> : LogicBase<T>, IFormLogic<string, ReportQueueItem>
+    public class ReportLogic<T> : LogicBase<T>, IFormLogic<FinishedQueueItem, ReportQueueItem>
     {
         protected virtual Receiver Receiver { get; set; }
 
@@ -13,9 +13,9 @@ namespace FtB_FormLogic
 
         }
 
-        public virtual string Execute(ReportQueueItem reportQueueItem)
+        public virtual FinishedQueueItem Execute(ReportQueueItem reportQueueItem)
         {
-            return "";
+            return new FinishedQueueItem() { ArchiveReference = reportQueueItem.ArchiveReference };
         }
     }
 }
