@@ -1,16 +1,20 @@
 ﻿using AltinnWebServices.WS.Prefill;
 using FtB_Common.Adapters;
 using FtB_Common.Interfaces;
+using Microsoft.Extensions.Logging;
+using System;
 
 namespace AltinnWebServices.Services
 {
-    public class PrefillAdapter : IPrefillAdapter
+    public class Altinn2PrefillAdapter : IPrefillAdapter
     {
+        private readonly ILogger _logger;
         private readonly IPrefillFormTaskBuilder _prefillFormTaskBuilder;
         private readonly IAltinnPrefillClient _altinnPrefillClient;
 
-        public PrefillAdapter(IPrefillFormTaskBuilder prefillFormTaskBuilder, IAltinnPrefillClient altinnPrefillClient)
+        public Altinn2PrefillAdapter(ILogger<Altinn2PrefillAdapter> logger, IPrefillFormTaskBuilder prefillFormTaskBuilder, IAltinnPrefillClient altinnPrefillClient)
         {
+            _logger = logger;
             _prefillFormTaskBuilder = prefillFormTaskBuilder;
             _altinnPrefillClient = altinnPrefillClient;
         }
@@ -37,10 +41,20 @@ namespace AltinnWebServices.Services
             //    }
             //}
             var prefillFormTask = _prefillFormTaskBuilder.Build();
-
+            _logger.LogDebug($"PrefillFormTask for {prefillData.Reciever} - created");
 
             // ********** Should have retry for communication errors  *********
-            var receiptExternal = _altinnPrefillClient.SendPrefill(prefillFormTask, prefillData.DueDate);
+
+            ReceiptExternal receiptExternal = null;
+            try
+            {
+                receiptExternal = _altinnPrefillClient.SendPrefill(prefillFormTask, prefillData.DueDate);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred when sending prefill to Altinn");
+                throw;
+            }
             // ****************************************************************
 
 

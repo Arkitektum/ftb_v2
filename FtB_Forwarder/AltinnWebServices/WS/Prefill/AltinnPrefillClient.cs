@@ -44,13 +44,13 @@ namespace AltinnWebServices.WS.Prefill
             }
             catch (TimeoutException te)
             {
-                _log.LogError($"{GetType().Name} ERROR. Message: {te.InnerException}");
+                _log.LogError(te, $"Timeout when communicating with Altinn 2 prefill service");
                 _client.Abort();
                 throw;
             }
             catch (CommunicationException ce)
             {
-                _log.LogError($"{GetType().Name} ERROR. Message: {ce.InnerException}");
+                _log.LogError(ce, $"Communication error occurred when communication with Altinn 2 prefill service");
                 _client.Abort();
                 throw;
             }
