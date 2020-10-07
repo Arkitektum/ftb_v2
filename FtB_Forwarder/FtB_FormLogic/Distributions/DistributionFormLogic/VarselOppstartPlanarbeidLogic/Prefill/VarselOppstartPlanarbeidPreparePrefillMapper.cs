@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace FtB_FormLogic
 {
-    public class NabovarselPlanPrefillMapper : IFormMapper<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType, no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
+    public class VarselOppstartPlanarbeidPreparePrefillMapper : IFormMapper<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType, no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
     {
         public string FormDataString { get; set; }
 

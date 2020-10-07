@@ -25,9 +25,8 @@ namespace FtB_FormLogic
         public override ReportQueueItem Execute(SendQueueItem sendQueueItem)
         {
             var returnReportQueueItem = base.Execute(sendQueueItem);
-            MapPrefillData(sendQueueItem.Receiver.Id);
 
-            //Execute base logic
+            MapPrefillData(sendQueueItem.Receiver.Id);            
             UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillCreated));
 
             PersistPrefill(sendQueueItem);

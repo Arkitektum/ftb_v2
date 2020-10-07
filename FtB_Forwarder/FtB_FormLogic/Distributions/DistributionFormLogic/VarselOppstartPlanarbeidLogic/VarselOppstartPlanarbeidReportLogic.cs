@@ -1,8 +1,6 @@
-﻿using FtB_Common.Adapters;
-using FtB_Common.FormLogic;
+﻿using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace FtB_FormLogic
 {

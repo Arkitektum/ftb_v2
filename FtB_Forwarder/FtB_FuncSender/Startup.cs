@@ -43,7 +43,7 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<IMessageManager, SlackManager>();
             builder.Services.AddAltinn2PrefillService(configuration);
             builder.Services.AddScoped<IPrefillAdapter, Altinn2PrefillAdapter>();
-            builder.Services.AddScoped<IPrefillDataProvider<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>, NabovarselSvarPrefillDataProvider>();
+            builder.Services.AddScoped<IPrefillDataProvider<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>, VarselOppstartPlanarbeidPrepareDataProvider>();
         }
     }
 }

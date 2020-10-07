@@ -5,7 +5,7 @@ using no.kxml.skjema.dibk.nabovarselsvarPlan;
 
 namespace FtB_FormLogic
 {
-    public class NabovarselSvarPrefillDataProvider : PrefillDataProviderBase, IPrefillDataProvider<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
+    public class VarselOppstartPlanarbeidPrepareDataProvider : PrefillDataProviderBase, IPrefillDataProvider<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
     {
         public SvarPaaNabovarselPlanType PrefillFormData { get; set; }
 
