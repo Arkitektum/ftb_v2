@@ -36,8 +36,7 @@ namespace FtB_FormLogic
                 runAgain = false;
                 try
                 {
-                    string receiverIdWithLegalStoreageCharacters = entity.RowKey.Replace("/", "");
-                    ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>("ftbReceivers", entity.PartitionKey, receiverIdWithLegalStoreageCharacters);
+                    ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>("ftbReceivers", entity.PartitionKey, entity.RowKey);
                     _log.LogTrace($"ID={entity.RowKey}. Before ReceiverEntity update for archiveRefrrence {entity.PartitionKey}. Status: {entity.Status}.");
                     receiverEntity.Status = entity.Status;
 

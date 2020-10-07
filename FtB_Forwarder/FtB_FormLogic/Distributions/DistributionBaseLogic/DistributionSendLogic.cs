@@ -28,7 +28,7 @@ namespace FtB_FormLogic
             MapPrefillData(sendQueueItem.Receiver.Id);
 
             //Execute base logic
-            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillCreated));
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillCreated));
 
             //prefillData = 
             PersistPrefill(sendQueueItem);
@@ -44,7 +44,7 @@ namespace FtB_FormLogic
         {
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
             _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(PrefillData.XmlDataString), metaData);
-            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillPersisted));
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillPersisted));
         }
 
         protected virtual void SendPrefill(SendQueueItem sendQueueItem)
@@ -53,7 +53,7 @@ namespace FtB_FormLogic
             switch (prefillResult.ResultType)
             {
                 case PrefillResultType.Ok:
-                    UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillSent));
+                    UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillSent));
                     break;
                 case PrefillResultType.UnkownErrorOccured:
                     break;
@@ -82,7 +82,7 @@ namespace FtB_FormLogic
 
             // Finally persist distributionform..  and maybe a list of logentries??            
 
-            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id, ReceiverStatusEnum.Sent));
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.Sent));
         }
         protected abstract void MapPrefillData(string receiverId);
     }

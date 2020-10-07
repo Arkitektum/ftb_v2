@@ -15,10 +15,10 @@ namespace FtB_FormLogic
             this.log = log;
         }
 
-        public override List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
+        public override IEnumerable<SendQueueItem> Execute(SubmittalQueueItem submittalQueueItem)
         {
             log.LogInformation("Jau");
-            return base.Exceute(submittalQueueItem);
+            return base.Execute(submittalQueueItem);
         }
 
         protected override  abstract void GetReceivers();

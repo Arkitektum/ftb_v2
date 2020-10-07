@@ -15,20 +15,25 @@ namespace FtB_FormLogic
         {
         }
 
-        public virtual List<SendQueueItem> Exceute(SubmittalQueueItem submittalQueueItem)
+        //public virtual IEnumerable<SendQueueItem> Execute(SubmittalQueueItem submittalQueueItem)
+        //{
+        //    throw new NotImplementedException();
+        //}
+        public virtual IEnumerable<SendQueueItem> Execute(SubmittalQueueItem submittalQueueItem)
         {
             _log.LogDebug($"{GetType().Name}: Processing logic for archveReference {submittalQueueItem.ArchiveReference}....");
             _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {submittalQueueItem.ArchiveReference}....");
             base.LoadData(submittalQueueItem.ArchiveReference);
 
             CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
-            CreateReceiversDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers);
 
             List<SendQueueItem> sendQueueItems = new List<SendQueueItem>();
             foreach (var receiverVar in Receivers)
             {
+                var storageRowKey = Guid.NewGuid().ToString();
+                CreateReceiverDatabaseStatus(submittalQueueItem.ArchiveReference, storageRowKey, receiverVar);
                 //var receiver = new Receiver() { Type = receiverVar.Type, Id = receiverVar.Id };
-                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, Receiver = receiverVar });
+                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, StorageRowKey= storageRowKey, Receiver = receiverVar });
             }
 
             return sendQueueItems;
@@ -49,21 +54,19 @@ namespace FtB_FormLogic
             }
         }
 
-        private void CreateReceiversDatabaseStatus(string archiveReference, List<Receiver> receivers)
+        private void CreateReceiverDatabaseStatus(string archiveReference, string storageRowKey, Receiver receiver)
         {
-            foreach (var receiver in receivers)
+            try
             {
-                try
-                {
-                    ReceiverEntity entity = new ReceiverEntity(archiveReference, receiver.Id.Replace("/", ""), ReceiverStatusEnum.Created, DateTime.Now);
-                    _tableStorage.InsertEntityRecordAsync(entity, "ftbReceivers");
-                    _log.LogInformation($"Create receiver database status for {archiveReference} and reciverId={receiver.Id}.");
-                }
-                catch (Exception ex)
-                {
-                    _log.LogError($"Error creating receiver records for archiveReference={archiveReference} and reciverId={receiver.Id}. Message: {ex.Message}");
-                    throw ex;
-                }
+                //ReceiverEntity entity = new ReceiverEntity(archiveReference, receiver.Id.Replace("/", ""), ReceiverStatusEnum.Created, DateTime.Now);
+                ReceiverEntity entity = new ReceiverEntity(archiveReference, storageRowKey, receiver.Id, ReceiverStatusEnum.Created, DateTime.Now);
+                _tableStorage.InsertEntityRecordAsync(entity, "ftbReceivers");
+                _log.LogInformation($"Create receiver database status for {archiveReference} and reciverId={receiver.Id}.");
+            }
+            catch (Exception ex)
+            {
+                _log.LogError($"Error creating receiver records for archiveReference={archiveReference} and reciverId={receiver.Id}. Message: {ex.Message}");
+                throw ex;
             }
         }
 
@@ -80,9 +83,6 @@ namespace FtB_FormLogic
             }
         }
 
-        public IEnumerable<SendQueueItem> Execute(SubmittalQueueItem input)
-        {
-            return Exceute(input);
-        }
+
     }
 }
