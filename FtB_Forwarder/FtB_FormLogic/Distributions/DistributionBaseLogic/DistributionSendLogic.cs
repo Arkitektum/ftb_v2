@@ -1,6 +1,7 @@
 ﻿using Altinn.Common;
 using Altinn.Common.Interfaces;
 using Altinn.Common.Models;
+using FtB_Common;
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -66,9 +67,11 @@ namespace FtB_FormLogic
                 default:
                     break;
             }
+
+            return prefillResult;
         }
 
-        protected virtual void Distribute(SendQueueItem sendQueueItem)
+        protected virtual void Distribute(SendQueueItem sendQueueItem, string prefillReferenceId)
         {
             // Validate if receiver info is sufficient
 

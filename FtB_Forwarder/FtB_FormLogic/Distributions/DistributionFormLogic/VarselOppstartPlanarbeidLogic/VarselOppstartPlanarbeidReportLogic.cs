@@ -1,5 +1,4 @@
-﻿using FtB_Common.Adapters;
-using FtB_Common.BusinessModels;
+﻿using FtB_Common.BusinessModels;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_MessageManager;
