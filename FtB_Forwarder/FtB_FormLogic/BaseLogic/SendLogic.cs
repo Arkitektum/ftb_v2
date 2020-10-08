@@ -14,11 +14,11 @@ namespace FtB_FormLogic
 
         public virtual ReportQueueItem Execute(SendQueueItem sendQueueItem)
         {
-            _log.LogDebug($"{GetType().Name}: Processing logic for archveReference {sendQueueItem.ArchiveReference}....");
-            _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {sendQueueItem.ArchiveReference}....");
+            _log.LogDebug($"{GetType().Name}: Processing logic for archiveReference {sendQueueItem.ArchiveReference}....");
+            
             base.LoadData(sendQueueItem.ArchiveReference);
 
-            return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, Receiver = sendQueueItem.Receiver };
+            return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, StorageRowKey = sendQueueItem.StorageRowKey, Receiver = sendQueueItem.Receiver };
 
         }
     }

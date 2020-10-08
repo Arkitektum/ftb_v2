@@ -22,19 +22,17 @@ namespace FtB_ProcessStrategies
                                     , IEnumerable<IMessageManager> messageManagers, ILogger<ReportQueueProcessor> log)
         {
             _blobOperations = blobOperations;
-            
             _messageManagers = messageManagers;
             _log = log;
             _formatIdToFormMapper = formatIdToFormMapper;
         }
 
-        public FinishedQueueItem ExecuteProcessingStrategy(ReportQueueItem reportQueueItem)
+        public string ExecuteProcessingStrategy(ReportQueueItem reportQueueItem)
         {
-            string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(reportQueueItem.ArchiveReference);
+            //string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(reportQueueItem.ArchiveReference);
             string formatId = _blobOperations.GetFormatIdFromStoredBlob(reportQueueItem.ArchiveReference);
 
-            var formLogicBeingProcessed = _formatIdToFormMapper.GetForm<FinishedQueueItem, ReportQueueItem>(formatId, FormLogicProcessingContext.Report);
-            _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {reportQueueItem.ArchiveReference} and {reportQueueItem.Receiver.Id}....");
+            var formLogicBeingProcessed = _formatIdToFormMapper.GetForm<string, ReportQueueItem>(formatId, FormLogicProcessingContext.Report);
                         
             return formLogicBeingProcessed.Execute(reportQueueItem);
         }

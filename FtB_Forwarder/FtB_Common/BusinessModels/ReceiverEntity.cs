@@ -1,18 +1,13 @@
-﻿using FtB_Common.Enums;
-using FtB_Common.Interfaces;
+﻿using FtB_Common.Interfaces;
 using Microsoft.Azure.Cosmos.Table;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FtB_Common.BusinessModels
 {
     public class ReceiverEntity : TableEntity, IStorageEntity
     {
-        public ReceiverEntity()
-        {
-
-        }
+        public ReceiverEntity() { }
+        
         public ReceiverEntity(string archiveReference, string storageRowKey, string receiverId, ReceiverStatusEnum status, DateTime createdTimestamp)
         {
             PartitionKey = archiveReference;
@@ -28,9 +23,12 @@ namespace FtB_Common.BusinessModels
             RowKey = storageRowKey;
             Status = Enum.GetName(typeof(ReceiverStatusEnum), status);
         }
-
-        public string ReceiverId { get; set; }
-
+        public ReceiverEntity(string archiveReference, string storageRowKey)
+        {
+            PartitionKey = archiveReference;
+            RowKey = storageRowKey;
+        }
+        private string ReceiverId { get; set; }
         public string Status { get; set; }
         public DateTime CreatedTimeStamp { get; set; }
     }

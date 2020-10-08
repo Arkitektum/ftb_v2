@@ -2,7 +2,6 @@
 using Altinn.Common.Interfaces;
 using Altinn.Common.Models;
 using FtB_Common.BusinessModels;
-using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,6 +12,7 @@ namespace FtB_FormLogic
 {
     public abstract class DistributionSendLogic<T> :  SendLogic<T>
     {
+        private readonly ILogger _log;
         private readonly IPrefillAdapter _prefillAdapter;
 
         public PrefillData PrefillData { get; set; }
@@ -21,16 +21,17 @@ namespace FtB_FormLogic
 
         public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IPrefillAdapter prefillAdapter) : base(repo, tableStorage, log)
         {
+            _log = log;
             _prefillAdapter = prefillAdapter;
         }
 
         public override ReportQueueItem Execute(SendQueueItem sendQueueItem)
         {
             var returnReportQueueItem = base.Execute(sendQueueItem);
-
-            MapPrefillData(sendQueueItem.Receiver.Id);            
+            MapPrefillData(sendQueueItem.Receiver.Id);
             UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillCreated));
 
+            //prefillData = 
             PersistPrefill(sendQueueItem);
 
             var result = SendPrefill(sendQueueItem);
@@ -43,13 +44,14 @@ namespace FtB_FormLogic
         protected virtual void PersistPrefill(SendQueueItem sendQueueItem)
         {
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
+            _log.LogDebug($"{GetType().Name}: PersistPrefill for archiveReference {sendQueueItem.ArchiveReference}....");
             _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(PrefillData.XmlDataString), metaData);
             UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillPersisted));
         }
 
         protected virtual PrefillResult SendPrefill(SendQueueItem sendQueueItem)
         {
-            var prefillResult = _prefillAdapter.SendPrefill(PrefillData);            
+            var prefillResult = _prefillAdapter.SendPrefill(PrefillData);
             switch (prefillResult.ResultType)
             {
                 case PrefillResultType.Ok:
@@ -64,10 +66,9 @@ namespace FtB_FormLogic
                 default:
                     break;
             }
-            return prefillResult;
         }
 
-        protected virtual void Distribute(SendQueueItem sendQueueItem, string prefillReference)
+        protected virtual void Distribute(SendQueueItem sendQueueItem)
         {
             // Validate if receiver info is sufficient
 
@@ -88,3 +89,4 @@ namespace FtB_FormLogic
         protected abstract void MapPrefillData(string receiverId);
     }
 }
+

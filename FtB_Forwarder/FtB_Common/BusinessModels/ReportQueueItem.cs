@@ -8,6 +8,7 @@ namespace FtB_Common.BusinessModels
     public class ReportQueueItem : IQueueItem
     {
         public string ArchiveReference { get; set; }
+        public string StorageRowKey { get; set; }
         public Receiver Receiver { get; set; }
     }
 }
