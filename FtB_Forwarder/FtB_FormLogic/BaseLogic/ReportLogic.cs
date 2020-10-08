@@ -111,7 +111,7 @@ namespace FtB_FormLogic
                         if (messageManager is SlackManager)
                         {
                             //Report on Slack channel
-                            var message = SubmitterReport.Subject + Environment.NewLine + SubmitterReport.Body + Environment.NewLine;
+                            var message = SubmitterReport.Subject + Environment.NewLine + SubmitterReport.Body;
                             _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}. Sending to Slack.");
                             _log.LogDebug($"{GetType().Name}: {message}");
                             messageManager.Send(message);

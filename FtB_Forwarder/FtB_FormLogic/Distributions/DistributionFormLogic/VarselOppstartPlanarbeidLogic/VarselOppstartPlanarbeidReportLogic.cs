@@ -29,9 +29,9 @@ namespace FtB_FormLogic
             body.Append($"Antall prosesserte: {submittalEntity.ProcessedCount}{Environment.NewLine}");
             body.Append($"Antall vellykkede utsendinger: {submittalEntity.SuccessCount}{Environment.NewLine}");
             body.Append($"Antall med reservasjon mot digital kommunikasjon: {submittalEntity.DigitalDisallowmentCount}{Environment.NewLine}");
-            body.Append($"Antall som feilet ved utsending: {submittalEntity.FailedCount}{Environment.NewLine}");
+            body.Append($"Antall som feilet ved utsending: {submittalEntity.FailedCount}");
             SubmitterReport.Body = body.ToString();
-            _log.LogDebug($"{GetType().Name}: Body: {SubmitterReport.Body}");
+            //_log.LogDebug($"{GetType().Name}: Body: {SubmitterReport.Body}");
         }
 
         public override string Execute(ReportQueueItem reportQueueItem)

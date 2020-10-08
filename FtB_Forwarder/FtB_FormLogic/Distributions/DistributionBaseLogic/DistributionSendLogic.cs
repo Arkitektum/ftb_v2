@@ -1,6 +1,6 @@
-﻿using FtB_Common.Adapters;
+﻿using FtB_Common;
+using FtB_Common.Adapters;
 using FtB_Common.BusinessModels;
-using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -48,7 +48,7 @@ namespace FtB_FormLogic
             UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillPersisted));
         }
 
-        protected virtual void SendPrefill(SendQueueItem sendQueueItem)
+        protected virtual PrefillResult SendPrefill(SendQueueItem sendQueueItem)
         {
             var prefillResult = _prefillAdapter.SendPrefill(PrefillData);
             switch (prefillResult.ResultType)
@@ -89,4 +89,3 @@ namespace FtB_FormLogic
     }
 }
 
-            var distributionFormId = this.PrefillData.DistributionFormId;

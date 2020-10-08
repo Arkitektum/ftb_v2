@@ -18,12 +18,11 @@ namespace AltinnWebServices.Services
             _logger = logger;
             _prefillFormTaskBuilder = prefillFormTaskBuilder;
             _altinnPrefillClient = altinnPrefillClient;
-            _log = log;
         }
 
         public PrefillResult SendPrefill(PrefillData prefillData)
         {
-            _log.LogDebug($"{GetType().Name}: SendPrefill for receiver {prefillData.Reciever}....");
+            _logger.LogDebug($"{GetType().Name}: SendPrefill for receiver {prefillData.Reciever}....");
             _prefillFormTaskBuilder.SetupPrefillFormTask(prefillData.ServiceCode, int.Parse(prefillData.ServiceEditionCode), prefillData.Reciever, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DaysValid);
             _prefillFormTaskBuilder.AddPrefillForm(prefillData.DataFormatId, int.Parse(prefillData.DataFormatVersion), prefillData.XmlDataString, prefillData.DistributionFormId);
 
