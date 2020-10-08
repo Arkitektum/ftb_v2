@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace Altinn3ServiceAdapters
+namespace Altinn3.Adapters
 {
     public class MultipartContentBuilder
     {

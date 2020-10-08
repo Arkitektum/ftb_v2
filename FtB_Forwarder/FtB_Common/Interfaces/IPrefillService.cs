@@ -1,4 +1,5 @@
-﻿using FtB_Common.Storage;
+﻿using Altinn.Common.Models;
+using FtB_Common.Storage;
 using FtB_MessageManager;
 using System;
 using System.Collections.Generic;

@@ -1,19 +1,21 @@
-﻿using AltinnWebServices.WS.Prefill;
-using FtB_Common.Adapters;
-using FtB_Common.Interfaces;
+﻿using Altinn.Common;
+using Altinn.Common.Interfaces;
+using Altinn.Common.Models;
+using Altinn2.Adapters.WS.Prefill;
+using AltinnWebServices.WS.Prefill;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 
-namespace AltinnWebServices.Services
+namespace Altinn2.Adapters
 {
-    public class Altinn2PrefillAdapter : IPrefillAdapter
+    public class PrefillAdapter : IPrefillAdapter
     {
         private readonly ILogger _logger;
         private readonly IPrefillFormTaskBuilder _prefillFormTaskBuilder;
         private readonly IAltinnPrefillClient _altinnPrefillClient;
 
-        public Altinn2PrefillAdapter(ILogger<Altinn2PrefillAdapter> logger, IPrefillFormTaskBuilder prefillFormTaskBuilder, IAltinnPrefillClient altinnPrefillClient)
+        public PrefillAdapter(ILogger<PrefillAdapter> logger, IPrefillFormTaskBuilder prefillFormTaskBuilder, IAltinnPrefillClient altinnPrefillClient)
         {
             _logger = logger;
             _prefillFormTaskBuilder = prefillFormTaskBuilder;
@@ -22,7 +24,7 @@ namespace AltinnWebServices.Services
 
         public PrefillResult SendPrefill(PrefillData prefillData)
         {
-            _prefillFormTaskBuilder.SetupPrefillFormTask(prefillData.ServiceCode, int.Parse(prefillData.ServiceEditionCode), prefillData.Reciever, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DaysValid);
+            _prefillFormTaskBuilder.SetupPrefillFormTask(prefillData.ServiceCode, int.Parse(prefillData.ServiceEditionCode), prefillData.Receiver.Id, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DaysValid);
             _prefillFormTaskBuilder.AddPrefillForm(prefillData.DataFormatId, int.Parse(prefillData.DataFormatVersion), prefillData.XmlDataString, prefillData.DistributionFormId);
 
             //Map email thingy!!!!
@@ -42,7 +44,7 @@ namespace AltinnWebServices.Services
             //    }
             //}
             var prefillFormTask = _prefillFormTaskBuilder.Build();
-            _logger.LogDebug($"PrefillFormTask for {prefillData.Reciever} - created");
+            _logger.LogDebug($"PrefillFormTask for {prefillData.Receiver.Id} - created");
 
             // ********** Should have retry for communication errors  *********
 

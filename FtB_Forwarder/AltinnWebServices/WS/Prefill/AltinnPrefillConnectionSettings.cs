@@ -1,6 +1,6 @@
-﻿namespace AltinnWebServices
+﻿namespace Altinn2.Adapters.WS.Prefill
 {
-    public class AltinnDownloadQueueConnectionSettings
+    public class AltinnPrefillConnectionSettings
     {
         public string UserName { get; set; }
         public string Password { get; set; }

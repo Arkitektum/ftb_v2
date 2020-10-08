@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FormLogic", "FtB_FormLo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncSender", "FtB_FuncSender\FtB_FuncSender.csproj", "{765AEB19-E5A8-4DAB-89CF-1CDDDAF83B16}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AltinnWebServices", "AltinnWebServices\AltinnWebServices.csproj", "{AA7B9543-E08C-456C-8D4C-14FDC1D34828}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn2.Adapters", "AltinnWebServices\Altinn2.Adapters.csproj", "{AA7B9543-E08C-456C-8D4C-14FDC1D34828}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Tests", "FtB_Tests\FtB_Tests.csproj", "{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}"
 EndProject
@@ -29,7 +29,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_DbModels", "Ftb_DbModel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_DbRepository", "Ftb_DbRepository\Ftb_DbRepository.csproj", "{42E18AC8-5FA1-4DB4-BEC9-23C6ECC0E66C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn3ServiceAdapters", "AltinnServiceAdapters\Altinn3ServiceAdapters.csproj", "{9278F98B-FCA0-4431-AEE3-A25BACD22766}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn3.Adapters", "AltinnServiceAdapters\Altinn3.Adapters.csproj", "{9278F98B-FCA0-4431-AEE3-A25BACD22766}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Common", "Altinn.Common\Altinn.Common.csproj", "{B8D0790F-CC4A-47F3-9A69-9FDA8806B5F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +91,10 @@ Global
 		{9278F98B-FCA0-4431-AEE3-A25BACD22766}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9278F98B-FCA0-4431-AEE3-A25BACD22766}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9278F98B-FCA0-4431-AEE3-A25BACD22766}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8D0790F-CC4A-47F3-9A69-9FDA8806B5F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8D0790F-CC4A-47F3-9A69-9FDA8806B5F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8D0790F-CC4A-47F3-9A69-9FDA8806B5F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8D0790F-CC4A-47F3-9A69-9FDA8806B5F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

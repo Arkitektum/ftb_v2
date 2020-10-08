@@ -1,4 +1,5 @@
-﻿using FtB_Common.BusinessModels;
+﻿using Altinn.Common.Models;
+using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
 using System;

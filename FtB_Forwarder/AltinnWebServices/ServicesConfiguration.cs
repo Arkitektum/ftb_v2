@@ -1,11 +1,10 @@
-﻿using AltinnWebServices.Bindings;
-using AltinnWebServices.Services;
-using AltinnWebServices.WS.Prefill;
-using FtB_Common.Adapters;
+﻿using Altinn.Common.Interfaces;
+using Altinn2.Adapters.Bindings;
+using Altinn2.Adapters.WS.Prefill;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AltinnWebServices
+namespace Altinn2.Adapters
 {
     public static class ServicesConfiguration
     {
@@ -16,7 +15,7 @@ namespace AltinnWebServices
             services.AddTransient<IBinding, BasicBindingProvider>();
             services.AddScoped<IAltinnPrefillClient, AltinnPrefillClient>();
             services.AddScoped<IPrefillFormTaskBuilder, PrefillFormTaskBuilder>();
-            services.AddScoped<IPrefillAdapter, Altinn2PrefillAdapter>();            
+            services.AddScoped<IPrefillAdapter, PrefillAdapter>();
 
             services.AddOptions<AltinnPrefillConnectionSettings>().Configure<IConfiguration>((settings, config) =>
             {

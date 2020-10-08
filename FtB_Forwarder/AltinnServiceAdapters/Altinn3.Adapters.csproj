@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FtB_Common\FtB_Common.csproj" />
+    <ProjectReference Include="..\Altinn.Common\Altinn.Common.csproj" />
   </ItemGroup>
 
 </Project>

@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Altinn.Common\Altinn.Common.csproj" />
     <ProjectReference Include="..\FtB_MessageManager\FtB_MessageManager.csproj" />
   </ItemGroup>
 

@@ -1,4 +1,6 @@
-﻿using FtB_Common.Adapters;
+﻿using Altinn.Common;
+using Altinn.Common.Interfaces;
+using Altinn.Common.Models;
 using FtB_Common.BusinessModels;
 using FtB_Common.Enums;
 using FtB_Common.Interfaces;

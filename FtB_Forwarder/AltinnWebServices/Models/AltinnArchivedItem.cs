@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AltinnWebServices.Models
+namespace Altinn2.Adapters.Models
 {
     /// <summary>
     /// Abstraction of the ArchivedFormTaskDQBE type

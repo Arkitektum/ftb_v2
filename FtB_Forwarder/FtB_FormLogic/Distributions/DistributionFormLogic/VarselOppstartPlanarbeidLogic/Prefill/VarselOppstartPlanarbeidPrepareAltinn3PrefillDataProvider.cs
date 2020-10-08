@@ -1,4 +1,5 @@
-﻿using FtB_Common.Interfaces;
+﻿using Altinn.Common.Models;
+using FtB_Common.Interfaces;
 using FtB_Common.Utils;
 using FtB_DataModels.Mappers;
 
@@ -16,7 +17,7 @@ namespace FtB_FormLogic
             {
                 DataFormatId = PrefillFormData.dataFormatId,
                 DataFormatVersion = PrefillFormData.dataFormatVersion,
-                Reciever = base.GetReceiver(NabovarselPlanAltinn3Mappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart)),
+                Receiver = base.GetReceiver(NabovarselPlanAltinn3Mappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart)),
                 DistributionFormId = distributionFormId,
                 ServiceCode = "5419",
                 ServiceEditionCode = "1",

@@ -1,6 +1,6 @@
-﻿using FtB_Common.Interfaces;
+﻿using Altinn.Common.Models;
 
-namespace FtB_Common.Adapters
+namespace Altinn.Common.Interfaces
 {
     public interface IPrefillAdapter
     {

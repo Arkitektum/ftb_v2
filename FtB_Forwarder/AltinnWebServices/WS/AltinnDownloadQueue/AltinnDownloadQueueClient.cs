@@ -1,11 +1,12 @@
-﻿using AltinnWebServices.Models;
+﻿using Altinn2.Adapters.Models;
+using AltinnWebServices.WS.AltinnDownloadQueue;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 
-namespace AltinnWebServices.WS.AltinnDownloadQueue
+namespace Altinn2.Adapters.WS.AltinnDownloadQueue
 {
     public class AltinnDownloadQueueClient : IAltinnDownloadQueueClient
     {

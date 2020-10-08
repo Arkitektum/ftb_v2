@@ -1,7 +1,7 @@
 ﻿using System.ServiceModel;
 using System.ServiceModel.Channels;
 
-namespace AltinnWebServices.Bindings
+namespace Altinn2.Adapters.Bindings
 {
     public class BasicBindingProvider : IBinding
     {

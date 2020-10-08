@@ -1,9 +1,7 @@
-﻿using AltinnWebServices.WS.Correspondence.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Altinn2.Adapters.WS.Correspondence.Models;
+using AltinnWebServices.WS.Correspondence;
 
-namespace AltinnWebServices.WS.Correspondence
+namespace Altinn2.Adapters.WS.Correspondence
 {
     public class CorrespondenceMapper
     {

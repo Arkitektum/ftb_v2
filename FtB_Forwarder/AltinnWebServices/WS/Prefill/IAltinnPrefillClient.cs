@@ -1,6 +1,7 @@
-﻿using System;
+﻿using AltinnWebServices.WS.Prefill;
+using System;
 
-namespace AltinnWebServices.WS.Prefill
+namespace Altinn2.Adapters.WS.Prefill
 {
     public interface IAltinnPrefillClient
     {

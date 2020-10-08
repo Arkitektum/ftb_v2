@@ -1,13 +1,13 @@
-﻿using FtB_Common.Interfaces;
+﻿using Altinn.Common.Models;
+using FtB_Common.Interfaces;
 using FtB_Common.Utils;
 using FtB_DataModels.Mappers;
-using no.kxml.skjema.dibk.nabovarselsvarPlan;
 
 namespace FtB_FormLogic
 {
     public class VarselOppstartPlanarbeidPrepareDataProvider : PrefillDataProviderBase, IPrefillDataProvider<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
     {
-        public SvarPaaNabovarselPlanType PrefillFormData { get; set; }
+        public no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType PrefillFormData { get; set; }
 
         public PrefillData GetPrefillData(string xmlString, string distributionFormId)
         {            
@@ -17,7 +17,7 @@ namespace FtB_FormLogic
             {
                 DataFormatId = PrefillFormData.dataFormatId,
                 DataFormatVersion = PrefillFormData.dataFormatVersion,
-                Reciever = base.GetReceiver(NabovarselPlanMappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart)),
+                Receiver = base.GetReceiver(NabovarselPlanMappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart)),
                 DistributionFormId = distributionFormId,
                 ServiceCode = "5419",
                 ServiceEditionCode = "1",

@@ -1,7 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AltinnWebServices.WS.Prefill;
+using Microsoft.Extensions.Configuration;
 using System;
 
-namespace AltinnWebServices.WS.Prefill
+namespace Altinn2.Adapters.WS.Prefill
 {
     public class PrefillFormTaskBuilder : IPrefillFormTaskBuilder
     {

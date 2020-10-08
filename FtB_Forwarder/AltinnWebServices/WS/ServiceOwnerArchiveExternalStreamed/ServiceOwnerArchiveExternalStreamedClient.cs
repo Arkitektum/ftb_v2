@@ -1,9 +1,10 @@
-﻿using Microsoft.Extensions.Options;
+﻿using AltinnWebServices.WS.ServiceOwnerArchiveExternalStreamed;
+using Microsoft.Extensions.Options;
 using System;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 
-namespace AltinnWebServices.WS.ServiceOwnerArchiveExternalStreamed
+namespace Altinn2.Adapters.WS.ServiceOwnerArchiveExternalStreamed
 {
     public class ServiceOwnerArchiveExternalStreamedClient : IServiceOwnerArchiveExternalStreamedClient
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AltinnWebServices.WS.ServiceOwnerArchiveExternalStreamed
+namespace Altinn2.Adapters.WS.ServiceOwnerArchiveExternalStreamed
 {
     public interface IServiceOwnerArchiveExternalStreamedClient : IDisposable
     {

@@ -1,8 +1,8 @@
-﻿using AltinnWebServices.Models;
+﻿using Altinn2.Adapters.Models;
 using System;
 using System.Collections.Generic;
 
-namespace AltinnWebServices.WS.AltinnDownloadQueue
+namespace Altinn2.Adapters.WS.AltinnDownloadQueue
 {
     public interface IAltinnDownloadQueueClient : IDisposable
     {

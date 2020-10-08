@@ -1,4 +1,4 @@
-﻿namespace AltinnWebServices.Models
+﻿namespace Altinn2.Adapters.Models
 {
     public interface IFormItem
     {
@@ -17,7 +17,7 @@
         public string ParentReference { get; set; }
         public string Reference { get; set; }
         public AltinnFormType FormType { get; set; }
-        
+
 
         public FormItem(string dataFormatId, int dataFormatVersionId, string formData, string parentReference, string reference, AltinnFormType formType)
         {

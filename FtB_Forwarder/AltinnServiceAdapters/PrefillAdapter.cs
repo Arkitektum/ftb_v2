@@ -1,20 +1,21 @@
-﻿using Altinn.Platform.Storage.Interface.Models;
-using FtB_Common.Adapters;
-using FtB_Common.Interfaces;
+﻿using Altinn.Common;
+using Altinn.Common.Interfaces;
+using Altinn.Common.Models;
+using Altinn.Platform.Storage.Interface.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.IO;
 using System.Net.Http;
 using System.Text;
 
-namespace Altinn3ServiceAdapters
+namespace Altinn3.Adapters
 {
-    public class Altinn3PrefillAdapter : IPrefillAdapter
+    public class PrefillAdapter : IPrefillAdapter
     {
-        private readonly ILogger<Altinn3PrefillAdapter> _logger;
+        private readonly ILogger<PrefillAdapter> _logger;
         private readonly HttpClient httpClient;
 
-        public Altinn3PrefillAdapter(ILogger<Altinn3PrefillAdapter> logger, HttpClient httpClient)
+        public PrefillAdapter(ILogger<PrefillAdapter> logger, HttpClient httpClient)
         {
             _logger = logger;
             this.httpClient = httpClient;
@@ -50,9 +51,15 @@ namespace Altinn3ServiceAdapters
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
             //Perform instantiation of with prefilled data
+            InstanceOwner instanceOwner = new InstanceOwner();
+            if (prefillData.Receiver.Type == AltinnReceiverType.Privatperson)
+                instanceOwner.PersonNumber = prefillData.Receiver.Id;
+            else
+                instanceOwner.OrganisationNumber = prefillData.Receiver.Id;
+
             Instance instanceTemplate = new Instance()
             {
-                InstanceOwner = new InstanceOwner { PersonNumber = prefillData.Reciever, PartyId = "1337" }
+                InstanceOwner = instanceOwner
             };
 
             var prefillResult = new PrefillResult();
@@ -74,7 +81,7 @@ namespace Altinn3ServiceAdapters
                     if (!response.IsSuccessStatusCode)
                     {
                         prefillResult.ResultType = PrefillResultType.UnkownErrorOccured;
-                        _logger.LogError($"Unable to create prefilled instance for {prefillData.Reciever} - statuscode: {response.StatusCode}, errorMessage: {result}");
+                        _logger.LogError($"Unable to create prefilled instance for {prefillData.Receiver.Id} - statuscode: {response.StatusCode}, errorMessage: {result}");
                     }
                     else
                     {
@@ -92,7 +99,7 @@ namespace Altinn3ServiceAdapters
                 }
             }
 
-            return prefillResult; 
+            return prefillResult;
         }
     }
 }

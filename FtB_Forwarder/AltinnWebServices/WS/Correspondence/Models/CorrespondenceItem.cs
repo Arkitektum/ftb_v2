@@ -1,4 +1,4 @@
-﻿namespace AltinnWebServices.WS.Correspondence.Models
+﻿namespace Altinn2.Adapters.WS.Correspondence.Models
 {
     public class CorrespondenceItem
     {

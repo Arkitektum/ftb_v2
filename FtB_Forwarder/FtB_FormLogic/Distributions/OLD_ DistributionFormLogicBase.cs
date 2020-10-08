@@ -1,3 +1,4 @@
+using Altinn.Common.Models;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using System;

@@ -1,4 +1,6 @@
-﻿namespace AltinnWebServices.WS.Prefill
+﻿using AltinnWebServices.WS.Prefill;
+
+namespace Altinn2.Adapters.WS.Prefill
 {
     public interface IPrefillFormTaskBuilder
     {

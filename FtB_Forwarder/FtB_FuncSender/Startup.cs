@@ -1,7 +1,5 @@
-using Altinn3ServiceAdapters;
-using AltinnWebServices;
-using AltinnWebServices.Services;
-using FtB_Common.Adapters;
+using Altinn2.Adapters;
+using Altinn3.Adapters;
 using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;

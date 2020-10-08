@@ -1,7 +1,8 @@
-﻿using AltinnWebServices.Models;
+﻿using Altinn2.Adapters.Models;
+using AltinnWebServices.WS.AltinnDownloadQueue;
 using System.Collections.Generic;
 
-namespace AltinnWebServices.WS.AltinnDownloadQueue
+namespace Altinn2.Adapters.WS.AltinnDownloadQueue
 {
     public static class AltinnDownloadQueueMapper
     {

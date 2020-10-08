@@ -1,6 +1,6 @@
-﻿namespace AltinnWebServices
+﻿namespace Altinn2.Adapters.WS.AltinnDownloadQueue
 {
-    public class AltinnServiceOwnerConnectionSettings
+    public class AltinnDownloadQueueConnectionSettings
     {
         public string UserName { get; set; }
         public string Password { get; set; }

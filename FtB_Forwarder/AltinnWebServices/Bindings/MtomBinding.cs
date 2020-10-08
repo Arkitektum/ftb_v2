@@ -2,7 +2,7 @@
 using System.Text;
 using WcfCoreMtomEncoder;
 
-namespace AltinnWebServices.Bindings
+namespace Altinn2.Adapters.Bindings
 {
     public class MtomBindingProvider : IBinding
     {

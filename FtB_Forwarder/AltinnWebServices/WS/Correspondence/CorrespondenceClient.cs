@@ -1,13 +1,12 @@
-﻿using AltinnWebServices.WS.Correspondence.Models;
+﻿using Altinn2.Adapters.WS.Correspondence.Models;
+using AltinnWebServices.WS.Correspondence;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using System.Text;
 
-namespace AltinnWebServices.WS.Correspondence
-{    
+namespace Altinn2.Adapters.WS.Correspondence
+{
     public class CorrespondenceClient
     {
         private CorrespondenceAgencyExternalBasicClient _client;
@@ -30,7 +29,7 @@ namespace AltinnWebServices.WS.Correspondence
 
                 var taskResult = _client.InsertCorrespondenceBasicV2Async(_connectionOptions.Value.UserName, _connectionOptions.Value.Password, _connectionOptions.Value.SystemUserCode, externalShipmentReference, null);
 
-                
+
 
             }
             catch (TimeoutException)

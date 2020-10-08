@@ -1,4 +1,4 @@
-﻿namespace FtB_Common.Adapters
+﻿namespace Altinn.Common
 {
     public class PrefillResult
     {
