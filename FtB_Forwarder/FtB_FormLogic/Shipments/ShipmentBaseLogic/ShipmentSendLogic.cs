@@ -16,9 +16,9 @@ namespace FtB_FormLogic
             this.svarUtAdapter = svarUtAdapter;
         }
 
-        public override  ReportQueueItem Execute(SendQueueItem input)
+        public override  ReportQueueItem Execute(SendQueueItem sendQueueItem)
         {
-            var t = base.Execute(input);
+            var t = base.Execute(sendQueueItem);
 
             //Map fra FormData til SvarUtPayload 
             svarUtAdapter.Send(new SvarUtPayload() { ReceiverId = Receiver.Id, ReceiverType = Receiver.Type.ToString(), BodyText = "formadata mapping inn i HTML greier sikkert.." });

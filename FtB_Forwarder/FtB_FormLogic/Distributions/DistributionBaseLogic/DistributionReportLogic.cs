@@ -12,15 +12,14 @@ namespace FtB_FormLogic
     {
         
 
-        private readonly IEnumerable<IMessageManager> _messageManagers;
-        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log) : base(repo, tableStorage, log)
+        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IEnumerable<IMessageManager> messagemanagers) : base(repo, tableStorage, log, messagemanagers)
         {
         
         }
 
-        public override FinishedQueueItem Execute(ReportQueueItem reportQueueItem)
+        public override string Execute(ReportQueueItem reportQueueItem)
         {
-            _log.LogInformation("Jau");
+            _log.LogDebug($"{GetType().Name}: Execute.....");
             return base.Execute(reportQueueItem);
         }
     }

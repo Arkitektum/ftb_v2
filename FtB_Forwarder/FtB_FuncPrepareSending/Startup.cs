@@ -13,7 +13,7 @@ namespace FtB_FuncPrepareSending
         {
             builder.Services.AddScoped<SubmittalQueueProcessor>();
             builder.Services.AddPrepareServices();
-            //builder.Services.AddLogging();
+            builder.Services.AddLogging();
         }
     }
 }

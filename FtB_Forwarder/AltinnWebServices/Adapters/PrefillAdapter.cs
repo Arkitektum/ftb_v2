@@ -1,6 +1,7 @@
 ﻿using AltinnWebServices.WS.Prefill;
 using FtB_Common.Adapters;
 using FtB_Common.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace AltinnWebServices.Services
 {
@@ -8,15 +9,18 @@ namespace AltinnWebServices.Services
     {
         private readonly IPrefillFormTaskBuilder _prefillFormTaskBuilder;
         private readonly IAltinnPrefillClient _altinnPrefillClient;
+        private readonly ILogger<PrefillAdapter> _log;
 
-        public PrefillAdapter(IPrefillFormTaskBuilder prefillFormTaskBuilder, IAltinnPrefillClient altinnPrefillClient)
+        public PrefillAdapter(IPrefillFormTaskBuilder prefillFormTaskBuilder, IAltinnPrefillClient altinnPrefillClient, ILogger<PrefillAdapter> log)
         {
             _prefillFormTaskBuilder = prefillFormTaskBuilder;
             _altinnPrefillClient = altinnPrefillClient;
+            _log = log;
         }
 
         public PrefillResult SendPrefill(PrefillData prefillData)
         {
+            _log.LogDebug($"{GetType().Name}: SendPrefill for receiver {prefillData.Reciever}....");
             _prefillFormTaskBuilder.SetupPrefillFormTask(prefillData.ServiceCode, int.Parse(prefillData.ServiceEditionCode), prefillData.Reciever, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DaysValid);
             _prefillFormTaskBuilder.AddPrefillForm(prefillData.DataFormatId, int.Parse(prefillData.DataFormatVersion), prefillData.XmlDataString, prefillData.DistributionFormId);
 

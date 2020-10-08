@@ -19,18 +19,33 @@ namespace FtB_Common.BusinessModels
             PartitionKey = archiveReference;
             RowKey = archiveReference;
             ReceiverCount = receiverCount;
-            SentCount = 0;
+            ProcessedCount = 0;
+            FailedCount = 0;
+            SuccessCount = 0;
+            DigitalDisallowmentCount = 0;
+            Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Created);
             CreatedTimeStamp = createdTimestamp;
         }
-        public int ReceiverCount { get; set; }
-        public int SentCount { get; set; }
-        public DateTime CreatedTimeStamp { get; set; }
 
-        //public List<Tuple<string,string>> GetListOfPropertiesWithValues()
-        //{
-        //    var propertiesList = new List<Tuple<string, string>>();
-        //    propertiesList.Add(Tuple.Create("ReceiverCount", ReceiverCount.ToString()));
-        //    return propertiesList;
-        //}
+        public SubmittalEntity(string archiveReference, SubmittalStatusEnum status)
+        {
+            PartitionKey = archiveReference;
+            RowKey = archiveReference;
+            Status = Enum.GetName(typeof(SubmittalStatusEnum), status);
+        }
+        public SubmittalEntity(string archiveReference)
+        {
+            PartitionKey = archiveReference;
+            RowKey = archiveReference;
+        }
+
+        public int ReceiverCount { get; set; }
+        public int ProcessedCount { get; set; }
+        public int FailedCount { get; set; }
+        public int SuccessCount { get; set; }
+        public int DigitalDisallowmentCount { get; set; }
+        public DateTime CreatedTimeStamp { get; set; }
+        public string Status { get; set; }
+
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace FtB_Common.Enums
+namespace FtB_Common
 {
     public enum ReceiverStatusEnum
     {
@@ -10,6 +10,8 @@ namespace FtB_Common.Enums
         PrefillCreated,
         PrefillPersisted,
         PrefillSent,
-        Sent
+        CorrespondenceCreated,
+        CorrespondenceSent,
+        DigitalDisallowment
     }
 }

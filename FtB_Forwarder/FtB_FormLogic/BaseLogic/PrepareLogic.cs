@@ -1,5 +1,5 @@
-﻿using FtB_Common.BusinessModels;
-using FtB_Common.Enums;
+﻿using FtB_Common;
+using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -22,7 +22,7 @@ namespace FtB_FormLogic
         public virtual IEnumerable<SendQueueItem> Execute(SubmittalQueueItem submittalQueueItem)
         {
             _log.LogDebug($"{GetType().Name}: Processing logic for archveReference {submittalQueueItem.ArchiveReference}....");
-            _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {submittalQueueItem.ArchiveReference}....");
+            
             base.LoadData(submittalQueueItem.ArchiveReference);
 
             CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
