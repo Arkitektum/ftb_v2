@@ -16,7 +16,7 @@ namespace AltinnWebServices
             services.AddTransient<IBinding, BasicBindingProvider>();
             services.AddScoped<IAltinnPrefillClient, AltinnPrefillClient>();
             services.AddScoped<IPrefillFormTaskBuilder, PrefillFormTaskBuilder>();
-            services.AddScoped<IPrefillAdapter, PrefillAdapter>();            
+            services.AddScoped<IPrefillAdapter, Altinn2PrefillAdapter>();            
 
             services.AddOptions<AltinnPrefillConnectionSettings>().Configure<IConfiguration>((settings, config) =>
             {

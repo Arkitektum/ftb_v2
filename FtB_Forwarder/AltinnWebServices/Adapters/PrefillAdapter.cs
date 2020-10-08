@@ -2,17 +2,20 @@
 using FtB_Common.Adapters;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
 
 namespace AltinnWebServices.Services
 {
-    public class PrefillAdapter : IPrefillAdapter
+    public class Altinn2PrefillAdapter : IPrefillAdapter
     {
+        private readonly ILogger _logger;
         private readonly IPrefillFormTaskBuilder _prefillFormTaskBuilder;
         private readonly IAltinnPrefillClient _altinnPrefillClient;
-        private readonly ILogger<PrefillAdapter> _log;
 
-        public PrefillAdapter(IPrefillFormTaskBuilder prefillFormTaskBuilder, IAltinnPrefillClient altinnPrefillClient, ILogger<PrefillAdapter> log)
+        public Altinn2PrefillAdapter(ILogger<Altinn2PrefillAdapter> logger, IPrefillFormTaskBuilder prefillFormTaskBuilder, IAltinnPrefillClient altinnPrefillClient)
         {
+            _logger = logger;
             _prefillFormTaskBuilder = prefillFormTaskBuilder;
             _altinnPrefillClient = altinnPrefillClient;
             _log = log;
@@ -41,10 +44,20 @@ namespace AltinnWebServices.Services
             //    }
             //}
             var prefillFormTask = _prefillFormTaskBuilder.Build();
-
+            _logger.LogDebug($"PrefillFormTask for {prefillData.Reciever} - created");
 
             // ********** Should have retry for communication errors  *********
-            var receiptExternal = _altinnPrefillClient.SendPrefill(prefillFormTask, prefillData.DueDate);
+
+            ReceiptExternal receiptExternal = null;
+            try
+            {
+                receiptExternal = _altinnPrefillClient.SendPrefill(prefillFormTask, prefillData.DueDate);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred when sending prefill to Altinn");
+                throw;
+            }
             // ****************************************************************
 
 
@@ -54,6 +67,9 @@ namespace AltinnWebServices.Services
             {
                 prefillResult.ResultMessage = "Ok - Prefill sent";
                 prefillResult.ResultType = PrefillResultType.Ok;
+
+                if (receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).FirstOrDefault() != null)
+                    prefillResult.PrefillReferenceId = receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).First().ReferenceValue;
             }
             else if (receiptExternal?.ReceiptStatusCode != ReceiptStatusEnum.OK)
                 if (receiptExternal.ReceiptText.Contains("Reportee is reserved against electronic communication"))

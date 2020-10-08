@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_DbModels", "Ftb_DbModel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_DbRepository", "Ftb_DbRepository\Ftb_DbRepository.csproj", "{42E18AC8-5FA1-4DB4-BEC9-23C6ECC0E66C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AltinnServiceAdapters", "AltinnServiceAdapters\AltinnServiceAdapters.csproj", "{9278F98B-FCA0-4431-AEE3-A25BACD22766}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn3ServiceAdapters", "AltinnServiceAdapters\Altinn3ServiceAdapters.csproj", "{9278F98B-FCA0-4431-AEE3-A25BACD22766}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

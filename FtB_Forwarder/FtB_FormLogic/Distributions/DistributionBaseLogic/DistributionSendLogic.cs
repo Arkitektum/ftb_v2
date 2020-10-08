@@ -1,6 +1,6 @@
-﻿using FtB_Common;
-using FtB_Common.Adapters;
+﻿using FtB_Common.Adapters;
 using FtB_Common.BusinessModels;
+using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
@@ -27,18 +27,15 @@ namespace FtB_FormLogic
         public override ReportQueueItem Execute(SendQueueItem sendQueueItem)
         {
             var returnReportQueueItem = base.Execute(sendQueueItem);
-            
             MapPrefillData(sendQueueItem.Receiver.Id);
-
-            //Execute base logic
             UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillCreated));
 
             //prefillData = 
             PersistPrefill(sendQueueItem);
 
-            SendPrefill(sendQueueItem);
+            var result = SendPrefill(sendQueueItem);
 
-            Distribute(sendQueueItem);
+            Distribute(sendQueueItem, result.PrefillReferenceId);
 
             return returnReportQueueItem;
         }
@@ -77,7 +74,7 @@ namespace FtB_FormLogic
             // Decrypt
 
             // Create distributionform 
-
+            var distributionFormId = this.PrefillData.DistributionFormId;
 
             // Map  from prefill-data to prefillFormTask
             // Send using prefill service
@@ -91,3 +88,5 @@ namespace FtB_FormLogic
         protected abstract void MapPrefillData(string receiverId);
     }
 }
+
+            var distributionFormId = this.PrefillData.DistributionFormId;
