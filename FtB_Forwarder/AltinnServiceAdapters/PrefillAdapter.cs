@@ -20,7 +20,7 @@ namespace Altinn3.Adapters
             _logger = logger;
             this.httpClient = httpClient;
         }
-        public PrefillResult SendPrefill(PrefillData prefillData)
+        public PrefillResult SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
         {
             _logger.LogDebug(@"*               _ _   _               ____   ___  ");
             _logger.LogDebug(@"*         /\   | | | (_)             |___ \ / _ \ ");
@@ -52,10 +52,10 @@ namespace Altinn3.Adapters
 
             //Perform instantiation of with prefilled data
             InstanceOwner instanceOwner = new InstanceOwner();
-            if (prefillData.Receiver.Type == AltinnReceiverType.Privatperson)
-                instanceOwner.PersonNumber = prefillData.Receiver.Id;
+            if (altinnDistributionMessage.Receiver.Type == AltinnReceiverType.Privatperson)
+                instanceOwner.PersonNumber = altinnDistributionMessage.Receiver.Id;
             else
-                instanceOwner.OrganisationNumber = prefillData.Receiver.Id;
+                instanceOwner.OrganisationNumber = altinnDistributionMessage.Receiver.Id;
 
             Instance instanceTemplate = new Instance()
             {
@@ -65,7 +65,7 @@ namespace Altinn3.Adapters
             var prefillResult = new PrefillResult();
 
             MultipartFormDataContent content = null;
-            byte[] byteArray = Encoding.ASCII.GetBytes(prefillData.XmlDataString);
+            byte[] byteArray = Encoding.ASCII.GetBytes(altinnDistributionMessage.PrefilledXmlDataString);
             using (MemoryStream stream = new MemoryStream(byteArray))
             {
                 content = new MultipartContentBuilder(instanceTemplate)
@@ -81,7 +81,7 @@ namespace Altinn3.Adapters
                     if (!response.IsSuccessStatusCode)
                     {
                         prefillResult.ResultType = PrefillResultType.UnkownErrorOccured;
-                        _logger.LogError($"Unable to create prefilled instance for {prefillData.Receiver.Id} - statuscode: {response.StatusCode}, errorMessage: {result}");
+                        _logger.LogError($"Unable to create prefilled instance for {altinnDistributionMessage.Receiver.Id} - statuscode: {response.StatusCode}, errorMessage: {result}");
                     }
                     else
                     {

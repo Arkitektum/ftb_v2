@@ -4,7 +4,7 @@ using FtB_DataModels.Mappers;
 
 namespace FtB_FormLogic
 {
-    public class PrefillDataProviderBase
+    public class SendDataProviderBase
     { 
         public virtual AltinnReceiver GetReceiver(BerortPart berortPart)
         {

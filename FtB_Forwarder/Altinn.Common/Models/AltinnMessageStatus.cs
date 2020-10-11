@@ -1,10 +1,12 @@
 ﻿namespace Altinn.Common.Models
 {
-    public enum AltinnMessageStatus
+    public enum AltinnDistributionStatus
     {
         PrefillCreated,
         PrefillSent,
+        PrefillFailed,
         MessageCreated,
-        MessageSent
+        MessageSent,
+        MessageFailed
     }
 }

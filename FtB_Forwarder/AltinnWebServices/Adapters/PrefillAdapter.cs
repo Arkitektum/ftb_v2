@@ -22,11 +22,21 @@ namespace Altinn2.Adapters
             _altinnPrefillClient = altinnPrefillClient;
         }
 
-        public PrefillResult SendPrefill(PrefillData prefillData)
+        public PrefillResult SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
         {
-            _logger.LogDebug($"{GetType().Name}: SendPrefill for receiver {prefillData.Receiver.Id}....");
-            _prefillFormTaskBuilder.SetupPrefillFormTask(prefillData.ServiceCode, int.Parse(prefillData.ServiceEditionCode), prefillData.Receiver.Id, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DistributionFormId, prefillData.DaysValid);
-            _prefillFormTaskBuilder.AddPrefillForm(prefillData.DataFormatId, int.Parse(prefillData.DataFormatVersion), prefillData.XmlDataString, prefillData.DistributionFormId);
+            _logger.LogDebug($"{GetType().Name}: SendPrefill for receiver {altinnDistributionMessage.Receiver.Id}....");
+            _prefillFormTaskBuilder.SetupPrefillFormTask(altinnDistributionMessage.ServiceCode, 
+                    int.Parse(altinnDistributionMessage.ServiceEditionCode), 
+                    altinnDistributionMessage.Receiver.Id, 
+                    altinnDistributionMessage.DistributionFormId, 
+                    altinnDistributionMessage.DistributionFormId, 
+                    altinnDistributionMessage.DistributionFormId, 
+                    altinnDistributionMessage.DaysValid);
+
+            _prefillFormTaskBuilder.AddPrefillForm(altinnDistributionMessage.DataFormatId, 
+                    int.Parse(altinnDistributionMessage.DataFormatVersion), 
+                    altinnDistributionMessage.PrefilledXmlDataString, 
+                    altinnDistributionMessage.DistributionFormId);
 
             //Map email thingy!!!!
             //if (prefillFormData.DoEmailNotification())
@@ -45,14 +55,14 @@ namespace Altinn2.Adapters
             //    }
             //}
             var prefillFormTask = _prefillFormTaskBuilder.Build();
-            _logger.LogDebug($"PrefillFormTask for {prefillData.Receiver.Id} - created");
+            _logger.LogDebug($"PrefillFormTask for {altinnDistributionMessage.Receiver.Id} - created");
 
             // ********** Should have retry for communication errors  *********
 
             ReceiptExternal receiptExternal = null;
             try
             {
-                receiptExternal = _altinnPrefillClient.SendPrefill(prefillFormTask, prefillData.DueDate);
+                receiptExternal = _altinnPrefillClient.SendPrefill(prefillFormTask, altinnDistributionMessage.DueDate);
             }
             catch (Exception ex)
             {

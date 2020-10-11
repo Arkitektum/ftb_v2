@@ -4,6 +4,6 @@ namespace Altinn.Common.Interfaces
 {
     public interface IPrefillAdapter
     {
-        PrefillResult SendPrefill(PrefillData prefillData);
+        PrefillResult SendPrefill(AltinnDistributionMessage altinnDistributionMessage);
     }
 }

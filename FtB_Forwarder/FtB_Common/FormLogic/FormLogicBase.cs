@@ -42,7 +42,5 @@ namespace FtB_Common.FormLogic
             DataForm = SerializeUtil.DeserializeFromString<T>(data);
         }
         //public abstract IFormDataValidator GetFormDataValidator();
-
-        public abstract PrefillData GetPrefillData(string filter, string identifier);
     }
 }

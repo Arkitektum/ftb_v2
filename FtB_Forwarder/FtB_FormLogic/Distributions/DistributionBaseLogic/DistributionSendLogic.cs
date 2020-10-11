@@ -4,6 +4,7 @@ using Altinn.Common.Models;
 using FtB_Common;
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
+using FtB_Common.Utils;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,17 +14,14 @@ namespace FtB_FormLogic
 {
     public abstract class DistributionSendLogic<T> :  SendLogic<T>
     {
-        private readonly ILogger _log;
-        private readonly IPrefillAdapter _prefillAdapter;
-
-        public PrefillData PrefillData { get; set; }
-        protected string prefillDataString { get; set; }
+        private readonly IDistributionAdapter _distributionAdapter;
+        
+        public AltinnDistributionMessage DistributionMessage { get; set; }       
 
 
-        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IPrefillAdapter prefillAdapter) : base(repo, tableStorage, log)
+        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IDistributionAdapter distributionAdapter) : base(repo, tableStorage, log)
         {
-            _log = log;
-            _prefillAdapter = prefillAdapter;
+            _distributionAdapter = distributionAdapter;
         }
 
         public override ReportQueueItem Execute(SendQueueItem sendQueueItem)
@@ -35,9 +33,10 @@ namespace FtB_FormLogic
             //prefillData = 
             PersistPrefill(sendQueueItem);
 
-            var result = SendPrefill(sendQueueItem);
+            var result = _distributionAdapter.SendDistribution(DistributionMessage);
 
-            Distribute(sendQueueItem, result.PrefillReferenceId);
+            //Use result of SendDistribution to update receiver entity
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.CorrespondenceSent));
 
             return returnReportQueueItem;
         }
@@ -46,49 +45,57 @@ namespace FtB_FormLogic
         {
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
             _log.LogDebug($"{GetType().Name}: PersistPrefill for archiveReference {sendQueueItem.ArchiveReference}....");
-            _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(PrefillData.XmlDataString), metaData);
+            _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(DistributionMessage.PrefilledXmlDataString), metaData);
             UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillPersisted));
         }
 
-        protected virtual PrefillResult SendPrefill(SendQueueItem sendQueueItem)
+        protected virtual void PersistMessage(SendQueueItem sendQueueItem)
         {
-            var prefillResult = _prefillAdapter.SendPrefill(PrefillData);
-            switch (prefillResult.ResultType)
-            {
-                case PrefillResultType.Ok:
-                    UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillSent));
-                    break;
-                case PrefillResultType.UnkownErrorOccured:
-                    break;
-                case PrefillResultType.ReservedReportee:
-                    break;
-                case PrefillResultType.UnableToReachReceiver:
-                    break;
-                default:
-                    break;
-            }
-
-            return prefillResult;
+            var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("DistributionMessageReceiver", sendQueueItem.Receiver.Id) };
+            _log.LogDebug($"{GetType().Name}: PersistMessage for archiveReference {sendQueueItem.ArchiveReference}....");
+            _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Message-{Guid.NewGuid()}", Encoding.Default.GetBytes(SerializeUtil.Serialize(DistributionMessage.MessageData)), metaData);
+            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillPersisted));
         }
 
-        protected virtual void Distribute(SendQueueItem sendQueueItem, string prefillReferenceId)
-        {
-            // Validate if receiver info is sufficient
+        //protected virtual IEnumerable<AltinnDistributionResult> SendPrefill(SendQueueItem sendQueueItem)
+        //{
+        //    var distributionResults = _distributionAdapter.SendDistribution(DistributionMessage);
+        //    //switch (prefillResult.ResultType)
+        //    //{
+        //    //    case PrefillResultType.Ok:
+        //    //        UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillSent));
+        //    //        break;
+        //    //    case PrefillResultType.UnkownErrorOccured:
+        //    //        break;
+        //    //    case PrefillResultType.ReservedReportee:
+        //    //        break;
+        //    //    case PrefillResultType.UnableToReachReceiver:
+        //    //        break;
+        //    //    default:
+        //    //        break;
+        //    //}
 
-            // Decrypt
+        //    return distributionResults;
+        //}
 
-            // Create distributionform 
-            var distributionFormId = this.PrefillData.DistributionFormId;
+        //protected virtual void Distribute(SendQueueItem sendQueueItem, string prefillReferenceId)
+        //{
+        //    // Validate if receiver info is sufficient
 
-            // Map  from prefill-data to prefillFormTask
-            // Send using prefill service
+        //    // Decrypt
 
-            // _distributionAdapter.SendDistribution(eitEllerAnnaObjekt);
+        //    // Create distributionform 
+        //    var distributionFormId = this.PrefillData.DistributionFormId;
 
-            // Finally persist distributionform..  and maybe a list of logentries??            
+        //    // Map  from prefill-data to prefillFormTask
+        //    // Send using prefill service
 
-            UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.CorrespondenceSent));
-        }
+        //    // _distributionAdapter.SendDistribution(eitEllerAnnaObjekt);
+
+        //    // Finally persist distributionform..  and maybe a list of logentries??            
+
+        //    UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.CorrespondenceSent));
+        //}
         protected abstract void MapPrefillData(string receiverId);
     }
 }

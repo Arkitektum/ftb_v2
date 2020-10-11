@@ -1,4 +1,5 @@
 ﻿using Altinn.Common.Interfaces;
+using Altinn.Common.Models;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -10,19 +11,37 @@ namespace FtB_FormLogic
     public class VarselOppstartPlanarbeidSendLogic : DistributionSendLogic<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
         //private VarselOppstartPlanarbeidPrepareAltinn3PrefillMapper prefillMapper;
-        private VarselOppstartPlanarbeidPreparePrefillMapper prefillMapper;
+        private VarselOppstartPlanarbeidPreparePrefillMapper _prefillMapper;
 
-        public VarselOppstartPlanarbeidSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger<VarselOppstartPlanarbeidSendLogic> log, IPrefillAdapter prefillAdapter) : base(repo, tableStorage, log, prefillAdapter)
+        public VarselOppstartPlanarbeidSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger<VarselOppstartPlanarbeidSendLogic> log, IDistributionAdapter distributionAdapter) : base(repo, tableStorage, log, distributionAdapter)
         {
             //prefillMapper = new VarselOppstartPlanarbeidPrepareAltinn3PrefillMapper();
-            prefillMapper = new VarselOppstartPlanarbeidPreparePrefillMapper();
+            _prefillMapper = new VarselOppstartPlanarbeidPreparePrefillMapper();
         }
 
         protected override void MapPrefillData(string receiverId)
         {
-            prefillMapper.Map(base.FormData, receiverId);
-            //base.PrefillData = new VarselOppstartPlanarbeidPrepareAltinn3PrefillDataProvider().GetPrefillData(prefillMapper.FormDataString, Guid.NewGuid().ToString());
-            base.PrefillData = new VarselOppstartPlanarbeidPrepareDataProvider().GetPrefillData(prefillMapper.FormDataString, Guid.NewGuid().ToString());
+            _prefillMapper.Map(base.FormData, receiverId);
+            base.DistributionMessage = new VarselOppstartPlanarbeidSendDataProvider().GetDistributionMessage(_prefillMapper.FormDataString, base.FormData, Guid.NewGuid().ToString());
+                                    
         }
     }
+
+    //public interface IDistributionMessageProvider<T>
+    //{
+    //    Altinn.Common.Models.MessageDataType CreateDistributionMessage(T formData);
+    //}
+
+    //public class VarselOppstartPlanarbeidMessageProvider : IDistributionMessageProvider<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
+    //{
+    //    public MessageDataType CreateDistributionMessage(no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType formData)
+    //    {
+    //        var retVal = new MessageDataType();
+            
+    //        //Create body, title and summary
+           
+
+    //        return retVal;
+    //    }
+    //}
 }

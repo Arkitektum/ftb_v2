@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace Altinn.Common.Models
 {
 
-    public class AltinnMessage
+    public class AltinnDistributionMessage
     {
-        public AltinnMessage()
+        public AltinnDistributionMessage()
         {
             this.Attachments = new List<Attachment>();
             this.ReplyLink = new ReplyLink();

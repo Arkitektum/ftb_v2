@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AltinnWebServices\Altinn2.Adapters.csproj" />
     <ProjectReference Include="..\FtB_Common\FtB_Common.csproj" />
     <ProjectReference Include="..\FtB_FormLogic\FtB_FormLogic.csproj" />
     <ProjectReference Include="..\FtB_MessageManager\FtB_MessageManager.csproj" />
