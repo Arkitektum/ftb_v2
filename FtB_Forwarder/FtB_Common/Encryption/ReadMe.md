@@ -1,0 +1,1 @@
+﻿Maybe the encryption/decryption logic should be placed in its own project

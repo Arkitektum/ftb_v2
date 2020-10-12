@@ -2,6 +2,7 @@ using Altinn.Common.Interfaces;
 using Altinn.Distribution;
 using Altinn2.Adapters;
 using Altinn3.Adapters;
+using FtB_Common.Encryption;
 using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
@@ -44,6 +45,9 @@ namespace FtB_FuncSender
             
             builder.Services.AddScoped<IDistributionDataMapper<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>, VarselOppstartPlanarbeidSendDataProvider>();
             builder.Services.AddAltinn2Distribution(configuration);
+
+            builder.Services.AddScoped<IDecryption, Decryption>();
+            builder.Services.AddScoped<IDecryptionFactory, DecryptionFactory>();
 
             //builder.Services.AddAltinn3Distribution(configuration);
             //builder.Services.AddScoped<IDistributionDataMapper<FtB_DataModels.Datamodels.NabovarelPlan.SvarPaaNabovarselPlanType, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>, VarselOppstartPlanarbeidPrepareAltinn3SendDataProvider>();

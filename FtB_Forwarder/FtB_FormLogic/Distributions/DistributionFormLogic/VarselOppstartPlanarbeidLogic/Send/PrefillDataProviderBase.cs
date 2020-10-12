@@ -1,11 +1,18 @@
 ﻿using Altinn.Common.Models;
 using FtB_Common.BusinessModels;
+using FtB_Common.Encryption;
 using FtB_DataModels.Mappers;
 
 namespace FtB_FormLogic
 {
     public class SendDataProviderBase
-    { 
+    {
+        private readonly IDecryptionFactory decryptionFactory;
+
+        public SendDataProviderBase(IDecryptionFactory decryptionFactory)
+        {
+            this.decryptionFactory = decryptionFactory;
+        }
         public virtual AltinnReceiver GetReceiver(BerortPart berortPart)
         {
             var receiver = new AltinnReceiver();
@@ -29,7 +36,7 @@ namespace FtB_FormLogic
 
         private string DecryptIfNecesarry(string encrypted)
         {
-            return encrypted;
+            return decryptionFactory.GetDecryptor().DecryptText(encrypted);
         }
     }
 }
