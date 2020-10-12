@@ -7,12 +7,12 @@ namespace FtB_FormLogic
 {
     public class SendDataProviderBase
     {
-        private readonly IDecryptionFactory decryptionFactory;
+        //private readonly IDecryptionFactory decryptionFactory;
 
-        public SendDataProviderBase(IDecryptionFactory decryptionFactory)
-        {
-            this.decryptionFactory = decryptionFactory;
-        }
+        //public SendDataProviderBase(IDecryptionFactory decryptionFactory)
+        //{
+        //    this.decryptionFactory = decryptionFactory;
+        //}
         public virtual AltinnReceiver GetReceiver(BerortPart berortPart)
         {
             var receiver = new AltinnReceiver();
@@ -22,7 +22,7 @@ namespace FtB_FormLogic
 
             if (!string.IsNullOrEmpty(berortPart.Ssn))
             {
-                receiver.Id = DecryptIfNecesarry(berortPart.Ssn);
+                receiver.Id = berortPart.Ssn; //DecryptIfNecesarry(berortPart.Ssn);
                 receiver.Type = AltinnReceiverType.Privatperson;
             }
             else
@@ -34,9 +34,12 @@ namespace FtB_FormLogic
             return receiver;
         }
 
-        private string DecryptIfNecesarry(string encrypted)
-        {
-            return decryptionFactory.GetDecryptor().DecryptText(encrypted);
-        }
+        //private string DecryptIfNecesarry(string encrypted)
+        //{
+        //    if (encrypted.Length > 11)
+        //        return decryptionFactory.GetDecryptor().DecryptText(encrypted);
+
+        //    return encrypted;
+        //}
     }
 }

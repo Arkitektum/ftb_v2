@@ -46,6 +46,7 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<IDistributionDataMapper<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>, VarselOppstartPlanarbeidSendDataProvider>();
             builder.Services.AddAltinn2Distribution(configuration);
 
+            builder.Services.AddScoped<VarselOppstartPlanarbeidPrefillMapper>();
             builder.Services.AddScoped<IDecryption, Decryption>();
             builder.Services.AddScoped<IDecryptionFactory, DecryptionFactory>();
             builder.Services.AddOptions<EncryptionSettings>().Configure<IConfiguration>((settings, config) =>

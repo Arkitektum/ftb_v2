@@ -1,11 +1,18 @@
-﻿using FtB_Common.Utils;
+﻿using FtB_Common.Encryption;
+using FtB_Common.Utils;
 using FtB_DataModels.Mappers;
 using System.Linq;
 
 namespace FtB_FormLogic
 {
-    public class VarselOppstartPlanarbeidPreparePrefillMapper : IFormMapper<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType, no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
+    public class VarselOppstartPlanarbeidPrefillMapper : IFormMapper<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType, no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
     {
+        private readonly IDecryptionFactory _decryptionFactory;
+
+        public VarselOppstartPlanarbeidPrefillMapper(IDecryptionFactory decryptionFactory)
+        {
+            _decryptionFactory = decryptionFactory;
+        }
         public string FormDataString { get; set; }
 
         public no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType Map(no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType form, string receiverId)
@@ -24,6 +31,10 @@ namespace FtB_FormLogic
 
             svarPaaNabovarsel.beroertPart = NabovarselPlanMappers.GetNabovarselBerortPartMapper()
                 .Map<no.kxml.skjema.dibk.nabovarselPlan.BeroertPartType, no.kxml.skjema.dibk.nabovarselsvarPlan.BeroertPartType>(berortPart.First());
+
+            //Decryption of fødselsnummer.... :(
+            if (!string.IsNullOrEmpty(svarPaaNabovarsel.beroertPart.foedselsnummer) && svarPaaNabovarsel.beroertPart.foedselsnummer.Length > 11)
+                svarPaaNabovarsel.beroertPart.foedselsnummer = _decryptionFactory.GetDecryptor().DecryptText(svarPaaNabovarsel.beroertPart.foedselsnummer);
 
             svarPaaNabovarsel.hovedinnsendingsnummer = form.metadata.hovedinnsendingsnummer;
             svarPaaNabovarsel.fraSluttbrukersystem = form.metadata.fraSluttbrukersystem;

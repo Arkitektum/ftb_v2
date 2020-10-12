@@ -9,9 +9,9 @@ namespace FtB_FormLogic
 {
     public class VarselOppstartPlanarbeidPrepareAltinn3SendDataProvider : SendDataProviderBase, IDistributionDataMapper<FtB_DataModels.Datamodels.NabovarelPlan.SvarPaaNabovarselPlanType, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
-        public VarselOppstartPlanarbeidPrepareAltinn3SendDataProvider(IDecryptionFactory decryptionFactory) : base(decryptionFactory)
-        {
-        }
+        //public VarselOppstartPlanarbeidPrepareAltinn3SendDataProvider(IDecryptionFactory decryptionFactory) : base(decryptionFactory)
+        //{
+        //}
 
         public FtB_DataModels.Datamodels.NabovarelPlan.SvarPaaNabovarselPlanType PrefillFormData { get; set; }
 

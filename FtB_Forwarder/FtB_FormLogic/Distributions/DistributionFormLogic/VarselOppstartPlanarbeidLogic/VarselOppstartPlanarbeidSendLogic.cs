@@ -13,26 +13,24 @@ namespace FtB_FormLogic
     public class VarselOppstartPlanarbeidSendLogic : DistributionSendLogic<NabovarselPlanType>
     {
         private readonly IDistributionDataMapper<SvarPaaNabovarselPlanType, NabovarselPlanType> _distributionDataMapper;
-
-        //private VarselOppstartPlanarbeidPrepareAltinn3PrefillMapper prefillMapper;
-        private VarselOppstartPlanarbeidPreparePrefillMapper _prefillMapper;
+        private readonly VarselOppstartPlanarbeidPrefillMapper _prefillMapper;
 
         public VarselOppstartPlanarbeidSendLogic(IFormDataRepo repo, 
                                                  ITableStorage tableStorage, 
                                                  ILogger<VarselOppstartPlanarbeidSendLogic> log, 
-                                                 IDistributionAdapter distributionAdapter, IDistributionDataMapper<SvarPaaNabovarselPlanType, NabovarselPlanType> distributionDataMapper) 
+                                                 IDistributionAdapter distributionAdapter, 
+                                                 IDistributionDataMapper<SvarPaaNabovarselPlanType, NabovarselPlanType> distributionDataMapper,
+                                                 VarselOppstartPlanarbeidPrefillMapper prefillMapper) 
             : base(repo, tableStorage, log, distributionAdapter)
-        {
-            //prefillMapper = new VarselOppstartPlanarbeidPrepareAltinn3PrefillMapper();
-            _prefillMapper = new VarselOppstartPlanarbeidPreparePrefillMapper();
+        {   
             _distributionDataMapper = distributionDataMapper;
+            this._prefillMapper = prefillMapper;
         }
 
         protected override void MapPrefillData(string receiverId)
         {
             _prefillMapper.Map(base.FormData, receiverId);
             base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(_prefillMapper.FormDataString, base.FormData, Guid.NewGuid().ToString());
-                                    
         }
     }
 
