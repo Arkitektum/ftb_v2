@@ -28,7 +28,7 @@ namespace FtB_Common.BusinessModels
             PartitionKey = archiveReference;
             RowKey = storageRowKey;
         }
-        private string ReceiverId { get; set; }
+        public string ReceiverId { get; set; }
         public string Status { get; set; }
         public DateTime CreatedTimeStamp { get; set; }
     }
