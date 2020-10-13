@@ -27,5 +27,13 @@ namespace Altinn.Distribution
             return services;
         }
 
+        public static IServiceCollection AddAltinnNotification(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddAltinn2CorrespondenceService(configuration);
+            services.AddScoped<INotificationAdapter, AltinnNotification>();
+
+            return services;
+        }
+
     }
 }
