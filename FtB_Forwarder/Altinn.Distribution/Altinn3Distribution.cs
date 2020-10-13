@@ -32,7 +32,9 @@ namespace Altinn.Distribution
 
                 //Send correspondence
                 //prefillResult.PrefillReferenceId
-                _correspondenceAdapter.SendMessage(altinnMessage, prefillResult.PrefillReferenceId);
+                //Transform body!!!!! 
+                //, prefillResult.PrefillReferenceId
+                _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage);
 
                 results.Add(new AltinnDistributionResult() { Status = AltinnDistributionStatus.MessageSent });
             }

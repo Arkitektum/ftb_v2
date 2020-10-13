@@ -6,19 +6,14 @@ namespace Altinn2.Adapters.WS.Prefill
 {
     public class PrefillFormTaskBuilder : IPrefillFormTaskBuilder
     {
-        private readonly string _serviceOwnerCode;
-
         private PrefillFormTask _prefillForm = null;
         private readonly PrefillFormBEList _prefillFormBeList = new PrefillFormBEList();
         private readonly PrefillAttachmentBEList _prefillAttachmentBeList = new PrefillAttachmentBEList();
         private readonly NotificationBEList _notificationBeList = new NotificationBEList();
         private readonly PreFillIdentityFieldBEList _identityBeList = new PreFillIdentityFieldBEList();
-        private readonly IConfiguration _configuration;
 
-        public PrefillFormTaskBuilder(IConfiguration configuration)
+        public PrefillFormTaskBuilder()
         {
-            _configuration = configuration;
-            _serviceOwnerCode = _configuration["Altinn.ServiceOwnerCode"];
         }
 
         public PrefillFormTask Build()
@@ -61,7 +56,6 @@ namespace Altinn2.Adapters.WS.Prefill
                 ExternalServiceEditionCode = serviceEdition,
                 ExternalShipmentReference = externalShipRef,
                 SendersReference = sendersReference,
-                ServiceOwnerCode = _serviceOwnerCode,
                 Reportee = reportee,
                 ReceiversReference = receiversReference,
                 ValidFromDate = DateTime.Now.AddDays(-1),

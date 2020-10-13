@@ -21,24 +21,30 @@ namespace FtB_FormLogic
 
             var distributionMessage = new AltinnDistributionMessage()
             {
-                DataFormatId = PrefillFormData.dataFormatId,
-                DataFormatVersion = PrefillFormData.dataFormatVersion,
-                Receiver = base.GetReceiver(NabovarselPlanMappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart)),
-                DistributionFormId = distributionFormId,
-                ServiceCode = "5419", //Distribution service servicecode??
-                ServiceEditionCode = "1",
+                PrefillDataFormatId = PrefillFormData.dataFormatId,
+                PrefillDataFormatVersion = PrefillFormData.dataFormatVersion,
+                DistributionFormReferenceId = distributionFormId,
+                PrefillServiceCode = "5419", //Distribution service servicecode??
+                PrefillServiceEditionCode = "1",
                 PrefilledXmlDataString = prefillXmlString,
                 DaysValid = 14,
-                DueDate = null,
-                MessageData = CreateMessageData(mainFormData)
-                
+                DueDate = null
             };
 
+            distributionMessage.NotificationMessage.Receiver = base.GetReceiver(NabovarselPlanMappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart));
+            distributionMessage.NotificationMessage.MessageData = CreateMessageData(mainFormData);
             return distributionMessage;
         }
 
         private MessageDataType CreateMessageData(no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData)
         {
+            //return new MessageDataType((values, messageBody) =>
+            //{
+            //    foreach (var item in values)
+            //    {
+            //        messageBody.Replace(item.Key, item.Value);
+            //    }
+            //})
             return new MessageDataType() { MessageBody = "", MessageSummary = "", MessageTitle = "" };
         }
 

@@ -1,5 +1,4 @@
-﻿using Altinn2.Adapters.WS.Correspondence.Models;
-using AltinnWebServices.WS.Correspondence;
+﻿using AltinnWebServices.WS.Correspondence;
 using Microsoft.Extensions.Options;
 using System;
 using System.ServiceModel;
@@ -7,29 +6,24 @@ using System.ServiceModel.Channels;
 
 namespace Altinn2.Adapters.WS.Correspondence
 {
-    public class CorrespondenceClient
+    public class CorrespondenceClient : ICorrespondenceClient
     {
         private CorrespondenceAgencyExternalBasicClient _client;
-        private readonly IOptions<AltinnCorrespondenceConnectionSettings> _connectionOptions;
+        private readonly IOptions<CorrespondenceConnectionSettings> _connectionOptions;
 
-        public CorrespondenceClient(Binding binding, IOptions<AltinnCorrespondenceConnectionSettings> connectionOptions)
+        public CorrespondenceClient(Binding binding, IOptions<CorrespondenceConnectionSettings> connectionOptions)
         {
             _client = new CorrespondenceAgencyExternalBasicClient(binding, new EndpointAddress(connectionOptions.Value.EndpointUrl));
             _connectionOptions = connectionOptions;
         }
 
-        public void SendCorrespondence(CorrespondenceItem correspondenceItem)
+        public ReceiptExternal SendCorrespondence(InsertCorrespondenceV2 correspondenceItem)
         {
             try
             {
-                //Map to InsertCorrespondenceV2
-                InsertCorrespondenceV2 correspondence = CorrespondenceMapper.Map(correspondenceItem);
-                var externalShipmentReference = correspondenceItem.ExternalShipmentReference;
-
-
-                var taskResult = _client.InsertCorrespondenceBasicV2Async(_connectionOptions.Value.UserName, _connectionOptions.Value.Password, _connectionOptions.Value.SystemUserCode, externalShipmentReference, null);
-
-
+                var taskResult = _client.InsertCorrespondenceBasicV2Async(_connectionOptions.Value.UserName, _connectionOptions.Value.Password, _connectionOptions.Value.SystemUserCode, correspondenceItem.ArchiveReference, correspondenceItem);
+                var result = taskResult.GetAwaiter().GetResult();
+                return result.Body.InsertCorrespondenceBasicV2Result;
 
             }
             catch (TimeoutException)
@@ -43,6 +37,5 @@ namespace Altinn2.Adapters.WS.Correspondence
                 throw;
             }
         }
-
     }
 }

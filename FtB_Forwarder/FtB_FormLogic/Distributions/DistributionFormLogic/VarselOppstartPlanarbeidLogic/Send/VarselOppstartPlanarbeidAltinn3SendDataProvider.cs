@@ -21,15 +21,20 @@ namespace FtB_FormLogic
 
             var prefillData = new AltinnDistributionMessage()
             {
-                DataFormatId = PrefillFormData.dataFormatId,
-                DataFormatVersion = PrefillFormData.dataFormatVersion,
-                Receiver = base.GetReceiver(NabovarselPlanAltinn3Mappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart)),
-                DistributionFormId = distributionFormId,
-                ServiceCode = "5419",
-                ServiceEditionCode = "1",
+                PrefillDataFormatId = PrefillFormData.dataFormatId,
+                PrefillDataFormatVersion = PrefillFormData.dataFormatVersion,
+                //Receiver = base.GetReceiver(NabovarselPlanAltinn3Mappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart)),
+                DistributionFormReferenceId = distributionFormId,
+                PrefillServiceCode = "5419",
+                PrefillServiceEditionCode = "1",
                 PrefilledXmlDataString = prefillXmlString,
                 DaysValid = 14,
                 DueDate = null
+            };
+
+            prefillData.NotificationMessage = new AltinnNotificationMessage()
+            {
+                Receiver = base.GetReceiver(NabovarselPlanAltinn3Mappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart))                
             };
 
             return prefillData;

@@ -13,9 +13,9 @@ namespace Altinn2.Adapters
     {
         private readonly ILogger _logger;
         private readonly IPrefillFormTaskBuilder _prefillFormTaskBuilder;
-        private readonly IAltinnPrefillClient _altinnPrefillClient;
+        private readonly IPrefillClient _altinnPrefillClient;
 
-        public PrefillAdapter(ILogger<PrefillAdapter> logger, IPrefillFormTaskBuilder prefillFormTaskBuilder, IAltinnPrefillClient altinnPrefillClient)
+        public PrefillAdapter(ILogger<PrefillAdapter> logger, IPrefillFormTaskBuilder prefillFormTaskBuilder, IPrefillClient altinnPrefillClient)
         {
             _logger = logger;
             _prefillFormTaskBuilder = prefillFormTaskBuilder;
@@ -24,19 +24,19 @@ namespace Altinn2.Adapters
 
         public PrefillResult SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
         {
-            _logger.LogDebug($"{GetType().Name}: SendPrefill for receiver {altinnDistributionMessage.Receiver.Id}....");
-            _prefillFormTaskBuilder.SetupPrefillFormTask(altinnDistributionMessage.ServiceCode, 
-                    int.Parse(altinnDistributionMessage.ServiceEditionCode), 
-                    altinnDistributionMessage.Receiver.Id, 
-                    altinnDistributionMessage.DistributionFormId, 
-                    altinnDistributionMessage.DistributionFormId, 
-                    altinnDistributionMessage.DistributionFormId, 
+            _logger.LogDebug($"{GetType().Name}: SendPrefill for receiver {altinnDistributionMessage.NotificationMessage.Receiver.Id}....");
+            _prefillFormTaskBuilder.SetupPrefillFormTask(altinnDistributionMessage.PrefillServiceCode, 
+                    int.Parse(altinnDistributionMessage.PrefillServiceEditionCode), 
+                    altinnDistributionMessage.NotificationMessage.Receiver.Id, 
+                    altinnDistributionMessage.DistributionFormReferenceId, 
+                    altinnDistributionMessage.DistributionFormReferenceId, 
+                    altinnDistributionMessage.DistributionFormReferenceId, 
                     altinnDistributionMessage.DaysValid);
 
-            _prefillFormTaskBuilder.AddPrefillForm(altinnDistributionMessage.DataFormatId, 
-                    int.Parse(altinnDistributionMessage.DataFormatVersion), 
+            _prefillFormTaskBuilder.AddPrefillForm(altinnDistributionMessage.PrefillDataFormatId, 
+                    int.Parse(altinnDistributionMessage.PrefillDataFormatVersion), 
                     altinnDistributionMessage.PrefilledXmlDataString, 
-                    altinnDistributionMessage.DistributionFormId);
+                    altinnDistributionMessage.DistributionFormReferenceId);
 
             //Map email thingy!!!!
             //if (prefillFormData.DoEmailNotification())
@@ -55,7 +55,7 @@ namespace Altinn2.Adapters
             //    }
             //}
             var prefillFormTask = _prefillFormTaskBuilder.Build();
-            _logger.LogDebug($"PrefillFormTask for {altinnDistributionMessage.Receiver.Id} - created");
+            _logger.LogDebug($"PrefillFormTask for {altinnDistributionMessage.NotificationMessage.Receiver.Id} - created");
 
             // ********** Should have retry for communication errors  *********
 

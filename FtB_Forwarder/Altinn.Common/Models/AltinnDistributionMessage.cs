@@ -3,34 +3,53 @@ using System.Collections.Generic;
 
 namespace Altinn.Common.Models
 {
+    public abstract class AltinnMessageBase
+    {
+        public AltinnMessageBase()
+        {
+            this.Attachments = new List<Attachment>();
+            this.MessageData = new MessageDataType();
+            this.Receiver = new AltinnReceiver();
+        }
+        public MessageDataType MessageData { get; set; }
+        public IEnumerable<Attachment> Attachments { get; set; }
+        public AltinnReceiver Receiver { get; set; }
+        public string ArchiveReference { get; set; }
+        public bool RespectReservable { get; set; } = true;    
+    }
+
+    public class AltinnMessage : AltinnMessageBase
+    {}
+
+    public class AltinnNotificationMessage : AltinnMessageBase
+    {
+        public AltinnNotificationMessage()
+        {
+            this.Notifications = new List<Notification>();
+        }
+
+        public IEnumerable<Notification> Notifications { get; set; }
+        public string NotificationTemplate { get; set; }
+    }
 
     public class AltinnDistributionMessage
     {
         public AltinnDistributionMessage()
-        {
-            this.Attachments = new List<Attachment>();
+        {   
             this.ReplyLink = new ReplyLink();
-            this.MessageData = new MessageDataType();
-            this.Notifications = new List<Notification>();
-        }
-        public string Reportee { get; set; }
-        public string ServiceCode { get; set; }
-        public string ServiceEditionCode { get; set; }
-        public AltinnReceiver Receiver { get; set; }
-        public bool RespectReservable { get; set; }
-        public string DistributionFormId { get; set; }
-        public string ServiceOwnerCode { get; set; }
-        public string DataFormatId { get; set; }
-        public string DataFormatVersion { get; set; }
+            this.NotificationMessage = new AltinnNotificationMessage();
+        }        
+
+        public AltinnNotificationMessage NotificationMessage { get; set; }
+        public string PrefillDataFormatId { get; set; }
+        public string PrefillDataFormatVersion { get; set; }
+        public string PrefillServiceCode { get; set; }
+        public string PrefillServiceEditionCode { get; set; }
+        public string PrefilledXmlDataString { get; set; }
+
+        public string DistributionFormReferenceId { get; set; }
         public int DaysValid { get; set; }
         public DateTime? DueDate { get; set; }
-
         public ReplyLink ReplyLink { get; set; }
-
-        public string PrefilledXmlDataString { get; set; }
-        public MessageDataType MessageData { get; set; }
-        IEnumerable<Attachment> Attachments { get; set; }
-        IEnumerable<Notification> Notifications { get; set; }
-        public string NotificationTemplate { get; set; }
     }
 }

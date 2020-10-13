@@ -35,7 +35,6 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<BlobStorage>();
             builder.Services.AddLogging();
 
-
             builder.Services.AddScoped<FormatIdToFormMapper>();
             builder.Services.AddScoped<VarselOppstartPlanarbeidSendLogic>();
             builder.Services.AddScoped<IFormDataRepo, FormDataRepository>();
@@ -56,6 +55,8 @@ namespace FtB_FuncSender
 
             //builder.Services.AddAltinn3Distribution(configuration);
             //builder.Services.AddScoped<IDistributionDataMapper<FtB_DataModels.Datamodels.NabovarelPlan.SvarPaaNabovarselPlanType, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>, VarselOppstartPlanarbeidPrepareAltinn3SendDataProvider>();
+
+            builder.Services.AddAltinnNotification(configuration);
         }
     }
 }

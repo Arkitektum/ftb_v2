@@ -3,7 +3,7 @@ using System;
 
 namespace Altinn2.Adapters.WS.Prefill
 {
-    public interface IAltinnPrefillClient
+    public interface IPrefillClient
     {
         ReceiptExternal SendPrefill(PrefillFormTask prefillFormTask, DateTime? dueDate);
     }

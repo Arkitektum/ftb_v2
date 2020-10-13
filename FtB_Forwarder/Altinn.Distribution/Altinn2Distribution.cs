@@ -32,7 +32,13 @@ namespace Altinn.Distribution
 
                 //Send correspondence
                 //prefillResult.PrefillReferenceId
-                _correspondenceAdapter.SendMessage(altinnMessage, prefillResult.PrefillReferenceId);
+
+                //Transform body!!!!
+                //, prefillResult.PrefillReferenceId
+                //var kv = new List<KeyValuePair<string, string>>();
+                //altinnMessage.NotificationMessage.MessageData.EnrichBodyWith(kv);
+
+                _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage);
 
                 results.Add(new AltinnDistributionResult() { Status = AltinnDistributionStatus.MessageSent });
             }

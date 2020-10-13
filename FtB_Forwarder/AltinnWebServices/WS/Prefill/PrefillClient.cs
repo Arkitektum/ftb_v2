@@ -7,20 +7,19 @@ using System.ServiceModel;
 
 namespace Altinn2.Adapters.WS.Prefill
 {
-    public class AltinnPrefillClient : IAltinnPrefillClient
+    public class PrefillClient : IPrefillClient
     {
         private PreFillExternalBasicClient _client;
-        private readonly IOptions<AltinnPrefillConnectionSettings> _connectionOptions;
-        private readonly ILogger<AltinnPrefillClient> _log;
-
-        //Move into separate class????
+        private readonly IOptions<PrefillConnectionSettings> _connectionOptions;
+        private readonly ILogger<PrefillClient> _log;
+        //Move into separate class????
         private readonly string _externalBatchId = Guid.NewGuid().ToString();
         private readonly bool _doSaveFormTask = true;
         private readonly bool _doinstantiateFormTask = true;
         private readonly int? _caseId = null;
         private readonly string _instantitedOnBehalfOf = null;
 
-        public AltinnPrefillClient(IBindingFactory bindingFactory, IOptions<AltinnPrefillConnectionSettings> connectionOptions, ILogger<AltinnPrefillClient> log)
+        public PrefillClient(IBindingFactory bindingFactory, IOptions<PrefillConnectionSettings> connectionOptions, ILogger<PrefillClient> log)
         {
             _client = new PreFillExternalBasicClient(bindingFactory.GetBindingFor(BindingType.Mtom), new EndpointAddress(connectionOptions.Value.EndpointUrl));
             _connectionOptions = connectionOptions;
@@ -31,6 +30,8 @@ namespace Altinn2.Adapters.WS.Prefill
         {
             try
             {
+                prefillFormTask.ServiceOwnerCode = _connectionOptions.Value.ServiceOwnerCode;
+
                 var result = _client.SubmitAndInstantiatePrefilledFormTaskBasicAsync(_connectionOptions.Value.UserName,
                     _connectionOptions.Value.Password,
                     _externalBatchId,

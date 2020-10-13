@@ -52,10 +52,10 @@ namespace Altinn3.Adapters
 
             //Perform instantiation of with prefilled data
             InstanceOwner instanceOwner = new InstanceOwner();
-            if (altinnDistributionMessage.Receiver.Type == AltinnReceiverType.Privatperson)
-                instanceOwner.PersonNumber = altinnDistributionMessage.Receiver.Id;
+            if (altinnDistributionMessage.NotificationMessage.Receiver.Type == AltinnReceiverType.Privatperson)
+                instanceOwner.PersonNumber = altinnDistributionMessage.NotificationMessage.Receiver.Id;
             else
-                instanceOwner.OrganisationNumber = altinnDistributionMessage.Receiver.Id;
+                instanceOwner.OrganisationNumber = altinnDistributionMessage.NotificationMessage.Receiver.Id;
 
             Instance instanceTemplate = new Instance()
             {
@@ -81,7 +81,7 @@ namespace Altinn3.Adapters
                     if (!response.IsSuccessStatusCode)
                     {
                         prefillResult.ResultType = PrefillResultType.UnkownErrorOccured;
-                        _logger.LogError($"Unable to create prefilled instance for {altinnDistributionMessage.Receiver.Id} - statuscode: {response.StatusCode}, errorMessage: {result}");
+                        _logger.LogError($"Unable to create prefilled instance for {altinnDistributionMessage.NotificationMessage.Receiver.Id} - statuscode: {response.StatusCode}, errorMessage: {result}");
                     }
                     else
                     {

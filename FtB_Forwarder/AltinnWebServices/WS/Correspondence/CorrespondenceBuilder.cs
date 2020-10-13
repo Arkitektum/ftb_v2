@@ -1,12 +1,12 @@
 ﻿using Altinn.Common.Models;
 using AltinnWebServices.WS.Correspondence;
+using Microsoft.Extensions.Options;
 using System;
 
 namespace Altinn2.Adapters.WS.Correspondence
 {
-    public class CorrespondanceBuilder
+    public class CorrespondenceBuilder : ICorrespondenceBuilder
     {
-
         private InsertCorrespondenceV2 _correspondence = null;
         private readonly ExternalContentV2 _content = new ExternalContentV2();
         private readonly AttachmentsV2 _attachments = new AttachmentsV2();
@@ -16,6 +16,12 @@ namespace Altinn2.Adapters.WS.Correspondence
 
         private readonly XmlAttachmentListV2 _xmlAttachmentList = new XmlAttachmentListV2();
         private readonly NotificationBEList _notificationList = new NotificationBEList();
+        private readonly IOptions<CorrespondenceSettings> _correspondenceSettings;
+
+        public CorrespondenceBuilder(IOptions<CorrespondenceSettings> correspondenceSettings)
+        {
+            _correspondenceSettings = correspondenceSettings;
+        }
 
         public InsertCorrespondenceV2 Build()
         {
@@ -176,12 +182,12 @@ namespace Altinn2.Adapters.WS.Correspondence
         /// <param name="reportee"></param>
         /// <param name="archiveReference"></param>
         /// <param name="dueDate"></param>
-        public void SetUpCorrespondence(string serviceCode, string serviceCodeEdition, string reportee, string archiveReference, DateTime dueDate)
+        public void SetUpCorrespondence(string reportee, string archiveReference, DateTime dueDate)
         {
             _correspondence = new InsertCorrespondenceV2
             {
-                ServiceCode = serviceCode,
-                ServiceEdition = serviceCodeEdition,
+                ServiceCode = _correspondenceSettings.Value.ServiceCode,
+                ServiceEdition = _correspondenceSettings.Value.ServiceCodeEdition,
                 Reportee = reportee,
                 ArchiveReference = archiveReference,
                 AllowForwarding = true,
@@ -199,12 +205,12 @@ namespace Altinn2.Adapters.WS.Correspondence
         /// <param name="serviceCodeEdition"></param>
         /// <param name="reportee"></param>
         /// <param name="archiveReference"></param>
-        public void SetUpCorrespondence(string serviceCode, string serviceCodeEdition, string reportee, string archiveReference)
+        public void SetUpCorrespondence(string reportee, string archiveReference)
         {
             _correspondence = new InsertCorrespondenceV2
             {
-                ServiceCode = serviceCode,
-                ServiceEdition = serviceCodeEdition,
+                ServiceCode = _correspondenceSettings.Value.ServiceCode,
+                ServiceEdition = _correspondenceSettings.Value.ServiceCodeEdition,
                 Reportee = reportee,
                 ArchiveReference = archiveReference,
                 AllowForwarding = true,
@@ -213,12 +219,12 @@ namespace Altinn2.Adapters.WS.Correspondence
                 IsReservable = true
             };
         }
-        public void SetUpCorrespondence(string serviceCode, string serviceCodeEdition, string reportee, string archiveReference, bool respectReservable = true)
+        public void SetUpCorrespondence(string reportee, string archiveReference, bool respectReservable = true)
         {
             _correspondence = new InsertCorrespondenceV2
             {
-                ServiceCode = serviceCode,
-                ServiceEdition = serviceCodeEdition,
+                ServiceCode = _correspondenceSettings.Value.ServiceCode,
+                ServiceEdition = _correspondenceSettings.Value.ServiceCodeEdition,
                 Reportee = reportee,
                 ArchiveReference = archiveReference,
                 AllowForwarding = true,

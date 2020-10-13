@@ -1,6 +1,6 @@
 ﻿using Altinn.Common.Interfaces;
-using Altinn2.Adapters.Adapters;
 using Altinn2.Adapters.Bindings;
+using Altinn2.Adapters.WS.Correspondence;
 using Altinn2.Adapters.WS.Prefill;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,11 +14,11 @@ namespace Altinn2.Adapters
             services.AddTransient<IBindingFactory, BindingFactory>();
             services.AddTransient<IBinding, MtomBindingProvider>();
             services.AddTransient<IBinding, BasicBindingProvider>();
-            services.AddScoped<IAltinnPrefillClient, AltinnPrefillClient>();
+            services.AddScoped<IPrefillClient, PrefillClient>();
             services.AddScoped<IPrefillFormTaskBuilder, PrefillFormTaskBuilder>();
             services.AddScoped<IPrefillAdapter, PrefillAdapter>();
 
-            services.AddOptions<AltinnPrefillConnectionSettings>().Configure<IConfiguration>((settings, config) =>
+            services.AddOptions<PrefillConnectionSettings>().Configure<IConfiguration>((settings, config) =>
             {
                 configuration.GetSection("AltinnPrefillConnectionSettings").Bind(settings);
             });
@@ -31,11 +31,13 @@ namespace Altinn2.Adapters
             services.AddTransient<IBindingFactory, BindingFactory>();
             services.AddTransient<IBinding, MtomBindingProvider>();
             services.AddTransient<IBinding, BasicBindingProvider>();
-            //services.AddScoped<IAltinnCorrespondenceClient, Altinn2.Adapters.WS.Correspondence.CorrespondenceClient >();
-            //services.AddScoped<ICorrespondenceBuilder, Altinn2.Adapters.WS.Correspondence.CorrespondanceBuilder>();
+
+            services.AddScoped<ICorrespondenceClient, CorrespondenceClient>();
+            services.AddScoped<ICorrespondenceBuilder, CorrespondenceBuilder>();
+            
             services.AddScoped<ICorrespondenceAdapter, CorrespondenceAdapter>();
 
-            services.AddOptions<WS.Correspondence.AltinnCorrespondenceConnectionSettings>().Configure<IConfiguration>((settings, config) =>
+            services.AddOptions<WS.Correspondence.CorrespondenceConnectionSettings>().Configure<IConfiguration>((settings, config) =>
             {
                 configuration.GetSection("AltinnCorrespondenceConnectionSettings").Bind(settings);
             });

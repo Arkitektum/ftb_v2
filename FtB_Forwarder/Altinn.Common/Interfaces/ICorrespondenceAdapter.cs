@@ -7,6 +7,6 @@ namespace Altinn.Common.Interfaces
 {
     public interface ICorrespondenceAdapter
     {
-        void SendMessage(AltinnDistributionMessage altinnMessage, string prefillReference);
+        CorrespondenceResult SendMessage(AltinnMessageBase altinnMessage);
     }
 }
