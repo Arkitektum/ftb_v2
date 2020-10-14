@@ -5,6 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceiptMessageBody.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceiptMessageBody.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FtB_Common\FtB_Common.csproj" />
     <ProjectReference Include="..\FtB_DataModels\FtB_DataModels.csproj" />
   </ItemGroup>

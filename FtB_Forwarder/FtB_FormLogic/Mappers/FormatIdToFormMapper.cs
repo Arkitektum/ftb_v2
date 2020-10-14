@@ -20,7 +20,7 @@ namespace FtB_FormLogic
             _log = log;
         }
 
-        public IFormLogic<T,U> GetForm<T,U>(string formatId, FormLogicProcessingContext processingContext)
+        public IFormLogic<T,U> GetFormLogic<T,U>(string formatId, FormLogicProcessingContext processingContext)
         {
             //Retrieves classes implementing IForm, having FormDataFormatAttribute and filtering by its DataFormatId
             _log.LogDebug($"{GetType().Name}: GetForm for formatId {formatId}....");
@@ -32,15 +32,15 @@ namespace FtB_FormLogic
                 .Where(t => t.GetCustomAttribute<FormDataFormatAttribute>().DataFormatId == formatId &&  
                             t.GetCustomAttribute<FormDataFormatAttribute>().ProcessingContext == processingContext);
 
-            object formInstance = null;
+            object formLogicInstance = null;
             if (types.Count() > 0)
             {
                 //Resolves an instance of the class
                 var formType = types.FirstOrDefault();
-                formInstance = _services.GetService(formType);
+                formLogicInstance = _services.GetService(formType);
             }
 
-            return formInstance as IFormLogic<T, U>;
+            return formLogicInstance as IFormLogic<T, U>;
         }
     }
 }
