@@ -21,8 +21,6 @@ namespace Altinn2.Adapters.WS.Correspondence
         {
             try
             {
-                correspondenceItem.ServiceCode = _connectionOptions.Value.ServiceCode;
-                correspondenceItem.ServiceEdition = _connectionOptions.Value.ServiceEditionCode;
                 var taskResult = _client.InsertCorrespondenceBasicV2Async(_connectionOptions.Value.UserName, _connectionOptions.Value.Password, _connectionOptions.Value.ServiceOwnerCode, externalShipmentReference, correspondenceItem);
                 var result = taskResult.GetAwaiter().GetResult();
                 return result.Body.InsertCorrespondenceBasicV2Result;

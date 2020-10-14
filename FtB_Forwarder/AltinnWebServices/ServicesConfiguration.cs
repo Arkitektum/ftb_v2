@@ -34,6 +34,8 @@ namespace Altinn2.Adapters
             
             services.AddScoped<ICorrespondenceAdapter, CorrespondenceAdapter>();            
             services.Configure<CorrespondenceConnectionSettings>(configuration.GetSection("CorrespondenceConnectionSettings"));
+            services.Configure<CorrespondenceBuilderSettings>(configuration.GetSection("CorrespondenceBuilderSettings"));
+            
 
             return services;
         }

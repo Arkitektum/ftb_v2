@@ -16,9 +16,9 @@ namespace Altinn2.Adapters.WS.Correspondence
 
         private readonly XmlAttachmentListV2 _xmlAttachmentList = new XmlAttachmentListV2();
         private readonly NotificationBEList _notificationList = new NotificationBEList();
-        private readonly IOptions<CorrespondenceSettings> _correspondenceSettings;
+        private readonly IOptions<CorrespondenceBuilderSettings> _correspondenceSettings;
 
-        public CorrespondenceBuilder(IOptions<CorrespondenceSettings> correspondenceSettings)
+        public CorrespondenceBuilder(IOptions<CorrespondenceBuilderSettings> correspondenceSettings)
         {
             _correspondenceSettings = correspondenceSettings;
         }
@@ -186,8 +186,8 @@ namespace Altinn2.Adapters.WS.Correspondence
         {
             _correspondence = new InsertCorrespondenceV2
             {
-                ServiceCode = _correspondenceSettings.Value.ServiceCode,
-                ServiceEdition = _correspondenceSettings.Value.ServiceCodeEdition,
+                ServiceCode = _correspondenceSettings.Value.DefaultMessageServiceCode,
+                ServiceEdition = _correspondenceSettings.Value.DefaultMessageServiceEdition,
                 Reportee = reportee,
                 ArchiveReference = archiveReference,
                 AllowForwarding = true,
@@ -209,8 +209,8 @@ namespace Altinn2.Adapters.WS.Correspondence
         {
             _correspondence = new InsertCorrespondenceV2
             {
-                ServiceCode = _correspondenceSettings.Value.ServiceCode,
-                ServiceEdition = _correspondenceSettings.Value.ServiceCodeEdition,
+                ServiceCode = _correspondenceSettings.Value.DefaultMessageServiceCode,
+                ServiceEdition = _correspondenceSettings.Value.DefaultMessageServiceEdition,
                 Reportee = reportee,
                 ArchiveReference = archiveReference,
                 AllowForwarding = true,
@@ -223,8 +223,8 @@ namespace Altinn2.Adapters.WS.Correspondence
         {
             _correspondence = new InsertCorrespondenceV2
             {
-                ServiceCode = _correspondenceSettings.Value.ServiceCode,
-                ServiceEdition = _correspondenceSettings.Value.ServiceCodeEdition,
+                ServiceCode = _correspondenceSettings.Value.DefaultMessageServiceCode,
+                ServiceEdition = _correspondenceSettings.Value.DefaultMessageServiceEdition,
                 Reportee = reportee,
                 ArchiveReference = archiveReference,
                 AllowForwarding = true,

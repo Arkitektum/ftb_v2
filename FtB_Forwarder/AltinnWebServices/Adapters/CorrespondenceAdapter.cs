@@ -4,6 +4,7 @@ using Altinn.Common.Models;
 using Altinn2.Adapters.WS.Correspondence;
 using AltinnWebServices.WS.Correspondence;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Linq;
 
 namespace Altinn2.Adapters
@@ -11,6 +12,7 @@ namespace Altinn2.Adapters
     public class CorrespondenceAdapter : ICorrespondenceAdapter
     {
         private readonly ILogger<CorrespondenceAdapter> _logger;
+        private readonly IOptions<CorrespondenceBuilderSettings> _settings;
         private readonly ICorrespondenceBuilder _correspondenceBuilder;
         private readonly ICorrespondenceClient _correspondenceClient;
 
