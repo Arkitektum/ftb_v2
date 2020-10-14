@@ -1,4 +1,5 @@
-﻿using AltinnWebServices.WS.Correspondence;
+﻿using Altinn2.Adapters.Bindings;
+using AltinnWebServices.WS.Correspondence;
 using Microsoft.Extensions.Options;
 using System;
 using System.ServiceModel;
@@ -11,9 +12,9 @@ namespace Altinn2.Adapters.WS.Correspondence
         private CorrespondenceAgencyExternalBasicClient _client;
         private readonly IOptions<CorrespondenceConnectionSettings> _connectionOptions;
 
-        public CorrespondenceClient(Binding binding, IOptions<CorrespondenceConnectionSettings> connectionOptions)
+        public CorrespondenceClient(IBindingFactory bindingFactory, IOptions<CorrespondenceConnectionSettings> connectionOptions)
         {
-            _client = new CorrespondenceAgencyExternalBasicClient(binding, new EndpointAddress(connectionOptions.Value.EndpointUrl));
+            _client = new CorrespondenceAgencyExternalBasicClient(bindingFactory.GetBindingFor(BindingType.Mtom), new EndpointAddress(connectionOptions.Value.EndpointUrl));
             _connectionOptions = connectionOptions;
         }
 
@@ -21,7 +22,7 @@ namespace Altinn2.Adapters.WS.Correspondence
         {
             try
             {
-                var taskResult = _client.InsertCorrespondenceBasicV2Async(_connectionOptions.Value.UserName, _connectionOptions.Value.Password, _connectionOptions.Value.SystemUserCode, correspondenceItem.ArchiveReference, correspondenceItem);
+                var taskResult = _client.InsertCorrespondenceBasicV2Async(_connectionOptions.Value.UserName, _connectionOptions.Value.Password, _connectionOptions.Value.ServiceOwnerCode, correspondenceItem.ArchiveReference, correspondenceItem);
                 var result = taskResult.GetAwaiter().GetResult();
                 return result.Body.InsertCorrespondenceBasicV2Result;
 

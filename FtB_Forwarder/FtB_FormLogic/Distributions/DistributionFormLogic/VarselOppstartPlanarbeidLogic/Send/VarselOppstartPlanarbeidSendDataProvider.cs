@@ -45,7 +45,7 @@ namespace FtB_FormLogic
             //        messageBody.Replace(item.Key, item.Value);
             //    }
             //})
-            return new MessageDataType() { MessageBody = "", MessageSummary = "", MessageTitle = "" };
+            return new MessageDataType() { MessageBody = "Test message body", MessageSummary = "Test message summary", MessageTitle = "TEST TEST TEST" };
         }
 
         //public PrefillData GetPrefillData(string xmlString, string distributionFormId)

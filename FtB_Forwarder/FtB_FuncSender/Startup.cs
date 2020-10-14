@@ -34,6 +34,7 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<IBlobOperations, BlobOperations>();
             builder.Services.AddScoped<BlobStorage>();
             builder.Services.AddLogging();
+            
 
             builder.Services.AddScoped<FormatIdToFormMapper>();
             builder.Services.AddScoped<VarselOppstartPlanarbeidSendLogic>();

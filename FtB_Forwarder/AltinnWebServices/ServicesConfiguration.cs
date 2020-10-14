@@ -20,7 +20,7 @@ namespace Altinn2.Adapters
 
             services.AddOptions<PrefillConnectionSettings>().Configure<IConfiguration>((settings, config) =>
             {
-                configuration.GetSection("AltinnPrefillConnectionSettings").Bind(settings);
+                configuration.GetSection("PrefillConnectionSettings").Bind(settings);
             });
 
             return services;
@@ -39,7 +39,7 @@ namespace Altinn2.Adapters
 
             services.AddOptions<WS.Correspondence.CorrespondenceConnectionSettings>().Configure<IConfiguration>((settings, config) =>
             {
-                configuration.GetSection("AltinnCorrespondenceConnectionSettings").Bind(settings);
+                configuration.GetSection("CorrespondenceConnectionSettings").Bind(settings);
             });
 
             return services;
