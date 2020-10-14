@@ -20,7 +20,7 @@ namespace Altinn2.Adapters
             _correspondenceBuilder = correspondenceBuilder;
             _correspondenceClient = correspondenceClient;
         }
-        public CorrespondenceResult SendMessage(AltinnMessageBase altinnMessage)
+        public CorrespondenceResult SendMessage(AltinnMessageBase altinnMessage, string externalShipmentReference)
         {
             var retVal = new CorrespondenceResult();
 
@@ -50,7 +50,7 @@ namespace Altinn2.Adapters
 
             InsertCorrespondenceV2 correspondence = _correspondenceBuilder.Build();
 
-            var correspondenceResponse = _correspondenceClient.SendCorrespondence(correspondence);
+            var correspondenceResponse = _correspondenceClient.SendCorrespondence(correspondence, externalShipmentReference);
 
             if (correspondenceResponse.ReceiptStatusCode != ReceiptStatusEnum.OK)
             {
@@ -59,6 +59,11 @@ namespace Altinn2.Adapters
             }
 
             return retVal;
+        }
+
+        public CorrespondenceResult SendMessage(AltinnMessageBase altinnMessage)
+        {
+            return SendMessage(altinnMessage, altinnMessage.ArchiveReference);
         }
     }
 }

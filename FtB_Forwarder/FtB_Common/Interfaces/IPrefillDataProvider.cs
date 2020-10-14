@@ -10,6 +10,6 @@ namespace FtB_Common.Interfaces
     public interface IDistributionDataMapper<T, TB>
     {
         public T PrefillFormData { get; set; }
-        AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, TB mainFormData, string distributionFormId);
+        AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, TB mainFormData, string distributionFormId, string archiveReference);
     }
 }

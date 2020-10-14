@@ -3,7 +3,6 @@ using AltinnWebServices.WS.Correspondence;
 using Microsoft.Extensions.Options;
 using System;
 using System.ServiceModel;
-using System.ServiceModel.Channels;
 
 namespace Altinn2.Adapters.WS.Correspondence
 {
@@ -18,11 +17,13 @@ namespace Altinn2.Adapters.WS.Correspondence
             _connectionOptions = connectionOptions;
         }
 
-        public ReceiptExternal SendCorrespondence(InsertCorrespondenceV2 correspondenceItem)
+        public ReceiptExternal SendCorrespondence(InsertCorrespondenceV2 correspondenceItem, string externalShipmentReference)
         {
             try
             {
-                var taskResult = _client.InsertCorrespondenceBasicV2Async(_connectionOptions.Value.UserName, _connectionOptions.Value.Password, _connectionOptions.Value.ServiceOwnerCode, correspondenceItem.ArchiveReference, correspondenceItem);
+                correspondenceItem.ServiceCode = _connectionOptions.Value.ServiceCode;
+                correspondenceItem.ServiceEdition = _connectionOptions.Value.ServiceEditionCode;
+                var taskResult = _client.InsertCorrespondenceBasicV2Async(_connectionOptions.Value.UserName, _connectionOptions.Value.Password, _connectionOptions.Value.ServiceOwnerCode, externalShipmentReference, correspondenceItem);
                 var result = taskResult.GetAwaiter().GetResult();
                 return result.Body.InsertCorrespondenceBasicV2Result;
 
@@ -32,7 +33,7 @@ namespace Altinn2.Adapters.WS.Correspondence
                 _client.Abort();
                 throw;
             }
-            catch (CommunicationException)
+            catch (CommunicationException ex)
             {
                 _client.Abort();
                 throw;

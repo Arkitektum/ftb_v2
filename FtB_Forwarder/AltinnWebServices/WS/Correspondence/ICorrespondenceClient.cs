@@ -4,6 +4,6 @@ namespace Altinn2.Adapters.WS.Correspondence
 {
     public interface ICorrespondenceClient
     {
-        ReceiptExternal SendCorrespondence(InsertCorrespondenceV2 correspondenceItem);
+        ReceiptExternal SendCorrespondence(InsertCorrespondenceV2 correspondenceItem, string externalShipmentReference);
     }
 }

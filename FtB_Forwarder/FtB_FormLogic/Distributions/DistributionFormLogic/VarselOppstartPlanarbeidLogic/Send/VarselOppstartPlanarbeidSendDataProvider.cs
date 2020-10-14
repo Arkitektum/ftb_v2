@@ -15,7 +15,7 @@ namespace FtB_FormLogic
 
         public no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType PrefillFormData { get; set; }
 
-        public AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, string distributionFormId)
+        public AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, string distributionFormId, string archiveReference)
         {
             PrefillFormData = SerializeUtil.DeserializeFromString<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>(prefillXmlString);
 
@@ -33,7 +33,13 @@ namespace FtB_FormLogic
 
             distributionMessage.NotificationMessage.Receiver = base.GetReceiver(NabovarselPlanMappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart));
             distributionMessage.NotificationMessage.MessageData = CreateMessageData(mainFormData);
+            distributionMessage.NotificationMessage.ArchiveReference = archiveReference;
             return distributionMessage;
+        }
+
+        private void AddAttachments()
+        {
+
         }
 
         private MessageDataType CreateMessageData(no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData)
@@ -45,7 +51,7 @@ namespace FtB_FormLogic
             //        messageBody.Replace(item.Key, item.Value);
             //    }
             //})
-            return new MessageDataType() { MessageBody = "Test message body", MessageSummary = "Test message summary", MessageTitle = "TEST TEST TEST" };
+            return new MessageDataType() { MessageBody = "<html><body><div>Test message body</div></body></html>", MessageSummary = "Test message summary", MessageTitle = "TEST TEST TEST" };
         }
 
         //public PrefillData GetPrefillData(string xmlString, string distributionFormId)

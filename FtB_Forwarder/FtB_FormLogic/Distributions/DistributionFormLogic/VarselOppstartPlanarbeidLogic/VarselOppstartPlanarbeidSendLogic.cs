@@ -30,7 +30,7 @@ namespace FtB_FormLogic
         protected override void MapPrefillData(string receiverId)
         {
             _prefillMapper.Map(base.FormData, receiverId);
-            base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(_prefillMapper.FormDataString, base.FormData, Guid.NewGuid().ToString());
+            base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(_prefillMapper.FormDataString, base.FormData, Guid.NewGuid().ToString(), base.ArchiveReference);
         }
     }
 

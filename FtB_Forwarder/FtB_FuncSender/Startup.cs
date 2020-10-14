@@ -49,10 +49,7 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<VarselOppstartPlanarbeidPrefillMapper>();
             builder.Services.AddScoped<IDecryption, Decryption>();
             builder.Services.AddScoped<IDecryptionFactory, DecryptionFactory>();
-            builder.Services.AddOptions<EncryptionSettings>().Configure<IConfiguration>((settings, config) =>
-            {
-                configuration.GetSection("EncryptionSettings").Bind(settings);
-            });
+            builder.Services.Configure<EncryptionSettings>(configuration.GetSection("EncryptionSettings"));
 
             //builder.Services.AddAltinn3Distribution(configuration);
             //builder.Services.AddScoped<IDistributionDataMapper<FtB_DataModels.Datamodels.NabovarelPlan.SvarPaaNabovarselPlanType, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>, VarselOppstartPlanarbeidPrepareAltinn3SendDataProvider>();

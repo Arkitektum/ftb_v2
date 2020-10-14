@@ -15,7 +15,7 @@ namespace FtB_FormLogic
 
         public FtB_DataModels.Datamodels.NabovarelPlan.SvarPaaNabovarselPlanType PrefillFormData { get; set; }
 
-        public AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, NabovarselPlanType mainFormData, string distributionFormId)
+        public AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, NabovarselPlanType mainFormData, string distributionFormId, string archiveReference)
         {
             PrefillFormData = SerializeUtil.DeserializeFromString<FtB_DataModels.Datamodels.NabovarelPlan.SvarPaaNabovarselPlanType>(prefillXmlString);
 
@@ -34,7 +34,8 @@ namespace FtB_FormLogic
 
             prefillData.NotificationMessage = new AltinnNotificationMessage()
             {
-                Receiver = base.GetReceiver(NabovarselPlanAltinn3Mappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart))                
+                Receiver = base.GetReceiver(NabovarselPlanAltinn3Mappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart)),
+                ArchiveReference = archiveReference
             };
 
             return prefillData;

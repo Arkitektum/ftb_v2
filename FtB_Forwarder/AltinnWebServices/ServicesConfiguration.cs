@@ -18,10 +18,7 @@ namespace Altinn2.Adapters
             services.AddScoped<IPrefillFormTaskBuilder, PrefillFormTaskBuilder>();
             services.AddScoped<IPrefillAdapter, PrefillAdapter>();
 
-            services.AddOptions<PrefillConnectionSettings>().Configure<IConfiguration>((settings, config) =>
-            {
-                configuration.GetSection("PrefillConnectionSettings").Bind(settings);
-            });
+            services.Configure<PrefillConnectionSettings>(configuration.GetSection("PrefillConnectionSettings"));
 
             return services;
         }
@@ -35,12 +32,8 @@ namespace Altinn2.Adapters
             services.AddScoped<ICorrespondenceClient, CorrespondenceClient>();
             services.AddScoped<ICorrespondenceBuilder, CorrespondenceBuilder>();
             
-            services.AddScoped<ICorrespondenceAdapter, CorrespondenceAdapter>();
-
-            services.AddOptions<WS.Correspondence.CorrespondenceConnectionSettings>().Configure<IConfiguration>((settings, config) =>
-            {
-                configuration.GetSection("CorrespondenceConnectionSettings").Bind(settings);
-            });
+            services.AddScoped<ICorrespondenceAdapter, CorrespondenceAdapter>();            
+            services.Configure<CorrespondenceConnectionSettings>(configuration.GetSection("CorrespondenceConnectionSettings"));
 
             return services;
         }

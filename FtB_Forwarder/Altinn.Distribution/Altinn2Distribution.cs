@@ -38,7 +38,7 @@ namespace Altinn.Distribution
                 //var kv = new List<KeyValuePair<string, string>>();
                 //altinnMessage.NotificationMessage.MessageData.EnrichBodyWith(kv);
 
-                _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage);
+                _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage, altinnMessage.DistributionFormReferenceId);
 
                 results.Add(new AltinnDistributionResult() { Status = AltinnDistributionStatus.MessageSent });
             }
