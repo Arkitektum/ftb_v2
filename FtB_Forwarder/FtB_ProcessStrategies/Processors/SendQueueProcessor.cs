@@ -27,7 +27,7 @@ namespace FtB_ProcessStrategies
             {
                 //string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
                 string formatId = _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
-                var formLogicBeingProcessed = _formatIdToFormMapper.GetForm<ReportQueueItem, SendQueueItem>(formatId, FormLogicProcessingContext.Send);
+                var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<ReportQueueItem, SendQueueItem>(formatId, FormLogicProcessingContext.Send);
 
                 var result = formLogicBeingProcessed.Execute(sendQueueItem);
                 return result;

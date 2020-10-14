@@ -12,6 +12,7 @@ namespace FtB_Common
         PrefillSent,
         CorrespondenceCreated,
         CorrespondenceSent,
-        DigitalDisallowment
+        DigitalDisallowment,
+        ReadyForReporting
     }
 }

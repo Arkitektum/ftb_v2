@@ -4,6 +4,7 @@ using FtB_Common.BusinessModels;
 using FtB_Common.Exceptions;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
+using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
@@ -31,7 +32,7 @@ namespace FtB_FormLogic
             FormData = SerializeUtil.DeserializeFromString<T>(data);
         }
 
-        protected void UpdateReceiverEntity(ReceiverEntity entity)
+        protected void UpdateReceiverEntity(string partitionKey, string rowKey, ReceiverStatusEnum status)
         {
             bool runAgain;
             do
@@ -39,12 +40,12 @@ namespace FtB_FormLogic
                 runAgain = false;
                 try
                 {
-                    ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>("ftbReceivers", entity.PartitionKey, entity.RowKey);
-                    _log.LogTrace($"ID={entity.RowKey}. Before ReceiverEntity update for archiveRefrrence {entity.PartitionKey}. Status: {entity.Status}.");
-                    receiverEntity.Status = entity.Status;
+                    ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>("ftbReceivers", partitionKey, rowKey);
+                    _log.LogTrace($"ID={rowKey}. Before ReceiverEntity update for archiveRefrrence {partitionKey}. Status: {receiverEntity.Status}.");
+                    receiverEntity.Status = Enum.GetName(typeof(ReceiverStatusEnum), status);
 
                     //Log the record to be inserted
-                    _log.LogDebug($"ID={entity.RowKey}. Updating changed entity for {entity.PartitionKey} and {entity.RowKey}. Status: {entity.Status}.....");
+                    _log.LogDebug($"ID={rowKey}. Updating changed entity for {partitionKey} and {rowKey}. Status: {receiverEntity.Status}.....");
                     var updatedEntity = _tableStorage.UpdateEntityRecord(receiverEntity, "ftbReceivers");
                 }
                 catch (TableStorageConcurrentException ex)
@@ -52,22 +53,28 @@ namespace FtB_FormLogic
                     if (ex.HTTPStatusCode == 412)
                     {
                         int randomNumber = new Random().Next(0, 1000);
-                        _log.LogInformation($"ID={entity.RowKey}. ArchveReference={entity.PartitionKey}. Optimistic concurrency violation – entity has changed since it was retrieved. Run again after { randomNumber.ToString() } ms.");
+                        _log.LogInformation($"ID={rowKey}. ArchveReference={partitionKey}. Optimistic concurrency violation – entity has changed since it was retrieved. Run again after { randomNumber.ToString() } ms.");
                         Thread.Sleep(randomNumber);
                         runAgain = true;
                     }
                     else
                     {
-                        _log.LogError($"Error incrementing submittal record for ID={entity.RowKey}. ArchveReference={entity.PartitionKey}. Message: { ex.Message }");
+                        _log.LogError($"Error incrementing submittal record for ID={rowKey}. ArchveReference={partitionKey}. Message: { ex.Message }");
                         throw ex;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _log.LogError($"Error incrementing submittal record for ID={entity.RowKey}. ArchveReference={entity.PartitionKey}. Message: { ex.Message }");
+                    _log.LogError($"Error incrementing submittal record for ID={rowKey}. ArchveReference={partitionKey}. Message: { ex.Message }");
                     throw ex;
                 }
             } while (runAgain);
+        }
+
+        protected TableEntity GetTableStorageEntity(string tablename, string partitionKey, string rowKey)
+        {
+            TableEntity fetchedEntity = _tableStorage.GetTableEntity<ReceiverEntity>(tablename, partitionKey, rowKey);
+            return fetchedEntity;
         }
 
     }
