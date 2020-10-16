@@ -1,5 +1,7 @@
-﻿using Azure.Storage.Blobs.Models;
+﻿using Altinn.Common.Models;
+using Azure.Storage.Blobs.Models;
 using FtB_Common.BusinessModels;
+using FtB_Common.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
@@ -98,7 +100,7 @@ namespace FtB_Common.Storage
                     BlobProperties properties = client.GetPropertiesAsync().GetAwaiter().GetResult();
                     foreach (var metadataItem in properties.Metadata)
                     {
-                        if (metadataItem.Key.Equals("Type") && metadataItem.Value.Equals("FormData"))
+                        if (metadataItem.Key.Equals("Type") && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.FormData)))
                         {
                             StringBuilder sb = new StringBuilder();
                             if (client.ExistsAsync().GetAwaiter().GetResult())
@@ -145,17 +147,16 @@ namespace FtB_Common.Storage
 
         public string GetBlobDataByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
         {
-            var items = _blobStorage.GetBlobContainerItems(containerName);
+            var blobItems = _blobStorage.GetBlobContainerItems(containerName);
             var data = string.Empty;
-            foreach (var item in items)
+            foreach (var blobItem in blobItems)
             {
-                var client = _blobStorage.GetBlockBlobContainerClient(containerName, item.Name);
-                BlobProperties properties = client.GetPropertiesAsync().GetAwaiter().GetResult();
-                
+                var blob = _blobStorage.GetBlockBlobContainerClient(containerName, blobItem.Name);
+                BlobProperties properties = blob.GetPropertiesAsync().GetAwaiter().GetResult();
                 var t = properties.Metadata?.Where(m => metaDataFilter.All(f => m.Key == f.Key && m.Value == f.Value)).ToList();
                 if (t?.Count() == metaDataFilter.Count())
                 {
-                    var response = client.Download();
+                    var response = blob.Download();
                     
                     using (var reader = new StreamReader(response.Value.Content))
                     {   
@@ -165,6 +166,70 @@ namespace FtB_Common.Storage
                 }
             }
             return data;
+        }
+
+        public IEnumerable<Tuple<string,string>> GetListOfBlobsWithMetadataType(string containerName, IEnumerable<BlobStorageMetadataTypeEnum> blobItemTypes)
+        {
+            var listOfAttachments = new List<Tuple<string, string>>();
+            //foreach (var blobContainerItem in _blobStorage.GetBlobContainerItems(archiveReference))
+            //{
+            //    foreach (var blobItemType in blobItemTypes)
+            //    { 
+            //        var metadataItemList = blobContainerItem.Metadata;
+            //        foreach (var metadataItem in metadataItemList)
+            //        {
+            //            if (metadataItem.Key.Equals("Type")
+            //                && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), blobItemType)))
+            //            {
+            //                foreach (var item in metadataItemList)
+            //                {
+            //                    if (item.Key.Equals("AttachmentTypeName"))
+            //                    {
+            //                        listOfAttachments.Add(new Tuple<string, string>(item.Value, blobContainerItem.Name));
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            var blobItems = _blobStorage.GetBlobContainerItems(containerName);
+            var data = string.Empty;
+            foreach (var blobItem in blobItems)
+            {
+                var blob = _blobStorage.GetBlockBlobContainerClient(containerName, blobItem.Name);
+                BlobProperties properties = blob.GetPropertiesAsync().GetAwaiter().GetResult();
+
+                var metadataList = properties.Metadata;
+                foreach (var metadataKeyValuePair in metadataList)
+                {
+                    foreach (var blobItemType in blobItemTypes)
+                    {
+                        if (metadataKeyValuePair.Key.Equals("Type") && metadataKeyValuePair.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), blobItemType)))
+                        {
+                            foreach (var item in metadataList)
+                            {
+                                if (item.Key.Equals("AttachmentTypeName"))
+                                {
+                                    listOfAttachments.Add(new Tuple<string, string>(item.Value, blobItem.Name));
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+            }
+
+            return listOfAttachments;
+        }
+
+        private bool predicate1(KeyValuePair<string, string> f, KeyValuePair<string, string> m)
+        {
+            return predicate(f, m);
+        }
+
+        private static bool predicate(KeyValuePair<string, string> f, KeyValuePair<string, string> m)
+        {
+            return m.Key == f.Key && m.Value == f.Value;
         }
     }
 }

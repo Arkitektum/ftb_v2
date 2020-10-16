@@ -1,8 +1,10 @@
 ﻿using Altinn.Common.Models;
 using FtB_Common;
 using FtB_Common.BusinessModels;
+using FtB_Common.Enums;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
+using FtB_Common.Storage;
 using FtB_MessageManager;
 using Microsoft.Extensions.Logging;
 using System;
@@ -17,10 +19,16 @@ namespace FtB_FormLogic
     [FormDataFormat(DataFormatId = "6325", DataFormatVersion = "44824", ProcessingContext = FormLogicProcessingContext.Report)]
     public class VarselOppstartPlanarbeidReportLogic : DistributionReportLogic<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
+        private readonly IBlobOperations _blobOperations;
 
-        public VarselOppstartPlanarbeidReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger<VarselOppstartPlanarbeidReportLogic> log, IEnumerable<IMessageManager> messageManagers) 
+        public VarselOppstartPlanarbeidReportLogic(IFormDataRepo repo, 
+                                                   ITableStorage tableStorage, 
+                                                   ILogger<VarselOppstartPlanarbeidReportLogic> log, 
+                                                   IEnumerable<IMessageManager> messageManagers,
+                                                   IBlobOperations blobOperations) 
             : base(repo, tableStorage, log, messageManagers)
         {
+            _blobOperations = blobOperations;
         }
         
         private string GetContactPerson()
@@ -62,12 +70,12 @@ namespace FtB_FormLogic
                     builder.Append(base.FormData.forslagsstiller.epost);
                 }
             }
-            _log.LogDebug($"{GetType().Name}. Getting contact person: {builder.ToString()}.");
+            //_log.LogDebug($"{GetType().Name}. Getting contact person: {builder.ToString()}.");
             
             return builder.ToString();
         }
         
-        protected override MessageDataType GetSubmitterReceipt(string archiveReference)
+        protected override MessageDataType GetSubmitterReceiptMessage(string archiveReference)
         {
             try
             {
@@ -100,12 +108,12 @@ namespace FtB_FormLogic
                         }
                     }
                 }
-                _log.LogDebug($"{GetType().Name}: htmlBody: {htmlBody}");
+                //_log.LogDebug($"{GetType().Name}: htmlBody: {htmlBody}");
                 //TODO: Add Logo?
                 //string LogoResourceName = "KommIT.FIKS.AdapterAltinnSvarUt.Content.images.dibk_logo.png";
                 htmlBody = htmlBody.Replace("<byggested/>", byggested);
                 htmlBody = htmlBody.Replace("<kontaktperson/>", kontaktperson);
-                htmlBody = htmlBody.Replace("<archiveCode/>", archiveReference.ToUpper());
+                htmlBody = htmlBody.Replace("<arkivReferanse/>", archiveReference.ToUpper());
                 
 
                 var mess = new MessageDataType()
@@ -125,7 +133,73 @@ namespace FtB_FormLogic
             }
         }
 
+        protected override string GetSubmitterReceipt(string archiveReference)
+        {
+            try
+            {
+                string adresse = base.FormData.eiendomByggested.First().adresse.adresselinje1;
+                string planNavn = base.FormData.planforslag.plannavn == null ? "" : base.FormData.planforslag.plannavn;
+                string byggested = adresse != null && adresse.Trim().Length > 0 ? $"{adresse}, {planNavn}" : $"{planNavn}";
+                string kontaktperson = FormData.forslagsstiller.kontaktperson.navn; // GetContactPerson();
+                string forslagsstiller = FormData.forslagsstiller.navn;
 
+                //Get html embedded resource file
+                string htmlBody = "";
+                //var HtmlBodyTemplate = "VarselOppstartPlanarbeidReceiptMessageBody.html";
+                var HtmlBodyTemplate = "FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceipt.html";
+
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    if (assembly.GetName().Name.ToUpper().Contains("FTB_FORMLOGIC"))
+                    {
+                        _log.LogDebug($"{GetType().Name}. Found assembly: {assembly.FullName}");
+                        using (Stream stream = assembly.GetManifestResourceStream(HtmlBodyTemplate))
+                        {
+                            if (stream == null)
+                            {
+                                throw new Exception($"The resource {HtmlBodyTemplate} was not loaded properly.");
+                            }
+
+                            using (StreamReader reader = new StreamReader(stream))
+                            {
+                                htmlBody = reader.ReadToEnd();
+                            }
+                        }
+                    }
+                }
+                //_log.LogDebug($"{GetType().Name}: htmlBody: {htmlBody}");
+                //string LogoResourceName = "KommIT.FIKS.AdapterAltinnSvarUt.Content.images.dibk_logo.png";
+                //TODO: Add Logo?
+                //TODO: 
+                //planNavn
+                //forslagsstiller
+                //arkivReferanse
+                //vedlegg
+                //naboer
+
+                htmlBody = htmlBody.Replace("<planNavn/>", planNavn);
+                htmlBody = htmlBody.Replace("<forslagsstiller/>", forslagsstiller);
+                htmlBody = htmlBody.Replace("<byggested/>", byggested);
+                htmlBody = htmlBody.Replace("<kontaktperson/>", kontaktperson);
+                htmlBody = htmlBody.Replace("<arkivReferanse/>", archiveReference.ToUpper());
+                //What attachments to add?
+                var blobStorageTypes = new List<BlobStorageMetadataTypeEnum>();
+                blobStorageTypes.Add(BlobStorageMetadataTypeEnum.MainForm);
+                blobStorageTypes.Add(BlobStorageMetadataTypeEnum.SubmittalAttachment);
+                
+                IEnumerable<Tuple<string, string>> listOfAttachmentsInSubmittal = _blobOperations.GetListOfBlobsWithMetadataType(archiveReference, blobStorageTypes);
+                string htmlText = AddTableOfAttachmentsToHtml(listOfAttachmentsInSubmittal, "Følgende vedlegg er sendt med varselet:");
+                htmlBody = htmlBody.Replace("<vedlegg/>", htmlText);
+
+                return htmlBody;
+            }
+            catch (Exception ex)
+            {
+                _log.LogError($"{GetType().Name}. Error: {ex.Message}");
+
+                throw ex;
+            }
+        }
         //public override string Execute(ReportQueueItem reportQueueItem)
         //{
         //    var returnItem =  base.Execute(reportQueueItem);

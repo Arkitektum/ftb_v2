@@ -1,6 +1,7 @@
 ﻿using Altinn.Common.Models;
 using FtB_Common;
 using FtB_Common.BusinessModels;
+using FtB_Common.Enums;
 using FtB_Common.Exceptions;
 using FtB_Common.Interfaces;
 using FtB_MessageManager;
@@ -9,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -29,7 +31,7 @@ namespace FtB_FormLogic
             _log.LogDebug($"{GetType().Name}: Execute.....");
             var returnItem =  base.Execute(reportQueueItem);
             //var receiverEntity = new ReceiverEntity(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
-            ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>("ftbReceivers", reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
+            ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
 
             _log.LogDebug($"{GetType().Name}. Execute: ID={reportQueueItem.ArchiveReference}. RowKey={reportQueueItem.StorageRowKey}. ReceiverEntityStatus: {receiverEntity.Status}.");
             Enum.TryParse(receiverEntity.Status, out ReceiverStatusEnum receiverStatus);
@@ -59,7 +61,7 @@ namespace FtB_FormLogic
                 runAgain = false;
                 try
                 {
-                    SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>("ftbSubmittals", archiveReference, archiveReference);
+                    SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(archiveReference, archiveReference);
                     _log.LogDebug($"ID={archiveReference}. Before SubmittalEntity update for archiveRefrrence {archiveReference}. SubmittalEntityStatus: {submittalEntity.Status}. ReceiverStatusEnum: {receiverStatus}.");
                     submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Processing);
                     submittalEntity.ProcessedCount++;
@@ -77,9 +79,14 @@ namespace FtB_FormLogic
                     }
 
                     _log.LogDebug($"ArchiveReference={archiveReference}. Updating  submittal. Status: Success: {submittalEntity.SuccessCount}, DigitalDisallowment: {submittalEntity.DigitalDisallowmentCount}, FailedCount: {submittalEntity.FailedCount}");
-                    var updatedEntity = _tableStorage.UpdateEntityRecord(submittalEntity, "ftbSubmittals");
+                    var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
 
-                    UpdateReceiverEntity(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey, ReceiverStatusEnum.ReadyForReporting);
+
+                    ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
+                    receiverEntity.Status = Enum.GetName(typeof(ReceiverStatusEnum),ReceiverStatusEnum.ReadyForReporting);
+                    var updatedReceiverEntity = _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
+
+                    //UpdateReceiverEntity(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey, ReceiverStatusEnum.ReadyForReporting);
 
                 }
                 catch (TableStorageConcurrentException ex)
@@ -110,29 +117,40 @@ namespace FtB_FormLogic
             try
             {
 
-                SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>("ftbSubmittals", reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
+                SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
                 _log.LogDebug($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. ID={reportQueueItem.Receiver.Id}. SubmittalEntity.ProcessedCount={submittalEntity.ProcessedCount}, submittalEntity.ReceiverCount={submittalEntity.ReceiverCount}");
                 if (submittalEntity.ProcessedCount == submittalEntity.ReceiverCount)
                 {
                     submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
-                    //TODO: Must create a submitter report
                     _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. ReportStrategyBase: All receivers has been processed.");
                     foreach (var messageManager in _messageManagers)
                     {
                         if (messageManager is SlackManager)
                         {
                             //Report on Slack channel
-                            var messageData = GetSubmitterReceipt(reportQueueItem.ArchiveReference);
-                            string message = messageData.MessageTitle + Environment.NewLine
+                            var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
+                            string receiptMessage = messageData.MessageTitle + Environment.NewLine
                                             + messageData.MessageSummary + Environment.NewLine
                                             + messageData.MessageBody;
                             //Formatting for Slack
-                            message = message.Replace("<br>", "\n").Replace("<p>", "\n").Replace("</p>", "");
-                            _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}. Sending to Slack.");
-                            _log.LogDebug($"{GetType().Name}: {message}");
-                            messageManager.Send(message);
+                            //receiptMessage = receiptMessage.Replace("<br />", "\n").Replace("<p>", "\n").Replace("</p>", "");
+                            _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt message to Slack.");
+                            _log.LogDebug($"{GetType().Name}: {receiptMessage}");
+
+
+                            string hopelessMessageSeparator = "\n\n\n\n\n\n\n\n\n\n";
+                            //var slackMessage = Task.Run(async () => await messageManager.Send(receiptMessage));
+
+                            var receipt = GetSubmitterReceipt(reportQueueItem.ArchiveReference);
+                            //receipt = receipt.Replace("<br />", "\n").Replace("<p>", "\n").Replace("</p>", "");
+                            _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt to Slack.");
+                            _log.LogDebug($"{GetType().Name}: {receipt}");
+                            Task.Run(async () => await messageManager.Send(receiptMessage + hopelessMessageSeparator + receipt));
+
                         }
                     }
+                    //TODO: Update submittalstatus with Completed
+                    var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
                 }
             }
             catch (Exception ex)
@@ -142,15 +160,56 @@ namespace FtB_FormLogic
             }
         }
 
-        protected virtual MessageDataType GetSubmitterReceipt(string archiveReference) 
+        protected virtual MessageDataType GetSubmitterReceiptMessage(string archiveReference)
+        {
+            throw new NotImplementedException();
+        }
+        protected virtual string GetSubmitterReceipt(string archiveReference)
         {
             throw new NotImplementedException();
         }
 
+        protected string AddTableOfAttachmentsToHtml(IEnumerable<Tuple<string,string>> attachments, string tableHeaderText)
+        {
+            StringBuilder strBuilder = new StringBuilder();
+
+            strBuilder.Append("<div class='SubHeadingUnderline PaddingTop Paddingbottom'>" + tableHeaderText + "</div>");
+            strBuilder.Append("<div class='Paragraf'>");
+            strBuilder.Append("<table id='tabell'>");
+            strBuilder.Append("<thead>");
+            strBuilder.Append("<tr>");
+            strBuilder.Append("<td><b>Vedleggstype:</b></td>");
+            strBuilder.Append("<td><b>Filnavn:</b></td>");
+            strBuilder.Append("</tr>");
+            strBuilder.Append("</thead>");
+            strBuilder.Append("<tbody>");
+
+            foreach (var vedlegg in attachments)
+            {
+                strBuilder.Append("<tr>");
+                strBuilder.Append("<td>" + vedlegg.Item1 + "</td>");
+                strBuilder.Append("<td>" + vedlegg.Item2 + "</td>");
+                strBuilder.Append("</tr>");
+            }
+
+            strBuilder.Append("</tbody>");
+            strBuilder.Append("</table>");
+            strBuilder.Append("</div>");
+
+            return strBuilder.ToString();
+        }
+
+        //protected IEnumerable<Tuple<string,string> GetAttachmentListSentToReceivers(IEnumerable<BlobStorageMetadataTypeEnum> blobStorageTypes)
+        //{
+        //    //Get list of blobStorageTypes
+
+
+        //    return new List<new Tuple<string, string>("","");
+        //}
         private bool AllReceiversHasBeenProcessed(string archiveReference)
         {
             //TODO: This method has to return value based on status of sending to each separate reciver, and not on this "submittalEntity.SentCount"
-            var submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>("ftbSubmittals", archiveReference, archiveReference);
+            var submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(archiveReference, archiveReference);
             return submittalEntity.ProcessedCount == submittalEntity.ReceiverCount;
         }
     }

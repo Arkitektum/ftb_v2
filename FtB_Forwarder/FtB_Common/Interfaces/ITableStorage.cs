@@ -8,10 +8,10 @@ namespace FtB_Common.Interfaces
 {
     public interface ITableStorage
     {
-        Task<TableEntity> InsertEntityRecordAsync(TableEntity tableEntity, string tableName);
-        TableEntity InsertEntityRecord(TableEntity tableEntity, string tableName);
-        TableEntity UpdateEntityRecord(TableEntity entity, string tableName);
-        T GetTableEntity<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity;
+        Task<TableEntity> InsertEntityRecordAsync<T>(TableEntity tableEntity);
+        TableEntity InsertEntityRecord<T>(TableEntity tableEntity);
+        TableEntity UpdateEntityRecord<T>(TableEntity entity);
+        T GetTableEntity<T>(string partitionKey, string rowKey) where T : ITableEntity;
         //Task<T> GetTableEntityAsync<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity;
     }
 }

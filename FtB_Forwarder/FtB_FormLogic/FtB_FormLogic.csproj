@@ -5,10 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceipt.html" />
     <None Remove="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceiptMessageBody.html" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceipt.html" />
     <EmbeddedResource Include="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceiptMessageBody.html" />
   </ItemGroup>
 

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FtB_Common.Interfaces;
 using FtB_Common.Exceptions;
+using FtB_Common.BusinessModels;
 
 namespace FtB_Common.Storage
 {
@@ -43,14 +44,24 @@ namespace FtB_Common.Storage
             return storageAccount;
         }
 
-        public async Task<TableEntity> InsertEntityRecordAsync(TableEntity entity, string tableName)
+        public async Task<TableEntity> InsertEntityRecordAsync<T>(TableEntity entity)
         {
-            CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
-            //Create a new storage table.
-            cloudTable.CreateIfNotExists();
 
             try
             {
+                string tableNameFromType = ""; ;
+                if (typeof(T) == typeof(ReceiverEntity))
+                {
+                    tableNameFromType = "ftbReceivers";
+                }
+                else if (typeof(T) == typeof(SubmittalEntity))
+                {
+                    tableNameFromType = "ftbSubmittals";
+                }
+
+                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
+                //Create a new storage table.
+                cloudTable.CreateIfNotExists();
                 // Create the Insert table operation
                 TableOperation insertOperation = TableOperation.Insert(entity);
 
@@ -64,14 +75,24 @@ namespace FtB_Common.Storage
                 throw ex;
             }
         }
-        public TableEntity InsertEntityRecord(TableEntity entity, string tableName)
+        public TableEntity InsertEntityRecord<T>(TableEntity entity)
         {
-            CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
-            //Create a new storage table.
-            cloudTable.CreateIfNotExists();
 
             try
             {
+                string tableNameFromType = ""; ;
+                if (typeof(T) == typeof(ReceiverEntity))
+                {
+                    tableNameFromType = "ftbReceivers";
+                }
+                else if (typeof(T) == typeof(SubmittalEntity))
+                {
+                    tableNameFromType = "ftbSubmittals";
+                }
+
+                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
+                //Create a new storage table.
+                cloudTable.CreateIfNotExists();
                 // Create the InsertOrReplace table operation
                 TableOperation insertOperation = TableOperation.Insert(entity);
 
@@ -86,11 +107,21 @@ namespace FtB_Common.Storage
             }
         }
 
-        public TableEntity UpdateEntityRecord(TableEntity entity, string tableName)
+        public TableEntity UpdateEntityRecord<T>(TableEntity entity)
         {
             try
             {
-                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
+                string tableNameFromType = ""; ;
+                if (typeof(T) == typeof(ReceiverEntity))
+                {
+                    tableNameFromType = "ftbReceivers";
+                }
+                else if (typeof(T) == typeof(SubmittalEntity))
+                {
+                    tableNameFromType = "ftbSubmittals";
+                }
+
+                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
                 // Create the InsertOrReplace table operation
                 TableOperation operation = TableOperation.Replace(entity);
 
@@ -111,12 +142,21 @@ namespace FtB_Common.Storage
             }
         }
 
-        public T GetTableEntity<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity
+        public T GetTableEntity<T>(string partitionKey, string rowKey) where T : ITableEntity
         {
             try
             {
+                string tableNameFromType = ""; ;
+                if (typeof(T) == typeof(ReceiverEntity))
+                {
+                    tableNameFromType = "ftbReceivers";
+                }
+                else if (typeof(T) == typeof(SubmittalEntity))
+                {
+                    tableNameFromType = "ftbSubmittals";
+                }
                 TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey, rowKey);
-                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableName);
+                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
                 TableResult result = cloudTable.Execute(retrieveOperation);
                 return (T)result.Result;
             }

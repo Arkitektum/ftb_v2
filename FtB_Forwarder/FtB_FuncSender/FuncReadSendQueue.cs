@@ -34,7 +34,7 @@ namespace FtB_FuncSender
             }
             catch (Exception ex)
             {
-                log.LogError($"Something went wrong. InnerException: {ex.InnerException}");
+                log.LogError($"Something went wrong. Exception: {ex}");
                 throw; //Do this to make sure the message is not removed from the SendQueue. It will retry, and then end up in DeadLetterQueue
             }
         }

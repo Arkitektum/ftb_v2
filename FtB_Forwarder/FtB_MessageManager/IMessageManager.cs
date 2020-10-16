@@ -7,7 +7,7 @@ namespace FtB_MessageManager
 {
     public interface IMessageManager
     {
-        Task Send(dynamic messageElement);
+        Task Send(string messageElement);
 
     }
 }

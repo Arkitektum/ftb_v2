@@ -15,7 +15,7 @@ namespace FtB_MessageManager
             _options = options;
         }
 
-        public async Task Send(dynamic messageElement)
+        public async Task Send(string messageElement)
         {
             //string comicItemTitle = messageElement.comicItem.Safe_Title;
             //string imageLink = messageElement.comicItem.Img;

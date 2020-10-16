@@ -21,7 +21,7 @@ namespace FtB_MessageManager
             _options = options;
             _log = log;
         }
-        public Task Send(dynamic messageElement)
+        public Task Send(string messageElement)
         {
             throw new NotImplementedException();
         }

@@ -44,7 +44,7 @@ namespace FtB_FormLogic
             try
             {
                 SubmittalEntity entity = new SubmittalEntity(archiveReference, receiverCount, DateTime.Now);
-                _tableStorage.InsertEntityRecordAsync(entity, "ftbSubmittals");
+                _tableStorage.InsertEntityRecordAsync<SubmittalEntity>(entity);
                 _log.LogDebug($"Create submittal database status for {archiveReference} with receiver count: {receiverCount}.");
             }
             catch (Exception ex)
@@ -60,7 +60,7 @@ namespace FtB_FormLogic
             {
                 //ReceiverEntity entity = new ReceiverEntity(archiveReference, receiver.Id.Replace("/", ""), ReceiverStatusEnum.Created, DateTime.Now);
                 ReceiverEntity entity = new ReceiverEntity(archiveReference, storageRowKey, receiver.Id, ReceiverStatusEnum.Created, DateTime.Now);
-                _tableStorage.InsertEntityRecordAsync(entity, "ftbReceivers");
+                _tableStorage.InsertEntityRecordAsync<ReceiverEntity>(entity);
                 _log.LogInformation($"Create receiver database status for {archiveReference} and reciverId={receiver.Id}.");
             }
             catch (Exception ex)
