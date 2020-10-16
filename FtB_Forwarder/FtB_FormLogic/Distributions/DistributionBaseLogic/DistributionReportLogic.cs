@@ -138,6 +138,8 @@ namespace FtB_FormLogic
                     //Report on Slack channel
 
                     var notificationMessage = new AltinnNotificationMessage();
+                    notificationMessage.ArchiveReference = ArchiveReference;
+
                     notificationMessage.Receiver = GetReceiver();
                     notificationMessage.ArchiveReference = reportQueueItem.ArchiveReference;
                     var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
