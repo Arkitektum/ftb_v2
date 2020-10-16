@@ -65,7 +65,7 @@ namespace Altinn3.Adapters
             var prefillResult = new PrefillResult();
 
             MultipartFormDataContent content = null;
-            byte[] byteArray = Encoding.ASCII.GetBytes(altinnDistributionMessage.PrefilledXmlDataString);
+            byte[] byteArray = Encoding.UTF8.GetBytes(altinnDistributionMessage.PrefilledXmlDataString);
             using (MemoryStream stream = new MemoryStream(byteArray))
             {
                 content = new MultipartContentBuilder(instanceTemplate)

@@ -2,17 +2,17 @@
 using FtB_Common.BusinessModels;
 using FtB_Common.Encryption;
 using FtB_DataModels.Mappers;
+using System.Collections.Generic;
 
 namespace FtB_FormLogic
 {
     public class SendDataProviderBase
     {
-        //private readonly IDecryptionFactory decryptionFactory;
+        public SendDataProviderBase()
+        {
 
-        //public SendDataProviderBase(IDecryptionFactory decryptionFactory)
-        //{
-        //    this.decryptionFactory = decryptionFactory;
-        //}
+        }
+
         public virtual AltinnReceiver GetReceiver(BerortPart berortPart)
         {
             var receiver = new AltinnReceiver();
@@ -33,6 +33,13 @@ namespace FtB_FormLogic
 
             return receiver;
         }
+
+        //public IEnumerable<Attachment> GetAttachmentsFor(string archiveReference)
+        //{
+
+
+
+        //}
 
         //private string DecryptIfNecesarry(string encrypted)
         //{
