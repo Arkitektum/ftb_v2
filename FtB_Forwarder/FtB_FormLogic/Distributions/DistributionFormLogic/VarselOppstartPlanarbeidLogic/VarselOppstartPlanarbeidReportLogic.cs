@@ -1,4 +1,5 @@
-﻿using Altinn.Common.Models;
+﻿using Altinn.Common.Interfaces;
+using Altinn.Common.Models;
 using FtB_Common;
 using FtB_Common.BusinessModels;
 using FtB_Common.Enums;
@@ -21,22 +22,29 @@ namespace FtB_FormLogic
     {
         private readonly IBlobOperations _blobOperations;
 
-        public VarselOppstartPlanarbeidReportLogic(IFormDataRepo repo, 
-                                                   ITableStorage tableStorage, 
-                                                   ILogger<VarselOppstartPlanarbeidReportLogic> log, 
-                                                   IEnumerable<IMessageManager> messageManagers,
-                                                   IBlobOperations blobOperations) 
-            : base(repo, tableStorage, log, messageManagers)
+        public VarselOppstartPlanarbeidReportLogic(IFormDataRepo repo,
+                                                   ITableStorage tableStorage,
+                                                   ILogger<VarselOppstartPlanarbeidReportLogic> log,
+                                                   IBlobOperations blobOperations,
+                                                   INotificationAdapter notificationAdapter)
+            : base(repo, tableStorage, log, notificationAdapter)
         {
             _blobOperations = blobOperations;
         }
-        
+        public override AltinnReceiver GetReceiver()
+        {
+            return new AltinnReceiver()
+            {
+                Id = FormData.forslagsstiller.organisasjonsnummer,
+                Type = AltinnReceiverType.Foretak
+            };
+        }
         private string GetContactPerson()
         {
             StringBuilder builder = new StringBuilder();
             if (!base.FormData.forslagsstiller.kontaktperson.navn.IsNullOrEmpty())
             {
-                
+
                 builder.Append(base.FormData.forslagsstiller.kontaktperson.navn);
                 if (!base.FormData.forslagsstiller.kontaktperson.mobilnummer.IsNullOrEmpty())
                 {
@@ -71,10 +79,10 @@ namespace FtB_FormLogic
                 }
             }
             //_log.LogDebug($"{GetType().Name}. Getting contact person: {builder.ToString()}.");
-            
+
             return builder.ToString();
         }
-        
+
         protected override MessageDataType GetSubmitterReceiptMessage(string archiveReference)
         {
             try
@@ -114,7 +122,7 @@ namespace FtB_FormLogic
                 htmlBody = htmlBody.Replace("<byggested/>", byggested);
                 htmlBody = htmlBody.Replace("<kontaktperson/>", kontaktperson);
                 htmlBody = htmlBody.Replace("<arkivReferanse/>", archiveReference.ToUpper());
-                
+
 
                 var mess = new MessageDataType()
                 {
@@ -128,7 +136,7 @@ namespace FtB_FormLogic
             catch (Exception ex)
             {
                 _log.LogError($"{GetType().Name}. Error: {ex.Message}");
-                
+
                 throw ex;
             }
         }
@@ -186,7 +194,7 @@ namespace FtB_FormLogic
                 var blobStorageTypes = new List<BlobStorageMetadataTypeEnum>();
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.MainForm);
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.SubmittalAttachment);
-                
+
                 IEnumerable<Tuple<string, string>> listOfAttachmentsInSubmittal = _blobOperations.GetListOfBlobsWithMetadataType(archiveReference, blobStorageTypes);
                 string htmlText = AddTableOfAttachmentsToHtml(listOfAttachmentsInSubmittal, "Følgende vedlegg er sendt med varselet:");
                 htmlBody = htmlBody.Replace("<vedlegg/>", htmlText);

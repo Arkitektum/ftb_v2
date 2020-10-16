@@ -1,4 +1,5 @@
-﻿using Altinn.Common.Models;
+﻿using Altinn.Common.Interfaces;
+using Altinn.Common.Models;
 using FtB_Common;
 using FtB_Common.BusinessModels;
 using FtB_Common.Enums;
@@ -16,20 +17,27 @@ namespace FtB_FormLogic
 {
     public class DistributionReportLogic<T> : ReportLogic<T>
     {
+        private readonly INotificationAdapter _notificationAdapter;
 
-        private readonly IEnumerable<IMessageManager> _messageManagers;
+        //private readonly IEnumerable<IMessageManager> _messageManagers;
 
-        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IEnumerable<IMessageManager> messageManagers) 
+        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, INotificationAdapter notificationAdapter) //, IEnumerable<IMessageManager> messageManagers) 
             : base(repo, tableStorage, log)
         {
-            _messageManagers = messageManagers;
+            _notificationAdapter = notificationAdapter;
+            //_messageManagers = messageManagers;
 
+        }
+
+        public virtual AltinnReceiver GetReceiver()
+        {
+            throw new System.NotImplementedException();
         }
 
         public override string Execute(ReportQueueItem reportQueueItem)
         {
             _log.LogDebug($"{GetType().Name}: Execute.....");
-            var returnItem =  base.Execute(reportQueueItem);
+            var returnItem = base.Execute(reportQueueItem);
             //var receiverEntity = new ReceiverEntity(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
             ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
 
@@ -83,7 +91,7 @@ namespace FtB_FormLogic
 
 
                     ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
-                    receiverEntity.Status = Enum.GetName(typeof(ReceiverStatusEnum),ReceiverStatusEnum.ReadyForReporting);
+                    receiverEntity.Status = Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.ReadyForReporting);
                     var updatedReceiverEntity = _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
 
                     //UpdateReceiverEntity(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey, ReceiverStatusEnum.ReadyForReporting);
@@ -110,7 +118,7 @@ namespace FtB_FormLogic
                     throw ex;
                 }
             } while (runAgain);
-        
+
         }
         private void SendReceiptToSubmitterWhenAllReceiversAreProcessed(ReportQueueItem reportQueueItem)
         {
@@ -123,32 +131,53 @@ namespace FtB_FormLogic
                 {
                     submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
                     _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. ReportStrategyBase: All receivers has been processed.");
-                    foreach (var messageManager in _messageManagers)
+                    //foreach (var messageManager in _messageManagers)
+                    //{
+                    //if (messageManager is SlackManager)
+                    //{
+                    //Report on Slack channel
+
+                    var notificationMessage = new AltinnNotificationMessage();
+                    notificationMessage.Receiver = GetReceiver();
+                    var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
+                    //string receiptMessage = messageData.MessageTitle + Environment.NewLine
+                    //                + messageData.MessageSummary + Environment.NewLine
+                    //                + messageData.MessageBody;
+
+                    notificationMessage.MessageData = messageData;
+
+                    //Formatting for Slack
+                    //receiptMessage = receiptMessage.Replace("<br />", "\n").Replace("<p>", "\n").Replace("</p>", "");
+                    _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt message to Slack.");
+                    //_log.LogDebug($"{GetType().Name}: {receiptMessage}");
+
+
+                    //string hopelessMessageSeparator = "\n\n\n\n\n\n\n\n\n\n";
+                    //var slackMessage = Task.Run(async () => await messageManager.Send(receiptMessage));
+
+                    //Create PDF from HTML 
+                    var receipt = GetSubmitterReceipt(reportQueueItem.ArchiveReference);
+
+                    var receiptAttachment = new AttachmentBinary()
                     {
-                        if (messageManager is SlackManager)
-                        {
-                            //Report on Slack channel
-                            var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
-                            string receiptMessage = messageData.MessageTitle + Environment.NewLine
-                                            + messageData.MessageSummary + Environment.NewLine
-                                            + messageData.MessageBody;
-                            //Formatting for Slack
-                            //receiptMessage = receiptMessage.Replace("<br />", "\n").Replace("<p>", "\n").Replace("</p>", "");
-                            _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt message to Slack.");
-                            _log.LogDebug($"{GetType().Name}: {receiptMessage}");
+                        BinaryContent = System.Text.Encoding.UTF8.GetBytes(receipt),
+                        Filename = "Kvittering.html",
+                        Name = "Kvitto",
+                        SendersReference = ArchiveReference
+                    };
 
+                    notificationMessage.Attachments = new List<Attachment>() { receiptAttachment };
+                    
 
-                            string hopelessMessageSeparator = "\n\n\n\n\n\n\n\n\n\n";
-                            //var slackMessage = Task.Run(async () => await messageManager.Send(receiptMessage));
+                    _notificationAdapter.SendNotification(notificationMessage);
 
-                            var receipt = GetSubmitterReceipt(reportQueueItem.ArchiveReference);
-                            //receipt = receipt.Replace("<br />", "\n").Replace("<p>", "\n").Replace("</p>", "");
-                            _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt to Slack.");
-                            _log.LogDebug($"{GetType().Name}: {receipt}");
-                            Task.Run(async () => await messageManager.Send(receiptMessage + hopelessMessageSeparator + receipt));
+                    //receipt = receipt.Replace("<br />", "\n").Replace("<p>", "\n").Replace("</p>", "");
+                    _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt to Slack.");
+                    _log.LogDebug($"{GetType().Name}: {receipt}");
+                    //Task.Run(async () => await messageManager.Send(receiptMessage + hopelessMessageSeparator + receipt));
 
-                        }
-                    }
+                    //}
+                    //}
                     //TODO: Update submittalstatus with Completed
                     var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
                 }
@@ -169,7 +198,7 @@ namespace FtB_FormLogic
             throw new NotImplementedException();
         }
 
-        protected string AddTableOfAttachmentsToHtml(IEnumerable<Tuple<string,string>> attachments, string tableHeaderText)
+        protected string AddTableOfAttachmentsToHtml(IEnumerable<Tuple<string, string>> attachments, string tableHeaderText)
         {
             StringBuilder strBuilder = new StringBuilder();
 
