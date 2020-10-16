@@ -139,6 +139,7 @@ namespace FtB_FormLogic
 
                     var notificationMessage = new AltinnNotificationMessage();
                     notificationMessage.Receiver = GetReceiver();
+                    notificationMessage.ArchiveReference = reportQueueItem.ArchiveReference;
                     var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
                     //string receiptMessage = messageData.MessageTitle + Environment.NewLine
                     //                + messageData.MessageSummary + Environment.NewLine
