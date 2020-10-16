@@ -1,10 +1,7 @@
 ﻿using Altinn.Common.Interfaces;
 using Altinn.Common.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Altinn.Distribution
 {
@@ -20,7 +17,7 @@ namespace Altinn.Distribution
             _prefillAdapter = prefillAdapter;
             _correspondenceAdapter = correspondenceAdapter;
         }
-        
+
         public IEnumerable<AltinnDistributionResult> SendDistribution(AltinnDistributionMessage altinnMessage)
         {
             var results = new List<AltinnDistributionResult>();
@@ -34,16 +31,10 @@ namespace Altinn.Distribution
                 //Send correspondence
                 //prefillResult.PrefillReferenceId
 
-                //Transform body!!!!
-                //, prefillResult.PrefillReferenceId
-                //var kv = new List<KeyValuePair<string, string>>();
-                //altinnMessage.NotificationMessage.MessageData.EnrichBodyWith(kv);
-
-                if(altinnMessage.NotificationMessage?.ReplyLink?.UrlTitle != string.Empty)
+                if (altinnMessage.NotificationMessage?.ReplyLink?.UrlTitle != string.Empty)
                 {
                     //altinnMessage.ReplyLink.Url = "{{placeholder:altinnServer}}/Pages/ServiceEngine/Dispatcher/Dispatcher.aspx?ReporteeElementID={{placeholder:prefillFormId}}";
                     altinnMessage.NotificationMessage.ReplyLink.Url = $"https://tt02.altinn.no/Pages/ServiceEngine/Dispatcher/Dispatcher.aspx?ReporteeElementID={prefillResult.PrefillReferenceId}";
-
                 }
 
                 _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage, altinnMessage.DistributionFormReferenceId);
@@ -54,11 +45,7 @@ namespace Altinn.Distribution
             {
                 results.Add(new AltinnDistributionResult() { Status = AltinnDistributionStatus.PrefillFailed });
             }
-            
-
             return results;
         }
-
-
     }
 }

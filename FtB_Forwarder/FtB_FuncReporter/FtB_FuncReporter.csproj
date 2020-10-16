@@ -15,6 +15,7 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Altinn.Distribution\Altinn.Distribution.csproj" />
     <ProjectReference Include="..\FtB_FormLogic\FtB_FormLogic.csproj" />
     <ProjectReference Include="..\FtB_MessageManager\FtB_MessageManager.csproj" />
     <ProjectReference Include="..\FtB_ProcessStrategies\FtB_ProcessStrategies.csproj" />

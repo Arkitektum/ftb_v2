@@ -1,4 +1,5 @@
-﻿using FtB_Common.FormDataRepositories;
+﻿using Altinn.Distribution;
+using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using FtB_FormLogic;
@@ -33,6 +34,9 @@ namespace FtB_FuncReporter
             builder.Services.AddScoped<IFormDataRepo, FormDataRepository>();
             builder.Services.AddScoped<ITableStorage, TableStorage>();
             builder.Services.AddMessageManagerService(configuration);
+
+            builder.Services.AddAltinnNotification(configuration);
+
             builder.Services.AddLogging();
         }
     }
