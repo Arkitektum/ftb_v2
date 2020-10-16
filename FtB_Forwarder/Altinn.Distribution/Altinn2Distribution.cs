@@ -39,6 +39,13 @@ namespace Altinn.Distribution
                 //var kv = new List<KeyValuePair<string, string>>();
                 //altinnMessage.NotificationMessage.MessageData.EnrichBodyWith(kv);
 
+                if(altinnMessage.NotificationMessage?.ReplyLink?.UrlTitle != string.Empty)
+                {
+                    //altinnMessage.ReplyLink.Url = "{{placeholder:altinnServer}}/Pages/ServiceEngine/Dispatcher/Dispatcher.aspx?ReporteeElementID={{placeholder:prefillFormId}}";
+                    altinnMessage.NotificationMessage.ReplyLink.Url = $"https://tt02.altinn.no/Pages/ServiceEngine/Dispatcher/Dispatcher.aspx?ReporteeElementID={prefillResult.PrefillReferenceId}";
+
+                }
+
                 _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage, altinnMessage.DistributionFormReferenceId);
 
                 results.Add(new AltinnDistributionResult() { Status = AltinnDistributionStatus.MessageSent });

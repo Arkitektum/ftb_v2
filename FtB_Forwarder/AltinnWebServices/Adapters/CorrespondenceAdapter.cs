@@ -29,14 +29,22 @@ namespace Altinn2.Adapters
             _correspondenceBuilder.SetUpCorrespondence(altinnMessage.Receiver.Id, altinnMessage.ArchiveReference);
 
             _correspondenceBuilder.AddContent(altinnMessage.MessageData.MessageTitle, altinnMessage.MessageData.MessageSummary, altinnMessage.MessageData.MessageBody);
-
-
+            
             //Add notification stuff if present in input
             var notificationMessage = altinnMessage as AltinnNotificationMessage;
-            if (notificationMessage != null && notificationMessage.Notifications.Count() > 0)
+            if (notificationMessage != null)
             {
-                //_correspondenceBuilder.AddEmailAndSmsNotification()
+                if (notificationMessage.Notifications.Count() > 0)
+                {
+                    //_correspondenceBuilder.AddEmailAndSmsNotification()
+                }
+
+                if(notificationMessage.ReplyLink != null)
+                {
+                    _correspondenceBuilder.AddReplyLink(notificationMessage.ReplyLink.Url, notificationMessage.ReplyLink.UrlTitle);
+                }
             }
+
 
             // Must handle XML attachments as well
             foreach (var item in altinnMessage.Attachments)

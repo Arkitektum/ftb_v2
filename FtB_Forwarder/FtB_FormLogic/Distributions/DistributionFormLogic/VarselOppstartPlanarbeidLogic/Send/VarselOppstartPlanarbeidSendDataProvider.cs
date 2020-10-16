@@ -35,6 +35,7 @@ namespace FtB_FormLogic
             distributionMessage.NotificationMessage.Receiver = base.GetReceiver(NabovarselPlanMappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart));
             distributionMessage.NotificationMessage.MessageData = CreateMessageData(mainFormData);
             distributionMessage.NotificationMessage.ArchiveReference = archiveReference;
+            distributionMessage.NotificationMessage.ReplyLink = CreateReplyLink();
             return distributionMessage;
         }
 
@@ -59,6 +60,17 @@ namespace FtB_FormLogic
             return new MessageDataType() { MessageBody = body, MessageSummary = summary, MessageTitle = title };
         }
 
+        private ReplyLink CreateReplyLink()
+        {
+            var replyLink = new ReplyLink()
+            {
+                //URL settes av adapteret..
+                UrlTitle = "Trykk her for å fylle ut svarskjemaet"
+            };
+            return replyLink;
+
+        }
+
 
         public static string GetPrefillNotificationBody(no.kxml.skjema.dibk.nabovarselsvarPlan.ForslagsstillerType forslagsstiller, no.kxml.skjema.dibk.nabovarselsvarPlan.BeroertPartType beroertPart, DateTime? fristForInnspill, string kommune)
         {
@@ -75,7 +87,6 @@ namespace FtB_FormLogic
                 datoFristInnspill = String.Format("{0:MM.dd.yyyy}", fristForInnspill);
             }
 
-            string body = "";
             message.Append($"{forslagsstiller.navn} ønsker å endre  eller bygge i {kommune} kommune.<br>");
             message.Append($"Klikk på dokumentene nederst i denne meldingen for å lese mer om planarbeidet, og for å se et kartutsnitt av hvilket område planene gjelder.</p><br>");
 
@@ -100,7 +111,6 @@ namespace FtB_FormLogic
             message.Append($"<p><strong>Har du ingen uttalelser?</strong><br>");
             message.Append($"Da trenger du ikke gjøre noe som helst.</p>");
 
-            //return "";
             return message.ToString();
         }
 

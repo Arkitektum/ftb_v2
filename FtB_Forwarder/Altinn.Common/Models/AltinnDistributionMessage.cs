@@ -10,12 +10,14 @@ namespace Altinn.Common.Models
             this.Attachments = new List<Attachment>();
             this.MessageData = new MessageDataType();
             this.Receiver = new AltinnReceiver();
+            this.ReplyLink = new ReplyLink();
         }
         public MessageDataType MessageData { get; set; }
         public IEnumerable<Attachment> Attachments { get; set; }
         public AltinnReceiver Receiver { get; set; }
         public string ArchiveReference { get; set; }
-        public bool RespectReservable { get; set; } = true;    
+        public bool RespectReservable { get; set; } = true;
+        public ReplyLink ReplyLink { get; set; }
     }
 
     public class AltinnMessage : AltinnMessageBase
@@ -35,8 +37,7 @@ namespace Altinn.Common.Models
     public class AltinnDistributionMessage
     {
         public AltinnDistributionMessage()
-        {   
-            this.ReplyLink = new ReplyLink();
+        {               
             this.NotificationMessage = new AltinnNotificationMessage();
         }        
 
@@ -50,6 +51,5 @@ namespace Altinn.Common.Models
         public string DistributionFormReferenceId { get; set; }
         public int DaysValid { get; set; }
         public DateTime? DueDate { get; set; }
-        public ReplyLink ReplyLink { get; set; }
     }
 }
