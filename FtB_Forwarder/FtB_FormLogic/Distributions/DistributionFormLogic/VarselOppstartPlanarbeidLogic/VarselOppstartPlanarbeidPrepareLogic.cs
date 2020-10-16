@@ -13,9 +13,10 @@ namespace FtB_FormLogic
         public VarselOppstartPlanarbeidPrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger<VarselOppstartPlanarbeidPrepareLogic> log) : base(repo, tableStorage, log)
         {
         }
-
-
-
+        protected override void GetReceivers()
+        {
+            throw new System.NotImplementedException();
+        }
 
         private List<Receiver> receivers;
         protected override List<Receiver> Receivers
@@ -45,11 +46,6 @@ namespace FtB_FormLogic
             }
 
             set { base.Receivers = value; }
-        }
-
-        protected override void GetReceivers()
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

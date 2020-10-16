@@ -33,22 +33,4 @@ namespace FtB_FormLogic
             base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(_prefillMapper.FormDataString, base.FormData, Guid.NewGuid().ToString(), base.ArchiveReference);
         }
     }
-
-    //public interface IDistributionMessageProvider<T>
-    //{
-    //    Altinn.Common.Models.MessageDataType CreateDistributionMessage(T formData);
-    //}
-
-    //public class VarselOppstartPlanarbeidMessageProvider : IDistributionMessageProvider<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
-    //{
-    //    public MessageDataType CreateDistributionMessage(no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType formData)
-    //    {
-    //        var retVal = new MessageDataType();
-            
-    //        //Create body, title and summary
-           
-
-    //        return retVal;
-    //    }
-    //}
 }

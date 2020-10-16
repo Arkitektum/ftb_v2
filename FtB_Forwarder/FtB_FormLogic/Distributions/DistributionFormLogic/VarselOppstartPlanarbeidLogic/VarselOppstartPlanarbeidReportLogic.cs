@@ -39,7 +39,7 @@ namespace FtB_FormLogic
                 Type = AltinnReceiverType.Foretak
             };
         }
-        private string GetContactPerson()
+        private string GetContactPersonExtendedInfo()
         {
             StringBuilder builder = new StringBuilder();
             if (!base.FormData.forslagsstiller.kontaktperson.navn.IsNullOrEmpty())
@@ -62,7 +62,6 @@ namespace FtB_FormLogic
                     builder.Append(base.FormData.forslagsstiller.kontaktperson.epost);
                 }
             }
-
             else if (!base.FormData.forslagsstiller.navn.IsNullOrEmpty())
             {
                 builder.Append(base.FormData.forslagsstiller.navn);
@@ -78,7 +77,6 @@ namespace FtB_FormLogic
                     builder.Append(base.FormData.forslagsstiller.epost);
                 }
             }
-            //_log.LogDebug($"{GetType().Name}. Getting contact person: {builder.ToString()}.");
 
             return builder.ToString();
         }
@@ -90,7 +88,7 @@ namespace FtB_FormLogic
                 string adresse = base.FormData.eiendomByggested.First().adresse.adresselinje1;
                 string planNavn = base.FormData.planforslag.plannavn == null ? "" : base.FormData.planforslag.plannavn;
                 string byggested = adresse != null && adresse.Trim().Length > 0 ? $"{adresse}, {planNavn}" : $"{planNavn}";
-                string kontaktperson = GetContactPerson();
+                string kontaktperson = GetContactPersonExtendedInfo();
 
                 //Get html embedded resource file
                 string htmlBody = "";
@@ -116,13 +114,11 @@ namespace FtB_FormLogic
                         }
                     }
                 }
-                //_log.LogDebug($"{GetType().Name}: htmlBody: {htmlBody}");
                 //TODO: Add Logo?
                 //string LogoResourceName = "KommIT.FIKS.AdapterAltinnSvarUt.Content.images.dibk_logo.png";
                 htmlBody = htmlBody.Replace("<byggested/>", byggested);
                 htmlBody = htmlBody.Replace("<kontaktperson/>", kontaktperson);
                 htmlBody = htmlBody.Replace("<arkivReferanse/>", archiveReference.ToUpper());
-
 
                 var mess = new MessageDataType()
                 {
@@ -153,7 +149,6 @@ namespace FtB_FormLogic
 
                 //Get html embedded resource file
                 string htmlBody = "";
-                //var HtmlBodyTemplate = "VarselOppstartPlanarbeidReceiptMessageBody.html";
                 var HtmlBodyTemplate = "FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceipt.html";
 
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
@@ -175,29 +170,31 @@ namespace FtB_FormLogic
                         }
                     }
                 }
-                //_log.LogDebug($"{GetType().Name}: htmlBody: {htmlBody}");
-                //string LogoResourceName = "KommIT.FIKS.AdapterAltinnSvarUt.Content.images.dibk_logo.png";
                 //TODO: Add Logo?
-                //TODO: 
-                //planNavn
-                //forslagsstiller
-                //arkivReferanse
-                //vedlegg
-                //naboer
-
-                htmlBody = htmlBody.Replace("<planNavn/>", planNavn);
-                htmlBody = htmlBody.Replace("<forslagsstiller/>", forslagsstiller);
-                htmlBody = htmlBody.Replace("<byggested/>", byggested);
-                htmlBody = htmlBody.Replace("<kontaktperson/>", kontaktperson);
-                htmlBody = htmlBody.Replace("<arkivReferanse/>", archiveReference.ToUpper());
-                //What attachments to add?
+                //string LogoResourceName = "KommIT.FIKS.AdapterAltinnSvarUt.Content.images.dibk_logo.png";
+                htmlBody = htmlBody.Replace("<planNavn />", planNavn);
+                htmlBody = htmlBody.Replace("<forslagsstiller />", forslagsstiller);
+                htmlBody = htmlBody.Replace("<kontaktperson />", kontaktperson);
+                htmlBody = htmlBody.Replace("<arkivReferanse />", archiveReference.ToUpper());
+                //TODO: What attachments to add?
                 var blobStorageTypes = new List<BlobStorageMetadataTypeEnum>();
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.MainForm);
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.SubmittalAttachment);
 
                 IEnumerable<Tuple<string, string>> listOfAttachmentsInSubmittal = _blobOperations.GetListOfBlobsWithMetadataType(archiveReference, blobStorageTypes);
-                string htmlText = AddTableOfAttachmentsToHtml(listOfAttachmentsInSubmittal, "Følgende vedlegg er sendt med varselet:");
-                htmlBody = htmlBody.Replace("<vedlegg/>", htmlText);
+                string htmlTableOfAttachments = AddTableOfAttachmentsToHtml(listOfAttachmentsInSubmittal, "Følgende vedlegg er sendt med varselet:");
+                htmlBody = htmlBody.Replace("<vedlegg />", htmlTableOfAttachments);
+                htmlBody = htmlBody.Replace("<antallVarsledeMottakere />", GetReceiverSuccessfullyNotifiedCount().ToString());
+                
+                //TODO: Set back from calling the test method
+                //var listOfDeniers = GetDigitalDisallowmentReceiverNames();
+                var listOfDeniers = FOR_TEST_GetDigitalDisallowmentReceiverNames();
+                var deniersASHtml = new StringBuilder();
+                foreach (var denier in listOfDeniers)
+                {
+                    deniersASHtml.Append($"{denier}<br />");
+                }
+                htmlBody = htmlBody.Replace("<naboerSomIkkeKunneVarsles />", deniersASHtml.ToString());
 
                 return htmlBody;
             }
@@ -207,6 +204,62 @@ namespace FtB_FormLogic
 
                 throw ex;
             }
+        }
+
+        private int GetReceiverSuccessfullyNotifiedCount()
+        {
+            SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(ArchiveReference, ArchiveReference);
+            return submittalEntity.SuccessCount;
+        }
+        private IEnumerable<string> GetDigitalDisallowmentReceiverNames()
+        {
+            var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
+            var digitalDisallowmentReceiverIds = new List<string>();
+            foreach (var receiver in receiversProcessedFromSubmittal)
+            {
+                if (receiver.Status.Equals(Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.DigitalDisallowment)))
+                {
+                    digitalDisallowmentReceiverIds.Add(receiver.ReceiverId);
+                }
+            }
+
+            var denierNames = new List<string>();
+            foreach (var denier in digitalDisallowmentReceiverIds)
+            {
+                foreach (var berortPart in FormData.beroerteParter)
+                {
+                    if (berortPart.foedselsnummer.Equals(denier) || berortPart.organisasjonsnummer.Equals(denier))
+                    {
+                        denierNames.Add(berortPart.navn);
+                        break;
+                    }
+                }
+            }
+
+            return denierNames;
+        }
+
+        public IEnumerable<string> FOR_TEST_GetDigitalDisallowmentReceiverNames()
+        {
+            var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
+            var digitalDisallowmentReceiverIds = new List<string>();
+            digitalDisallowmentReceiverIds.Add(receiversProcessedFromSubmittal.First().ReceiverId);
+
+            var denierNames = new List<string>();
+            foreach (var denier in digitalDisallowmentReceiverIds)
+            {
+                foreach (var berortPart in FormData.beroerteParter)
+                {
+                    if ((berortPart.foedselsnummer != null && berortPart.foedselsnummer.Equals(denier)) 
+                        || (berortPart.organisasjonsnummer != null && berortPart.organisasjonsnummer.Equals(denier)))
+                    {
+                        denierNames.Add(berortPart.navn);
+                        break;
+                    }
+                }
+            }
+
+            return denierNames;
         }
         //public override string Execute(ReportQueueItem reportQueueItem)
         //{

@@ -19,26 +19,28 @@ namespace FtB_FormLogic
     {
         private readonly INotificationAdapter _notificationAdapter;
 
-        //private readonly IEnumerable<IMessageManager> _messageManagers;
-
         public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, INotificationAdapter notificationAdapter) //, IEnumerable<IMessageManager> messageManagers) 
             : base(repo, tableStorage, log)
         {
             _notificationAdapter = notificationAdapter;
-            //_messageManagers = messageManagers;
-
         }
 
         public virtual AltinnReceiver GetReceiver()
         {
             throw new System.NotImplementedException();
         }
+        protected virtual MessageDataType GetSubmitterReceiptMessage(string archiveReference)
+        {
+            throw new NotImplementedException();
+        }
+        protected virtual string GetSubmitterReceipt(string archiveReference)
+        {
+            throw new NotImplementedException();
+        }
 
         public override string Execute(ReportQueueItem reportQueueItem)
         {
-            _log.LogDebug($"{GetType().Name}: Execute.....");
             var returnItem = base.Execute(reportQueueItem);
-            //var receiverEntity = new ReceiverEntity(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
             ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
 
             _log.LogDebug($"{GetType().Name}. Execute: ID={reportQueueItem.ArchiveReference}. RowKey={reportQueueItem.StorageRowKey}. ReceiverEntityStatus: {receiverEntity.Status}.");
@@ -49,13 +51,6 @@ namespace FtB_FormLogic
                 UpdateSubmittalEntityAfterReceiverIsProcessed(reportQueueItem, receiverStatus);
             }
             SendReceiptToSubmitterWhenAllReceiversAreProcessed(reportQueueItem);
-
-
-
-
-            //Sende kvittering til innsender
-
-
 
             return returnItem;
         }
@@ -89,13 +84,9 @@ namespace FtB_FormLogic
                     _log.LogDebug($"ArchiveReference={archiveReference}. Updating  submittal. Status: Success: {submittalEntity.SuccessCount}, DigitalDisallowment: {submittalEntity.DigitalDisallowmentCount}, FailedCount: {submittalEntity.FailedCount}");
                     var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
 
-
                     ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
                     receiverEntity.Status = Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.ReadyForReporting);
                     var updatedReceiverEntity = _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
-
-                    //UpdateReceiverEntity(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey, ReceiverStatusEnum.ReadyForReporting);
-
                 }
                 catch (TableStorageConcurrentException ex)
                 {
@@ -108,13 +99,13 @@ namespace FtB_FormLogic
                     }
                     else
                     {
-                        _log.LogError($"Error updating submittal record for ArchiveReference={archiveReference}. Message: { ex.Message }");
+                        _log.LogError($"Error updating submittal record for ArchiveReference={archiveReference}. Message: {ex.Message}");
                         throw ex;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _log.LogError($"Error updating submittal record for ArchiveReference={archiveReference}. Message: { ex.Message }");
+                    _log.LogError($"Error updating submittal record for ArchiveReference={archiveReference}. Message: {ex.Message}");
                     throw ex;
                 }
             } while (runAgain);
@@ -124,18 +115,12 @@ namespace FtB_FormLogic
         {
             try
             {
-
                 SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
                 _log.LogDebug($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. ID={reportQueueItem.Receiver.Id}. SubmittalEntity.ProcessedCount={submittalEntity.ProcessedCount}, submittalEntity.ReceiverCount={submittalEntity.ReceiverCount}");
                 if (submittalEntity.ProcessedCount == submittalEntity.ReceiverCount)
                 {
                     submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
-                    _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. ReportStrategyBase: All receivers has been processed.");
-                    //foreach (var messageManager in _messageManagers)
-                    //{
-                    //if (messageManager is SlackManager)
-                    //{
-                    //Report on Slack channel
+                    _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
 
                     var notificationMessage = new AltinnNotificationMessage();
                     notificationMessage.ArchiveReference = ArchiveReference;
@@ -143,22 +128,9 @@ namespace FtB_FormLogic
                     notificationMessage.Receiver = GetReceiver();
                     notificationMessage.ArchiveReference = reportQueueItem.ArchiveReference;
                     var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
-                    //string receiptMessage = messageData.MessageTitle + Environment.NewLine
-                    //                + messageData.MessageSummary + Environment.NewLine
-                    //                + messageData.MessageBody;
-
                     notificationMessage.MessageData = messageData;
 
-                    //Formatting for Slack
-                    //receiptMessage = receiptMessage.Replace("<br />", "\n").Replace("<p>", "\n").Replace("</p>", "");
-                    _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt message to Slack.");
-                    //_log.LogDebug($"{GetType().Name}: {receiptMessage}");
-
-
-                    //string hopelessMessageSeparator = "\n\n\n\n\n\n\n\n\n\n";
-                    //var slackMessage = Task.Run(async () => await messageManager.Send(receiptMessage));
-
-                    //Create PDF from HTML 
+                    //TODO: Create PDF from HTML 
                     var receipt = GetSubmitterReceipt(reportQueueItem.ArchiveReference);
 
                     var receiptAttachment = new AttachmentBinary()
@@ -170,18 +142,10 @@ namespace FtB_FormLogic
                     };
 
                     notificationMessage.Attachments = new List<Attachment>() { receiptAttachment };
-                    
-
+                    _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
                     _notificationAdapter.SendNotification(notificationMessage);
 
-                    //receipt = receipt.Replace("<br />", "\n").Replace("<p>", "\n").Replace("</p>", "");
-                    _log.LogInformation($"ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt to Slack.");
                     _log.LogDebug($"{GetType().Name}: {receipt}");
-                    //Task.Run(async () => await messageManager.Send(receiptMessage + hopelessMessageSeparator + receipt));
-
-                    //}
-                    //}
-                    //TODO: Update submittalstatus with Completed
                     var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
                 }
             }
@@ -190,15 +154,6 @@ namespace FtB_FormLogic
                 _log.LogError($"{GetType().Name}. Error: {ex.Message}");
                 throw ex;
             }
-        }
-
-        protected virtual MessageDataType GetSubmitterReceiptMessage(string archiveReference)
-        {
-            throw new NotImplementedException();
-        }
-        protected virtual string GetSubmitterReceipt(string archiveReference)
-        {
-            throw new NotImplementedException();
         }
 
         protected string AddTableOfAttachmentsToHtml(IEnumerable<Tuple<string, string>> attachments, string tableHeaderText)
@@ -229,20 +184,6 @@ namespace FtB_FormLogic
             strBuilder.Append("</div>");
 
             return strBuilder.ToString();
-        }
-
-        //protected IEnumerable<Tuple<string,string> GetAttachmentListSentToReceivers(IEnumerable<BlobStorageMetadataTypeEnum> blobStorageTypes)
-        //{
-        //    //Get list of blobStorageTypes
-
-
-        //    return new List<new Tuple<string, string>("","");
-        //}
-        private bool AllReceiversHasBeenProcessed(string archiveReference)
-        {
-            //TODO: This method has to return value based on status of sending to each separate reciver, and not on this "submittalEntity.SentCount"
-            var submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(archiveReference, archiveReference);
-            return submittalEntity.ProcessedCount == submittalEntity.ReceiverCount;
         }
     }
 }

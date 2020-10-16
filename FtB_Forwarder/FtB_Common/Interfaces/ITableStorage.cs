@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using FtB_Common.BusinessModels;
+using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +13,8 @@ namespace FtB_Common.Interfaces
         TableEntity InsertEntityRecord<T>(TableEntity tableEntity);
         TableEntity UpdateEntityRecord<T>(TableEntity entity);
         T GetTableEntity<T>(string partitionKey, string rowKey) where T : ITableEntity;
+        IEnumerable<ReceiverEntity> GetReceivers(string partitionKey);
+
         //Task<T> GetTableEntityAsync<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity;
     }
 }

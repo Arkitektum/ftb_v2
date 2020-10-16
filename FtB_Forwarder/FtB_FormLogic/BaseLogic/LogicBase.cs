@@ -41,10 +41,7 @@ namespace FtB_FormLogic
                 try
                 {
                     ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(partitionKey, rowKey);
-                    _log.LogDebug($"ID={rowKey}. Before ReceiverEntity update for archiveRefrrence {partitionKey}. Status: {receiverEntity.Status}.");
                     receiverEntity.Status = Enum.GetName(typeof(ReceiverStatusEnum), status);
-
-                    //Log the record to be inserted
                     _log.LogDebug($"ID={rowKey}. Updating changed entity for {partitionKey} and {rowKey}. Status: {receiverEntity.Status}.....");
                     var updatedEntity = _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
                 }
@@ -70,12 +67,5 @@ namespace FtB_FormLogic
                 }
             } while (runAgain);
         }
-
-        //protected TableEntity GetTableStorageEntity(string tablename, string partitionKey, string rowKey)
-        //{
-        //    TableEntity fetchedEntity = _tableStorage.GetTableEntity<ReceiverEntity>(tablename, partitionKey, rowKey);
-        //    return fetchedEntity;
-        //}
-
     }
 }

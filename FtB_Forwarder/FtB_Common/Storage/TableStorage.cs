@@ -46,7 +46,6 @@ namespace FtB_Common.Storage
 
         public async Task<TableEntity> InsertEntityRecordAsync<T>(TableEntity entity)
         {
-
             try
             {
                 string tableNameFromType = ""; ;
@@ -77,7 +76,6 @@ namespace FtB_Common.Storage
         }
         public TableEntity InsertEntityRecord<T>(TableEntity entity)
         {
-
             try
             {
                 string tableNameFromType = ""; ;
@@ -167,6 +165,31 @@ namespace FtB_Common.Storage
                 throw;
             }
         }
+
+        public IEnumerable<ReceiverEntity> GetReceivers(string partitionKey)
+        {
+            try
+            {
+                string filter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
+                var receivers = new List<ReceiverEntity>();
+                TableQuery<ReceiverEntity> tableQuery = new TableQuery<ReceiverEntity>().Where(filter);
+                CloudTable cloudTable = _cloudTableClient.GetTableReference("ftbReceivers");
+                var list = cloudTable.ExecuteQuery(tableQuery);
+                foreach (var item in list)
+                {
+                    receivers.Add(item);
+                }
+
+                return receivers;
+            }
+            catch (StorageException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+                throw;
+            }
+        }
+
         //public async Task<T> GetTableEntityAsync<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity
         //{
         //    try
