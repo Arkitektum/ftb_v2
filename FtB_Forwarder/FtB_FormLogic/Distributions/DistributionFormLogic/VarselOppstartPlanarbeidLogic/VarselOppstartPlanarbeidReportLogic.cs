@@ -6,13 +6,11 @@ using FtB_Common.Enums;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
-using FtB_MessageManager;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace FtB_FormLogic
@@ -213,51 +211,80 @@ namespace FtB_FormLogic
         }
         private IEnumerable<string> GetDigitalDisallowmentReceiverNames()
         {
-            var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
-            var digitalDisallowmentReceiverIds = new List<string>();
-            foreach (var receiver in receiversProcessedFromSubmittal)
-            {
-                if (receiver.Status.Equals(Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.DigitalDisallowment)))
-                {
-                    digitalDisallowmentReceiverIds.Add(receiver.ReceiverId);
-                }
-            }
+            //var digitalDisallowmentReceiverIds = new List<string>();
+            //foreach (var receiver in receiversProcessedFromSubmittal)
+            //{
+            //    if (receiver.Status.Equals(Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.DigitalDisallowment)))
+            //    {
+            //        digitalDisallowmentReceiverIds.Add(receiver.ReceiverId);
+            //    }
+            //}
 
-            var denierNames = new List<string>();
-            foreach (var denier in digitalDisallowmentReceiverIds)
-            {
-                foreach (var berortPart in FormData.beroerteParter)
-                {
-                    if (berortPart.foedselsnummer.Equals(denier) || berortPart.organisasjonsnummer.Equals(denier))
-                    {
-                        denierNames.Add(berortPart.navn);
-                        break;
-                    }
-                }
-            }
+            //var denierNames1 = new List<string>();
+            //foreach (var denier in digitalDisallowmentReceiverIds)
+            //{
+            //    foreach (var berortPart in FormData.beroerteParter)
+            //    {
+            //        if (berortPart.foedselsnummer.Equals(denier) || berortPart.organisasjonsnummer.Equals(denier))
+            //        {
+            //            denierNames1.Add(berortPart.navn);
+            //            break;
+            //        }
+            //    }
+            //}
+
+            var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
+            var digitalDisallowmentReceiverIds = receiversProcessedFromSubmittal
+                    .Where(x => x.Status == Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.DigitalDisallowment))
+                    .Select( x => x.ReceiverId);
+
+            var socialSecurityNumbers = FormData.beroerteParter
+                    .Where(x => x.foedselsnummer != null)
+                    .Select(x => new { Id = x.foedselsnummer, x.navn });
+            var orgNumbers = FormData.beroerteParter
+                    .Where(x => x.organisasjonsnummer != null)
+                    .Select(x => new { Id = x.organisasjonsnummer, x.navn });
+
+            var denierNames = socialSecurityNumbers.Union(orgNumbers)
+                    .Where(x => digitalDisallowmentReceiverIds.Any(y => y == x.Id))
+                    .Select(x => x.navn);
 
             return denierNames;
         }
 
         public IEnumerable<string> FOR_TEST_GetDigitalDisallowmentReceiverNames()
         {
-            var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
-            var digitalDisallowmentReceiverIds = new List<string>();
-            digitalDisallowmentReceiverIds.Add(receiversProcessedFromSubmittal.First().ReceiverId);
+            //var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
+            //var digitalDisallowmentReceiverIds = new List<string>();
+            //digitalDisallowmentReceiverIds.Add(receiversProcessedFromSubmittal.First().ReceiverId);
 
-            var denierNames = new List<string>();
-            foreach (var denier in digitalDisallowmentReceiverIds)
-            {
-                foreach (var berortPart in FormData.beroerteParter)
-                {
-                    if ((berortPart.foedselsnummer != null && berortPart.foedselsnummer.Equals(denier)) 
-                        || (berortPart.organisasjonsnummer != null && berortPart.organisasjonsnummer.Equals(denier)))
-                    {
-                        denierNames.Add(berortPart.navn);
-                        break;
-                    }
-                }
-            }
+            //var denierNames = new List<string>();
+            //foreach (var denier in digitalDisallowmentReceiverIds)
+            //{
+            //    foreach (var berortPart in FormData.beroerteParter)
+            //    {
+            //        if ((berortPart.foedselsnummer != null && berortPart.foedselsnummer.Equals(denier)) 
+            //            || (berortPart.organisasjonsnummer != null && berortPart.organisasjonsnummer.Equals(denier)))
+            //        {
+            //            denierNames.Add(berortPart.navn);
+            //            break;
+            //        }
+            //    }
+            //}
+
+            var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
+            var digitalDisallowmentReceiverIds = receiversProcessedFromSubmittal.First().ReceiverId;
+
+            var socialSecurityNumbers = FormData.beroerteParter
+                    .Where(x => x.foedselsnummer != null)
+                    .Select(x => new { Id = x.foedselsnummer, x.navn });
+            var orgNumbers = FormData.beroerteParter
+                    .Where(x => x.organisasjonsnummer != null)
+                    .Select(x => new { Id = x.organisasjonsnummer, x.navn });
+
+            var denierNames = socialSecurityNumbers.Union(orgNumbers)
+                    .Where(x => x.Id == digitalDisallowmentReceiverIds)
+                    .Select(x => x.navn);
 
             return denierNames;
         }
