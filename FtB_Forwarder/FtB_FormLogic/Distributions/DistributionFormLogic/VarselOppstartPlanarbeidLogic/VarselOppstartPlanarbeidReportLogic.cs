@@ -213,28 +213,6 @@ namespace FtB_FormLogic
         }
         private IEnumerable<string> GetDigitalDisallowmentReceiverNames()
         {
-            //var digitalDisallowmentReceiverIds = new List<string>();
-            //foreach (var receiver in receiversProcessedFromSubmittal)
-            //{
-            //    if (receiver.Status.Equals(Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.DigitalDisallowment)))
-            //    {
-            //        digitalDisallowmentReceiverIds.Add(receiver.ReceiverId);
-            //    }
-            //}
-
-            //var denierNames1 = new List<string>();
-            //foreach (var denier in digitalDisallowmentReceiverIds)
-            //{
-            //    foreach (var berortPart in FormData.beroerteParter)
-            //    {
-            //        if (berortPart.foedselsnummer.Equals(denier) || berortPart.organisasjonsnummer.Equals(denier))
-            //        {
-            //            denierNames1.Add(berortPart.navn);
-            //            break;
-            //        }
-            //    }
-            //}
-
             var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
             var digitalDisallowmentReceiverIds = receiversProcessedFromSubmittal
                     .Where(x => x.Status == Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.DigitalDisallowment))
@@ -256,24 +234,6 @@ namespace FtB_FormLogic
 
         public IEnumerable<string> FOR_TEST_GetDigitalDisallowmentReceiverNames()
         {
-            //var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
-            //var digitalDisallowmentReceiverIds = new List<string>();
-            //digitalDisallowmentReceiverIds.Add(receiversProcessedFromSubmittal.First().ReceiverId);
-
-            //var denierNames = new List<string>();
-            //foreach (var denier in digitalDisallowmentReceiverIds)
-            //{
-            //    foreach (var berortPart in FormData.beroerteParter)
-            //    {
-            //        if ((berortPart.foedselsnummer != null && berortPart.foedselsnummer.Equals(denier)) 
-            //            || (berortPart.organisasjonsnummer != null && berortPart.organisasjonsnummer.Equals(denier)))
-            //        {
-            //            denierNames.Add(berortPart.navn);
-            //            break;
-            //        }
-            //    }
-            //}
-
             var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
             var digitalDisallowmentReceiverIds = receiversProcessedFromSubmittal.First().ReceiverId;
 

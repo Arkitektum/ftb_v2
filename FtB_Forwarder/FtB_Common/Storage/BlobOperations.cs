@@ -194,12 +194,23 @@ namespace FtB_Common.Storage
             //}
             var blobItems = _blobStorage.GetBlobContainerItems(containerName);
             var data = string.Empty;
+            
+            
             foreach (var blobItem in blobItems)
             {
                 var blob = _blobStorage.GetBlockBlobContainerClient(containerName, blobItem.Name);
                 BlobProperties properties = blob.GetPropertiesAsync().GetAwaiter().GetResult();
-
                 var metadataList = properties.Metadata;
+
+                //var newblobItemTypes = blobItemTypes.ToList();
+                //var blabla = metadataList.Where(
+                //    x => (x.Key.Equals("Type")) && newblobItemTypes.Contains(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), x.Value))
+                //    );
+
+
+
+
+
                 foreach (var metadataKeyValuePair in metadataList)
                 {
                     foreach (var blobItemType in blobItemTypes)
@@ -222,14 +233,5 @@ namespace FtB_Common.Storage
             return listOfAttachments;
         }
 
-        private bool predicate1(KeyValuePair<string, string> f, KeyValuePair<string, string> m)
-        {
-            return predicate(f, m);
-        }
-
-        private static bool predicate(KeyValuePair<string, string> f, KeyValuePair<string, string> m)
-        {
-            return m.Key == f.Key && m.Value == f.Value;
-        }
     }
 }

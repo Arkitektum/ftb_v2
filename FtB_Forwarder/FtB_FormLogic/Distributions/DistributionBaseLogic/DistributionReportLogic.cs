@@ -5,6 +5,7 @@ using FtB_Common.BusinessModels;
 using FtB_Common.Enums;
 using FtB_Common.Exceptions;
 using FtB_Common.Interfaces;
+using FtB_Common.Storage;
 using Ftb_DbRepository;
 using FtB_MessageManager;
 using Microsoft.Extensions.Logging;
@@ -18,11 +19,13 @@ namespace FtB_FormLogic
 {
     public class DistributionReportLogic<T> : ReportLogic<T>
     {
+        private readonly IBlobOperations _blobOperations;
         private readonly INotificationAdapter _notificationAdapter;
 
         public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, INotificationAdapter notificationAdapter, DbUnitOfWork dbUnitOfWork) //, IEnumerable<IMessageManager> messageManagers) 
             : base(repo, tableStorage, log, dbUnitOfWork)
         {
+            _blobOperations = blobOperations;
             _notificationAdapter = notificationAdapter;
         }
 
@@ -138,11 +141,22 @@ namespace FtB_FormLogic
                     {
                         BinaryContent = System.Text.Encoding.UTF8.GetBytes(receipt),
                         Filename = "Kvittering.html",
-                        Name = "Kvitto",
+                        Name = "Kvittering",
+                        SendersReference = ArchiveReference
+                    };
+                    var metadataList = new List<KeyValuePair<string, string>>();
+                    metadataList.Add(new KeyValuePair<string, string>("Type", "MainForm"));
+                    var mainFormFromBlobStorage = _blobOperations.GetBlobDataByMetadata(ArchiveReference, metadataList);
+
+                    var mainFormAttachment = new AttachmentBinary()
+                    {
+                        BinaryContent = System.Text.Encoding.UTF8.GetBytes(mainFormFromBlobStorage),
+                        Filename = "Skjema.pdf",
+                        Name = "Varsel",
                         SendersReference = ArchiveReference
                     };
 
-                    notificationMessage.Attachments = new List<Attachment>() { receiptAttachment };
+                    notificationMessage.Attachments = new List<Attachment>() { receiptAttachment, mainFormAttachment };
                     _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
                     _notificationAdapter.SendNotification(notificationMessage);
 
