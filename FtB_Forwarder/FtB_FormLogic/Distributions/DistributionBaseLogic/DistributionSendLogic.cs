@@ -5,6 +5,7 @@ using FtB_Common;
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
+using Ftb_DbRepository;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace FtB_FormLogic
         public AltinnDistributionMessage DistributionMessage { get; set; }       
 
 
-        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IDistributionAdapter distributionAdapter) : base(repo, tableStorage, log)
+        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IDistributionAdapter distributionAdapter, DbUnitOfWork dbUnitOfWork) : base(repo, tableStorage, log, dbUnitOfWork)
         {
             _distributionAdapter = distributionAdapter;
         }

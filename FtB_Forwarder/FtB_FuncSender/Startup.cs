@@ -6,6 +6,7 @@ using FtB_Common.Encryption;
 using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
+using Ftb_DbRepository;
 using FtB_FormLogic;
 using FtB_MessageManager;
 using FtB_ProcessStrategies;
@@ -50,6 +51,7 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<IDecryption, Decryption>();
             builder.Services.AddScoped<IDecryptionFactory, DecryptionFactory>();
             builder.Services.Configure<EncryptionSettings>(configuration.GetSection("EncryptionSettings"));
+            builder.Services.AddFtbDbUnitOfWork();
 
             //builder.Services.AddAltinn3Distribution(configuration);
             //builder.Services.AddScoped<IDistributionDataMapper<FtB_DataModels.Datamodels.NabovarelPlan.SvarPaaNabovarselPlanType, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>, VarselOppstartPlanarbeidPrepareAltinn3SendDataProvider>();

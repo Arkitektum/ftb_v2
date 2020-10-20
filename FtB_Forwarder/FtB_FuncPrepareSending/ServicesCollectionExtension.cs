@@ -1,6 +1,7 @@
 ﻿using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
+using Ftb_DbRepository;
 using FtB_FormLogic;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,7 +17,7 @@ namespace FtB_FuncPrepareSending
             services.AddScoped<ITableStorage, TableStorage>();
             services.AddScoped<IBlobOperations, BlobOperations>();
             services.AddScoped<BlobStorage>();
-
+            services.AddFtbDbUnitOfWork();
             //services.AddPrepareStrategies();
 
             //Test reporter

@@ -4,6 +4,7 @@ using FtB_Common.BusinessModels;
 using FtB_Common.Exceptions;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
+using Ftb_DbRepository;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using System;
@@ -15,11 +16,14 @@ namespace FtB_FormLogic
     {
         protected readonly ITableStorage _tableStorage;
         protected readonly ILogger _log;
-        public LogicBase(IFormDataRepo repo, ITableStorage tableStorage, ILogger log)
+        protected readonly DbUnitOfWork _dbUnitOfWork;
+
+        public LogicBase(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork)
         {
             _repo = repo;
             _tableStorage = tableStorage;
             _log = log;
+            _dbUnitOfWork = dbUnitOfWork;
         }
         public string ArchiveReference { get; set; }
         protected readonly IFormDataRepo _repo;

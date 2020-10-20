@@ -1,5 +1,6 @@
 ﻿using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
+using Ftb_DbRepository;
 using Microsoft.Extensions.Logging;
 
 namespace FtB_FormLogic
@@ -11,7 +12,7 @@ namespace FtB_FormLogic
         protected override Receiver Receiver { get => base.Receiver; set => base.Receiver = value; }
 
 
-        public ShipmentSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, ISvarUtAdapter svarUtAdapter) : base(repo, tableStorage, log)
+        public ShipmentSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, ISvarUtAdapter svarUtAdapter, DbUnitOfWork dbUnitOfWork) : base(repo, tableStorage, log, dbUnitOfWork)
         {
             this.svarUtAdapter = svarUtAdapter;
         }

@@ -1,6 +1,7 @@
 ﻿using FtB_Common;
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
+using Ftb_DbRepository;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace FtB_FormLogic
     {
         protected virtual List<Receiver> Receivers { get; set; }
 
-        public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log) : base(repo, tableStorage, log)
+        public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork) : base(repo, tableStorage, log, dbUnitOfWork)
         {
         }
 

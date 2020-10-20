@@ -5,10 +5,10 @@ namespace Ftb_DbRepository
 {
     public static class ServicesConfiguration
     {
-        public static IServiceCollection AddFtbDbRepository(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddFtbDbUnitOfWork(this IServiceCollection services)
         {
-            services.AddDbContext<FtbDbContext>(options => options.UseSqlServer(connectionString));
-            services.AddScoped<IFormMetadataRepository, FormMetadataRepository>();
+            services.AddScoped<DbUnitOfWork>();
+            services.AddScoped<ILogEntryRepository, LogEntryRepository>();
             return services;
         }
     }

@@ -1,5 +1,6 @@
 ﻿using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
+using Ftb_DbRepository;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
@@ -10,7 +11,7 @@ namespace FtB_FormLogic
         private readonly ILogger log;
         protected  override  List<Receiver> Receivers { get => base.Receivers; set => base.Receivers = value; }
 
-        public DistributionPrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log) : base(repo, tableStorage, log)
+        public DistributionPrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork) : base(repo, tableStorage, log, dbUnitOfWork)
         {
             this.log = log;
         }

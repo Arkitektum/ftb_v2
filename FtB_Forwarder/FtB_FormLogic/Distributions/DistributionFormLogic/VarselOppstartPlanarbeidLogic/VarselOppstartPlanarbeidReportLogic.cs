@@ -6,6 +6,7 @@ using FtB_Common.Enums;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
+using Ftb_DbRepository;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,9 @@ namespace FtB_FormLogic
                                                    ITableStorage tableStorage,
                                                    ILogger<VarselOppstartPlanarbeidReportLogic> log,
                                                    IBlobOperations blobOperations,
-                                                   INotificationAdapter notificationAdapter)
-            : base(repo, tableStorage, log, notificationAdapter)
+                                                   INotificationAdapter notificationAdapter,
+                                                    DbUnitOfWork dbUnitOfWork)
+            : base(repo, tableStorage, log, notificationAdapter, dbUnitOfWork)
         {
             _blobOperations = blobOperations;
         }

@@ -1,12 +1,13 @@
 ﻿using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
+using Ftb_DbRepository;
 using Microsoft.Extensions.Logging;
 
 namespace FtB_FormLogic
 {
     public class ReportLogic<T> : LogicBase<T>, IFormLogic<string, ReportQueueItem>, IReportLogic
     {
-        public ReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log) : base(repo, tableStorage, log)
+        public ReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork) : base(repo, tableStorage, log, dbUnitOfWork)
         {
         }
 

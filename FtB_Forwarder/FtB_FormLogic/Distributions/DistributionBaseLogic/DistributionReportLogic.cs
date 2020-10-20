@@ -5,6 +5,7 @@ using FtB_Common.BusinessModels;
 using FtB_Common.Enums;
 using FtB_Common.Exceptions;
 using FtB_Common.Interfaces;
+using Ftb_DbRepository;
 using FtB_MessageManager;
 using Microsoft.Extensions.Logging;
 using System;
@@ -19,8 +20,8 @@ namespace FtB_FormLogic
     {
         private readonly INotificationAdapter _notificationAdapter;
 
-        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, INotificationAdapter notificationAdapter) //, IEnumerable<IMessageManager> messageManagers) 
-            : base(repo, tableStorage, log)
+        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, INotificationAdapter notificationAdapter, DbUnitOfWork dbUnitOfWork) //, IEnumerable<IMessageManager> messageManagers) 
+            : base(repo, tableStorage, log, dbUnitOfWork)
         {
             _notificationAdapter = notificationAdapter;
         }
