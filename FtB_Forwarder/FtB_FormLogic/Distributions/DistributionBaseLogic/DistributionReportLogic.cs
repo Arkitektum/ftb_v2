@@ -22,7 +22,7 @@ namespace FtB_FormLogic
         private readonly IBlobOperations _blobOperations;
         private readonly INotificationAdapter _notificationAdapter;
 
-        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, INotificationAdapter notificationAdapter, DbUnitOfWork dbUnitOfWork) //, IEnumerable<IMessageManager> messageManagers) 
+        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, INotificationAdapter notificationAdapter, IBlobOperations blobOperations, DbUnitOfWork dbUnitOfWork) //, IEnumerable<IMessageManager> messageManagers) 
             : base(repo, tableStorage, log, dbUnitOfWork)
         {
             _blobOperations = blobOperations;

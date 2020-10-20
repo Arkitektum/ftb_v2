@@ -26,8 +26,8 @@ namespace FtB_FormLogic
                                                    ILogger<VarselOppstartPlanarbeidReportLogic> log,
                                                    IBlobOperations blobOperations,
                                                    INotificationAdapter notificationAdapter,
-                                                    DbUnitOfWork dbUnitOfWork)
-            : base(repo, tableStorage, log, notificationAdapter, dbUnitOfWork)
+                                                   DbUnitOfWork dbUnitOfWork)
+            : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork)
         {
             _blobOperations = blobOperations;
         }
