@@ -152,8 +152,8 @@ namespace FtB_FormLogic
                     var mainFormAttachment = new AttachmentBinary()
                     {
                         BinaryContent = mainFormFromBlobStorage,
-                        Filename = "Skjema.pdf",
-                        Name = "Varsel",
+                        Filename = GetFileNameForMainForm().Filename,
+                        Name = GetFileNameForMainForm().Name,
                         SendersReference = ArchiveReference
                     };
 
@@ -172,6 +172,10 @@ namespace FtB_FormLogic
             }
         }
 
+        protected virtual (string Filename, string Name) GetFileNameForMainForm()
+        {
+            throw new NotImplementedException();
+        }
         protected string AddTableOfAttachmentsToHtml(IEnumerable<Tuple<string, string>> attachments, string tableHeaderText)
         {
             StringBuilder strBuilder = new StringBuilder();

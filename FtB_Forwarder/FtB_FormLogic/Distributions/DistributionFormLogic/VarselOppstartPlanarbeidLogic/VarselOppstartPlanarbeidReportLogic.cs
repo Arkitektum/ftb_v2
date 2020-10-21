@@ -250,6 +250,13 @@ namespace FtB_FormLogic
 
             return denierNames;
         }
+
+        protected override (string Filename, string Name) GetFileNameForMainForm()
+        {
+            var Filename = "Varselbrev.pdf";
+            var Name = "Varselbrev";
+            return (Filename, Name);
+        }
         //public override string Execute(ReportQueueItem reportQueueItem)
         //{
         //    var returnItem =  base.Execute(reportQueueItem);
