@@ -122,7 +122,7 @@ namespace FtB_FormLogic
 
                 var mess = new MessageDataType()
                 {
-                    MessageTitle = $"Melding: Kvittering - varsel for oppstart av reguleringsplanarbeid, {byggested}",
+                    MessageTitle = $"AF-Ver.2: Kvittering - varsel for oppstart av reguleringsplanarbeid, {byggested}",
                     MessageSummary = "Trykk på vedleggene under for å laste ned varselet og kvittering med liste over hvilke berørte parter som har blitt varslet",
                     MessageBody = htmlBody
                 };

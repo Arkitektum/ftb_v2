@@ -11,6 +11,7 @@ using FtB_MessageManager;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -145,12 +146,12 @@ namespace FtB_FormLogic
                         SendersReference = ArchiveReference
                     };
                     var metadataList = new List<KeyValuePair<string, string>>();
-                    metadataList.Add(new KeyValuePair<string, string>("Type", "MainForm"));
-                    var mainFormFromBlobStorage = _blobOperations.GetBlobDataByMetadata(ArchiveReference, metadataList);
-
+                    metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));
+                    var mainFormFromBlobStorage = _blobOperations.GetBlobAsBytesByMetadata(ArchiveReference, metadataList);
+                    
                     var mainFormAttachment = new AttachmentBinary()
                     {
-                        BinaryContent = System.Text.Encoding.UTF8.GetBytes(mainFormFromBlobStorage),
+                        BinaryContent = mainFormFromBlobStorage,
                         Filename = "Skjema.pdf",
                         Name = "Varsel",
                         SendersReference = ArchiveReference

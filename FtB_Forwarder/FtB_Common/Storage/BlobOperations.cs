@@ -145,7 +145,7 @@ namespace FtB_Common.Storage
             client.SetMetadata(dict);
         }
 
-        public string GetBlobDataByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
+        public string GetBlobASStringByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
         {
             var blobItems = _blobStorage.GetBlobContainerItems(containerName);
             var data = string.Empty;
@@ -168,9 +168,33 @@ namespace FtB_Common.Storage
             return data;
         }
 
+        public byte[] GetBlobAsBytesByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
+        {
+            var blobItems = _blobStorage.GetBlobContainerItems(containerName);
+            byte[] filecontent = Encoding.ASCII.GetBytes("");
+            foreach (var blobItem in blobItems)
+            {
+                var blob = _blobStorage.GetBlockBlobContainerClient(containerName, blobItem.Name);
+                BlobProperties properties = blob.GetPropertiesAsync().GetAwaiter().GetResult();
+                var t = properties.Metadata?.Where(m => metaDataFilter.All(f => m.Key == f.Key && m.Value == f.Value)).ToList();
+                if (t?.Count() == metaDataFilter.Count())
+                {
+                    var response = blob.Download();
+                    var contentLenght = response.Value.ContentLength;
+                    using (var binReader = new BinaryReader(response.Value.Content))
+                    {
+                        filecontent = binReader.ReadBytes(Convert.ToInt32(contentLenght));
+                    }
+                    break;
+                }
+            }
+            return filecontent;
+        }
+
         public IEnumerable<Tuple<string,string>> GetListOfBlobsWithMetadataType(string containerName, IEnumerable<BlobStorageMetadataTypeEnum> blobItemTypes)
         {
             var listOfAttachments = new List<Tuple<string, string>>();
+            //TODO: Clean up
             //foreach (var blobContainerItem in _blobStorage.GetBlobContainerItems(archiveReference))
             //{
             //    foreach (var blobItemType in blobItemTypes)
@@ -195,21 +219,17 @@ namespace FtB_Common.Storage
             var blobItems = _blobStorage.GetBlobContainerItems(containerName);
             var data = string.Empty;
             
-            
             foreach (var blobItem in blobItems)
             {
                 var blob = _blobStorage.GetBlockBlobContainerClient(containerName, blobItem.Name);
                 BlobProperties properties = blob.GetPropertiesAsync().GetAwaiter().GetResult();
                 var metadataList = properties.Metadata;
 
+                //TODO: LINQ
                 //var newblobItemTypes = blobItemTypes.ToList();
                 //var blabla = metadataList.Where(
                 //    x => (x.Key.Equals("Type")) && newblobItemTypes.Contains(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), x.Value))
                 //    );
-
-
-
-
 
                 foreach (var metadataKeyValuePair in metadataList)
                 {
