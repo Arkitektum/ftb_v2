@@ -6,6 +6,7 @@ using FtB_Common.Enums;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
+using FtB_Common.Utils;
 using Ftb_DbRepository;
 using Microsoft.Extensions.Logging;
 using System;
@@ -144,48 +145,26 @@ namespace FtB_FormLogic
                 string adresse = base.FormData.eiendomByggested.First().adresse.adresselinje1;
                 string planNavn = base.FormData.planforslag.plannavn == null ? "" : base.FormData.planforslag.plannavn;
                 string byggested = adresse != null && adresse.Trim().Length > 0 ? $"{adresse}, {planNavn}" : $"{planNavn}";
-                string kontaktperson = FormData.forslagsstiller.kontaktperson.navn; // GetContactPerson();
+                string kontaktperson = FormData.forslagsstiller.kontaktperson.navn;
                 string forslagsstiller = FormData.forslagsstiller.navn;
 
                 //Get html embedded resource file
-                string htmlBody = "";
-                var HtmlBodyTemplate = "FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceipt.html";
-
-                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    if (assembly.GetName().Name.ToUpper().Contains("FTB_FORMLOGIC"))
-                    {
-                        _log.LogDebug($"{GetType().Name}. Found assembly: {assembly.FullName}");
-                        using (Stream stream = assembly.GetManifestResourceStream(HtmlBodyTemplate))
-                        {
-                            if (stream == null)
-                            {
-                                throw new Exception($"The resource {HtmlBodyTemplate} was not loaded properly.");
-                            }
-
-                            using (StreamReader reader = new StreamReader(stream))
-                            {
-                                htmlBody = reader.ReadToEnd();
-                            }
-                        }
-                    }
-                }
+                string htmlTemplate = HtmlUtils.GetTextFromTemplate("FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceipt.html");
                 //TODO: Add Logo?
-                //string LogoResourceName = "KommIT.FIKS.AdapterAltinnSvarUt.Content.images.dibk_logo.png";
-                htmlBody = htmlBody.Replace("<planNavn />", planNavn);
-                htmlBody = htmlBody.Replace("<forslagsstiller />", forslagsstiller);
-                htmlBody = htmlBody.Replace("<kontaktperson />", kontaktperson);
-                htmlBody = htmlBody.Replace("<arkivReferanse />", archiveReference.ToUpper());
-                //TODO: What attachments to add?
+                //string LogoResourceName = "FtB_Common.Images.dibk_logo.png";
+                htmlTemplate = htmlTemplate.Replace("<planNavn />", planNavn);
+                htmlTemplate = htmlTemplate.Replace("<forslagsstiller />", forslagsstiller);
+                htmlTemplate = htmlTemplate.Replace("<kontaktperson />", kontaktperson);
+                htmlTemplate = htmlTemplate.Replace("<arkivReferanse />", archiveReference.ToUpper());
                 var blobStorageTypes = new List<BlobStorageMetadataTypeEnum>();
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.MainForm);
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.SubmittalAttachment);
 
-                IEnumerable<Tuple<string, string>> listOfAttachmentsInSubmittal = _blobOperations.GetListOfBlobsWithMetadataType(archiveReference, blobStorageTypes);
-                string htmlTableOfAttachments = AddTableOfAttachmentsToHtml(listOfAttachmentsInSubmittal, "Følgende vedlegg er sendt med varselet:");
-                htmlBody = htmlBody.Replace("<vedlegg />", htmlTableOfAttachments);
-                htmlBody = htmlBody.Replace("<antallVarsledeMottakere />", GetReceiverSuccessfullyNotifiedCount().ToString());
-                
+                IEnumerable<(string attachmentType, string fileName)> listOfAttachmentsInSubmittal = _blobOperations.GetListOfBlobsWithMetadataType(archiveReference, blobStorageTypes);
+                string tableRowsAsHtml = "<tr><td>" + string.Join("</td></tr><tr><td>", listOfAttachmentsInSubmittal.Select(p => p.attachmentType + "</td><td>" + p.fileName)) + "</td></tr>";
+                htmlTemplate = htmlTemplate.Replace("<vedlegg />", tableRowsAsHtml);
+                htmlTemplate = htmlTemplate.Replace("<antallVarsledeMottakere />", GetReceiverSuccessfullyNotifiedCount().ToString());
+
                 //TODO: Set back from calling the test method
                 //var listOfDeniers = GetDigitalDisallowmentReceiverNames();
                 var listOfDeniers = FOR_TEST_GetDigitalDisallowmentReceiverNames();
@@ -194,9 +173,9 @@ namespace FtB_FormLogic
                 {
                     deniersASHtml.Append($"{denier}<br />");
                 }
-                htmlBody = htmlBody.Replace("<naboerSomIkkeKunneVarsles />", deniersASHtml.ToString());
+                htmlTemplate = htmlTemplate.Replace("<naboerSomIkkeKunneVarsles />", deniersASHtml.ToString());
 
-                return htmlBody;
+                return htmlTemplate;
             }
             catch (Exception ex)
             {
@@ -205,6 +184,34 @@ namespace FtB_FormLogic
                 throw ex;
             }
         }
+
+        //private string GetHtmlFromTemplate(string htmlTemplatePath)
+        //{
+        //    string htmlBody = "";
+        //    //var HtmlBodyTemplate = "FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceiptHtml.html";
+
+        //    foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        //    {
+        //        if (assembly.GetName().Name.ToUpper().Contains("FTB_FORMLOGIC"))
+        //        {
+        //            _log.LogDebug($"{GetType().Name}. Found assembly: {assembly.FullName}");
+        //            using (Stream stream = assembly.GetManifestResourceStream(htmlTemplatePath))
+        //            {
+        //                if (stream == null)
+        //                {
+        //                    throw new Exception($"The resource {htmlTemplatePath} was not loaded properly.");
+        //                }
+
+        //                using (StreamReader reader = new StreamReader(stream))
+        //                {
+        //                    htmlBody = reader.ReadToEnd();
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    return htmlBody;
+        //}
 
         private int GetReceiverSuccessfullyNotifiedCount()
         {
@@ -257,13 +264,5 @@ namespace FtB_FormLogic
             var Name = "Varselbrev";
             return (Filename, Name);
         }
-        //public override string Execute(ReportQueueItem reportQueueItem)
-        //{
-        //    var returnItem =  base.Execute(reportQueueItem);
-
-
-        //    return returnItem;
-        //}
-
     }
 }

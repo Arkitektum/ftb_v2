@@ -1,6 +1,4 @@
-﻿<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+﻿<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
     <style>
@@ -69,36 +67,56 @@
             text-align: right;
         }
 
-            .align-right img {
-                display: inline-block;
-            }
+        .align-right img {
+            display: inline-block;
+        }
+
+        label {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
+    <img src="dibk_logo.png">
     <div class='Heading'>
         <b>Kvittering for varsel om oppstart av reguleringsplanarbeid</b>
     </div>
+
     <div class='Paragraf PaddingTop'>
-        <b>Navn på plan: </b><planNavn /><br />
-        <b>Forslagsstiller: </b><forslagsstiller /><br />
-        <b>Kontaktperson: </b><kontaktperson /><br /><br />
-        <b>Nabovarsel sendt via: </b> Fellestjenester Bygg<br />
-        <b>Altinnreferanse: </b><arkivReferanse />
+        <label>Navn på plan: </label><planNavn /><br />
+        <label>Forslagsstiller: </label><forslagsstiller /><br />
+        <label>Kontaktperson: </label><kontaktperson /><br /><br />
+        <label>Nabovarsel sendt via: </label> Fellestjenester Bygg<br />
+        <label>Altinnreferanse: </label><arkivReferanse />
     </div>
 
-    <div class='Paragraf'>
-        <vedlegg />
+    <div class='Paragraf PaddingTop'>
+        <div class='SubHeadingUnderline PaddingTop Paddingbottom'>Følgende vedlegg er sendt med varselet:</div>
+        <div class='Paragraf'>
+            <table id='tabell'>
+                <thead>
+                    <tr>
+                        <td><label>Vedleggstype:</label></td>
+                        <td><label>Filnavn:</label></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <vedlegg />
+                </tbody>
+            </table>
+        </div>
+
     </div>
-    <div class='Paragraf'>
+    <div class='Paragraf PaddingTop'>
         <p>
-            <b>Antall mottakere som har fått varsel om oppstart av reguleringsplanarbeid: </b><br />
+            <label>Antall mottakere som har fått varsel om oppstart av reguleringsplanarbeid: </label><br />
             <antallVarsledeMottakere />
         </p>
     </div>
-    
-    <div class='Paragraf'>
+
+    <div class='Paragraf PaddingTop'>
         <p>
-            <b>Følgende mottakere kunne IKKE varsles digitalt: </b><br />
+            <label>Følgende mottakere kunne IKKE varsles digitalt: </label><br />
             <naboerSomIkkeKunneVarsles />
         </p>
     </div>

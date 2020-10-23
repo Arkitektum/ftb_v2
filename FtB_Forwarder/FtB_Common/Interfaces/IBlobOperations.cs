@@ -13,6 +13,6 @@ namespace FtB_Common.Storage
         void AddBytesAsBlob(string containerName, string fileName, byte[] fileBytes, string mimeType, IEnumerable<KeyValuePair<string, string>> metadata = null);
         string GetBlobASStringByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaData);
         byte[] GetBlobAsBytesByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter);
-        IEnumerable<Tuple<string, string>> GetListOfBlobsWithMetadataType(string archiveReference, IEnumerable<BlobStorageMetadataTypeEnum> blobStorageTypes);
+        IEnumerable<(string attachmentType, string fileName)> GetListOfBlobsWithMetadataType(string archiveReference, IEnumerable<BlobStorageMetadataTypeEnum> blobStorageTypes);
     }
 }
