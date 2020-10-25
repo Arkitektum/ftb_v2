@@ -12,17 +12,14 @@ namespace Ftb_DbModels
         public const bool InternalMsg = true;
         public const bool ExternalMsg = false;
 
-        [Key]
         public int Id { get; set; }
 
-        [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm:ss:fff }")]
         public DateTime Timestamp { get; set; }
-        [StringLength(maximumLength:20)]
-        public string ArchiveReference { get; set; }
+
+        private string _archiveReference;
+        public string ArchiveReference { get { return _archiveReference; } set { _archiveReference = value.ToUpper(); } }
         public string Message { get; set; }
         public string Type { get; set; }
-        public virtual FormMetadata FormMetadata { get; set; }
         
         public Boolean OnlyInternal { get; set; }
         public string Url { get; set; }
@@ -60,81 +57,55 @@ namespace Ftb_DbModels
             OnlyInternal = onlyInternal;
         }
 
-        public static LogEntry NewInfo(string archiveReference, string message)
-        {
-            return new LogEntry(archiveReference, message, Info);
-        }
+        //public static LogEntry NewInfo(string archiveReference, string message)
+        //{
+        //    return new LogEntry(archiveReference, message, Info);
+        //}
 
-        public static LogEntry NewInfo(string archiveReference, string message, string eventId, Stopwatch stopWatch)
-        {
-            return new LogEntry(archiveReference, message, Info)
-            {
-                EventId = eventId,
-                EventDuration = stopWatch.ElapsedMilliseconds
-            };
-        }
-        public static LogEntry NewInfo(string archiveReference, string message, string eventId)
-        {
-            return new LogEntry(archiveReference, message, Info)
-            {
-                EventId = eventId
-            };
-        }
-        public static LogEntry NewInfoInternal(string archiveReference, string message, string eventId, Stopwatch stopWatch)
-        {
-            return new LogEntry(archiveReference, message, Info, InternalMsg)
-            {
-                EventId = eventId,
-                EventDuration = stopWatch.ElapsedMilliseconds
-            };
-        }
+        //public static LogEntry NewInfo(string archiveReference, string message, string eventId)
+        //{
+        //    return new LogEntry(archiveReference, message, Info)
+        //    {
+        //        EventId = eventId
+        //    };
+        //}
+        //public static LogEntry NewInfoInternal(string archiveReference, string message, string eventId)
+        //{
+        //    return new LogEntry(archiveReference, message, Info, InternalMsg)
+        //    {
+        //        EventId = eventId,
+        //    };
+        //}
 
-        public static LogEntry NewInfoInternal(string archiveReference, string message, string eventId)
-        {
-            return new LogEntry(archiveReference, message, Info, InternalMsg)
-            {
-                EventId = eventId,
-            };
-        }
+        //public static LogEntry NewErrorInternal(string archiveReference, string message, string eventId)
+        //{
+        //    return new LogEntry(archiveReference, message, Error, InternalMsg)
+        //    {
+        //        EventId = eventId
+        //    };
+        //}
 
-        public static LogEntry NewErrorInternal(string archiveReference, string message, string eventId, Stopwatch stopWatch)
-        {
-            return new LogEntry(archiveReference, message, Error, InternalMsg)
-            {
-                EventId = eventId,
-                EventDuration = stopWatch.ElapsedMilliseconds
-            };
-        }
+        //public static LogEntry NewError(string archiveReference, string message)
+        //{
+        //    return new LogEntry(archiveReference, message, Error);
+        //}
 
-        public static LogEntry NewErrorInternal(string archiveReference, string message, string eventId)
-        {
-            return new LogEntry(archiveReference, message, Error, InternalMsg)
-            {
-                EventId = eventId
-            };
-        }
+        //public static LogEntry NewError(string archiveReference, string message, string eventId, Stopwatch stopWatch)
+        //{
+        //    return new LogEntry(archiveReference, message, Error)
+        //    {
+        //        EventId = eventId,
+        //        EventDuration = stopWatch.ElapsedMilliseconds
+        //    };
+        //}
 
-        public static LogEntry NewError(string archiveReference, string message)
-        {
-            return new LogEntry(archiveReference, message, Error);
-        }
-
-        public static LogEntry NewError(string archiveReference, string message, string eventId, Stopwatch stopWatch)
-        {
-            return new LogEntry(archiveReference, message, Error)
-            {
-                EventId = eventId,
-                EventDuration = stopWatch.ElapsedMilliseconds
-            };
-        }
-
-        public static LogEntry NewError(string archiveReference, string message, string eventId)
-        {
-            return new LogEntry(archiveReference, message, Error)
-            {
-                EventId = eventId,
-            };
-        }
+        //public static LogEntry NewError(string archiveReference, string message, string eventId)
+        //{
+        //    return new LogEntry(archiveReference, message, Error)
+        //    {
+        //        EventId = eventId,
+        //    };
+        //}
 
         public string ShortMessage()
         {

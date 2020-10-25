@@ -1,14 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Ftb_Repositories.HttpClients;
+using Ftb_Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Ftb_DbRepository
+namespace Ftb_Repositories
 {
     public static class ServicesConfiguration
     {
-        public static IServiceCollection AddFtbDbUnitOfWork(this IServiceCollection services)
+        public static IServiceCollection AddFtbDbUnitOfWork(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddHttpClient<FormMetadataHttpClient>();
+            services.AddHttpClient<LogEntryHttpClient>();
             services.AddScoped<DbUnitOfWork>();
             services.AddScoped<ILogEntryRepository, LogEntryRepository>();
+            services.AddScoped<IDistributionFormRepository, DistributionFormsRepository>();
+            services.AddScoped<IFormMetadataRepository, FormMetadataRepository>();
+            services.Configure<FormProcessAPISettings>(configuration.GetSection("FormProcessAPISettings"));
             return services;
         }
     }

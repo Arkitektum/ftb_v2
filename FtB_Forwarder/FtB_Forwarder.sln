@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_DbModels", "Ftb_DbModels\Ftb_DbModels.csproj", "{D63DCA85-F2E1-469C-8AC5-917D9A62C192}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_DbRepository", "Ftb_DbRepository\Ftb_DbRepository.csproj", "{42E18AC8-5FA1-4DB4-BEC9-23C6ECC0E66C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_Repositories", "Ftb_DbRepository\Ftb_Repositories.csproj", "{42E18AC8-5FA1-4DB4-BEC9-23C6ECC0E66C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn3.Adapters", "AltinnServiceAdapters\Altinn3.Adapters.csproj", "{9278F98B-FCA0-4431-AEE3-A25BACD22766}"
 EndProject
@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Common", "Altinn.Com
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Altinn", "Altinn", "{578BF08A-0003-46D7-8EDF-1BB56C738054}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altinn.Distribution", "Altinn.Distribution\Altinn.Distribution.csproj", "{B48E1719-5E50-4C81-BB6F-16F14570246C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Distribution", "Altinn.Distribution\Altinn.Distribution.csproj", "{B48E1719-5E50-4C81-BB6F-16F14570246C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

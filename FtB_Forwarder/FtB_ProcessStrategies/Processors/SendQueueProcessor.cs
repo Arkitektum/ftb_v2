@@ -2,8 +2,8 @@
 using FtB_Common.FormLogic;
 //using FtB_Common.Mappers;
 using FtB_Common.Storage;
-using Ftb_DbRepository;
 using FtB_FormLogic;
+using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -29,6 +29,7 @@ namespace FtB_ProcessStrategies
         {
             try
             {
+                _dbUnitOfWork.SetArhiveReference(sendQueueItem.ArchiveReference);
                 //string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
                 string formatId = _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<ReportQueueItem, SendQueueItem>(formatId, FormLogicProcessingContext.Send);

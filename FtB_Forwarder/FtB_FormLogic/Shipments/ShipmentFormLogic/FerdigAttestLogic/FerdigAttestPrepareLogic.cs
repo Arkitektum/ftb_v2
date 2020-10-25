@@ -1,6 +1,6 @@
 ﻿using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
-using Ftb_DbRepository;
+using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

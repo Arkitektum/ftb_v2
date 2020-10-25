@@ -2,10 +2,10 @@
 using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
-using Ftb_DbRepository;
 using FtB_FormLogic;
 using FtB_MessageManager;
 using FtB_ProcessStrategies;
+using Ftb_Repositories;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Extensions.Configuration;
@@ -37,7 +37,7 @@ namespace FtB_FuncReporter
             builder.Services.AddMessageManagerService(configuration);
 
             builder.Services.AddAltinnNotification(configuration);
-            builder.Services.AddFtbDbUnitOfWork();
+            builder.Services.AddFtbDbUnitOfWork(configuration);
 
             builder.Services.AddLogging();
         }

@@ -17,7 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FtB_Common\FtB_Common.csproj" />
     <ProjectReference Include="..\FtB_DataModels\FtB_DataModels.csproj" />
-    <ProjectReference Include="..\Ftb_DbRepository\Ftb_DbRepository.csproj" />
+    <ProjectReference Include="..\Ftb_DbRepository\Ftb_Repositories.csproj" />
   </ItemGroup>
 
   <ItemGroup>

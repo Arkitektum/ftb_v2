@@ -1,34 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Ftb_Repositories.Interfaces;
+using Microsoft.Extensions.Logging;
 
-namespace Ftb_DbRepository
+namespace Ftb_Repositories
 {
-    public class DbUnitOfWork// : IDisposable
+    public class DbUnitOfWork
     {
-        private readonly ILogEntryRepository _logEntryRepository;
-        
+        private readonly ILogger<DbUnitOfWork> _logger;
 
-        public DbUnitOfWork(ILogEntryRepository logEntryRepository)
+        public DbUnitOfWork(ILogger<DbUnitOfWork> logger, ILogEntryRepository logEntryRepository, IFormMetadataRepository formMetadataRepository, IDistributionFormRepository distributionFormRepository)
         {
-            _logEntryRepository = logEntryRepository;
+            _logger = logger;
+            LogEntries = logEntryRepository;
+            FormMetadata = formMetadataRepository;
+            DistributionForms = distributionFormRepository;
         }
 
-        //private readonly IFormMetadataRepository _formMetadataRepository;
-        //public IFormMetadataRepository FormMetadata
-        //{
-        //    get { return _formMetadataRepository; }
-        //}
+        private string archiveReference;
 
-        public ILogEntryRepository LogEntries
+        public void SetArhiveReference(string archiveReference)
         {
-            get { return _logEntryRepository; }
+            this.archiveReference = archiveReference;
+            FormMetadata.SetArchiveReference(archiveReference);
+            DistributionForms.SetArchiveReference(archiveReference);
+            LogEntries.SetArchiveReference(archiveReference);
         }
+        public IDistributionFormRepository DistributionForms { get; }
+        public IFormMetadataRepository FormMetadata { get; }
+        public ILogEntryRepository LogEntries { get; }
 
         public void Save()
         {
-            //_formMetadataRepository.Complete();
-            _logEntryRepository.Complete();
+            FormMetadata.Save();
+            DistributionForms.Save();
+            LogEntries.Save();
         }
 
         //public void Dispose()

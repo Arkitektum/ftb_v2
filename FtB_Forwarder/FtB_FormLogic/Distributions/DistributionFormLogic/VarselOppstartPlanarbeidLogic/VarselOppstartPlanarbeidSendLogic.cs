@@ -2,7 +2,8 @@
 using Altinn.Common.Models;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
-using Ftb_DbRepository;
+using Ftb_DbModels;
+using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
 using no.kxml.skjema.dibk.nabovarselPlan;
 using no.kxml.skjema.dibk.nabovarselsvarPlan;
@@ -31,8 +32,11 @@ namespace FtB_FormLogic
 
         protected override void MapPrefillData(string receiverId)
         {
-            _prefillMapper.Map(base.FormData, receiverId);
+            _prefillMapper.Map(base.FormData, receiverId);            
             base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(_prefillMapper.FormDataString, base.FormData, Guid.NewGuid().ToString(), base.ArchiveReference);
+            //DistributionForm dForm = _formMetadataService.InsertDistributionForm(archivereferance, prefillFormData.GetPrefillKey(), prefillFormData.GetPrefillOurReference(), altinnForm.GetName());
+            _dbUnitOfWork.DistributionForms.Add(new DistributionForm(){  _distributionDataMapper.PrefillFormData.hovedinnsendingsnummer)
+            _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {_distributionDataMapper.PrefillFormData.beroertPart.systemReferanse}");
         }
     }
 }

@@ -4,15 +4,14 @@ using System.ComponentModel.DataAnnotations;
 namespace Ftb_DbModels
 {
     public class DistributionForm 
-    {
-        [Key]
+    {        
         public Guid Id { get; set; }
 
         /// <summary>
         /// ID på innsendt distribusjonstjeneste (opprinnelsen)
         /// </summary>
-        [StringLength(maximumLength: 20)]
-        public string InitialArchiveReference { get; set; }
+        private string _archiveReference;
+        public string InitialArchiveReference { get { return _archiveReference; } set { _archiveReference = value.ToUpper(); } }
         /// <summary>
         /// Sluttbrukersystem sin referanse til forsendelsene (Hovedinnsendingsnr i distribusjon skjema datamodell)
         /// </summary>

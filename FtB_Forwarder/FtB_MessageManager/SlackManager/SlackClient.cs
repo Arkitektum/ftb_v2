@@ -24,3 +24,4 @@ namespace FtB_MessageManager
         }
     }
 }
+

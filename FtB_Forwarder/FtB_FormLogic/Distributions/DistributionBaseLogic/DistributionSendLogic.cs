@@ -5,7 +5,7 @@ using FtB_Common;
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
-using Ftb_DbRepository;
+using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -33,6 +33,25 @@ namespace FtB_FormLogic
 
             //prefillData = 
             PersistPrefill(sendQueueItem);
+
+            //Generate distributionForms
+            /*
+                foreach (var ownedproperty in nabovarselSvar.nabo.gjelderNaboeiendom)
+                {
+                    requestingSystemReferences.Add(ownedproperty.sluttbrukersystemVaarReferanse);
+                }
+
+            -----
+                for (int i = 1; i < neighborReferenceIdList.Count; i++)
+                {
+                    DistributionForm dFormDummy = _formMetadataService.InsertDistributionForm(archivereferance, prefillFormData.GetPrefillKey(), neighborReferenceIdList[i], altinnForm.GetName());
+                    dFormDummy.DistributionReference = dForm.Id;
+                    _formMetadataService.SaveDistributionForm(dFormDummy);
+                    _logEntryService.Save(new LogEntry(archivereferance, $"Distribusjon med søknadsystemsreferanse {prefillFormData.GetPrefillOurReference()} kombinert med {neighborReferenceIdList[i]}", LogEntry.Info, LogEntry.ExternalMsg));
+                    _logEntryService.Save(new LogEntry(archivereferance, $"Dist id {prefillFormData.GetPrefillKey()} kombinert med {dFormDummy.Id.ToString()}", "Info", true));
+                }
+             */
+
 
             var result = _distributionAdapter.SendDistribution(DistributionMessage);
 

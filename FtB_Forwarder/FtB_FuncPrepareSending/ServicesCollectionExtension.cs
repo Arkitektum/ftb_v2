@@ -1,15 +1,16 @@
 ﻿using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
-using Ftb_DbRepository;
 using FtB_FormLogic;
+using Ftb_Repositories;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FtB_FuncPrepareSending
 {
     public static class ServicesConfiguration
     {
-        public static IServiceCollection AddPrepareServices(this IServiceCollection services)
+        public static IServiceCollection AddPrepareServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<FormatIdToFormMapper>();
             services.AddScoped<VarselOppstartPlanarbeidPrepareLogic>();
@@ -17,8 +18,8 @@ namespace FtB_FuncPrepareSending
             services.AddScoped<ITableStorage, TableStorage>();
             services.AddScoped<IBlobOperations, BlobOperations>();
             services.AddScoped<BlobStorage>();
-            services.AddFtbDbUnitOfWork();
-            //services.AddPrepareStrategies();
+            services.AddFtbDbUnitOfWork(configuration);
+            
 
             //Test reporter
             //services.AddScoped<TestPrepareStrategy>();

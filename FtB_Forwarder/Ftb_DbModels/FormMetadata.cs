@@ -8,8 +8,8 @@ namespace Ftb_DbModels
         /// <summary>
         /// Arkivreferanse i altinn (MessageId i REST API)
         /// </summary>
-        [Key]
-        public string ArchiveReference { get; set; }
+        private string _archiveReference;
+        public string ArchiveReference { get { return _archiveReference; } set { _archiveReference = value.ToUpper(); } }
         /// <summary>
         /// Kommunenr det sendes til
         /// </summary>

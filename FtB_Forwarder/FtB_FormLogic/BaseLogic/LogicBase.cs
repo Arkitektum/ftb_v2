@@ -4,7 +4,7 @@ using FtB_Common.BusinessModels;
 using FtB_Common.Exceptions;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
-using Ftb_DbRepository;
+using Ftb_Repositories;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using System;
@@ -31,7 +31,7 @@ namespace FtB_FormLogic
         public void LoadData(string archiveReference)
         {
             _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {archiveReference}....");
-            ArchiveReference = archiveReference;
+            ArchiveReference = archiveReference;            
             var data = _repo.GetFormData(ArchiveReference);
             FormData = SerializeUtil.DeserializeFromString<T>(data);
         }
