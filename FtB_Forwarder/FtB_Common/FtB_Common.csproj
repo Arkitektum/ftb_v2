@@ -11,7 +11,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Images\dibk_logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Images\dibk_logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.6.0" />
+    <PackageReference Include="itext7" Version="7.1.13" />
+    <PackageReference Include="itext7.pdfhtml" Version="3.0.2" />
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />

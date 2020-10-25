@@ -6,14 +6,12 @@ using FtB_Common.Enums;
 using FtB_Common.Exceptions;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
-using FtB_MessageManager;
-using Ftb_Repositories;
+using FtB_Common.Utils;
+using Ftb_DbRepository;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -22,7 +20,7 @@ namespace FtB_FormLogic
         private readonly IBlobOperations _blobOperations;
         private readonly INotificationAdapter _notificationAdapter;
 
-        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, INotificationAdapter notificationAdapter, IBlobOperations blobOperations, DbUnitOfWork dbUnitOfWork) //, IEnumerable<IMessageManager> messageManagers) 
+        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, INotificationAdapter notificationAdapter, IBlobOperations blobOperations, DbUnitOfWork dbUnitOfWork)
             : base(repo, tableStorage, log, dbUnitOfWork)
         {
             _blobOperations = blobOperations;
@@ -125,42 +123,40 @@ namespace FtB_FormLogic
                 {
                     submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
                     _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
-
                     var notificationMessage = new AltinnNotificationMessage();
                     notificationMessage.ArchiveReference = ArchiveReference;
-
                     notificationMessage.Receiver = GetReceiver();
                     notificationMessage.ArchiveReference = reportQueueItem.ArchiveReference;
                     var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
                     notificationMessage.MessageData = messageData;
 
-                    //TODO: Create PDF from HTML 
-                    var receipt = GetSubmitterReceipt(reportQueueItem.ArchiveReference);
+                    var plainReceiptHtml = GetSubmitterReceipt(reportQueueItem.ArchiveReference);
+                    byte[] PDFInbytes = HtmlUtils.GetPDFFromHTML(plainReceiptHtml);
 
                     var receiptAttachment = new AttachmentBinary()
                     {
-                        BinaryContent = System.Text.Encoding.UTF8.GetBytes(receipt),
-                        Filename = "Kvittering.html",
+                        BinaryContent = PDFInbytes,
+                        Filename = "Kvittering.pdf",
                         Name = "Kvittering",
                         SendersReference = ArchiveReference
                     };
+
                     var metadataList = new List<KeyValuePair<string, string>>();
-                    metadataList.Add(new KeyValuePair<string, string>("Type", "MainForm"));
-                    var mainFormFromBlobStorage = _blobOperations.GetBlobDataByMetadata(ArchiveReference, metadataList);
+                    metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));
+                    var mainFormFromBlobStorage = _blobOperations.GetBlobAsBytesByMetadata(ArchiveReference, metadataList);
 
                     var mainFormAttachment = new AttachmentBinary()
                     {
-                        BinaryContent = System.Text.Encoding.UTF8.GetBytes(mainFormFromBlobStorage),
-                        Filename = "Skjema.pdf",
-                        Name = "Varsel",
+                        BinaryContent = mainFormFromBlobStorage,
+                        Filename = GetFileNameForMainForm().Filename,
+                        Name = GetFileNameForMainForm().Name,
                         SendersReference = ArchiveReference
                     };
 
                     notificationMessage.Attachments = new List<Attachment>() { receiptAttachment, mainFormAttachment };
                     _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
                     _notificationAdapter.SendNotification(notificationMessage);
-
-                    _log.LogDebug($"{GetType().Name}: {receipt}");
+                    _log.LogDebug($"{GetType().Name}: {plainReceiptHtml}");
                     var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
                 }
             }
@@ -171,34 +167,9 @@ namespace FtB_FormLogic
             }
         }
 
-        protected string AddTableOfAttachmentsToHtml(IEnumerable<Tuple<string, string>> attachments, string tableHeaderText)
+        protected virtual (string Filename, string Name) GetFileNameForMainForm()
         {
-            StringBuilder strBuilder = new StringBuilder();
-
-            strBuilder.Append("<div class='SubHeadingUnderline PaddingTop Paddingbottom'>" + tableHeaderText + "</div>");
-            strBuilder.Append("<div class='Paragraf'>");
-            strBuilder.Append("<table id='tabell'>");
-            strBuilder.Append("<thead>");
-            strBuilder.Append("<tr>");
-            strBuilder.Append("<td><b>Vedleggstype:</b></td>");
-            strBuilder.Append("<td><b>Filnavn:</b></td>");
-            strBuilder.Append("</tr>");
-            strBuilder.Append("</thead>");
-            strBuilder.Append("<tbody>");
-
-            foreach (var vedlegg in attachments)
-            {
-                strBuilder.Append("<tr>");
-                strBuilder.Append("<td>" + vedlegg.Item1 + "</td>");
-                strBuilder.Append("<td>" + vedlegg.Item2 + "</td>");
-                strBuilder.Append("</tr>");
-            }
-
-            strBuilder.Append("</tbody>");
-            strBuilder.Append("</table>");
-            strBuilder.Append("</div>");
-
-            return strBuilder.ToString();
+            throw new NotImplementedException();
         }
     }
 }

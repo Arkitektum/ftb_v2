@@ -145,7 +145,7 @@ namespace FtB_Common.Storage
             client.SetMetadata(dict);
         }
 
-        public string GetBlobDataByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
+        public string GetBlobASStringByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
         {
             var blobItems = _blobStorage.GetBlobContainerItems(containerName);
             var data = string.Empty;
@@ -168,66 +168,43 @@ namespace FtB_Common.Storage
             return data;
         }
 
-        public IEnumerable<Tuple<string,string>> GetListOfBlobsWithMetadataType(string containerName, IEnumerable<BlobStorageMetadataTypeEnum> blobItemTypes)
+        public byte[] GetBlobAsBytesByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
         {
-            var listOfAttachments = new List<Tuple<string, string>>();
-            //foreach (var blobContainerItem in _blobStorage.GetBlobContainerItems(archiveReference))
-            //{
-            //    foreach (var blobItemType in blobItemTypes)
-            //    { 
-            //        var metadataItemList = blobContainerItem.Metadata;
-            //        foreach (var metadataItem in metadataItemList)
-            //        {
-            //            if (metadataItem.Key.Equals("Type")
-            //                && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), blobItemType)))
-            //            {
-            //                foreach (var item in metadataItemList)
-            //                {
-            //                    if (item.Key.Equals("AttachmentTypeName"))
-            //                    {
-            //                        listOfAttachments.Add(new Tuple<string, string>(item.Value, blobContainerItem.Name));
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
             var blobItems = _blobStorage.GetBlobContainerItems(containerName);
-            var data = string.Empty;
-            
+            byte[] filecontent = Encoding.ASCII.GetBytes("");
+            foreach (var blobItem in blobItems)
+            {
+                var blob = _blobStorage.GetBlockBlobContainerClient(containerName, blobItem.Name);
+                BlobProperties properties = blob.GetPropertiesAsync().GetAwaiter().GetResult();
+                var t = properties.Metadata?.Where(m => metaDataFilter.All(f => m.Key == f.Key && m.Value == f.Value)).ToList();
+                if (t?.Count() == metaDataFilter.Count())
+                {
+                    var response = blob.Download();
+                    var contentLenght = response.Value.ContentLength;
+                    using (var binReader = new BinaryReader(response.Value.Content))
+                    {
+                        filecontent = binReader.ReadBytes(Convert.ToInt32(contentLenght));
+                    }
+                    break;
+                }
+            }
+            return filecontent;
+        }
+
+        public IEnumerable<(string attachmentType, string fileName)> GetListOfBlobsWithMetadataType(string containerName, IEnumerable<BlobStorageMetadataTypeEnum> blobItemTypes)
+        {
+            var listOfAttachments = new List<(string attachmentType, string fileName)>();
+            var blobItems = _blobStorage.GetBlobContainerItems(containerName);
             
             foreach (var blobItem in blobItems)
             {
                 var blob = _blobStorage.GetBlockBlobContainerClient(containerName, blobItem.Name);
                 BlobProperties properties = blob.GetPropertiesAsync().GetAwaiter().GetResult();
                 var metadataList = properties.Metadata;
-
-                //var newblobItemTypes = blobItemTypes.ToList();
-                //var blabla = metadataList.Where(
-                //    x => (x.Key.Equals("Type")) && newblobItemTypes.Contains(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), x.Value))
-                //    );
-
-
-
-
-
-                foreach (var metadataKeyValuePair in metadataList)
-                {
-                    foreach (var blobItemType in blobItemTypes)
-                    {
-                        if (metadataKeyValuePair.Key.Equals("Type") && metadataKeyValuePair.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), blobItemType)))
-                        {
-                            foreach (var item in metadataList)
-                            {
-                                if (item.Key.Equals("AttachmentTypeName"))
-                                {
-                                    listOfAttachments.Add(new Tuple<string, string>(item.Value, blobItem.Name));
-                                }
-                            }
-                        }
-                    }
-                    
-                }
+                var blobItemTypesAsString = blobItemTypes.Select(x => Enum.GetName(typeof(BlobStorageMetadataTypeEnum), x)).ToList();
+                var blobIsOfRequestedType = metadataList.Any(x => x.Key.Equals("Type") && blobItemTypesAsString.Contains(x.Value));
+                var attachment = metadataList.Where(x => x.Key.Equals("AttachmentTypeName")).Select(x => (attachmentType: x.Value, fileName: blobItem.Name));
+                listOfAttachments.AddRange(attachment);
             }
 
             return listOfAttachments;
