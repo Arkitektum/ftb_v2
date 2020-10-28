@@ -5,6 +5,6 @@ namespace Altinn.Common.Interfaces
 {
     public interface IDistributionAdapter
     {
-        IEnumerable<AltinnDistributionResult> SendDistribution(AltinnDistributionMessage altinnMessage);
+        IEnumerable<DistributionResult> SendDistribution(AltinnDistributionMessage altinnMessage);
     }
 }

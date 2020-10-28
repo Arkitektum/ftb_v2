@@ -9,7 +9,16 @@ namespace FtB_Common.Interfaces
     /// <typeparam name="TB">Main form datatype</typeparam>
     public interface IDistributionDataMapper<T, TB>
     {
-        public T PrefillFormData { get; set; }
+        T PrefillFormData { get; set; }
         AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, TB mainFormData, string distributionFormId, string archiveReference);
+    }
+
+    public interface ISendData
+    {
+        string PrefillFormName { get; }
+        string ExternalSystemMainReference { get; set; }
+        string ExternalSystemSubReference { get; }
+        string PrefillServiceCode { get; }
+        string PrefillServiceEditionCode { get; }
     }
 }

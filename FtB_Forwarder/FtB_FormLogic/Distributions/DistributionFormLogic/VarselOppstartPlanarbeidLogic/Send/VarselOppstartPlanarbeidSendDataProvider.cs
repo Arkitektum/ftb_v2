@@ -1,5 +1,4 @@
 ﻿using Altinn.Common.Models;
-using FtB_Common.Encryption;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
 using FtB_DataModels.Mappers;
@@ -8,13 +7,42 @@ using System.Text;
 
 namespace FtB_FormLogic
 {
-    public class VarselOppstartPlanarbeidSendDataProvider : SendDataProviderBase, IDistributionDataMapper<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
+    public class VarselOppstartPlanarbeidSendDataProvider : PrefillSendDataProviderBase,
+        IDistributionDataMapper<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
-        //public VarselOppstartPlanarbeidSendDataProvider(IDecryptionFactory decryptionFactory) : base(decryptionFactory)
-        //{
-        //}
-
         public no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType PrefillFormData { get; set; }
+
+        public override string PrefillFormName { get { return "Uttalelse til oppstart av reguleringsplanarbeid"; } }
+        public override string ExternalSystemMainReference
+        {
+            get
+            {
+                if (PrefillFormData == null)
+                    throw new NullReferenceException("PrefillFormData is null.");
+                else
+                    return PrefillFormData.hovedinnsendingsnummer;
+            }
+            set
+            {
+                if (PrefillFormData == null)
+                    throw new NullReferenceException("PrefillFormData is null.");
+                else
+                    PrefillFormData.hovedinnsendingsnummer = value;
+
+            }
+        }
+        public override string ExternalSystemSubReference
+        {
+            get
+            {
+                if (PrefillFormData == null)
+                    throw new NullReferenceException("PrefillFormData is null.");
+                else
+                    return PrefillFormData.beroertPart.systemReferanse;
+            }
+        }
+        public override string PrefillServiceCode { get => "5419"; }
+        public override string PrefillServiceEditionCode { get => "1"; }
 
         public AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, string distributionFormId, string archiveReference)
         {
@@ -25,8 +53,8 @@ namespace FtB_FormLogic
                 PrefillDataFormatId = PrefillFormData.dataFormatId,
                 PrefillDataFormatVersion = PrefillFormData.dataFormatVersion,
                 DistributionFormReferenceId = distributionFormId,
-                PrefillServiceCode = "5419", //Distribution service servicecode??
-                PrefillServiceEditionCode = "1",
+                PrefillServiceCode = this.PrefillServiceCode,
+                PrefillServiceEditionCode = this.PrefillServiceEditionCode,
                 PrefilledXmlDataString = prefillXmlString,
                 DaysValid = 14,
                 DueDate = null
@@ -39,21 +67,8 @@ namespace FtB_FormLogic
             return distributionMessage;
         }
 
-        private void AddAttachments()
-        {
-
-        }
-
         private MessageDataType CreateMessageData(no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData)
         {
-            //return new MessageDataType((values, messageBody) =>
-            //{
-            //    foreach (var item in values)
-            //    {
-            //        messageBody.Replace(item.Key, item.Value);
-            //    }
-            //})
-
             var body = GetPrefillNotificationBody(PrefillFormData.forslagsstiller, PrefillFormData.beroertPart, PrefillFormData.fristForInnspill, PrefillFormData.kommune);
             var summary = string.Empty;
             var title = GetPrefillNotificationTitle(PrefillFormData.planNavn, PrefillFormData.planid);
@@ -84,7 +99,7 @@ namespace FtB_FormLogic
             string datoFristInnspill = String.Empty;
             if (fristForInnspill.HasValue)
             {
-                datoFristInnspill = String.Format("{0:MM.dd.yyyy}", fristForInnspill);
+                datoFristInnspill = string.Format("{0:MM.dd.yyyy}", fristForInnspill);
             }
 
             message.Append($"{forslagsstiller.navn} ønsker å endre  eller bygge i {kommune} kommune.<br>");

@@ -1,7 +1,9 @@
-﻿using Altinn.Common.Interfaces;
+﻿using Altinn.Common;
+using Altinn.Common.Interfaces;
 using Altinn.Common.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Altinn.Distribution
 {
@@ -18,33 +20,30 @@ namespace Altinn.Distribution
             _correspondenceAdapter = correspondenceAdapter;
         }
 
-        public IEnumerable<AltinnDistributionResult> SendDistribution(AltinnDistributionMessage altinnMessage)
+        public IEnumerable<DistributionResult> SendDistribution(AltinnDistributionMessage altinnMessage)
         {
-            var results = new List<AltinnDistributionResult>();
+            var results = new List<DistributionResult>();
             //Send prefill
-            var prefillResult = _prefillAdapter.SendPrefill(altinnMessage);
+            var prefillResults = _prefillAdapter.SendPrefill(altinnMessage);
+            results.AddRange(prefillResults);
 
-            if (prefillResult.ResultType == Common.PrefillResultType.Ok)
+            if (prefillResults.Where(p => p.Step == Common.DistriutionStep.Sent).FirstOrDefault() != null)
             {
-                results.Add(new AltinnDistributionResult() { Status = AltinnDistributionStatus.PrefillSent });
-
                 //Send correspondence
                 //prefillResult.PrefillReferenceId
 
                 if (altinnMessage.NotificationMessage?.ReplyLink?.UrlTitle != string.Empty)
                 {
+                    var prefillSentResult = prefillResults.Where(o => o is PrefillSentResult).FirstOrDefault() as PrefillSentResult;
                     //altinnMessage.ReplyLink.Url = "{{placeholder:altinnServer}}/Pages/ServiceEngine/Dispatcher/Dispatcher.aspx?ReporteeElementID={{placeholder:prefillFormId}}";
-                    altinnMessage.NotificationMessage.ReplyLink.Url = $"https://tt02.altinn.no/Pages/ServiceEngine/Dispatcher/Dispatcher.aspx?ReporteeElementID={prefillResult.PrefillReferenceId}";
+                    altinnMessage.NotificationMessage.ReplyLink.Url = $"https://tt02.altinn.no/Pages/ServiceEngine/Dispatcher/Dispatcher.aspx?ReporteeElementID={prefillSentResult?.PrefillReferenceId}";
                 }
 
-                _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage, altinnMessage.DistributionFormReferenceId);
+                var correspondenceResults = _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage, altinnMessage.DistributionFormReferenceId);
 
-                results.Add(new AltinnDistributionResult() { Status = AltinnDistributionStatus.MessageSent });
+                results.AddRange(correspondenceResults);
             }
-            else
-            {
-                results.Add(new AltinnDistributionResult() { Status = AltinnDistributionStatus.PrefillFailed });
-            }
+
             return results;
         }
     }

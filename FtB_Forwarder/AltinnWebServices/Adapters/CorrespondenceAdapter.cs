@@ -5,6 +5,8 @@ using Altinn2.Adapters.WS.Correspondence;
 using AltinnWebServices.WS.Correspondence;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Altinn2.Adapters
@@ -22,14 +24,14 @@ namespace Altinn2.Adapters
             _correspondenceBuilder = correspondenceBuilder;
             _correspondenceClient = correspondenceClient;
         }
-        public CorrespondenceResult SendMessage(AltinnMessageBase altinnMessage, string externalShipmentReference)
+        public IEnumerable<DistributionResult> SendMessage(AltinnMessageBase altinnMessage, string externalShipmentReference)
         {
-            var retVal = new CorrespondenceResult();
+            var correspondenceResults = new List<DistributionResult>();
 
             _correspondenceBuilder.SetUpCorrespondence(altinnMessage.Receiver.Id, altinnMessage.ArchiveReference);
 
             _correspondenceBuilder.AddContent(altinnMessage.MessageData.MessageTitle, altinnMessage.MessageData.MessageSummary, altinnMessage.MessageData.MessageBody);
-            
+
             //Add notification stuff if present in input
             var notificationMessage = altinnMessage as AltinnNotificationMessage;
             if (notificationMessage != null)
@@ -39,12 +41,11 @@ namespace Altinn2.Adapters
                     //_correspondenceBuilder.AddEmailAndSmsNotification()
                 }
 
-                if(notificationMessage.ReplyLink != null)
+                if (notificationMessage.ReplyLink != null)
                 {
                     _correspondenceBuilder.AddReplyLink(notificationMessage.ReplyLink.Url, notificationMessage.ReplyLink.UrlTitle);
                 }
             }
-
 
             // Must handle XML attachments as well
             foreach (var item in altinnMessage.Attachments)
@@ -59,19 +60,33 @@ namespace Altinn2.Adapters
             }
 
             InsertCorrespondenceV2 correspondence = _correspondenceBuilder.Build();
+            correspondenceResults.Add(new CorrespondenceResult() { Step = DistriutionStep.PayloadCreated });
 
-            var correspondenceResponse = _correspondenceClient.SendCorrespondence(correspondence, externalShipmentReference);
-
-            if (correspondenceResponse.ReceiptStatusCode != ReceiptStatusEnum.OK)
+            var correspondenceResult = new CorrespondenceResult();
+            try
             {
-                retVal.ResultType = CorrespondenceResultType.Failed;
-                retVal.ResultMessage = correspondenceResponse.ReceiptText;
+                var correspondenceResponse = _correspondenceClient.SendCorrespondence(correspondence, externalShipmentReference);
+
+                correspondenceResult.Message = correspondenceResponse.ReceiptText;
+                if (correspondenceResponse.ReceiptStatusCode == ReceiptStatusEnum.OK)
+                    correspondenceResult.Step = DistriutionStep.Sent;
+                else
+                {
+                    correspondenceResult.Step = DistriutionStep.Failed;
+                    correspondenceResult.Message = $"{correspondenceResult.Message} - {correspondenceResponse.ReceiptHistory}";
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred when sending correspondence to Altinn");
+                correspondenceResult.Step = DistriutionStep.UnkownErrorOccurred;
+                correspondenceResult.Message = $"An error occurred when sending correspondence to Altinn - {ex.Message}";
             }
 
-            return retVal;
+            return correspondenceResults;
         }
 
-        public CorrespondenceResult SendMessage(AltinnMessageBase altinnMessage)
+        public IEnumerable<DistributionResult> SendMessage(AltinnMessageBase altinnMessage)
         {
             return SendMessage(altinnMessage, altinnMessage.ArchiveReference);
         }

@@ -24,7 +24,7 @@ namespace FtB_FormLogic
                                                  IDistributionDataMapper<SvarPaaNabovarselPlanType, NabovarselPlanType> distributionDataMapper,
                                                  VarselOppstartPlanarbeidPrefillMapper prefillMapper, DbUnitOfWork dbUnitOfWork
             )
-            : base(repo, tableStorage, log, distributionAdapter, dbUnitOfWork)
+            : base(repo, tableStorage, log, distributionAdapter, (ISendData)distributionDataMapper, dbUnitOfWork)
         {
             _distributionDataMapper = distributionDataMapper;
             this._prefillMapper = prefillMapper;
@@ -34,8 +34,7 @@ namespace FtB_FormLogic
         {
             _prefillMapper.Map(base.FormData, receiverId);            
             base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(_prefillMapper.FormDataString, base.FormData, Guid.NewGuid().ToString(), base.ArchiveReference);
-            //DistributionForm dForm = _formMetadataService.InsertDistributionForm(archivereferance, prefillFormData.GetPrefillKey(), prefillFormData.GetPrefillOurReference(), altinnForm.GetName());
-            _dbUnitOfWork.DistributionForms.Add(new DistributionForm(){  _distributionDataMapper.PrefillFormData.hovedinnsendingsnummer)
+
             _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {_distributionDataMapper.PrefillFormData.beroertPart.systemReferanse}");
         }
     }

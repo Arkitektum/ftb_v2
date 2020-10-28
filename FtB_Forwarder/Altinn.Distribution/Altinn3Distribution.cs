@@ -1,9 +1,11 @@
-﻿using Altinn.Common.Interfaces;
+﻿using Altinn.Common;
+using Altinn.Common.Interfaces;
 using Altinn.Common.Models;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace Altinn.Distribution
 {
@@ -19,34 +21,25 @@ namespace Altinn.Distribution
             _prefillAdapter = prefillAdapter;
             _correspondenceAdapter = correspondenceAdapter;
         }
-        
-        public IEnumerable<AltinnDistributionResult> SendDistribution(AltinnDistributionMessage altinnMessage)
+
+        IEnumerable<DistributionResult> IDistributionAdapter.SendDistribution(AltinnDistributionMessage altinnMessage)
         {
-            var results = new List<AltinnDistributionResult>();
+            var results = new List<DistributionResult>();
             //Send prefill
             var prefillResult = _prefillAdapter.SendPrefill(altinnMessage);
 
-            if (prefillResult.ResultType == Common.PrefillResultType.Ok)
+            if (prefillResult.Where(r => r.Step == DistriutionStep.Sent).Any())
             {
-                results.Add(new AltinnDistributionResult() { Status = AltinnDistributionStatus.PrefillSent });
-
                 //Send correspondence
                 //prefillResult.PrefillReferenceId
                 //Transform body!!!!! 
                 //, prefillResult.PrefillReferenceId
-                _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage);
+                var correspondenceResults = _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage);
 
-                results.Add(new AltinnDistributionResult() { Status = AltinnDistributionStatus.MessageSent });
-            }
-            else
-            {
-                results.Add(new AltinnDistributionResult() { Status = AltinnDistributionStatus.PrefillFailed });
-            }
-            
+                results.AddRange(correspondenceResults); 
+            }           
 
             return results;
-        }
-
-
+        }        
     }
 }

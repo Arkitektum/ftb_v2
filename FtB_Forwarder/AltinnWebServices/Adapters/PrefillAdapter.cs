@@ -5,6 +5,7 @@ using Altinn2.Adapters.WS.Prefill;
 using AltinnWebServices.WS.Prefill;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Altinn2.Adapters
@@ -22,20 +23,21 @@ namespace Altinn2.Adapters
             _altinnPrefillClient = altinnPrefillClient;
         }
 
-        public PrefillResult SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
+        public IEnumerable<PrefillResult> SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
         {
+            var results = new List<PrefillResult>();
             _logger.LogDebug($"{GetType().Name}: SendPrefill for receiver {altinnDistributionMessage.NotificationMessage.Receiver.Id}....");
-            _prefillFormTaskBuilder.SetupPrefillFormTask(altinnDistributionMessage.PrefillServiceCode, 
-                    int.Parse(altinnDistributionMessage.PrefillServiceEditionCode), 
-                    altinnDistributionMessage.NotificationMessage.Receiver.Id, 
-                    altinnDistributionMessage.DistributionFormReferenceId, 
-                    altinnDistributionMessage.DistributionFormReferenceId, 
-                    altinnDistributionMessage.DistributionFormReferenceId, 
+            _prefillFormTaskBuilder.SetupPrefillFormTask(altinnDistributionMessage.PrefillServiceCode,
+                    int.Parse(altinnDistributionMessage.PrefillServiceEditionCode),
+                    altinnDistributionMessage.NotificationMessage.Receiver.Id,
+                    altinnDistributionMessage.DistributionFormReferenceId,
+                    altinnDistributionMessage.DistributionFormReferenceId,
+                    altinnDistributionMessage.DistributionFormReferenceId,
                     altinnDistributionMessage.DaysValid);
 
-            _prefillFormTaskBuilder.AddPrefillForm(altinnDistributionMessage.PrefillDataFormatId, 
-                    int.Parse(altinnDistributionMessage.PrefillDataFormatVersion), 
-                    altinnDistributionMessage.PrefilledXmlDataString, 
+            _prefillFormTaskBuilder.AddPrefillForm(altinnDistributionMessage.PrefillDataFormatId,
+                    int.Parse(altinnDistributionMessage.PrefillDataFormatVersion),
+                    altinnDistributionMessage.PrefilledXmlDataString,
                     altinnDistributionMessage.DistributionFormReferenceId);
 
             //Map email thingy!!!!
@@ -55,6 +57,7 @@ namespace Altinn2.Adapters
             //    }
             //}
             var prefillFormTask = _prefillFormTaskBuilder.Build();
+            results.Add(new PrefillResult() { Step = DistriutionStep.PayloadCreated, Message = $"{altinnDistributionMessage.NotificationMessage.Receiver.Id}" });
             _logger.LogDebug($"PrefillFormTask for {altinnDistributionMessage.NotificationMessage.Receiver.Id} - created");
 
             // ********** Should have retry for communication errors  *********
@@ -67,46 +70,47 @@ namespace Altinn2.Adapters
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred when sending prefill to Altinn");
-                throw;
+                //throw;
             }
             // ****************************************************************
 
 
-            var prefillResult = new PrefillResult();
+            var prefillFinalResult = new PrefillResult();
 
             if (receiptExternal?.ReceiptStatusCode == ReceiptStatusEnum.OK)
             {
-                prefillResult.ResultMessage = "Ok - Prefill sent";
-                prefillResult.ResultType = PrefillResultType.Ok;
+                prefillFinalResult.Message = "Ok - Prefill sent";
+                prefillFinalResult.Step = DistriutionStep.Sent;
 
                 if (receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).FirstOrDefault() != null)
-                    prefillResult.PrefillReferenceId = receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).First().ReferenceValue;
+                    prefillFinalResult = new PrefillSentResult() { PrefillReferenceId = receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).First().ReferenceValue };
             }
             else if (receiptExternal?.ReceiptStatusCode != ReceiptStatusEnum.OK)
                 if (receiptExternal.ReceiptText.Contains("Reportee is reserved against electronic communication"))
                 {
-                    prefillResult.ResultMessage = receiptExternal.ReceiptText;
-                    prefillResult.ResultType = PrefillResultType.ReservedReportee;
+                    prefillFinalResult.Message = receiptExternal.ReceiptText;
+                    prefillFinalResult.Step = DistriutionStep.ReservedReportee;
                 }
                 else if (receiptExternal.ReceiptText.Contains("One or more notification endpoint addresses is missing.") ||
                          receiptExternal.ReceiptText.Contains("Unable to properly identify notification receivers") ||
                          receiptExternal.ReceiptText.Contains("no official (kofuvi) notification endpoints found"))
                 {
-                    prefillResult.ResultMessage = receiptExternal.ReceiptText;
-                    prefillResult.ResultType = PrefillResultType.UnableToReachReceiver;
+                    prefillFinalResult.Message = receiptExternal.ReceiptText;
+                    prefillFinalResult.Step = DistriutionStep.UnableToReachReceiver;
                 }
                 else
                 {
-                    prefillResult.ResultMessage = "Unknown error occurred while sending prefill";
-                    prefillResult.ResultType = PrefillResultType.UnkownErrorOccured;
+                    prefillFinalResult.Message = "Unknown error occurred while sending prefill";
+                    prefillFinalResult.Step = DistriutionStep.UnkownErrorOccurred;
                 }
             else
             {
-                prefillResult.ResultMessage = "Unknown error occurred while sending prefill";
-                prefillResult.ResultType = PrefillResultType.UnkownErrorOccured;
+                prefillFinalResult.Message = "Unknown error occurred while sending prefill";
+                prefillFinalResult.Step = DistriutionStep.UnkownErrorOccurred;
             }
 
-            return prefillResult;
+            results.Add(prefillFinalResult);
+            return results;
         }
     }
 }

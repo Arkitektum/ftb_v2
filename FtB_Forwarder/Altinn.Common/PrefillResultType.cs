@@ -1,9 +1,11 @@
 ﻿namespace Altinn.Common
 {
-    public enum PrefillResultType
+    public enum DistriutionStep
     {
-        Ok,
-        UnkownErrorOccured,
+        PayloadCreated,
+        Sent,
+        Failed,
+        UnkownErrorOccurred,
         ReservedReportee,
         UnableToReachReceiver,
     }

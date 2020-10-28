@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Altinn.Common
+﻿namespace Altinn.Common
 {
-    public class CorrespondenceResult
+    public class CorrespondenceResult : DistributionResult
     {
-        public string ResultMessage { get; set; }
-        public CorrespondenceResultType ResultType { get; set; }
-    }
-
-    public enum CorrespondenceResultType
-    {
-        Ok,
-        Failed,
+        public CorrespondenceResult() : base(DistributionComponent.Correspondence)
+        {
+        }
     }
 }

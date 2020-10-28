@@ -7,7 +7,7 @@ using FtB_Common.Exceptions;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using FtB_Common.Utils;
-using Ftb_DbRepository;
+using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

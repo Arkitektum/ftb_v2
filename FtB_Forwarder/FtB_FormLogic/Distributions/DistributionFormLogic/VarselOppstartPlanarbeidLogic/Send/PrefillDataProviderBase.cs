@@ -1,6 +1,7 @@
 ﻿using Altinn.Common.Models;
 using FtB_Common.BusinessModels;
 using FtB_Common.Encryption;
+using FtB_Common.Interfaces;
 using FtB_DataModels.Mappers;
 using System.Collections.Generic;
 
@@ -22,7 +23,7 @@ namespace FtB_FormLogic
 
             if (!string.IsNullOrEmpty(berortPart.Ssn))
             {
-                receiver.Id = berortPart.Ssn; //DecryptIfNecesarry(berortPart.Ssn);
+                receiver.Id = berortPart.Ssn;
                 receiver.Type = AltinnReceiverType.Privatperson;
             }
             else
@@ -33,20 +34,19 @@ namespace FtB_FormLogic
 
             return receiver;
         }
-
-        //public IEnumerable<Attachment> GetAttachmentsFor(string archiveReference)
-        //{
-
-
-
-        //}
-
-        //private string DecryptIfNecesarry(string encrypted)
-        //{
-        //    if (encrypted.Length > 11)
-        //        return decryptionFactory.GetDecryptor().DecryptText(encrypted);
-
-        //    return encrypted;
-        //}
     }
+
+    public abstract class PrefillSendDataProviderBase : SendDataProviderBase, ISendData
+    {
+        public abstract string PrefillFormName { get; }
+
+        public abstract string ExternalSystemMainReference { get; set; }
+
+        public abstract string ExternalSystemSubReference { get; }
+
+        public abstract string PrefillServiceCode { get; }
+
+        public abstract string PrefillServiceEditionCode { get; }
+    }
+
 }

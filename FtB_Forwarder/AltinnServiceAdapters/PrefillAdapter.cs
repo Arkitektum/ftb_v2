@@ -4,6 +4,7 @@ using Altinn.Common.Models;
 using Altinn.Platform.Storage.Interface.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -20,7 +21,7 @@ namespace Altinn3.Adapters
             _logger = logger;
             this.httpClient = httpClient;
         }
-        public PrefillResult SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
+        IEnumerable<PrefillResult> IPrefillAdapter.SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
         {
             _logger.LogDebug(@"*               _ _   _               ____   ___  ");
             _logger.LogDebug(@"*         /\   | | | (_)             |___ \ / _ \ ");
@@ -44,8 +45,6 @@ namespace Altinn3.Adapters
 
                 throw;
             }
-
-
 
             //Add token
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
@@ -80,17 +79,14 @@ namespace Altinn3.Adapters
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        prefillResult.ResultType = PrefillResultType.UnkownErrorOccured;
+                        prefillResult.Step = DistriutionStep.Failed;
                         _logger.LogError($"Unable to create prefilled instance for {altinnDistributionMessage.NotificationMessage.Receiver.Id} - statuscode: {response.StatusCode}, errorMessage: {result}");
                     }
                     else
                     {
                         Instance instanceResult = JsonConvert.DeserializeObject<Instance>(result);
-                        prefillResult.ResultType = PrefillResultType.Ok;
-                        prefillResult.PrefillReferenceId = instanceResult.SelfLinks.Apps;
+                        prefillResult = new PrefillSentResult() { Step = DistriutionStep.Sent, PrefillReferenceId = instanceResult.SelfLinks.Apps };
                     }
-
-
                 }
                 catch (System.Exception)
                 {
@@ -99,7 +95,10 @@ namespace Altinn3.Adapters
                 }
             }
 
-            return prefillResult;
+            return new List<PrefillResult>() { prefillResult };
         }
+
+        
+        
     }
 }

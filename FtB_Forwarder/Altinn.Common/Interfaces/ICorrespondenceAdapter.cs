@@ -7,7 +7,7 @@ namespace Altinn.Common.Interfaces
 {
     public interface ICorrespondenceAdapter
     {
-        CorrespondenceResult SendMessage(AltinnMessageBase altinnMessage);
-        CorrespondenceResult SendMessage(AltinnMessageBase altinnMessage, string externalShipmentReference);
+        IEnumerable<DistributionResult> SendMessage(AltinnMessageBase altinnMessage);
+        IEnumerable<DistributionResult> SendMessage(AltinnMessageBase altinnMessage, string externalShipmentReference);
     }
 }
