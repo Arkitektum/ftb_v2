@@ -10,7 +10,9 @@ namespace FtB_Common
         PrefillCreated,
         PrefillPersisted,
         PrefillSent,
+        PrefillSendingFailed,
         CorrespondenceCreated,
+        CorrespondenceSendingFailed,
         CorrespondenceSent,
         DigitalDisallowment,
         ReadyForReporting

@@ -9,6 +9,7 @@ using Ftb_DbRepository;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace FtB_FormLogic
@@ -30,17 +31,28 @@ namespace FtB_FormLogic
             var returnReportQueueItem = base.Execute(sendQueueItem);
             MapPrefillData(sendQueueItem.Receiver.Id);
             UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillCreated);
-
-            //prefillData = 
             PersistPrefill(sendQueueItem);
-
+            AddAttachmentsToDistribution(sendQueueItem);
             var result = _distributionAdapter.SendDistribution(DistributionMessage);
-
-            //Use result of SendDistribution to update receiver entity
-            UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.CorrespondenceSent);
+            ReceiverStatusEnum distributionResult;
+            if (result.Any(x => x.Status.Equals(AltinnDistributionStatus.MessageSent)))
+            {
+                distributionResult = ReceiverStatusEnum.CorrespondenceSent;
+            }
+            else if (result.Any(x => x.Status.Equals(AltinnDistributionStatus.PrefillFailed)))
+            {
+                distributionResult = ReceiverStatusEnum.PrefillSendingFailed;
+            }
+            else
+            {
+                distributionResult = ReceiverStatusEnum.CorrespondenceSendingFailed;
+            }
+            UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, distributionResult);
 
             return returnReportQueueItem;
         }
+
+        protected abstract void AddAttachmentsToDistribution(SendQueueItem sendQueueItem);
 
         protected virtual void PersistPrefill(SendQueueItem sendQueueItem)
         {

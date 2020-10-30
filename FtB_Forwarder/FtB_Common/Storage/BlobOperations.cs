@@ -38,7 +38,9 @@ namespace FtB_Common.Storage
                     BlobProperties properties = await client.GetPropertiesAsync();
                     foreach (var metadataItem in properties.Metadata)
                     {
-                        if (metadataItem.Key.Equals("Type") && metadataItem.Value.Equals("ArchivedItemInformation"))
+                        
+                        if (metadataItem.Key.Equals("Type") 
+                            && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.ArchivedItemInformation)))
                         {
                             StringBuilder sb = new StringBuilder();
                             if (await client.ExistsAsync())
@@ -51,7 +53,6 @@ namespace FtB_Common.Storage
                                         sb.Append(await streamReader.ReadLineAsync());
                                     }
                                 }
-
                             }
                             _archivedItem = JsonConvert.DeserializeObject<ArchivedItemInformation>(sb.ToString());
                         }
@@ -113,7 +114,6 @@ namespace FtB_Common.Storage
                                         sb.Append(streamReader.ReadLineAsync().GetAwaiter().GetResult());
                                     }
                                 }
-
                             }
                             return sb.ToString();
                         }
@@ -136,7 +136,6 @@ namespace FtB_Common.Storage
                 dict.Add(item.Key, item.Value);
 
             var client = _blobStorage.GetBlockBlobContainerClient(containerName, identifier);
-
             using (var stream = new MemoryStream(fileBytes, false))
             {
                 client.Upload(stream);
@@ -168,34 +167,34 @@ namespace FtB_Common.Storage
             return data;
         }
 
-        public byte[] GetBlobAsBytesByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
+        public IEnumerable<byte[]> GetBlobsAsBytesByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
         {
             var blobItems = _blobStorage.GetBlobContainerItems(containerName);
-            byte[] filecontent = Encoding.ASCII.GetBytes("");
+            List<byte[]> blobs = new List<byte[]>();
             foreach (var blobItem in blobItems)
             {
-                var blob = _blobStorage.GetBlockBlobContainerClient(containerName, blobItem.Name);
-                BlobProperties properties = blob.GetPropertiesAsync().GetAwaiter().GetResult();
-                var t = properties.Metadata?.Where(m => metaDataFilter.All(f => m.Key == f.Key && m.Value == f.Value)).ToList();
-                if (t?.Count() == metaDataFilter.Count())
+                var blobBlock = _blobStorage.GetBlockBlobContainerClient(containerName, blobItem.Name);
+                BlobProperties properties = blobBlock.GetPropertiesAsync().GetAwaiter().GetResult();
+                var matchingMetadataElements = properties.Metadata?.Where(m => metaDataFilter.All(f => m.Key == f.Key && m.Value == f.Value)).ToList();
+                foreach (var metadataElement in matchingMetadataElements)
                 {
-                    var response = blob.Download();
+                    var response = blobBlock.Download();
                     var contentLenght = response.Value.ContentLength;
                     using (var binReader = new BinaryReader(response.Value.Content))
                     {
-                        filecontent = binReader.ReadBytes(Convert.ToInt32(contentLenght));
+                        var filecontent = binReader.ReadBytes(Convert.ToInt32(contentLenght));
+                        blobs.Add(filecontent);
                     }
-                    break;
                 }
             }
-            return filecontent;
+            
+            return blobs;
         }
 
         public IEnumerable<(string attachmentType, string fileName)> GetListOfBlobsWithMetadataType(string containerName, IEnumerable<BlobStorageMetadataTypeEnum> blobItemTypes)
         {
             var listOfAttachments = new List<(string attachmentType, string fileName)>();
             var blobItems = _blobStorage.GetBlobContainerItems(containerName);
-            
             foreach (var blobItem in blobItems)
             {
                 var blob = _blobStorage.GetBlockBlobContainerClient(containerName, blobItem.Name);
@@ -210,5 +209,81 @@ namespace FtB_Common.Storage
             return listOfAttachments;
         }
 
+        public IEnumerable<Attachment> GetAttachmentsByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
+        {
+            var blobItems = _blobStorage.GetBlobContainerItems(containerName);
+            List<Attachment> attachments = new List<Attachment>();
+            foreach (var blobItem in blobItems)
+            {
+                var blobBlock = _blobStorage.GetBlockBlobContainerClient(containerName, blobItem.Name);
+                BlobProperties properties = blobBlock.GetPropertiesAsync().GetAwaiter().GetResult();
+                var blobIsPDF = (properties.ContentType != null && properties.ContentType.ToLower().Equals("application/pdf"))
+                                    || blobItem.Name.ToLower().Contains(".pdf");
+                var blobIsXML = (properties.ContentType != null && properties.ContentType.ToLower().Equals("application/xml"))
+                                    || blobItem.Name.ToLower().Contains(".xml");
+                var blobIsJson = (properties.ContentType != null && properties.ContentType.ToLower().Equals("application/json"))
+                                    || blobItem.Name.ToLower().Contains(".json");
+
+                var matchingMetadataElements = properties.Metadata?.Where(meta => metaDataFilter.ToList()
+                                    .Any(filter => filter.Key == meta.Key && filter.Value.Equals(meta.Value, StringComparison.OrdinalIgnoreCase)));
+
+                if (matchingMetadataElements?.Count() > 0)
+                {
+                    var response = blobBlock.Download();
+                                        
+                    if (blobIsPDF)
+                    {
+                        var attachment = new AttachmentBinary();
+                        attachment = (AttachmentBinary)EnrichTheAttachment(attachment, containerName, blobItem, properties);
+
+                        var contentLenght = response.Value.ContentLength;
+                        using (var binReader = new BinaryReader(response.Value.Content))
+                        {
+                            var filecontent = binReader.ReadBytes(Convert.ToInt32(contentLenght));
+                            attachment.BinaryContent = filecontent;
+                            attachments.Add(attachment);
+                        }
+                    }
+                    else if (blobIsXML)
+                    {
+                        var attachment = new AttachmentXml();
+                        attachment = (AttachmentXml)EnrichTheAttachment(attachment, containerName, blobItem, properties);
+                        var data = string.Empty;
+                        using (var reader = new StreamReader(response.Value.Content))
+                        {
+                            data = reader.ReadToEnd();
+                            attachment.XmlStringContent = data;
+                            attachments.Add(attachment);
+                        }
+                    }
+                    else if (blobIsJson)
+                    {
+                        var attachment = new AttachmentJson();
+                        attachment = (AttachmentJson)EnrichTheAttachment(attachment, containerName, blobItem, properties);
+                        var data = string.Empty;
+                        using (var reader = new StreamReader(response.Value.Content))
+                        {
+                            data = reader.ReadToEnd();
+                            attachment.JsonStringContent = data;
+                            attachments.Add(attachment);
+                        }
+                    }
+                }
+            }
+
+            return attachments;
+        }
+        private Attachment EnrichTheAttachment(Attachment attachment, string containerName, BlobItem blobItem, BlobProperties properties)
+        {
+            attachment.ArchiveReference = containerName.ToUpper();
+            attachment.AttachmentTypeName = properties.Metadata?.FirstOrDefault(x => x.Key.Equals("AttachmentTypeName")).Value;
+            attachment.Filename = blobItem.Name;
+            attachment.Name = properties.Metadata?.FirstOrDefault(x => x.Key.Equals("AttachmentTypeName")).Value;
+            attachment.Type = properties.ContentType;
+            //TODO Add url?
+            //attachment.Url
+
+            return attachment;
+        }   
     }
 }
