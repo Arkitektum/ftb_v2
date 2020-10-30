@@ -33,7 +33,7 @@ namespace FtB_FormLogic
         protected override void MapPrefillData(string receiverId)
         {
             _prefillMapper.Map(base.FormData, receiverId);            
-            base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(_prefillMapper.FormDataString, base.FormData, Guid.NewGuid().ToString(), base.ArchiveReference);
+            base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(_prefillMapper.FormDataString, base.FormData, Guid.NewGuid(), base.ArchiveReference);
 
             _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {_distributionDataMapper.PrefillFormData.beroertPart.systemReferanse}");
         }

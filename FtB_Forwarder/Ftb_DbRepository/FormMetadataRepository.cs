@@ -12,7 +12,7 @@ namespace Ftb_Repositories
         private readonly FormMetadataHttpClient _formMetadataClient;
         private FormMetadata _formMetadata;
 
-        public FormMetadataRepository(ILogger<FormMetadataRepository> logger, FormMetadataHttpClient formMetadataClient)
+        public FormMetadataRepository(ILogger<FormMetadataRepository> logger, FormMetadataHttpClient formMetadataClient)        
         {
             _logger = logger;
             _formMetadataClient = formMetadataClient;

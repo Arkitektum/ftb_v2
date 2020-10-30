@@ -30,15 +30,15 @@ namespace Altinn2.Adapters
             _prefillFormTaskBuilder.SetupPrefillFormTask(altinnDistributionMessage.PrefillServiceCode,
                     int.Parse(altinnDistributionMessage.PrefillServiceEditionCode),
                     altinnDistributionMessage.NotificationMessage.Receiver.Id,
-                    altinnDistributionMessage.DistributionFormReferenceId,
-                    altinnDistributionMessage.DistributionFormReferenceId,
-                    altinnDistributionMessage.DistributionFormReferenceId,
+                    altinnDistributionMessage.DistributionFormReferenceId.ToString(),
+                    altinnDistributionMessage.DistributionFormReferenceId.ToString(),
+                    altinnDistributionMessage.DistributionFormReferenceId.ToString(),
                     altinnDistributionMessage.DaysValid);
 
             _prefillFormTaskBuilder.AddPrefillForm(altinnDistributionMessage.PrefillDataFormatId,
                     int.Parse(altinnDistributionMessage.PrefillDataFormatVersion),
                     altinnDistributionMessage.PrefilledXmlDataString,
-                    altinnDistributionMessage.DistributionFormReferenceId);
+                    altinnDistributionMessage.DistributionFormReferenceId.ToString());
 
             //Map email thingy!!!!
             //if (prefillFormData.DoEmailNotification())

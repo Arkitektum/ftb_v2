@@ -11,9 +11,9 @@ namespace Altinn2.Adapters
     {
         public static IServiceCollection AddAltinn2PrefillService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IBindingFactory, BindingFactory>();
-            services.AddTransient<IBinding, MtomBindingProvider>();
-            services.AddTransient<IBinding, BasicBindingProvider>();
+            services.AddScoped<IBindingFactory, BindingFactory>();
+            services.AddScoped<IBinding, MtomBindingProvider>();
+            services.AddScoped<IBinding, BasicBindingProvider>();
             services.AddScoped<IPrefillClient, PrefillClient>();
             services.AddScoped<IPrefillFormTaskBuilder, PrefillFormTaskBuilder>();
             services.AddScoped<IPrefillAdapter, PrefillAdapter>();
@@ -25,9 +25,9 @@ namespace Altinn2.Adapters
 
         public static IServiceCollection AddAltinn2CorrespondenceService(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<IBindingFactory, BindingFactory>();
-            services.AddTransient<IBinding, MtomBindingProvider>();
-            services.AddTransient<IBinding, BasicBindingProvider>();
+            services.AddScoped<IBindingFactory, BindingFactory>();
+            services.AddScoped<IBinding, MtomBindingProvider>();
+            services.AddScoped<IBinding, BasicBindingProvider>();
 
             services.AddScoped<ICorrespondenceClient, CorrespondenceClient>();
             services.AddScoped<ICorrespondenceBuilder, CorrespondenceBuilder>();

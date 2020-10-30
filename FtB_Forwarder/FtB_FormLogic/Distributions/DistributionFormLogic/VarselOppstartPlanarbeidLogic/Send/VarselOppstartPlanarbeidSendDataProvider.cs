@@ -44,7 +44,7 @@ namespace FtB_FormLogic
         public override string PrefillServiceCode { get => "5419"; }
         public override string PrefillServiceEditionCode { get => "1"; }
 
-        public AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, string distributionFormId, string archiveReference)
+        public AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, Guid distributionFormId, string archiveReference)
         {
             PrefillFormData = SerializeUtil.DeserializeFromString<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>(prefillXmlString);
 

@@ -1,4 +1,6 @@
-﻿namespace Altinn.Common
+﻿using System;
+
+namespace Altinn.Common
 {
     public enum DistriutionStep
     {

@@ -1,4 +1,5 @@
 ﻿using Altinn.Common.Models;
+using System;
 
 namespace FtB_Common.Interfaces
 {
@@ -10,7 +11,7 @@ namespace FtB_Common.Interfaces
     public interface IDistributionDataMapper<T, TB>
     {
         T PrefillFormData { get; set; }
-        AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, TB mainFormData, string distributionFormId, string archiveReference);
+        AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, TB mainFormData, Guid distributionFormId, string archiveReference);
     }
 
     public interface ISendData

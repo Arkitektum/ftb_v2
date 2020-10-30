@@ -16,7 +16,7 @@ namespace Ftb_Repositories
         private readonly ILogger<DistributionFormsRepository> _logger;
         private readonly DistributionFormsHttpClient _distributionFormsClient;
 
-        public DistributionFormsRepository(ILogger<DistributionFormsRepository> logger, DistributionFormsHttpClient distributionFormsClient)
+        public DistributionFormsRepository(ILogger<DistributionFormsRepository> logger, DistributionFormsHttpClient distributionFormsClient)        
         {
             _logger = logger;
             _distributionFormsClient = distributionFormsClient;
@@ -27,7 +27,9 @@ namespace Ftb_Repositories
         }
         public IEnumerable<DistributionForm> Get()
         {
-            return _distributionFormsClient.Get(_archiveReference);
+            if (_distributionForms.Count == 0)
+                return _distributionFormsClient.Get(_archiveReference);
+            return _distributionForms;
         }
 
         public void Add(DistributionForm distributionForm)
@@ -38,7 +40,12 @@ namespace Ftb_Repositories
         public void Save()
         {
             if (_distributionForms?.Count > 0)
-                _distributionFormsClient.Post(_archiveReference, _distributionForms);
+            {
+                _logger.LogInformation("Persists distribution forms");
+                _distributionFormsClient.Post(_archiveReference, _distributionForms); 
+            }
+            else
+                _logger.LogWarning("No forms to persist!");
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Altinn.Distribution
                     altinnMessage.NotificationMessage.ReplyLink.Url = $"https://tt02.altinn.no/Pages/ServiceEngine/Dispatcher/Dispatcher.aspx?ReporteeElementID={prefillSentResult?.PrefillReferenceId}";
                 }
 
-                var correspondenceResults = _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage, altinnMessage.DistributionFormReferenceId);
+                var correspondenceResults = _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage, altinnMessage.DistributionFormReferenceId.ToString());
 
                 results.AddRange(correspondenceResults);
             }

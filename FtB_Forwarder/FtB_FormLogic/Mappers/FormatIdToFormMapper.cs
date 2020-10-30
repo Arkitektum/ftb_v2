@@ -35,7 +35,7 @@ namespace FtB_FormLogic
             if (types.Count() > 0)
             {
                 //Resolves an instance of the class
-                var formType = types.FirstOrDefault();
+                var formType = types.FirstOrDefault();                
                 formLogicInstance = _services.GetService(formType);
             }
 

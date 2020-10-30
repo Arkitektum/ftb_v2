@@ -48,7 +48,7 @@ namespace Altinn.Common.Models
         public string PrefillServiceEditionCode { get; set; }
         public string PrefilledXmlDataString { get; set; }
 
-        public string DistributionFormReferenceId { get; set; }
+        public Guid DistributionFormReferenceId { get; set; }
         public int DaysValid { get; set; }
         public DateTime? DueDate { get; set; }
     }

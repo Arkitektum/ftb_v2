@@ -10,12 +10,14 @@ namespace Ftb_Repositories.HttpClients
 {
     public class FormMetadataHttpClient
     {
-        public HttpClient Client { get; }
+        //public HttpClient Client { get; }
+        private readonly HttpClient Client;
         private readonly IOptions<FormProcessAPISettings> _settings;
 
-        public FormMetadataHttpClient(HttpClient httpClient, IOptions<FormProcessAPISettings> settings)
+        //public FormMetadataHttpClient(HttpClient httpClient, IOptions<FormProcessAPISettings> settings)
+        public FormMetadataHttpClient(IHttpClientFactory httpClientFacotry, IOptions<FormProcessAPISettings> settings)
         {
-            Client = httpClient;
+            Client = httpClientFacotry.CreateClient("FormMetadataHttpClient");
             _settings = settings;
         }
 

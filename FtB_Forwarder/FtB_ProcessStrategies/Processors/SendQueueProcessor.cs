@@ -29,6 +29,8 @@ namespace FtB_ProcessStrategies
         {
             try
             {
+                _log.LogDebug("_dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
+                
                 _dbUnitOfWork.SetArhiveReference(sendQueueItem.ArchiveReference);
                 //string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
                 string formatId = _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);

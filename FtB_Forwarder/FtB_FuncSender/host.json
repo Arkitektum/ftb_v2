@@ -8,7 +8,7 @@
       }
     },
     "logLevel": {
-      "Default": "Error",
+      "Default": "Debug",
       "FtB_Common": "Debug",
       "FtB_DataModels": "Debug",
       "Ftb_DbModels": "Debug",

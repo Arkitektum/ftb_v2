@@ -31,13 +31,20 @@ namespace FtB_FormLogic
 
         public override ReportQueueItem Execute(SendQueueItem sendQueueItem)
         {
+
+            _log.LogDebug("_dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
             var returnReportQueueItem = base.Execute(sendQueueItem);
+            _log.LogDebug("Maps prefill data for {0}", sendQueueItem.Receiver.Id);
             MapPrefillData(sendQueueItem.Receiver.Id);
             UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillCreated);
 
+            sendData.ExternalSystemMainReference = DistributionMessage.DistributionFormReferenceId.ToString();
+            _log.LogDebug("Creates distribution form with reference {0} for {1} - {2}", sendData.ExternalSystemMainReference, ArchiveReference, sendData.ExternalSystemSubReference);
             //DistributionForm dForm = _formMetadataService.InsertDistributionForm(archivereferance, prefillFormData.GetPrefillKey(), prefillFormData.GetPrefillOurReference(), altinnForm.GetName());
-            //_dbUnitOfWork.DistributionForms.Add(new DistributionForm() { this.sendData.PrefillServiceEditionCode )
 
+            _dbUnitOfWork.DistributionForms.Add(new DistributionForm() { Id = DistributionMessage.DistributionFormReferenceId, ExternalSystemReference = sendData.ExternalSystemMainReference, InitialExternalSystemReference = sendData.ExternalSystemSubReference, DistributionType = sendData.PrefillFormName });
+            var distributionForm = _dbUnitOfWork.DistributionForms.Get()
+                                        .Where(d => d.Id == DistributionMessage.DistributionFormReferenceId).FirstOrDefault();
             //prefillData = 
             PersistPrefill(sendQueueItem);
 
@@ -61,25 +68,35 @@ namespace FtB_FormLogic
 
             _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {sendData.ExternalSystemSubReference}");
             _dbUnitOfWork.LogEntries.AddInfo($"Dist id {sendData.ExternalSystemMainReference} - Distribusjon av {sendData.PrefillFormName} til tjeneste {sendData.PrefillServiceCode}/{sendData.PrefillServiceEditionCode}");
+            distributionForm.SubmitAndInstantiatePrefilled = DateTime.Now;
 
-            if (Receiver == null && string.IsNullOrEmpty(Receiver.Id))
+            if (Receiver == null || string.IsNullOrEmpty(Receiver.Id))
             {
                 _dbUnitOfWork.LogEntries.AddError("Fant ikke personnummer/organisasjonsnummer");
                 _dbUnitOfWork.LogEntries.AddErrorInternal($"Dist id {sendData.ExternalSystemMainReference} - Fant ikke personnummer/organisasjonsnummer i Receiver", "AltinnPrefill");
             }
-            var result = _distributionAdapter.SendDistribution(DistributionMessage);
+            else
+            {
+                var result = _distributionAdapter.SendDistribution(DistributionMessage);
 
-            //Remember "postdistribution metadata SendPrefillServiceV2 line 152 - 162
+                //Remember "postdistribution metadata SendPrefillServiceV2 line 152 - 162
 
-            //Log results
-            LogPrefillProcessing(result);
-            LogDistributionProcessingResults(result);
+                //Log results
+                LogPrefillProcessing(result);
+                LogDistributionProcessingResults(result);
 
-            _dbUnitOfWork.LogEntries.AddInfo($"Dist id {sendData.ExternalSystemMainReference} - Distribusjon behandling ferdig");
+                if (result.Where(r => r.Step == DistriutionStep.Failed || r.Step == DistriutionStep.UnkownErrorOccurred || r.Step == DistriutionStep.UnableToReachReceiver).Any())
+                {
+                    distributionForm.DistributionStatus = DistributionStatus.error;
+                    distributionForm.ErrorMessage = "Send manuelt";
+                }
 
-            //Use result of SendDistribution to update receiver entity
-            UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.CorrespondenceSent);
 
+                _dbUnitOfWork.LogEntries.AddInfo($"Dist id {sendData.ExternalSystemMainReference} - Distribusjon behandling ferdig");
+                                
+                //Use result of SendDistribution to update receiver entity
+                UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.CorrespondenceSent);
+            }
             return returnReportQueueItem;
         }
 
@@ -169,45 +186,6 @@ namespace FtB_FormLogic
             UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillPersisted);
         }
 
-        //protected virtual IEnumerable<AltinnDistributionResult> SendPrefill(SendQueueItem sendQueueItem)
-        //{
-        //    var distributionResults = _distributionAdapter.SendDistribution(DistributionMessage);
-        //    //switch (prefillResult.ResultType)
-        //    //{
-        //    //    case PrefillResultType.Ok:
-        //    //        UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillSent));
-        //    //        break;
-        //    //    case PrefillResultType.UnkownErrorOccured:
-        //    //        break;
-        //    //    case PrefillResultType.ReservedReportee:
-        //    //        break;
-        //    //    case PrefillResultType.UnableToReachReceiver:
-        //    //        break;
-        //    //    default:
-        //    //        break;
-        //    //}
-
-        //    return distributionResults;
-        //}
-
-        //protected virtual void Distribute(SendQueueItem sendQueueItem, string prefillReferenceId)
-        //{
-        //    // Validate if receiver info is sufficient
-
-        //    // Decrypt
-
-        //    // Create distributionform 
-        //    var distributionFormId = this.PrefillData.DistributionFormId;
-
-        //    // Map  from prefill-data to prefillFormTask
-        //    // Send using prefill service
-
-        //    // _distributionAdapter.SendDistribution(eitEllerAnnaObjekt);
-
-        //    // Finally persist distributionform..  and maybe a list of logentries??            
-
-        //    UpdateReceiverEntity(new ReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.CorrespondenceSent));
-        //}
         protected abstract void MapPrefillData(string receiverId);
     }
 }

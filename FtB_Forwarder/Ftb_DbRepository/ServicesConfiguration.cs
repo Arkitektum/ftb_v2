@@ -9,8 +9,14 @@ namespace Ftb_Repositories
     {
         public static IServiceCollection AddFtbDbUnitOfWork(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddHttpClient<FormMetadataHttpClient>();
-            services.AddHttpClient<LogEntryHttpClient>();
+            //services.AddHttpClient<FormMetadataHttpClient>();
+            //services.AddHttpClient<DistributionFormsHttpClient>();
+            //services.AddHttpClient<LogEntryHttpClient>();
+
+            services.AddHttpClient();
+            services.AddScoped<FormMetadataHttpClient>();
+            services.AddScoped<DistributionFormsHttpClient>();
+            services.AddScoped<LogEntryHttpClient>();
             services.AddScoped<DbUnitOfWork>();
             services.AddScoped<ILogEntryRepository, LogEntryRepository>();
             services.AddScoped<IDistributionFormRepository, DistributionFormsRepository>();

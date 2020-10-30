@@ -4,6 +4,7 @@ using FtB_Common.Interfaces;
 using FtB_Common.Utils;
 using FtB_DataModels.Mappers;
 using no.kxml.skjema.dibk.nabovarselPlan;
+using System;
 
 namespace FtB_FormLogic
 {
@@ -42,7 +43,7 @@ namespace FtB_FormLogic
         public string PrefillServiceCode { get => "5419"; }
         public string PrefillServiceEditionCode { get => "1"; }
 
-        public AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, NabovarselPlanType mainFormData, string distributionFormId, string archiveReference)
+        public AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, NabovarselPlanType mainFormData, Guid distributionFormId, string archiveReference)
         {
             PrefillFormData = SerializeUtil.DeserializeFromString<FtB_DataModels.Datamodels.NabovarelPlan.SvarPaaNabovarselPlanType>(prefillXmlString);
 
