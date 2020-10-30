@@ -188,6 +188,7 @@ namespace FtB_FormLogic
         }
 
         protected abstract void MapPrefillData(string receiverId);
+
+        protected abstract void AddAttachmentsToDistribution(SendQueueItem sendQueueItem);
     }
 }
-

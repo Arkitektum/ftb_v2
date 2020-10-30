@@ -4,6 +4,7 @@ using FtB_Common.BusinessModels;
 using FtB_Common.Enums;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
+using FtB_Common.Storage;
 using Ftb_DbModels;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
@@ -36,7 +37,7 @@ namespace FtB_FormLogic
             _prefillMapper = prefillMapper;
         }
 
-        protected override void AddAttachmentsToDistribution(SendQueueItem sendQueueItem)
+        protected override void AddAttachmentsToDistribution(SendQueueItem sendQueueItem)
         {
             var metadataList = new List<KeyValuePair<string, string>>();
             metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));
