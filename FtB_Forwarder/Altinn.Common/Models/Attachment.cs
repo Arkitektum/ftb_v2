@@ -3,9 +3,10 @@
     public abstract class Attachment
     {
         public string Filename { get; set; }
+        public string AttachmentTypeName { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
-        public string SendersReference { get; set; }        
+        public string ArchiveReference { get; set; }        
         public string Url { get; set; }        
     }
 
@@ -19,5 +20,11 @@
         public string DataFormatId { get; set; }
         public string DataFormatVersion { get; set; }
         public string XmlStringContent { get; set; }
+    }
+    public class AttachmentJson : Attachment
+    {
+        public string DataFormatId { get; set; }
+        public string DataFormatVersion { get; set; }
+        public string JsonStringContent { get; set; }
     }
 }

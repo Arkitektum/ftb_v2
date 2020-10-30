@@ -11,6 +11,7 @@ using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace FtB_FormLogic
@@ -19,7 +20,6 @@ namespace FtB_FormLogic
     {
         private readonly IBlobOperations _blobOperations;
         private readonly INotificationAdapter _notificationAdapter;
-
         public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, INotificationAdapter notificationAdapter, IBlobOperations blobOperations, DbUnitOfWork dbUnitOfWork)
             : base(repo, tableStorage, log, dbUnitOfWork)
         {
@@ -44,10 +44,8 @@ namespace FtB_FormLogic
         {
             var returnItem = base.Execute(reportQueueItem);
             ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
-
             _log.LogDebug($"{GetType().Name}. Execute: ID={reportQueueItem.ArchiveReference}. RowKey={reportQueueItem.StorageRowKey}. ReceiverEntityStatus: {receiverEntity.Status}.");
             Enum.TryParse(receiverEntity.Status, out ReceiverStatusEnum receiverStatus);
-
             if (receiverEntity.Status != Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.ReadyForReporting))
             {
                 UpdateSubmittalEntityAfterReceiverIsProcessed(reportQueueItem, receiverStatus);
@@ -60,7 +58,6 @@ namespace FtB_FormLogic
         {
             bool runAgain;
             string archiveReference = reportQueueItem.ArchiveReference;
-
             do
             {
                 runAgain = false;
@@ -82,10 +79,8 @@ namespace FtB_FormLogic
                             submittalEntity.FailedCount++;
                             break;
                     }
-
                     _log.LogDebug($"ArchiveReference={archiveReference}. Updating  submittal. Status: Success: {submittalEntity.SuccessCount}, DigitalDisallowment: {submittalEntity.DigitalDisallowmentCount}, FailedCount: {submittalEntity.FailedCount}");
                     var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
-
                     ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
                     receiverEntity.Status = Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.ReadyForReporting);
                     var updatedReceiverEntity = _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
@@ -129,28 +124,26 @@ namespace FtB_FormLogic
                     notificationMessage.ArchiveReference = reportQueueItem.ArchiveReference;
                     var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
                     notificationMessage.MessageData = messageData;
-
                     var plainReceiptHtml = GetSubmitterReceipt(reportQueueItem.ArchiveReference);
                     byte[] PDFInbytes = HtmlUtils.GetPDFFromHTML(plainReceiptHtml);
-
+                    
                     var receiptAttachment = new AttachmentBinary()
                     {
                         BinaryContent = PDFInbytes,
                         Filename = "Kvittering.pdf",
                         Name = "Kvittering",
-                        SendersReference = ArchiveReference
+                        ArchiveReference = ArchiveReference
                     };
-
                     var metadataList = new List<KeyValuePair<string, string>>();
                     metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));
-                    var mainFormFromBlobStorage = _blobOperations.GetBlobAsBytesByMetadata(ArchiveReference, metadataList);
+                    var mainFormFromBlobStorage = _blobOperations.GetBlobsAsBytesByMetadata(ArchiveReference, metadataList);
 
                     var mainFormAttachment = new AttachmentBinary()
                     {
-                        BinaryContent = mainFormFromBlobStorage,
+                        BinaryContent = mainFormFromBlobStorage.First(),
                         Filename = GetFileNameForMainForm().Filename,
                         Name = GetFileNameForMainForm().Name,
-                        SendersReference = ArchiveReference
+                        ArchiveReference = ArchiveReference
                     };
 
                     notificationMessage.Attachments = new List<Attachment>() { receiptAttachment, mainFormAttachment };
