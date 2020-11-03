@@ -10,13 +10,12 @@ namespace Ftb_Repositories.HttpClients
 {
     public class LogEntryHttpClient
     {
-        private readonly HttpClient Client;
+        public HttpClient Client { get; }
         private readonly IOptions<FormProcessAPISettings> _settings;
 
-        //public LogEntryHttpClient(HttpClient httpClient, IOptions<FormProcessAPISettings> settings)
-        public LogEntryHttpClient(IHttpClientFactory httpClientFactory, IOptions<FormProcessAPISettings> settings)
+        public LogEntryHttpClient(HttpClient httpClient, IOptions<FormProcessAPISettings> settings)
         {
-            Client = httpClientFactory.CreateClient("LogEntryHttpClient");
+            Client = httpClient;
             _settings = settings;
         }
 

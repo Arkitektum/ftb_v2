@@ -10,13 +10,12 @@ namespace Ftb_Repositories.HttpClients
 {
     public class DistributionFormsHttpClient
     {
-        private readonly HttpClient Client;
+        public HttpClient Client {get;}
         private readonly IOptions<FormProcessAPISettings> _settings;
-
-        //public DistributionFormsHttpClient(HttpClient httpClient, IOptions<FormProcessAPISettings> settings)
-        public DistributionFormsHttpClient(IHttpClientFactory httpClientFactory, IOptions<FormProcessAPISettings> settings)
+                
+        public DistributionFormsHttpClient(HttpClient httpClient, IOptions<FormProcessAPISettings> settings)
         {
-            Client = httpClientFactory.CreateClient("DistributionFormsHttpClient");
+            Client = httpClient;
             _settings = settings;
         }
 
