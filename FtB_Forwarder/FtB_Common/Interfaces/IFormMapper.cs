@@ -1,12 +1,13 @@
-﻿using System;
+﻿using FtB_Common.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace FtB_FormLogic
 {   
-    public interface IFormMapper<TFrom, TTo>
+    public interface IFormMapper<TFrom>
     {
-        string FormDataString { get; set; }
-        TTo Map(TFrom from, string filter);
+        //string FormDataString { get; set; }
+        IEnumerable<IPrefillData> Map(TFrom from, string filter);
     }
 }

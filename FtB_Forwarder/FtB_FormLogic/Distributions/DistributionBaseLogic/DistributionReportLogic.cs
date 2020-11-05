@@ -89,6 +89,7 @@ namespace FtB_FormLogic
                 {
                     if (ex.HTTPStatusCode == 412)
                     {
+                        //TODO - Make use of Polly and use a randomized exponential back off or similar to handle this
                         int randomNumber = new Random().Next(0, 1000);
                         _log.LogInformation($"ArchiveReference={archiveReference}. Optimistic concurrency violation – entity has changed since it was retrieved. Run again after { randomNumber.ToString() } ms.");
                         Thread.Sleep(randomNumber);

@@ -20,7 +20,7 @@ namespace FtB_FormLogic
     public class VarselOppstartPlanarbeidSendLogic : DistributionSendLogic<NabovarselPlanType>
     {
         private readonly IBlobOperations _blobOperations;
-        private readonly IDistributionDataMapper<SvarPaaNabovarselPlanType, NabovarselPlanType> _distributionDataMapper;
+        private readonly IDistributionDataMapper<NabovarselPlanType> _distributionDataMapper;
         private readonly VarselOppstartPlanarbeidPrefillMapper _prefillMapper;
 
         public VarselOppstartPlanarbeidSendLogic(IFormDataRepo repo,
@@ -28,10 +28,10 @@ namespace FtB_FormLogic
                                                  IBlobOperations blobOperations,
                                                  ILogger<VarselOppstartPlanarbeidSendLogic> log,
                                                  IDistributionAdapter distributionAdapter,
-                                                 IDistributionDataMapper<SvarPaaNabovarselPlanType, NabovarselPlanType> distributionDataMapper,
+                                                 IDistributionDataMapper<NabovarselPlanType> distributionDataMapper,
                                                  VarselOppstartPlanarbeidPrefillMapper prefillMapper, DbUnitOfWork dbUnitOfWork
             )
-            : base(repo, tableStorage, log, distributionAdapter, (ISendData)distributionDataMapper, dbUnitOfWork)
+            : base(repo, tableStorage, log, distributionAdapter, dbUnitOfWork)
         {
             _distributionDataMapper = distributionDataMapper;
             _prefillMapper = prefillMapper;
@@ -50,17 +50,20 @@ namespace FtB_FormLogic
                 var sortedAttachments = new AttachmentSorter().GenerateSortedListOfAttachments(attachments.ToList());
                 //DistributionMessage.NotificationMessage.Attachments = new AttachmentSorter().GenerateSortedListOfAttachments(attachments.ToList());
                 DistributionMessage.NotificationMessage.Attachments = sortedAttachments;
-            }
-
-
+            }
         }
-
         protected override void MapPrefillData(string receiverId)
         {
-            _prefillMapper.Map(base.FormData, receiverId);            
-            base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(_prefillMapper.FormDataString, base.FormData, Guid.NewGuid(), base.ArchiveReference);
+            base.prefillSendData = _prefillMapper.Map(base.FormData, receiverId);
 
-            _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {_distributionDataMapper.PrefillFormData.beroertPart.systemReferanse}");
+            base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(prefillSendData, base.FormData, Guid.NewGuid(), base.ArchiveReference);
+
+            _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {prefillSendData.FirstOrDefault()?.ExternalSystemReference}");
+        }
+
+        public void MapDistributionMessage()
+        {
+
         }
     }
 }

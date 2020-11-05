@@ -28,7 +28,10 @@ namespace FtB_FormLogic
 
             CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
 
-            List<SendQueueItem> sendQueueItems = new List<SendQueueItem>();
+            var sendQueueItems = new List<SendQueueItem>();
+
+            
+
             foreach (var receiverVar in Receivers)
             {
                 var storageRowKey = Guid.NewGuid().ToString();

@@ -1,77 +1,44 @@
 ﻿using Altinn.Common.Models;
 using FtB_Common.Interfaces;
-using FtB_Common.Utils;
 using FtB_DataModels.Mappers;
+using FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Send;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace FtB_FormLogic
 {
-    public class VarselOppstartPlanarbeidSendDataProvider : PrefillSendDataProviderBase,
-        IDistributionDataMapper<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
-    {
-        public no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType PrefillFormData { get; set; }
-
-        public override string PrefillFormName { get { return "Uttalelse til oppstart av reguleringsplanarbeid"; } }
-        public override string ExternalSystemMainReference
+    public class VarselOppstartPlanarbeidSendDataProvider : SendDataProviderBase, IDistributionDataMapper<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
+    {       
+        public AltinnDistributionMessage GetDistributionMessage(IEnumerable<IPrefillData> prefills, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, Guid distributionFormId, string archiveReference)
         {
-            get
-            {
-                if (PrefillFormData == null)
-                    throw new NullReferenceException("PrefillFormData is null.");
-                else
-                    return PrefillFormData.hovedinnsendingsnummer;
-            }
-            set
-            {
-                if (PrefillFormData == null)
-                    throw new NullReferenceException("PrefillFormData is null.");
-                else
-                    PrefillFormData.hovedinnsendingsnummer = value;
-
-            }
-        }
-        public override string ExternalSystemSubReference
-        {
-            get
-            {
-                if (PrefillFormData == null)
-                    throw new NullReferenceException("PrefillFormData is null.");
-                else
-                    return PrefillFormData.beroertPart.systemReferanse;
-            }
-        }
-        public override string PrefillServiceCode { get => "5419"; }
-        public override string PrefillServiceEditionCode { get => "1"; }
-
-        public AltinnDistributionMessage GetDistributionMessage(string prefillXmlString, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, Guid distributionFormId, string archiveReference)
-        {
-            PrefillFormData = SerializeUtil.DeserializeFromString<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>(prefillXmlString);
+            var prefill = prefills.First() as VarselOppstartPlanarbeidData;
 
             var distributionMessage = new AltinnDistributionMessage()
             {
-                PrefillDataFormatId = PrefillFormData.dataFormatId,
-                PrefillDataFormatVersion = PrefillFormData.dataFormatVersion,
+                PrefillDataFormatId = prefill.DataFormatId,
+                PrefillDataFormatVersion = prefill.DataFormatVersion,
                 DistributionFormReferenceId = distributionFormId,
-                PrefillServiceCode = this.PrefillServiceCode,
-                PrefillServiceEditionCode = this.PrefillServiceEditionCode,
-                PrefilledXmlDataString = prefillXmlString,
+                PrefillServiceCode = prefill.PrefillServiceCode,
+                PrefillServiceEditionCode = prefill.PrefillServiceEditionCode,
+                PrefilledXmlDataString = prefill.ToString(),
                 DaysValid = 14,
                 DueDate = null
             };
 
-            distributionMessage.NotificationMessage.Receiver = base.GetReceiver(NabovarselPlanMappers.GetNabovarselReceiverMapper().Map<BerortPart>(PrefillFormData.beroertPart));
-            distributionMessage.NotificationMessage.MessageData = CreateMessageData(mainFormData);
+            distributionMessage.NotificationMessage.Receiver = base.GetReceiver(NabovarselPlanMappers.GetNabovarselReceiverMapper().Map<BerortPart>(prefill.FormInstance.beroertPart));
+            distributionMessage.NotificationMessage.MessageData = CreateMessageData(mainFormData, prefill.FormInstance);
             distributionMessage.NotificationMessage.ArchiveReference = archiveReference;
             distributionMessage.NotificationMessage.ReplyLink = CreateReplyLink();
             return distributionMessage;
         }
 
-        private MessageDataType CreateMessageData(no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData)
+        private MessageDataType CreateMessageData(no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType prefillData)
         {
-            var body = GetPrefillNotificationBody(PrefillFormData.forslagsstiller, PrefillFormData.beroertPart, PrefillFormData.fristForInnspill, PrefillFormData.kommune);
+            var body = GetPrefillNotificationBody(prefillData.forslagsstiller, prefillData.beroertPart, prefillData.fristForInnspill, prefillData.kommune);
             var summary = string.Empty;
-            var title = GetPrefillNotificationTitle(PrefillFormData.planNavn, PrefillFormData.planid);
+            var title = GetPrefillNotificationTitle(prefillData.planNavn, prefillData.planid);
             return new MessageDataType() { MessageBody = body, MessageSummary = summary, MessageTitle = title };
         }
 

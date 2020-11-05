@@ -35,18 +35,4 @@ namespace FtB_FormLogic
             return receiver;
         }
     }
-
-    public abstract class PrefillSendDataProviderBase : SendDataProviderBase, ISendData
-    {
-        public abstract string PrefillFormName { get; }
-
-        public abstract string ExternalSystemMainReference { get; set; }
-
-        public abstract string ExternalSystemSubReference { get; }
-
-        public abstract string PrefillServiceCode { get; }
-
-        public abstract string PrefillServiceEditionCode { get; }
-    }
-
 }
