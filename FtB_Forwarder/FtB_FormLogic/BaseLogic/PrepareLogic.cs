@@ -1,21 +1,31 @@
 ﻿using FtB_Common;
+using FtB_Common.BusinessLogic;
 using FtB_Common.BusinessModels;
+using FtB_Common.Encryption;
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FtB_FormLogic
 {
     public abstract class PrepareLogic<T> : LogicBase<T>, IFormLogic<IEnumerable<SendQueueItem>, SubmittalQueueItem>
     {
-        protected virtual List<Receiver> Receivers { get; set; }
+        private readonly IDecryptionFactory _decryptionFactory;
 
-        public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork) : base(repo, tableStorage, log, dbUnitOfWork)
+        IEnumerable<Receiver> _receivers;
+        protected virtual List<Receiver> Receivers
         {
+            get { return _receivers.Distinct(new ReceiverEqualtiyComparer(_decryptionFactory)).ToList(); }
+            set { _receivers = value; }
         }
 
+        public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory) : base(repo, tableStorage, log, dbUnitOfWork)
+        {
+            _decryptionFactory = decryptionFactory;
+        }
         //public virtual IEnumerable<SendQueueItem> Execute(SubmittalQueueItem submittalQueueItem)
         //{
         //    throw new NotImplementedException();
@@ -28,9 +38,7 @@ namespace FtB_FormLogic
 
             CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
 
-            var sendQueueItems = new List<SendQueueItem>();
-
-            
+            var sendQueueItems = new List<SendQueueItem>();            
 
             foreach (var receiverVar in Receivers)
             {
@@ -73,20 +81,5 @@ namespace FtB_FormLogic
                 throw ex;
             }
         }
-
-        protected abstract void GetReceivers();
-
-        protected void RemoveDuplicateReceivers()
-        {
-            foreach (var receiver in this.Receivers)
-            {
-                if (!Receivers.Contains(receiver)) //Remove duplicate receivers
-                {
-                    Receivers.Add(receiver);
-                }
-            }
-        }
-
-
     }
 }

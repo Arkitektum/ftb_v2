@@ -1,8 +1,7 @@
 {
   "profiles": {
     "FtB_FuncSender": {
-      "commandName": "Executable",
-      "executablePath": "C:\\Program Files\\Microsoft\\Azure Functions Core Tools\\func.exe",
+      "commandName": "Project",
       "commandLineArgs": "host start --port 7802"
     }
   }

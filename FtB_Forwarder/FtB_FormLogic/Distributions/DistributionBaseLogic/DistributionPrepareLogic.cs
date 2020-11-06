@@ -1,4 +1,5 @@
 ﻿using FtB_Common.BusinessModels;
+using FtB_Common.Encryption;
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
@@ -11,17 +12,14 @@ namespace FtB_FormLogic
         private readonly ILogger log;
         protected  override  List<Receiver> Receivers { get => base.Receivers; set => base.Receivers = value; }
 
-        public DistributionPrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork) : base(repo, tableStorage, log, dbUnitOfWork)
+        public DistributionPrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory) : base(repo, tableStorage, log, dbUnitOfWork, decryptionFactory)
         {
             this.log = log;
         }
 
         public override IEnumerable<SendQueueItem> Execute(SubmittalQueueItem submittalQueueItem)
         {
-            log.LogInformation("Jau");
             return base.Execute(submittalQueueItem);
         }
-
-        protected override  abstract void GetReceivers();
     }
 }

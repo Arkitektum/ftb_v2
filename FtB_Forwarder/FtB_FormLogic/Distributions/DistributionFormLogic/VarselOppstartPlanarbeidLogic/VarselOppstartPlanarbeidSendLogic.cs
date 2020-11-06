@@ -56,14 +56,12 @@ namespace FtB_FormLogic
         {
             base.prefillSendData = _prefillMapper.Map(base.FormData, receiverId);
 
-            base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(prefillSendData, base.FormData, Guid.NewGuid(), base.ArchiveReference);
-
-            _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {prefillSendData.FirstOrDefault()?.ExternalSystemReference}");
         }
 
-        public void MapDistributionMessage()
+        protected override void MapDistributionMessage()
         {
-
+            base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(prefillSendData, base.FormData, Guid.NewGuid(), base.ArchiveReference);
+            base.MapDistributionMessage();
         }
     }
 }

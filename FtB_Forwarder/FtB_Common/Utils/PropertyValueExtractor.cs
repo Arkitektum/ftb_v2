@@ -4,12 +4,12 @@
     {
         public static string GetDataFormatId(object type)
         {
-            return GetPropertyValueFromObject<string>(type, "DataFormatId");
+            return GetPropertyValueFromObject<string>(type, "dataFormatId");
         }
 
         public static string GetDataFormatVersion(object type)
         {
-            return GetPropertyValueFromObject<string>(type, "DataFormatVersion");
+            return GetPropertyValueFromObject<string>(type, "dataFormatVersion");
         }
 
         private static T GetPropertyValueFromObject<T>(object obj, string propName)

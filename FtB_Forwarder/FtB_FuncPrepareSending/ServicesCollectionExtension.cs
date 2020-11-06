@@ -1,4 +1,5 @@
-﻿using FtB_Common.FormDataRepositories;
+﻿using FtB_Common.Encryption;
+using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using FtB_FormLogic;
@@ -19,7 +20,10 @@ namespace FtB_FuncPrepareSending
             services.AddScoped<IBlobOperations, BlobOperations>();
             services.AddScoped<BlobStorage>();
             services.AddFtbDbUnitOfWork(configuration);
-            
+
+            services.AddScoped<IDecryption, Decryption>();
+            services.AddScoped<IDecryptionFactory, DecryptionFactory>();
+            services.Configure<EncryptionSettings>(configuration.GetSection("EncryptionSettings"));
 
             //Test reporter
             //services.AddScoped<TestPrepareStrategy>();

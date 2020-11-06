@@ -1,4 +1,5 @@
 ﻿using Altinn.Distribution;
+using FtB_Common.Encryption;
 using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
