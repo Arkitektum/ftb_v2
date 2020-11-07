@@ -26,10 +26,7 @@ namespace FtB_FormLogic
         {
             _decryptionFactory = decryptionFactory;
         }
-        //public virtual IEnumerable<SendQueueItem> Execute(SubmittalQueueItem submittalQueueItem)
-        //{
-        //    throw new NotImplementedException();
-        //}
+
         public virtual IEnumerable<SendQueueItem> Execute(SubmittalQueueItem submittalQueueItem)
         {
             _log.LogDebug($"{GetType().Name}: Processing logic for archveReference {submittalQueueItem.ArchiveReference}....");

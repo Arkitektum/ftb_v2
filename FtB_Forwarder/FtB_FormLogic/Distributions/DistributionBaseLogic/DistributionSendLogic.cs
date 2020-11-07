@@ -47,40 +47,20 @@ namespace FtB_FormLogic
             var distributionForm = _dbUnitOfWork.DistributionForms.Get()
                                         .Where(d => d.Id == DistributionMessage.DistributionFormReferenceId).FirstOrDefault();
 
-            //Creates combined distribution data structure
+            //Creates combined distribution data structure -- BØR GJERAST ANLEIS.... BORT MED SEG!
             foreach (var combinedCandidate in prefillSendData.Where(p => p != prefillData))
             {
-                var silentDistribution = new DistributionForm()
+                var childDistribution = new DistributionForm()
                 {
                     Id = Guid.NewGuid(),
                     InitialExternalSystemReference = prefillData.InitialExternalSystemReference,
                     ExternalSystemReference = combinedCandidate.ExternalSystemReference,
                     DistributionReference = DistributionMessage.DistributionFormReferenceId,
-                    DistributionType = prefillData.PrefillFormName
                 };
+                _dbUnitOfWork.DistributionForms.Add(childDistribution);
+                _dbUnitOfWork.LogEntries.AddInfo($"Distribusjon med søknadsystemsreferanse {prefillData.InitialExternalSystemReference} kombinert med {childDistribution.ExternalSystemReference}");
+                _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} kombinert med {childDistribution.Id}", "Info");
             }
-
-            //Create combined distribution
-            //Generate distributionForms
-            /*
-                foreach (var ownedproperty in nabovarselSvar.nabo.gjelderNaboeiendom)
-                {
-                    requestingSystemReferences.Add(ownedproperty.sluttbrukersystemVaarReferanse);
-                }
-
-            -----
-                for (int i = 1; i < neighborReferenceIdList.Count; i++)
-                {
-                    DistributionForm dFormDummy = _formMetadataService.InsertDistributionForm(archivereferance, prefillFormData.GetPrefillKey(), neighborReferenceIdList[i], altinnForm.GetName());
-                    dFormDummy.DistributionReference = dForm.Id;
-                    _formMetadataService.SaveDistributionForm(dFormDummy);
-                    _logEntryService.Save(new LogEntry(archivereferance, $"Distribusjon med søknadsystemsreferanse {prefillFormData.GetPrefillOurReference()} kombinert med {neighborReferenceIdList[i]}", LogEntry.Info, LogEntry.ExternalMsg));
-                    _logEntryService.Save(new LogEntry(archivereferance, $"Dist id {prefillFormData.GetPrefillKey()} kombinert med {dFormDummy.Id.ToString()}", "Info", true));
-                }
-             */
-
-
-            //prefillData = 
 
             PersistPrefill(sendQueueItem);
 
@@ -115,6 +95,7 @@ namespace FtB_FormLogic
                 //Use result of SendDistribution to update receiver entity
                 UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.CorrespondenceSent);
             }
+
             return returnReportQueueItem;
         }
 
