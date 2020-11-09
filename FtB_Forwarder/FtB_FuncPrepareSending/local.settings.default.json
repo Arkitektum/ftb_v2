@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "AzureStorageConnectionString": "xx",
+    "queueConnectionString": "Endpoint=xx",
+    "SubmittalQueueName": "sbq-submittal",
+    "SendingQueueName": "sbq-sending",
+    "FormProcessAPISettings:Uri": "xx",
+    "EncryptionSettings:CertificateThumbprint": "xx"
+  }
+}
