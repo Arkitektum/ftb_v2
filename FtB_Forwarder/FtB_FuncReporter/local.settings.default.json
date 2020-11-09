@@ -1,0 +1,26 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "AzureStorageConnectionString": "xx",
+    "queueConnectionString": "Endpoint=xx",
+    "ReportQueueName": "sbq-reporting",
+
+    "CorrespondenceConnectionSettings:UserName": "xx",
+    "CorrespondenceConnectionSettings:Password": "xx",
+    "CorrespondenceConnectionSettings:EndpointUrl": "xx",
+    "CorrespondenceConnectionSettings:ServiceOwnerCode": "DIBK",
+
+    "CorrespondenceBuilderSettings:DefaultMessageServiceCode": "4662",
+    "CorrespondenceBuilderSettings:DefaultMessageServiceEdition": "1",
+
+    "EncryptionSettings:CertificateThumbprint": "xx",
+
+    "FormProcessAPISettings:Uri": "xx",
+
+    "HtmlAndPdfGeneratorSettings:UriAddress": "xx",
+    "HtmlAndPdfGeneratorSettings:API": "PDF",
+    "HtmlAndPdfGeneratorSettings:HtmlTemplateAssembly": "FtB_FormLogic"
+  }
+}
