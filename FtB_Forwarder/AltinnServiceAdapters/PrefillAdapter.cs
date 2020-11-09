@@ -14,9 +14,9 @@ namespace Altinn3.Adapters
     public class PrefillAdapter : IPrefillAdapter
     {
         private readonly ILogger<PrefillAdapter> _logger;
-        private readonly HttpClient httpClient;
+        private readonly Altinn3HttpClient httpClient;
 
-        public PrefillAdapter(ILogger<PrefillAdapter> logger, HttpClient httpClient)
+        public PrefillAdapter(ILogger<PrefillAdapter> logger, Altinn3HttpClient httpClient)
         {
             _logger = logger;
             this.httpClient = httpClient;
@@ -31,24 +31,7 @@ namespace Altinn3.Adapters
             _logger.LogDebug(@"*     /_/    \_\_|\__|_|_| |_|_| |_| |____(_)___/ ");
 
             //Instantiate prefill
-
-            var token = string.Empty;
-            //Request token
-            var authUri = @"http://altinn3local.no/Home/GetTestOrgToken/oysteinthoensisjord";
-            try
-            {
-                HttpResponseMessage response = httpClient.GetAsync(authUri).Result;
-                token = response.Content.ReadAsStringAsync().Result;
-            }
-            catch (System.Exception)
-            {
-
-                throw;
-            }
-
-            //Add token
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
+          
             //Perform instantiation of with prefilled data
             InstanceOwner instanceOwner = new InstanceOwner();
             if (altinnDistributionMessage.NotificationMessage.Receiver.Type == AltinnReceiverType.Privatperson)
@@ -71,20 +54,16 @@ namespace Altinn3.Adapters
                     .AddDataElement("nabovarselsvarPlanAltinn3", stream, "application/xml")
                     .Build();
                 try
-                {
-                    var requestUri = @"http://altinn3local.no/oysteinthoensisjord/nabovarsel-plan/instances";
+                {   
 
-                    HttpResponseMessage response = httpClient.PostAsync(requestUri, content).Result;
-                    string result = response.Content.ReadAsStringAsync().Result;
+                    Instance instanceResult = httpClient.PostPrefilledInstance(content, "nabovarsel-plan");                    
 
-                    if (!response.IsSuccessStatusCode)
+                    if (instanceResult == null)
                     {
-                        prefillResult.Step = DistriutionStep.Failed;
-                        _logger.LogError($"Unable to create prefilled instance for {altinnDistributionMessage.NotificationMessage.Receiver.Id} - statuscode: {response.StatusCode}, errorMessage: {result}");
+                        prefillResult.Step = DistriutionStep.Failed;                        
                     }
                     else
-                    {
-                        Instance instanceResult = JsonConvert.DeserializeObject<Instance>(result);
+                    {                        
                         prefillResult = new PrefillSentResult() { Step = DistriutionStep.Sent, PrefillReferenceId = instanceResult.SelfLinks.Apps };
                     }
                 }
@@ -97,8 +76,5 @@ namespace Altinn3.Adapters
 
             return new List<PrefillResult>() { prefillResult };
         }
-
-        
-        
     }
 }
