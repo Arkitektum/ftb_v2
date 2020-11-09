@@ -9,6 +9,7 @@ using FtB_Common.Storage;
 using FtB_Common.Utils;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,16 +22,22 @@ namespace FtB_FormLogic
     public class VarselOppstartPlanarbeidReportLogic : DistributionReportLogic<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
         private readonly IBlobOperations _blobOperations;
+        private readonly IHtmlUtils _htmlUtils;
+        private readonly IOptions<HtmlAndPdfGeneratorSettings> _htmlAndPdfGeneratorSettings;
 
         public VarselOppstartPlanarbeidReportLogic(IFormDataRepo repo,
                                                    ITableStorage tableStorage,
                                                    ILogger<VarselOppstartPlanarbeidReportLogic> log,
                                                    IBlobOperations blobOperations,
                                                    INotificationAdapter notificationAdapter,
-                                                   DbUnitOfWork dbUnitOfWork)
-            : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork)
+                                                   DbUnitOfWork dbUnitOfWork,
+                                                   IHtmlUtils htmlUtils,
+                                                   IOptions<HtmlAndPdfGeneratorSettings> htmlAndPdfGeneratorSettings)
+            : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils)
         {
             _blobOperations = blobOperations;
+            _htmlUtils = htmlUtils;
+            _htmlAndPdfGeneratorSettings = htmlAndPdfGeneratorSettings;
         }
         public override AltinnReceiver GetReceiver()
         {
@@ -90,15 +97,12 @@ namespace FtB_FormLogic
                 string planNavn = base.FormData.planforslag.plannavn == null ? "" : base.FormData.planforslag.plannavn;
                 string byggested = adresse != null && adresse.Trim().Length > 0 ? $"{adresse}, {planNavn}" : $"{planNavn}";
                 string kontaktperson = GetContactPersonExtendedInfo();
-
-                //Get html embedded resource file
                 string htmlBody = "";
-                //var HtmlBodyTemplate = "VarselOppstartPlanarbeidReceiptMessageBody.html";
                 var HtmlBodyTemplate = "FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceiptMessageBody.html";
 
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
-                    if (assembly.GetName().Name.ToUpper().Contains("FTB_FORMLOGIC"))
+                    if (assembly.GetName().Name.ToUpper().Contains(_htmlAndPdfGeneratorSettings.Value.HtmlTemplateAssembly.ToUpper()))
                     {
                         _log.LogDebug($"{GetType().Name}. Found assembly: {assembly.FullName}");
                         using (Stream stream = assembly.GetManifestResourceStream(HtmlBodyTemplate))
@@ -147,11 +151,7 @@ namespace FtB_FormLogic
                 string byggested = adresse != null && adresse.Trim().Length > 0 ? $"{adresse}, {planNavn}" : $"{planNavn}";
                 string kontaktperson = FormData.forslagsstiller.kontaktperson.navn;
                 string forslagsstiller = FormData.forslagsstiller.navn;
-
-                //Get html embedded resource file
-                string htmlTemplate = HtmlUtils.GetTextFromTemplate("FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceipt.html");
-                //TODO: Add Logo?
-                //string LogoResourceName = "FtB_Common.Images.dibk_logo.png";
+                string htmlTemplate = _htmlUtils.GetHtmlFromTemplate("FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceipt.html");
                 htmlTemplate = htmlTemplate.Replace("<planNavn />", planNavn);
                 htmlTemplate = htmlTemplate.Replace("<forslagsstiller />", forslagsstiller);
                 htmlTemplate = htmlTemplate.Replace("<kontaktperson />", kontaktperson);
@@ -165,9 +165,7 @@ namespace FtB_FormLogic
                 htmlTemplate = htmlTemplate.Replace("<vedlegg />", tableRowsAsHtml);
                 htmlTemplate = htmlTemplate.Replace("<antallVarsledeMottakere />", GetReceiverSuccessfullyNotifiedCount().ToString());
 
-                //TODO: Set back from calling the test method
-                //var listOfDeniers = GetDigitalDisallowmentReceiverNames();
-                var listOfDeniers = FOR_TEST_GetDigitalDisallowmentReceiverNames();
+                var listOfDeniers = GetDigitalDisallowmentReceiverNames();
                 var deniersASHtml = new StringBuilder();
                 foreach (var denier in listOfDeniers)
                 {
@@ -185,33 +183,6 @@ namespace FtB_FormLogic
             }
         }
 
-        //private string GetHtmlFromTemplate(string htmlTemplatePath)
-        //{
-        //    string htmlBody = "";
-        //    //var HtmlBodyTemplate = "FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceiptHtml.html";
-
-        //    foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-        //    {
-        //        if (assembly.GetName().Name.ToUpper().Contains("FTB_FORMLOGIC"))
-        //        {
-        //            _log.LogDebug($"{GetType().Name}. Found assembly: {assembly.FullName}");
-        //            using (Stream stream = assembly.GetManifestResourceStream(htmlTemplatePath))
-        //            {
-        //                if (stream == null)
-        //                {
-        //                    throw new Exception($"The resource {htmlTemplatePath} was not loaded properly.");
-        //                }
-
-        //                using (StreamReader reader = new StreamReader(stream))
-        //                {
-        //                    htmlBody = reader.ReadToEnd();
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    return htmlBody;
-        //}
 
         private int GetReceiverSuccessfullyNotifiedCount()
         {

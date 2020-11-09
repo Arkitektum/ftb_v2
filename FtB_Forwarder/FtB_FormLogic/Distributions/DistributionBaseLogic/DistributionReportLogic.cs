@@ -19,11 +19,14 @@ namespace FtB_FormLogic
     public class DistributionReportLogic<T> : ReportLogic<T>
     {
         private readonly IBlobOperations _blobOperations;
+        private readonly IHtmlUtils _htmlUtils;
         private readonly INotificationAdapter _notificationAdapter;
-        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, INotificationAdapter notificationAdapter, IBlobOperations blobOperations, DbUnitOfWork dbUnitOfWork)
+        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log
+                                , INotificationAdapter notificationAdapter, IBlobOperations blobOperations, DbUnitOfWork dbUnitOfWork, IHtmlUtils htmlUtils)
             : base(repo, tableStorage, log, dbUnitOfWork)
         {
             _blobOperations = blobOperations;
+            _htmlUtils = htmlUtils;
             _notificationAdapter = notificationAdapter;
         }
 
@@ -44,7 +47,7 @@ namespace FtB_FormLogic
         {
             var returnItem = base.Execute(reportQueueItem);
             ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
-            _log.LogDebug($"{GetType().Name}. Execute: ID={reportQueueItem.ArchiveReference}. RowKey={reportQueueItem.StorageRowKey}. ReceiverEntityStatus: {receiverEntity.Status}.");
+            base._log.LogDebug($"{GetType().Name}. Execute: ID={reportQueueItem.ArchiveReference}. RowKey={reportQueueItem.StorageRowKey}. ReceiverEntityStatus: {receiverEntity.Status}.");
             Enum.TryParse(receiverEntity.Status, out ReceiverStatusEnum receiverStatus);
             if (receiverEntity.Status != Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.ReadyForReporting))
             {
@@ -64,7 +67,7 @@ namespace FtB_FormLogic
                 try
                 {
                     SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(archiveReference, archiveReference);
-                    _log.LogDebug($"ID={archiveReference}. Before SubmittalEntity update for archiveRefrrence {archiveReference}. SubmittalEntityStatus: {submittalEntity.Status}. ReceiverStatusEnum: {receiverStatus}.");
+                    base._log.LogDebug($"ID={archiveReference}. Before SubmittalEntity update for archiveRefrrence {archiveReference}. SubmittalEntityStatus: {submittalEntity.Status}. ReceiverStatusEnum: {receiverStatus}.");
                     submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Processing);
                     submittalEntity.ProcessedCount++;
                     switch (receiverStatus)
@@ -79,7 +82,7 @@ namespace FtB_FormLogic
                             submittalEntity.FailedCount++;
                             break;
                     }
-                    _log.LogDebug($"ArchiveReference={archiveReference}. Updating  submittal. Status: Success: {submittalEntity.SuccessCount}, DigitalDisallowment: {submittalEntity.DigitalDisallowmentCount}, FailedCount: {submittalEntity.FailedCount}");
+                    base._log.LogDebug($"ArchiveReference={archiveReference}. Updating  submittal. Status: Success: {submittalEntity.SuccessCount}, DigitalDisallowment: {submittalEntity.DigitalDisallowmentCount}, FailedCount: {submittalEntity.FailedCount}");
                     var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
                     ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
                     receiverEntity.Status = Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.ReadyForReporting);
@@ -91,19 +94,19 @@ namespace FtB_FormLogic
                     {
                         //TODO - Make use of Polly and use a randomized exponential back off or similar to handle this
                         int randomNumber = new Random().Next(0, 1000);
-                        _log.LogInformation($"ArchiveReference={archiveReference}. Optimistic concurrency violation – entity has changed since it was retrieved. Run again after { randomNumber.ToString() } ms.");
+                        base._log.LogInformation($"ArchiveReference={archiveReference}. Optimistic concurrency violation – entity has changed since it was retrieved. Run again after { randomNumber.ToString() } ms.");
                         Thread.Sleep(randomNumber);
                         runAgain = true;
                     }
                     else
                     {
-                        _log.LogError($"Error updating submittal record for ArchiveReference={archiveReference}. Message: {ex.Message}");
+                        base._log.LogError($"Error updating submittal record for ArchiveReference={archiveReference}. Message: {ex.Message}");
                         throw ex;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _log.LogError($"Error updating submittal record for ArchiveReference={archiveReference}. Message: {ex.Message}");
+                    base._log.LogError($"Error updating submittal record for ArchiveReference={archiveReference}. Message: {ex.Message}");
                     throw ex;
                 }
             } while (runAgain);
@@ -114,11 +117,11 @@ namespace FtB_FormLogic
             try
             {
                 SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
-                _log.LogDebug($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. ID={reportQueueItem.Receiver.Id}. SubmittalEntity.ProcessedCount={submittalEntity.ProcessedCount}, submittalEntity.ReceiverCount={submittalEntity.ReceiverCount}");
+                base._log.LogDebug($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. ID={reportQueueItem.Receiver.Id}. SubmittalEntity.ProcessedCount={submittalEntity.ProcessedCount}, submittalEntity.ReceiverCount={submittalEntity.ReceiverCount}");
                 if (submittalEntity.ProcessedCount == submittalEntity.ReceiverCount)
                 {
                     submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
-                    _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
+                    base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
                     var notificationMessage = new AltinnNotificationMessage();
                     notificationMessage.ArchiveReference = ArchiveReference;
                     notificationMessage.Receiver = GetReceiver();
@@ -126,7 +129,7 @@ namespace FtB_FormLogic
                     var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
                     notificationMessage.MessageData = messageData;
                     var plainReceiptHtml = GetSubmitterReceipt(reportQueueItem.ArchiveReference);
-                    byte[] PDFInbytes = HtmlUtils.GetPDFFromHTML(plainReceiptHtml);
+                    byte[] PDFInbytes = _htmlUtils.GetPDFFromHTML(plainReceiptHtml);
                     
                     var receiptAttachment = new AttachmentBinary()
                     {
@@ -148,15 +151,15 @@ namespace FtB_FormLogic
                     };
 
                     notificationMessage.Attachments = new List<Attachment>() { receiptAttachment, mainFormAttachment };
-                    _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
+                    base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
                     _notificationAdapter.SendNotification(notificationMessage);
-                    _log.LogDebug($"{GetType().Name}: {plainReceiptHtml}");
+                    base._log.LogDebug($"{GetType().Name}: {plainReceiptHtml}");
                     var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
                 }
             }
             catch (Exception ex)
             {
-                _log.LogError($"{GetType().Name}. Error: {ex.Message}");
+                base._log.LogError($"{GetType().Name}. Error: {ex.Message}");
                 throw ex;
             }
         }

@@ -3,6 +3,7 @@ using FtB_Common.Encryption;
 using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
+using FtB_Common.Utils;
 using FtB_FormLogic;
 using FtB_MessageManager;
 using FtB_ProcessStrategies;
@@ -30,7 +31,7 @@ namespace FtB_FuncReporter
             builder.Services.AddScoped<ReportQueueProcessor>();
             builder.Services.AddScoped<IBlobOperations, BlobOperations>();
             builder.Services.AddScoped<BlobStorage>();
-
+            builder.Services.AddScoped<IHtmlUtils, HtmlUtils>();
             builder.Services.AddScoped<FormatIdToFormMapper>();
             builder.Services.AddScoped<VarselOppstartPlanarbeidReportLogic>();
             builder.Services.AddScoped<IFormDataRepo, FormDataRepository>();
@@ -39,6 +40,7 @@ namespace FtB_FuncReporter
 
             builder.Services.AddAltinnNotification(configuration);
             builder.Services.AddFtbDbUnitOfWork(configuration);
+            builder.Services.Configure<HtmlAndPdfGeneratorSettings>(configuration.GetSection("HtmlAndPdfGeneratorSettings"));
 
             builder.Services.AddLogging();
         }
