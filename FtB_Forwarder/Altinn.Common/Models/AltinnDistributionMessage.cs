@@ -32,6 +32,7 @@ namespace Altinn.Common.Models
 
         public IEnumerable<Notification> Notifications { get; set; }
         public string NotificationTemplate { get; set; }
+        public string SenderEmail { get; set; }
     }
 
     public class AltinnDistributionMessage

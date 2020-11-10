@@ -10,7 +10,7 @@ using System.Text;
 namespace FtB_FormLogic
 {
     public class VarselOppstartPlanarbeidSendDataProvider : SendDataProviderBase, IDistributionDataMapper<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
-    {       
+    {
         public AltinnDistributionMessage GetDistributionMessage(IEnumerable<IPrefillData> prefills, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, Guid distributionFormId, string archiveReference)
         {
             var prefill = prefills.First() as VarselOppstartPlanarbeidData;
@@ -31,6 +31,29 @@ namespace FtB_FormLogic
             distributionMessage.NotificationMessage.MessageData = CreateMessageData(mainFormData, prefill.FormInstance);
             distributionMessage.NotificationMessage.ArchiveReference = archiveReference;
             distributionMessage.NotificationMessage.ReplyLink = CreateReplyLink();
+            distributionMessage.NotificationMessage.NotificationTemplate = "DIBK-nabo-1";
+            distributionMessage.NotificationMessage.SenderEmail = "noreply@noreply.no";
+
+
+            //Add notifications
+            var smsContent = GetSMSNotificationMessage(prefill.FormInstance.beroertPart.organisasjonsnummer,
+                                                        prefill.FormInstance.beroertPart.navn,
+                                                        prefill.FormInstance.kommune,
+                                                        prefill.FormInstance.fristForInnspill.ToString(),
+                                                        prefill.FormInstance.forslagsstiller.navn,
+                                                        archiveReference);
+
+            var emailContent = GetEmailNotificationBody(prefill.FormInstance.beroertPart.organisasjonsnummer,
+                                                         prefill.FormInstance.beroertPart.navn,
+                                                         prefill.FormInstance.kommune,
+                                                         prefill.FormInstance.planNavn,
+                                                         prefill.FormInstance.fristForInnspill.ToString(),
+                                                         mainFormData.forslagsstiller);
+
+            
+            var notifications = new List<Notification>();
+            notifications.Add(new Notification() { EmailContent = emailContent, SmsContent = smsContent, Receiver = prefill.FormInstance.beroertPart.epost });
+
             return distributionMessage;
         }
 
@@ -56,12 +79,6 @@ namespace FtB_FormLogic
 
         public static string GetPrefillNotificationBody(no.kxml.skjema.dibk.nabovarselsvarPlan.ForslagsstillerType forslagsstiller, no.kxml.skjema.dibk.nabovarselsvarPlan.BeroertPartType beroertPart, DateTime? fristForInnspill, string kommune)
         {
-            //if (pdf.HasValue && pdf.Value)
-            //{
-            //    createBodyForPDF(beroertPart, forslagsstiller, fristForInnspill);
-            //}
-            //else
-            //{
             var message = new StringBuilder();
             string datoFristInnspill = String.Empty;
             if (fristForInnspill.HasValue)
@@ -101,18 +118,107 @@ namespace FtB_FormLogic
             return $"Oppstart av planarbeid - {planNavn} ({planid})";
         }
 
-        /*
-
-        public string GetPrefillNotificationBody(bool? pdf = false, string replyLink = "")
+        public static string GetSMSNotificationMessage(string orgnr, string berortPartNavn, string kommunenavn, string fristForInnspill, string forslagsstillerNavn, string archiveReference)
         {
-            ForslagsstillerType forslagsstiller = form.forslagsstiller;
-            BeroertPartType beroertPart = form.beroertPart;
-            DateTime? fristForInnspill = form.fristForInnspill;
-            string kommune = form.kommune;
-            
-            return NabovarselPlanMessages.GetPrefillNotificationBody(forslagsstiller, beroertPart, fristForInnspill, kommune, pdf, replyLink);
+            string evtOrgnr = string.Empty;
+            if (!string.IsNullOrEmpty(orgnr)) evtOrgnr = $" (org.nr. {orgnr})";
 
+            var notificationBuilder = new StringBuilder();
+            notificationBuilder.Append($"{berortPartNavn}{evtOrgnr} har fått varsel om oppstart av arbeid med reguleringsplan i {kommunenavn} kommune. ");
+            notificationBuilder.Append($"Logg inn på www.altinn.no for å se varselet.");
+            notificationBuilder.Append($"Du må svare innen {(fristForInnspill)} hvis du vil uttale deg. Altinn-referanse: {archiveReference}.");
+            notificationBuilder.Append($"Hilsen {forslagsstillerNavn}");
+            
+            return notificationBuilder.ToString();
         }
- */
+
+        public static string GetEmailNotificationBody(string orgnr, string nabo, string kommunenavn, string plannavn, string fristForInnspill, no.kxml.skjema.dibk.nabovarselPlan.ForslagsstillerType forslagsstiller)
+        {
+            string evtOrgnr = "";
+            if (!string.IsNullOrEmpty(orgnr)) evtOrgnr = $"(org.nr. {orgnr})";
+
+            // Dersom berørt part er en organisasjon
+
+
+            // Melding
+            var notificationBuilder = new StringBuilder();
+
+            notificationBuilder.Append($"Til {nabo} {evtOrgnr}");
+
+            notificationBuilder.Append($"<p>");
+            notificationBuilder.Append($"Vi varsler om oppstart av arbeid med reguleringsplan i {kommunenavn} kommune. <br>");
+            notificationBuilder.Append($"Navnet på reguleringsplanen er: {plannavn}.");
+            notificationBuilder.Append($"</p>");
+
+            notificationBuilder.Append($"Vi sender deg dette varselet fordi du kan være berørt eller har interesser i nærheten av området vi vil regulere.");
+
+            notificationBuilder.Append($"<p>");
+            notificationBuilder.Append($"<strong>Vil du ikke uttale deg?</strong><br> ");
+            notificationBuilder.Append($"Da trenger du ikke å gjøre noe som helst.");
+            notificationBuilder.Append($"</p>");
+
+            notificationBuilder.Append($"<p>");
+            notificationBuilder.Append($"<strong>Du kan uttale deg om oppstarten av reguleringsplanarbeidet</strong><br>");
+            notificationBuilder.Append($"<a href='https://www.altinn.no'>Logg inn på Altinn for å se varselet</a> og svar innen {fristForInnspill}.");
+            notificationBuilder.Append($"</p>");
+
+            if (!string.IsNullOrEmpty(orgnr))
+            {
+                notificationBuilder.Append($"<p>");
+                notificationBuilder.Append($"<strong>Om tilgang i Altinn</strong><br>");
+                notificationBuilder.Append($"For å se varselet om oppstart, må du representere {nabo} {evtOrgnr} i Altinn. <br>");
+                notificationBuilder.Append($"Den som skal se og svare på varselet, må ha rollen «Plan- og byggesak» i organisasjonen. ");
+                notificationBuilder.Append($"Se <a href='https://dibk.no/verktoy-og-veivisere/andre-fagomrader/fellestjenester-bygg/slik-gir-du-rettigheter-til-byggesak-i-altinn/'>veileder om rettigheter i Altinn</a> for mer informasjon.");
+                notificationBuilder.Append($"</p>");
+            }
+
+
+            notificationBuilder.Append($"<p>");
+            notificationBuilder.Append($"Med vennlig hilsen,<br>");
+            notificationBuilder.Append($"Forslagsstiller {forslagsstiller.navn}<br>");
+
+            var telefon = Telefon(forslagsstiller);
+            notificationBuilder.Append($"Telefon: {telefon} <br>");
+
+            var epost = Epost(forslagsstiller);
+            notificationBuilder.Append($"Epost: {epost}");
+
+            notificationBuilder.Append($"</p>");
+
+            notificationBuilder.Append($"<p><em>Det er ikke mulig å svare på denne e-posten. Spørsmål om innholdet i varselet, må du rette til {forslagsstiller.navn}.</em></p>");
+
+            return notificationBuilder.ToString();
+        }
+
+        private static string Epost(no.kxml.skjema.dibk.nabovarselPlan.ForslagsstillerType forslagsstiller)
+        {
+            string epost = "";
+            if (!string.IsNullOrEmpty(forslagsstiller.kontaktperson.epost))
+            {
+                epost = forslagsstiller.kontaktperson.epost;
+            }
+            else if (!string.IsNullOrEmpty(forslagsstiller.epost))
+            {
+                epost = forslagsstiller.epost;
+            }
+
+            return epost;
+        }
+
+        private static string Telefon(no.kxml.skjema.dibk.nabovarselPlan.ForslagsstillerType forslagsstiller)
+        {
+            string telefon = "";
+            if (!string.IsNullOrEmpty(forslagsstiller.kontaktperson.telefonnummer))
+            {
+                telefon = forslagsstiller.kontaktperson.telefonnummer;
+            }
+            else if (!string.IsNullOrEmpty(forslagsstiller.telefon))
+            {
+                telefon = forslagsstiller.telefon;
+            }
+
+            return telefon;
+        }
+
     }
 }

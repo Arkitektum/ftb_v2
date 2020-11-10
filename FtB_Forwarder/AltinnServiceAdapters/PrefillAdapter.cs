@@ -3,7 +3,6 @@ using Altinn.Common.Interfaces;
 using Altinn.Common.Models;
 using Altinn.Platform.Storage.Interface.Models;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
