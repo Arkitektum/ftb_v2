@@ -1,8 +1,8 @@
 ﻿namespace Altinn.Common.Models
 {
-    public enum NotificationType
-    {
-        Sms,
-        Email
-    }
+    //public enum NotificationType
+    //{
+    //    Sms,
+    //    Email
+    //}
 }

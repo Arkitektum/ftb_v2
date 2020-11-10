@@ -47,7 +47,7 @@ namespace FtB_FormLogic
             {
                 //TODO support attachment larger than 30MB
                 //Sortering på vedlegg etter gruppe i blankett
-                var sortedAttachments = new AttachmentSorter().GenerateSortedListOfAttachments(attachments.ToList());
+                var sortedAttachments = new AttachmentSorter().GenerateSortedListOfAttachments(attachments);
                 //DistributionMessage.NotificationMessage.Attachments = new AttachmentSorter().GenerateSortedListOfAttachments(attachments.ToList());
                 DistributionMessage.NotificationMessage.Attachments = sortedAttachments;
             }

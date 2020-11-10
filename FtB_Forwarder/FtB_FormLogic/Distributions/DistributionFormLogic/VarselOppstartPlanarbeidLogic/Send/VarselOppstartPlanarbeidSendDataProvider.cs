@@ -50,9 +50,15 @@ namespace FtB_FormLogic
                                                          prefill.FormInstance.fristForInnspill.ToString(),
                                                          mainFormData.forslagsstiller);
 
-            
+
             var notifications = new List<Notification>();
-            notifications.Add(new Notification() { EmailContent = emailContent, SmsContent = smsContent, Receiver = prefill.FormInstance.beroertPart.epost });
+            notifications.Add(new Notification()
+            {
+                EmailContent = emailContent,
+                EmailSubject = $"Varsel - Oppstart av reguleringsplanarbeid {mainFormData.planforslag.plannavn}",
+                SmsContent = smsContent,
+                Receiver = prefill.FormInstance.beroertPart.epost
+            });
 
             return distributionMessage;
         }
@@ -128,7 +134,7 @@ namespace FtB_FormLogic
             notificationBuilder.Append($"Logg inn på www.altinn.no for å se varselet.");
             notificationBuilder.Append($"Du må svare innen {(fristForInnspill)} hvis du vil uttale deg. Altinn-referanse: {archiveReference}.");
             notificationBuilder.Append($"Hilsen {forslagsstillerNavn}");
-            
+
             return notificationBuilder.ToString();
         }
 

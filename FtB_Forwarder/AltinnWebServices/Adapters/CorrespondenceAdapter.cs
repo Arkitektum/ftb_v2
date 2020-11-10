@@ -38,7 +38,14 @@ namespace Altinn2.Adapters
             {
                 if (notificationMessage.Notifications.Count() > 0)
                 {
-                    //_correspondenceBuilder.AddEmailAndSmsNotification()
+                    var notification = notificationMessage.Notifications.First();
+                    _correspondenceBuilder.AddEmailAndSmsNotification(NotificationEnums.NotificationCarrier.AltinnEmailPreferred,
+                        "noreply@noreply.no",
+                        notification.Receiver,
+                        notification.EmailSubject,
+                        notification.EmailContent,
+                        notificationMessage.NotificationTemplate,
+                        notification.SmsContent);
                 }
 
                 if (notificationMessage.ReplyLink != null)

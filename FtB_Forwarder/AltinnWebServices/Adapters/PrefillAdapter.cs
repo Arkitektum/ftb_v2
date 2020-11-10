@@ -56,6 +56,21 @@ namespace Altinn2.Adapters
             //        prefillFormTaskBuilder.ValidateNotificationEndpointsWithPrefillInstantiation();
             //    }
             //}
+            if (altinnDistributionMessage.NotificationMessage.Notifications.Count() > 0)
+            {
+                var notification = altinnDistributionMessage.NotificationMessage.Notifications.First();
+
+                _prefillFormTaskBuilder.AddEmailAndSmsNotification("noreply@noreply.no",
+                    notification.Receiver,
+                    notification.EmailSubject,
+                    notification.EmailContent,
+                    altinnDistributionMessage.NotificationMessage.NotificationTemplate,
+                    notification.SmsContent);
+
+            }
+
+
+
             var prefillFormTask = _prefillFormTaskBuilder.Build();
             results.Add(new PrefillResult() { Step = DistriutionStep.PayloadCreated, Message = $"{altinnDistributionMessage.NotificationMessage.Receiver.Id}" });
             _logger.LogDebug($"PrefillFormTask for {altinnDistributionMessage.NotificationMessage.Receiver.Id} - created");
