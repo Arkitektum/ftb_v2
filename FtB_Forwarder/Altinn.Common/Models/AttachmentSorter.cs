@@ -8,9 +8,9 @@ namespace Altinn.Common.Models
     public class AttachmentSorter
     {
 
-        public IEnumerable<Attachment> GenerateSortedListOfAttachments(List<Attachment> attachments)
+        public IEnumerable<Attachment> GenerateSortedListOfAttachments(IEnumerable<Attachment> attachments)
         {
-            AttachmentMetadata[] dok = new AttachmentMetadata[attachments.Count];
+            AttachmentMetadata[] dok = new AttachmentMetadata[attachments.ToList().Count];
             int dokidx = 0;
             foreach (var att in attachments)
             {
