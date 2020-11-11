@@ -192,6 +192,6 @@ namespace FtB_FormLogic
             _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {prefillSendData.FirstOrDefault()?.ExternalSystemReference}");
         }
 
-        protected abstract void AddAttachmentsToDistribution(SendQueueItem sendQueueItem);
+        //protected abstract void AddAttachmentsToDistribution(SendQueueItem sendQueueItem);
     }
 }

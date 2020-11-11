@@ -6,11 +6,13 @@
 
   <ItemGroup>
     <None Remove="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceipt.html" />
+    <None Remove="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceiptMessageBody - Copy.html" />
     <None Remove="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceiptMessageBody.html" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceipt.html" />
+    <EmbeddedResource Include="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Send\VarselOppstartPlanarbeidPrefillNotificationBody.html" />
     <EmbeddedResource Include="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceiptMessageBody.html" />
   </ItemGroup>
 

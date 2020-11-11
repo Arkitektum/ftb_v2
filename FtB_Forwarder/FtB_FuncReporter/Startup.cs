@@ -30,13 +30,14 @@ namespace FtB_FuncReporter
 
             builder.Services.AddScoped<ReportQueueProcessor>();
             builder.Services.AddScoped<IBlobOperations, BlobOperations>();
-            builder.Services.AddScoped<BlobStorage>();
+            builder.Services.AddScoped<PrivateBlobStorage>();
+            builder.Services.AddScoped<PublicBlobStorage>();
             builder.Services.AddScoped<IHtmlUtils, HtmlUtils>();
             builder.Services.AddScoped<FormatIdToFormMapper>();
             builder.Services.AddScoped<VarselOppstartPlanarbeidReportLogic>();
             builder.Services.AddScoped<IFormDataRepo, FormDataRepository>();
             builder.Services.AddScoped<ITableStorage, TableStorage>();
-            builder.Services.AddMessageManagerService(configuration);
+            //builder.Services.AddMessageManagerService(configuration);
 
             builder.Services.AddAltinnNotification(configuration);
             builder.Services.AddFtbDbUnitOfWork(configuration);

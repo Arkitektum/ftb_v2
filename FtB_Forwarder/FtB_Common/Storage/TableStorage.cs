@@ -18,7 +18,7 @@ namespace FtB_Common.Storage
         //public ILogger Logger { private get; set; }
         public TableStorage(IConfiguration configuration)
         {
-            _storageAccount = CreateStorageAccountFromConnectionString(configuration["AzureStorageConnectionString"]);
+            _storageAccount = CreateStorageAccountFromConnectionString(configuration["PrivateAzureStorageConnectionString"]);
             _cloudTableClient = _storageAccount.CreateCloudTableClient();
         }
 

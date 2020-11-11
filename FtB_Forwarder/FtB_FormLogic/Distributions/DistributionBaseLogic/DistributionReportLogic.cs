@@ -138,9 +138,10 @@ namespace FtB_FormLogic
                         Name = "Kvittering",
                         ArchiveReference = ArchiveReference
                     };
+                    string publicContainerName = _blobOperations.GetPublicBlobContainerName(reportQueueItem.ArchiveReference.ToLower());
                     var metadataList = new List<KeyValuePair<string, string>>();
                     metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));
-                    var mainFormFromBlobStorage = _blobOperations.GetBlobsAsBytesByMetadata(ArchiveReference, metadataList);
+                    var mainFormFromBlobStorage = _blobOperations.GetBlobsAsBytesByMetadata(BlobStorageEnum.Public, publicContainerName, metadataList);
 
                     var mainFormAttachment = new AttachmentBinary()
                     {

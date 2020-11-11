@@ -1,6 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
+using FtB_Common.Enums;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -9,45 +10,30 @@ using System.Threading.Tasks;
 
 namespace FtB_Common.Storage
 {
-    public class BlobStorage
+    public abstract class BlobStorage
     {
-        private BlobServiceClient _blobServiceClient;
-        private readonly IConfiguration _configuration;
-        private BlobContainerClient _containerClient;
+        protected BlobServiceClient _blobServiceClient;
+        protected IConfiguration _configuration;
+        protected BlobContainerClient _containerClient;
+        protected string _privateAzureStorageConnectionString;
+        protected string _publicAzureStorageConnectionString;
 
-        
-        //public ILogger Logger { private get; set; }
-        public BlobStorage(IConfiguration configuration)
-        {
-            _blobServiceClient = new BlobServiceClient(configuration["AzureStorageConnectionString"]);
-            _configuration = configuration;
-        }
-
-        public  BlobContainerClient GetBlobContainerClient(string containerName)
+        public BlobContainerClient GetBlobContainerClient(string containerName)
         {
             if (_containerClient == null)
             {
                 _containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
             }
-            return _blobServiceClient.GetBlobContainerClient(containerName);
+            return _containerClient;
         }
 
-        public BlockBlobClient GetBlockBlobContainerClient(string containerName, string blobName)
-        {
-            return new BlockBlobClient(_configuration["AzureStorageConnectionString"], containerName, blobName);
-        }
+        public abstract BlockBlobClient GetBlockBlobClient(string containerName, string blobName);
 
         public Azure.Pageable<BlobItem> GetBlobContainerItems(string containerName)
         {
             _containerClient = GetBlobContainerClient(containerName);
             return _containerClient.GetBlobs();
         }
-
-
-
-
-
-
 
 
         /*

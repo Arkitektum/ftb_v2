@@ -22,7 +22,7 @@ namespace FtB_Common.FormDataRepositories
 
         public void AddBytesAsBlob(string containerName, string fileName, byte[] fileBytes, IEnumerable<KeyValuePair<string, string>> metadata = null)
         {
-            _blobOperations.AddBytesAsBlob(containerName, fileName, fileBytes, null, metadata);
+            _blobOperations.AddByteStreamToBlobStorage( Enums.BlobStorageEnum.Private, containerName, fileName, fileBytes, null, metadata);
         }
     }
 }

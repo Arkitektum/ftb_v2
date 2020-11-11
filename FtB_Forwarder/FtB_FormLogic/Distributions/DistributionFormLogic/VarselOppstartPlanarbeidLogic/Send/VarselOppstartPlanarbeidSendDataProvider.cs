@@ -4,6 +4,7 @@ using FtB_DataModels.Mappers;
 using FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Send;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -85,32 +86,64 @@ namespace FtB_FormLogic
             {
                 datoFristInnspill = string.Format("{0:MM.dd.yyyy}", fristForInnspill);
             }
+            //TODO: Replace with HTML template?
 
-            message.Append($"{forslagsstiller.navn} ønsker å endre  eller bygge i {kommune} kommune.<br>");
-            message.Append($"Klikk på dokumentene nederst i denne meldingen for å lese mer om planarbeidet, og for å se et kartutsnitt av hvilket område planene gjelder.</p><br>");
+            //message.Append($"{forslagsstiller.navn} ønsker å endre  eller bygge i {kommune} kommune.<br>");
+            //message.Append($"Klikk på dokumentene nederst i denne meldingen for å lese mer om planarbeidet, og for å se et kartutsnitt av hvilket område planene gjelder.</p><br>");
 
-            message.Append($"<p><strong>Hvorfor får jeg varsel?</strong><br>");
-            message.Append("Du får dette varselet fordi du kan være berørt eller har interesser i nærheten av området vi vil endre.");
-            message.Append("</p>");
+            //message.Append($"<p><strong>Hvorfor får jeg varsel?</strong><br>");
+            //message.Append("Du får dette varselet fordi du kan være berørt eller har interesser i nærheten av området vi vil endre.");
+            //message.Append("</p>");
 
 
-            message.Append($"<p><strong>Har du spørsmål om planene?</strong><br>");
-            message.Append($"Ta kontakt på e-post {forslagsstiller.kontaktperson.epost} eller telefon {forslagsstiller.kontaktperson.telefonnummer}.</p>");
+            //message.Append($"<p><strong>Har du spørsmål om planene?</strong><br>");
+            //message.Append($"Ta kontakt på e-post {forslagsstiller.kontaktperson.epost} eller telefon {forslagsstiller.kontaktperson.telefonnummer}.</p>");
 
-            message.Append($"<p><strong>Vil du uttale deg om planene?</strong><br>");
-            message.Append($"Du kan bruke svarskjemaet under for å uttale deg om arbeidet med planen. Fristen for å sende uttalelse, er <strong>{datoFristInnspill}</strong></p>");
+            //message.Append($"<p><strong>Vil du uttale deg om planene?</strong><br>");
+            //message.Append($"Du kan bruke svarskjemaet under for å uttale deg om arbeidet med planen. Fristen for å sende uttalelse, er <strong>{datoFristInnspill}</strong></p>");
 
-            message.Append($"<p><strong>Hva skjer med uttalelsene dine?</strong><br>");
-            message.Append($"Uttalelsene dine blir sendt til {forslagsstiller.navn}. Du får ikke et eget svarbrev fra {forslagsstiller.navn}, men de skal vurdere alle uttalelser. Uttalelsene er med på å danne grunnlaget for forslaget som senere skal behandles av kommunen.</p>");
+            //message.Append($"<p><strong>Hva skjer med uttalelsene dine?</strong><br>");
+            //message.Append($"Uttalelsene dine blir sendt til {forslagsstiller.navn}. Du får ikke et eget svarbrev fra {forslagsstiller.navn}, men de skal vurdere alle uttalelser. Uttalelsene er med på å danne grunnlaget for forslaget som senere skal behandles av kommunen.</p>");
 
-            message.Append($"<p>Neste skritt er at kommunen skal vurdere om planforslaget er godt nok for å sendes på høring og offentlig ettersyn. I denne fasen får du en ny mulighet til å uttale deg om detaljene i planforslaget.</p>");
+            //message.Append($"<p>Neste skritt er at kommunen skal vurdere om planforslaget er godt nok for å sendes på høring og offentlig ettersyn. I denne fasen får du en ny mulighet til å uttale deg om detaljene i planforslaget.</p>");
 
-            message.Append($"<p>Du kan lese mer om planarbeid på nettsiden <a href='https://www.planlegging.no'>www.planlegging.no</a></p>");
+            //message.Append($"<p>Du kan lese mer om planarbeid på nettsiden <a href='https://www.planlegging.no'>www.planlegging.no</a></p>");
 
-            message.Append($"<p><strong>Har du ingen uttalelser?</strong><br>");
-            message.Append($"Da trenger du ikke gjøre noe som helst.</p>");
+            //message.Append($"<p><strong>Har du ingen uttalelser?</strong><br>");
+            //message.Append($"Da trenger du ikke gjøre noe som helst.</p>");
 
-            return message.ToString();
+            string htmlBody = "";
+            var HtmlBodyTemplate = "FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Send.VarselOppstartPlanarbeidPrefillNotificationBody.html";
+
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (assembly.GetName().Name.ToUpper().Contains("FtB_FormLogic".ToUpper()))
+                {
+                    using (Stream stream = assembly.GetManifestResourceStream(HtmlBodyTemplate))
+                    {
+                        if (stream == null)
+                        {
+                            throw new Exception($"The resource {HtmlBodyTemplate} was not loaded properly.");
+                        }
+
+                        using (StreamReader reader = new StreamReader(stream))
+                        {
+                            htmlBody = reader.ReadToEnd();
+                        }
+                    }
+                }
+            }
+            htmlBody = htmlBody.Replace("<kommune />", kommune);
+            htmlBody = htmlBody.Replace("<forslagsstiller.navn />", forslagsstiller.navn);
+            htmlBody = htmlBody.Replace("<forslagsstiller.kontaktperson.epost />", forslagsstiller.kontaktperson.epost);
+            htmlBody = htmlBody.Replace("<forslagsstiller.kontaktperson.telefonnummer />", forslagsstiller.kontaktperson.telefonnummer);
+            htmlBody = htmlBody.Replace("<datoFristInnspill />", datoFristInnspill);
+
+
+
+
+            return htmlBody;
+            //return message.ToString();
         }
 
         public static string GetPrefillNotificationTitle(string planNavn, string planid)

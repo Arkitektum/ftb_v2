@@ -18,7 +18,8 @@ namespace FtB_FuncPrepareSending
             services.AddScoped<IFormDataRepo, FormDataRepository>();
             services.AddScoped<ITableStorage, TableStorage>();
             services.AddScoped<IBlobOperations, BlobOperations>();
-            services.AddScoped<BlobStorage>();
+            services.AddScoped<PrivateBlobStorage>();
+            services.AddScoped<PublicBlobStorage>();
             services.AddFtbDbUnitOfWork(configuration);
 
             services.AddScoped<IDecryption, Decryption>();

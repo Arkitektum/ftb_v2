@@ -33,7 +33,8 @@ namespace FtB_FuncSender
 
             builder.Services.AddScoped<SendQueueProcessor>();
             builder.Services.AddScoped<IBlobOperations, BlobOperations>();
-            builder.Services.AddScoped<BlobStorage>();
+            builder.Services.AddScoped<PrivateBlobStorage>();
+            builder.Services.AddScoped<PublicBlobStorage>();
             builder.Services.AddLogging();
             
 
