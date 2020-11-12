@@ -9,9 +9,12 @@ namespace FtB_FormLogic
 {
     public class SendDataProviderBase
     {
-        public SendDataProviderBase()
-        {
+        //TODO: Rename class or file name
+        protected readonly IHtmlUtils _htmlUtils;
 
+        public SendDataProviderBase(IHtmlUtils htmlUtils)
+        {
+            _htmlUtils = htmlUtils;
         }
 
         public virtual AltinnReceiver GetReceiver(BerortPart berortPart)

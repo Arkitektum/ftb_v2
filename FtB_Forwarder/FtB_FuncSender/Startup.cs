@@ -6,6 +6,7 @@ using FtB_Common.Encryption;
 using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
+using FtB_Common.Utils;
 using FtB_FormLogic;
 using FtB_MessageManager;
 using FtB_ProcessStrategies;
@@ -35,6 +36,7 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<IBlobOperations, BlobOperations>();
             builder.Services.AddScoped<PrivateBlobStorage>();
             builder.Services.AddScoped<PublicBlobStorage>();
+            builder.Services.AddScoped<IHtmlUtils, HtmlUtils>();
             builder.Services.AddLogging();
             
 
@@ -52,6 +54,7 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<IDecryption, Decryption>();
             builder.Services.AddScoped<IDecryptionFactory, DecryptionFactory>();
             builder.Services.Configure<EncryptionSettings>(configuration.GetSection("EncryptionSettings"));
+            builder.Services.Configure<HtmlAndPdfGeneratorSettings>(configuration.GetSection("HtmlAndPdfGeneratorSettings"));
             builder.Services.AddFtbDbUnitOfWork(configuration);
 
             //builder.Services.AddAltinn3Distribution(configuration);

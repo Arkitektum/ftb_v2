@@ -12,6 +12,9 @@ namespace FtB_FormLogic
 {
     public class VarselOppstartPlanarbeidSendDataProvider : SendDataProviderBase, IDistributionDataMapper<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
+        public VarselOppstartPlanarbeidSendDataProvider(IHtmlUtils htmlUtils) : base(htmlUtils)
+        {
+        }
         public AltinnDistributionMessage GetDistributionMessage(IEnumerable<IPrefillData> prefills, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, Guid distributionFormId, string archiveReference)
         {
             var prefill = prefills.First() as VarselOppstartPlanarbeidData;
@@ -84,7 +87,7 @@ namespace FtB_FormLogic
         }
 
 
-        public static string GetPrefillNotificationBody(no.kxml.skjema.dibk.nabovarselsvarPlan.ForslagsstillerType forslagsstiller, no.kxml.skjema.dibk.nabovarselsvarPlan.BeroertPartType beroertPart, DateTime? fristForInnspill, string kommune)
+        public string GetPrefillNotificationBody(no.kxml.skjema.dibk.nabovarselsvarPlan.ForslagsstillerType forslagsstiller, no.kxml.skjema.dibk.nabovarselsvarPlan.BeroertPartType beroertPart, DateTime? fristForInnspill, string kommune)
         {
             var message = new StringBuilder();
             string datoFristInnspill = String.Empty;
@@ -92,7 +95,7 @@ namespace FtB_FormLogic
             {
                 datoFristInnspill = string.Format("{0:MM.dd.yyyy}", fristForInnspill);
             }
-            //TODO: Replace with HTML template?
+            //This is replaced with HTML template
 
             //message.Append($"{forslagsstiller.navn} ønsker å endre  eller bygge i {kommune} kommune.<br>");
             //message.Append($"Klikk på dokumentene nederst i denne meldingen for å lese mer om planarbeidet, og for å se et kartutsnitt av hvilket område planene gjelder.</p><br>");
@@ -118,38 +121,14 @@ namespace FtB_FormLogic
             //message.Append($"<p><strong>Har du ingen uttalelser?</strong><br>");
             //message.Append($"Da trenger du ikke gjøre noe som helst.</p>");
 
-            string htmlBody = "";
-            var HtmlBodyTemplate = "FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Send.VarselOppstartPlanarbeidPrefillNotificationBody.html";
-
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                if (assembly.GetName().Name.ToUpper().Contains("FtB_FormLogic".ToUpper()))
-                {
-                    using (Stream stream = assembly.GetManifestResourceStream(HtmlBodyTemplate))
-                    {
-                        if (stream == null)
-                        {
-                            throw new Exception($"The resource {HtmlBodyTemplate} was not loaded properly.");
-                        }
-
-                        using (StreamReader reader = new StreamReader(stream))
-                        {
-                            htmlBody = reader.ReadToEnd();
-                        }
-                    }
-                }
-            }
+            string htmlBody = _htmlUtils.GetHtmlFromTemplate("FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Send.VarselOppstartPlanarbeidPrefillNotificationBody.html");
             htmlBody = htmlBody.Replace("<kommune />", kommune);
             htmlBody = htmlBody.Replace("<forslagsstiller.navn />", forslagsstiller.navn);
             htmlBody = htmlBody.Replace("<forslagsstiller.kontaktperson.epost />", forslagsstiller.kontaktperson.epost);
             htmlBody = htmlBody.Replace("<forslagsstiller.kontaktperson.telefonnummer />", forslagsstiller.kontaktperson.telefonnummer);
             htmlBody = htmlBody.Replace("<datoFristInnspill />", datoFristInnspill);
 
-
-
-
             return htmlBody;
-            //return message.ToString();
         }
 
         public static string GetPrefillNotificationTitle(string planNavn, string planid)
