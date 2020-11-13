@@ -94,6 +94,7 @@ namespace Altinn2.Adapters
 
             if (receiptExternal?.ReceiptStatusCode == ReceiptStatusEnum.OK)
             {
+                prefillFinalResult = new PrefillSentResult() { PrefillReferenceId = receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).First().ReferenceValue };
                 prefillFinalResult.Message = "Ok - Prefill sent";
                 prefillFinalResult.Step = DistriutionStep.Sent;
 
