@@ -97,9 +97,6 @@ namespace Altinn2.Adapters
                 prefillFinalResult = new PrefillSentResult() { PrefillReferenceId = receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).First().ReferenceValue };
                 prefillFinalResult.Message = "Ok - Prefill sent";
                 prefillFinalResult.Step = DistriutionStep.Sent;
-
-                if (receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).FirstOrDefault() != null)
-                    prefillFinalResult = new PrefillSentResult() { PrefillReferenceId = receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).First().ReferenceValue, Message = prefillFinalResult.Message, Step = prefillFinalResult.Step };
             }
             else if (receiptExternal?.ReceiptStatusCode != ReceiptStatusEnum.OK)
                 if (receiptExternal.ReceiptText.Contains("Reportee is reserved against electronic communication"))
