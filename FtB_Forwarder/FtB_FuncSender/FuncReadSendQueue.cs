@@ -10,32 +10,37 @@ namespace FtB_FuncSender
 {
     public class FuncReadSendQueue
     {
+        private readonly ILogger<FuncReadSendQueue> _logger;
         private readonly SendQueueProcessor _queueProcessor;
 
-        public FuncReadSendQueue(SendQueueProcessor queueProcessor)
+        public FuncReadSendQueue(ILogger<FuncReadSendQueue> logger, SendQueueProcessor queueProcessor)
         {
+            _logger = logger;
             _queueProcessor = queueProcessor;
         }
 
         [FunctionName("FuncReadSendQueue")]
-        public void Run([ServiceBusTrigger("%SendingQueueName%", Connection = "queueConnectionString")] string myQueueItem, ILogger log,
+        public void Run([ServiceBusTrigger("%SendingQueueName%", Connection = "queueConnectionString")] string myQueueItem,
             [ServiceBus("%ReportQueueName%", Connection = "queueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<ReportQueueItem> queueCollector)
         {
             SendQueueItem sendQueueItem = JsonConvert.DeserializeObject<SendQueueItem>(myQueueItem);
-            log.LogInformation($"C# ServiceBus queue trigger function processed message: {sendQueueItem.ArchiveReference} for {sendQueueItem.Receiver.Id}");
-            try
+            using (var scope = _logger.BeginScope("ArchiveReference: {0} - Receiver.Id", sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id))
             {
-
-                var result = _queueProcessor.ExecuteProcessingStrategy(sendQueueItem);
-                if (result != null)
+                _logger.LogInformation($"C# ServiceBus queue trigger function processed message: {sendQueueItem.ArchiveReference} for {sendQueueItem.Receiver.Id}");
+                try
                 {
-                    queueCollector.AddAsync(result);
+
+                    var result = _queueProcessor.ExecuteProcessingStrategy(sendQueueItem);
+                    if (result != null)
+                    {
+                        queueCollector.AddAsync(result);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                log.LogError($"Something went wrong. Exception: {ex}");
-                throw; //Do this to make sure the message is not removed from the SendQueue. It will retry, and then end up in DeadLetterQueue
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Something went wrong. Exception: {ex}");
+                    throw; //Do this to make sure the message is not removed from the SendQueue. It will retry, and then end up in DeadLetterQueue
+                }
             }
         }
     }
