@@ -1,7 +1,6 @@
 ﻿using Ftb_DbModels;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -27,6 +26,7 @@ namespace Ftb_Repositories.HttpClients
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
             Client.BaseAddress = new Uri(_settings.Value.Uri);
+            Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
             var result = Client.PostAsync(requestUri, stringContent).GetAwaiter().GetResult();
         }
 
@@ -35,6 +35,7 @@ namespace Ftb_Repositories.HttpClients
             var requestUri = $"{archiveReference}/formmetadata";
 
             Client.BaseAddress = new Uri(_settings.Value.Uri);
+            Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
             var result = Client.GetAsync(requestUri).GetAwaiter().GetResult();
 
             FormMetadata retVal = null;
