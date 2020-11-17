@@ -8,6 +8,7 @@ using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using FtB_Common.Utils;
 using Ftb_Repositories;
+using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -19,14 +20,15 @@ namespace FtB_FormLogic
     public class DistributionReportLogic<T> : ReportLogic<T>
     {
         private readonly IBlobOperations _blobOperations;
-        private readonly IHtmlUtils _htmlUtils;
+        private readonly HtmlToPdfConverterHttpClient _htmlToPdfConverterHttpClient;
         private readonly INotificationAdapter _notificationAdapter;
         public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log
-                                , INotificationAdapter notificationAdapter, IBlobOperations blobOperations, DbUnitOfWork dbUnitOfWork, IHtmlUtils htmlUtils)
+                                , INotificationAdapter notificationAdapter, IBlobOperations blobOperations
+                                , DbUnitOfWork dbUnitOfWork, IHtmlUtils htmlUtils, HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
             : base(repo, tableStorage, log, dbUnitOfWork)
         {
             _blobOperations = blobOperations;
-            _htmlUtils = htmlUtils;
+            _htmlToPdfConverterHttpClient = htmlToPdfConverterHttpClient;
             _notificationAdapter = notificationAdapter;
         }
 
@@ -129,7 +131,7 @@ namespace FtB_FormLogic
                     var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
                     notificationMessage.MessageData = messageData;
                     var plainReceiptHtml = GetSubmitterReceipt(reportQueueItem.ArchiveReference);
-                    byte[] PDFInbytes = _htmlUtils.GetPDFFromHTML(plainReceiptHtml);
+                    byte[] PDFInbytes = _htmlToPdfConverterHttpClient.Get(plainReceiptHtml);
                     
                     var receiptAttachment = new AttachmentBinary()
                     {

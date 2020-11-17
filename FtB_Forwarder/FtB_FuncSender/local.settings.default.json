@@ -6,9 +6,9 @@
     "AzureWebJobsFeatureFlags": "EnableEnhancedScopes",
     "PrivateAzureStorageConnectionString": "xx",
     "PublicAzureStorageConnectionString": "xx",
-    "queueConnectionString": "Endpoint=xx",
-    "SendingQueueName": "sbq-sending",
-    "ReportQueueName": "sbq-reporting",
+    "QueueConnectionString": "Endpoint=xx",
+    "SendingQueueName": "sbq-send",
+    "ReportQueueName": "sbq-report",
 
     "PrefillConnectionSettings:UserName": "xx",
     "PrefillConnectionSettings:Password": "xx",
@@ -25,6 +25,8 @@
 
     "EncryptionSettings:CertificateThumbprint": "xx",
 
-    "FormProcessAPISettings:Uri": "xx"
+    "FormProcessAPISettings:Uri": "xx",
+
+    "HtmlUtilSettings:HtmlTemplateAssembly": "FtB_FormLogic"
   }
 }

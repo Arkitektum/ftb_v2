@@ -20,7 +20,7 @@ namespace FtB_FuncPrepareSending
             services.AddScoped<IBlobOperations, BlobOperations>();
             services.AddScoped<PrivateBlobStorage>();
             services.AddScoped<PublicBlobStorage>();
-            services.AddFtbDbUnitOfWork(configuration);
+            services.AddFtbRepositories(configuration);
 
             services.AddScoped<IDecryption, Decryption>();
             services.AddScoped<IDecryptionFactory, DecryptionFactory>();

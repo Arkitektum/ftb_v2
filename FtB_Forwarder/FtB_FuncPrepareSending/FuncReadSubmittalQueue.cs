@@ -23,8 +23,8 @@ namespace FtB_FuncPrepareSending
         }
 
         [FunctionName("FuncReadSubmittalQueue")]
-        public void Run([ServiceBusTrigger("%SubmittalQueueName%", Connection = "queueConnectionString")]string myQueueItem,
-            [ServiceBus("%SendingQueueName%", Connection = "queueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<SendQueueItem> queueCollector)
+        public void Run([ServiceBusTrigger("%SubmittalQueueName%", Connection = "QueueConnectionString")]string myQueueItem,
+            [ServiceBus("%SendingQueueName%", Connection = "QueueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<SendQueueItem> queueCollector)
         {            
             SubmittalQueueItem submittalQueueItem = JsonConvert.DeserializeObject<SubmittalQueueItem>(myQueueItem);
 

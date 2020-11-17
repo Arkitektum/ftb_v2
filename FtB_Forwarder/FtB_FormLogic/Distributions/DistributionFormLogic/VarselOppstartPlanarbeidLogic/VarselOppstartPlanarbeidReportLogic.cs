@@ -8,6 +8,7 @@ using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using FtB_Common.Utils;
 using Ftb_Repositories;
+using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -23,7 +24,6 @@ namespace FtB_FormLogic
     {
         private readonly IBlobOperations _blobOperations;
         private readonly IHtmlUtils _htmlUtils;
-        private readonly IOptions<HtmlAndPdfGeneratorSettings> _htmlAndPdfGeneratorSettings;
 
         public VarselOppstartPlanarbeidReportLogic(IFormDataRepo repo,
                                                    ITableStorage tableStorage,
@@ -32,12 +32,11 @@ namespace FtB_FormLogic
                                                    INotificationAdapter notificationAdapter,
                                                    DbUnitOfWork dbUnitOfWork,
                                                    IHtmlUtils htmlUtils,
-                                                   IOptions<HtmlAndPdfGeneratorSettings> htmlAndPdfGeneratorSettings)
-            : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils)
+                                                   HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
+            : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils, htmlToPdfConverterHttpClient)
         {
             _blobOperations = blobOperations;
             _htmlUtils = htmlUtils;
-            _htmlAndPdfGeneratorSettings = htmlAndPdfGeneratorSettings;
         }
         public override AltinnReceiver GetReceiver()
         {
@@ -97,28 +96,8 @@ namespace FtB_FormLogic
                 string planNavn = base.FormData.planforslag.plannavn == null ? "" : base.FormData.planforslag.plannavn;
                 string byggested = adresse != null && adresse.Trim().Length > 0 ? $"{adresse}, {planNavn}" : $"{planNavn}";
                 string kontaktperson = GetContactPersonExtendedInfo();
-                string htmlBody = "";
-                var HtmlBodyTemplate = "FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceiptMessageBody.html";
-
-                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    if (assembly.GetName().Name.ToUpper().Contains(_htmlAndPdfGeneratorSettings.Value.HtmlTemplateAssembly.ToUpper()))
-                    {
-                        _log.LogDebug($"{GetType().Name}. Found assembly: {assembly.FullName}");
-                        using (Stream stream = assembly.GetManifestResourceStream(HtmlBodyTemplate))
-                        {
-                            if (stream == null)
-                            {
-                                throw new Exception($"The resource {HtmlBodyTemplate} was not loaded properly.");
-                            }
-
-                            using (StreamReader reader = new StreamReader(stream))
-                            {
-                                htmlBody = reader.ReadToEnd();
-                            }
-                        }
-                    }
-                }
+                string htmlBody = _htmlUtils.GetHtmlFromTemplate("FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceipt.html");
+                
                 //TODO: Add Logo?
                 //string LogoResourceName = "KommIT.FIKS.AdapterAltinnSvarUt.Content.images.dibk_logo.png";
                 htmlBody = htmlBody.Replace("<byggested/>", byggested);

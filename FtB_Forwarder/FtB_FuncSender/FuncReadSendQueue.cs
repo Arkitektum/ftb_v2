@@ -20,8 +20,8 @@ namespace FtB_FuncSender
         }
 
         [FunctionName("FuncReadSendQueue")]
-        public void Run([ServiceBusTrigger("%SendingQueueName%", Connection = "queueConnectionString")] string myQueueItem,
-            [ServiceBus("%ReportQueueName%", Connection = "queueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<ReportQueueItem> queueCollector)
+        public void Run([ServiceBusTrigger("%SendingQueueName%", Connection = "QueueConnectionString")] string myQueueItem,
+            [ServiceBus("%ReportQueueName%", Connection = "QueueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<ReportQueueItem> queueCollector)
         {
             SendQueueItem sendQueueItem = JsonConvert.DeserializeObject<SendQueueItem>(myQueueItem);
             using (var scope = _logger.BeginScope("ArchiveReference: {0} - Receiver.Id", sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id))

@@ -18,7 +18,7 @@ namespace FtB_FuncReporter
         }
 
         [FunctionName("FuncReadReportQueue")]
-        public void Run([ServiceBusTrigger("%ReportQueueName%", Connection = "queueConnectionString")] string myQueueItem)
+        public void Run([ServiceBusTrigger("%ReportQueueName%", Connection = "QueueConnectionString")] string myQueueItem)
         {
             ReportQueueItem reportQueueItem = JsonConvert.DeserializeObject<ReportQueueItem>(myQueueItem);
             using (var scope = _logger.BeginScope("ArchiveReference: {0} - Receiver.Id", reportQueueItem.ArchiveReference, reportQueueItem.Receiver.Id))

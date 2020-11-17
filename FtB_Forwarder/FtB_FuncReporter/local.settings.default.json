@@ -5,8 +5,8 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "PrivateAzureStorageConnectionString": "xx",
     "PublicAzureStorageConnectionString": "xx",
-    "queueConnectionString": "Endpoint=xx",
-    "ReportQueueName": "sbq-reporting",
+    "QueueConnectionString": "Endpoint=xx",
+    "ReportQueueName": "sbq-report",
 
     "CorrespondenceConnectionSettings:UserName": "xx",
     "CorrespondenceConnectionSettings:Password": "xx",
@@ -20,8 +20,10 @@
 
     "FormProcessAPISettings:Uri": "xx",
 
-    "HtmlAndPdfGeneratorSettings:UriAddress": "xx",
-    "HtmlAndPdfGeneratorSettings:API": "PDF",
-    "HtmlAndPdfGeneratorSettings:HtmlTemplateAssembly": "FtB_FormLogic"
+    "HtmlToPdfConverterSettings:UriAddress": "xx",
+    "HtmlToPdfConverterSettings:API": "PDF",
+    "HtmlToPdfConverterSettings:APIKey": "",
+
+    "HtmlUtilSettings:HtmlTemplateAssembly": "FtB_FormLogic"
   }
 }
