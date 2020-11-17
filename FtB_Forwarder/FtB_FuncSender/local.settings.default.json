@@ -27,7 +27,7 @@
 
     "FormProcessAPISettings:Uri": "xx",
     "FormProcessAPISettings:BasicAuthUserName": "xx",
-    "FormProcessAPISettings:BasicAuthPassword": "xx"
+    "FormProcessAPISettings:BasicAuthPassword": "xx",
 
     "HtmlUtilSettings:HtmlTemplateAssembly": "FtB_FormLogic"
   }
