@@ -30,6 +30,7 @@ namespace Altinn2.Adapters.WS.Prefill
         {
             try
             {
+//                _log.LogDebug("Sends prefill", _client);
                 prefillFormTask.ServiceOwnerCode = _connectionOptions.Value.ServiceOwnerCode;
 
                 var result = _client.SubmitAndInstantiatePrefilledFormTaskBasicAsync(_connectionOptions.Value.UserName,
@@ -44,19 +45,26 @@ namespace Altinn2.Adapters.WS.Prefill
 
                 return result;
             }
+            catch (FaultException<AltinnFault> af)
+            {
+                _log.LogError(af, af.Detail.ToStringExtended());
+                _client.Abort();
+                throw;
+            }
             catch (TimeoutException te)
             {
                 _log.LogError(te, $"Timeout when communicating with Altinn 2 prefill service");
                 _client.Abort();
                 throw;
-            }
+            }            
             catch (CommunicationException ce)
             {
                 _log.LogError(ce, $"Communication error occurred when communication with Altinn 2 prefill service");
                 _client.Abort();
+
                 throw;
             }
 
-        }
+        }        
     }
 }

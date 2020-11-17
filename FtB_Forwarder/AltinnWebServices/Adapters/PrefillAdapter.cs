@@ -98,7 +98,7 @@ namespace Altinn2.Adapters
                 prefillFinalResult.Message = "Ok - Prefill sent";
                 prefillFinalResult.Step = DistriutionStep.Sent;
             }
-            else if (receiptExternal?.ReceiptStatusCode != ReceiptStatusEnum.OK)
+            else if (receiptExternal != null && receiptExternal.ReceiptStatusCode != ReceiptStatusEnum.OK)
                 if (receiptExternal.ReceiptText.Contains("Reportee is reserved against electronic communication"))
                 {
                     prefillFinalResult.Message = receiptExternal.ReceiptText;

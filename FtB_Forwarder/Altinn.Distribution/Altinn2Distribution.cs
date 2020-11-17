@@ -23,6 +23,7 @@ namespace Altinn.Distribution
         public IEnumerable<DistributionResult> SendDistribution(AltinnDistributionMessage altinnMessage)
         {
             var results = new List<DistributionResult>();
+            
             //Send prefill
             var prefillResults = _prefillAdapter.SendPrefill(altinnMessage);
             results.AddRange(prefillResults);
