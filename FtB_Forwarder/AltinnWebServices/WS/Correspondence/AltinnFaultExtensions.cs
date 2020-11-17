@@ -1,5 +1,4 @@
-﻿using AltinnWebServices.WS.Prefill;
-
+﻿using AltinnWebServices.WS.Correspondence;
 namespace Altinn2.Adapters.WS.Correspondence
 {
     public static class CorrespondenceAltinnFaultExtensions

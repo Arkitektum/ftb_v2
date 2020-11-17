@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs.ServiceBus;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 
 namespace FtB_FuncSender
 {
@@ -24,7 +25,8 @@ namespace FtB_FuncSender
             [ServiceBus("%ReportQueueName%", Connection = "QueueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<ReportQueueItem> queueCollector)
         {
             SendQueueItem sendQueueItem = JsonConvert.DeserializeObject<SendQueueItem>(myQueueItem);
-            using (var scope = _logger.BeginScope("ArchiveReference: {0} - Receiver.Id: {1}", sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id))
+            
+            using (var scope = _logger.BeginScope(new Dictionary<string,string> { { "ArchiveReference", sendQueueItem.ArchiveReference }, { "ReceiverId", sendQueueItem.Receiver.Id } }))
             {
                 _logger.LogInformation($"C# ServiceBus queue trigger function processed message: {sendQueueItem.ArchiveReference} for {sendQueueItem.Receiver.Id}");
                 try

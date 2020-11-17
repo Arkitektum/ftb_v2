@@ -23,12 +23,12 @@ namespace FtB_FuncPrepareSending
         }
 
         [FunctionName("FuncReadSubmittalQueue")]
-        public void Run([ServiceBusTrigger("%SubmittalQueueName%", Connection = "QueueConnectionString")]string myQueueItem,
+        public void Run([ServiceBusTrigger("%SubmittalQueueName%", Connection = "QueueConnectionString")] string myQueueItem,
             [ServiceBus("%SendingQueueName%", Connection = "QueueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<SendQueueItem> queueCollector)
-        {            
+        {
             SubmittalQueueItem submittalQueueItem = JsonConvert.DeserializeObject<SubmittalQueueItem>(myQueueItem);
 
-            using (var scope = _logger.BeginScope("ArchiveReference: {0}", submittalQueueItem.ArchiveReference))
+            using (var scope = _logger.BeginScope(new Dictionary<string, string> { { "ArchiveReference", submittalQueueItem.ArchiveReference } }))
             {
                 _logger.LogInformation($"C# ServiceBus queue trigger function processed message: {submittalQueueItem.ArchiveReference}");
 
@@ -39,7 +39,7 @@ namespace FtB_FuncPrepareSending
                     tasks.Add(queueCollector.AddAsync(item));
                 }
                 Task.WhenAll(tasks);
-            }            
+            }
         }
     }
 }
