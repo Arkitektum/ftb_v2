@@ -39,6 +39,7 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<IHtmlUtils, HtmlUtils>();
             builder.Services.AddLogging();
             
+            
 
             builder.Services.AddScoped<FormatIdToFormMapper>();
             builder.Services.AddScoped<VarselOppstartPlanarbeidSendLogic>();

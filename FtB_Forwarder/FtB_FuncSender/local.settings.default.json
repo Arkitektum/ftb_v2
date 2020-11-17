@@ -26,6 +26,8 @@
     "EncryptionSettings:CertificateThumbprint": "xx",
 
     "FormProcessAPISettings:Uri": "xx",
+    "FormProcessAPISettings:BasicAuthUserName": "xx",
+    "FormProcessAPISettings:BasicAuthPassword": "xx"
 
     "HtmlUtilSettings:HtmlTemplateAssembly": "FtB_FormLogic"
   }
