@@ -1,6 +1,7 @@
 {
   "version": "2.0",
   "logging": {
+    "includeScopes": true,
     "applicationInsights": {
       "samplingExcludedTypes": "Request",
       "samplingSettings": {

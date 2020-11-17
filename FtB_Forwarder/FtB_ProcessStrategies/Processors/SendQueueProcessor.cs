@@ -36,12 +36,13 @@ namespace FtB_ProcessStrategies
                 string formatId = _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<ReportQueueItem, SendQueueItem>(formatId, FormLogicProcessingContext.Send);
 
+                _log.LogDebug("Executes form logic");
                 var result = formLogicBeingProcessed.Execute(sendQueueItem);                
                 return result;
             }
             catch (Exception ex)
             {
-
+                _log.LogError(ex, "An error occured while processing: {0}", sendQueueItem?.ArchiveReference);
                 throw ex;
             }
             finally

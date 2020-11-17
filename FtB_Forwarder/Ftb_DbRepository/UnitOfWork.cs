@@ -15,14 +15,15 @@ namespace Ftb_Repositories
             DistributionForms = distributionFormRepository;
         }
 
-        private string archiveReference;
+        private string _archiveReference;
 
         public void SetArhiveReference(string archiveReference)
         {
-            this.archiveReference = archiveReference;
-            FormMetadata.SetArchiveReference(archiveReference);
-            DistributionForms.SetArchiveReference(archiveReference);
-            LogEntries.SetArchiveReference(archiveReference);
+            _logger.LogDebug("Setting archive reference in unit of work");
+            _archiveReference = archiveReference;
+            FormMetadata.SetArchiveReference(_archiveReference);
+            DistributionForms.SetArchiveReference(_archiveReference);
+            LogEntries.SetArchiveReference(_archiveReference);
         }
         public IDistributionFormRepository DistributionForms { get; }
         public IFormMetadataRepository FormMetadata { get; }

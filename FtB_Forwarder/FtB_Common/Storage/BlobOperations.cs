@@ -3,6 +3,7 @@ using Azure.Storage.Blobs.Models;
 using FtB_Common.BusinessModels;
 using FtB_Common.Enums;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,12 @@ namespace FtB_Common.Storage
     public class BlobOperations : IBlobOperations
     {
         private ArchivedItemInformation _archivedItem;
+        private readonly ILogger<BlobOperations> _logger;
         private PrivateBlobStorage _privateBlobStorage;
         private PublicBlobStorage _publicBlobStorage;
-        public BlobOperations(PrivateBlobStorage privateBlobStorage, PublicBlobStorage publicBlobStorage)
+        public BlobOperations(ILogger<BlobOperations> logger, PrivateBlobStorage privateBlobStorage, PublicBlobStorage publicBlobStorage)
         {
+            _logger = logger;
             _privateBlobStorage = privateBlobStorage;
             _publicBlobStorage = publicBlobStorage;
         }
@@ -30,6 +33,7 @@ namespace FtB_Common.Storage
         }
         private async Task GetArchivedItemFromBlobAsync(string containerName)
         {
+            _logger.LogDebug("Retrieving archived item from blob storage: {0}", containerName);
             try
             {
                 var stream = new MemoryStream();

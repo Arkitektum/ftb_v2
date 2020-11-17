@@ -24,7 +24,7 @@ namespace FtB_FuncSender
             [ServiceBus("%ReportQueueName%", Connection = "queueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<ReportQueueItem> queueCollector)
         {
             SendQueueItem sendQueueItem = JsonConvert.DeserializeObject<SendQueueItem>(myQueueItem);
-            using (var scope = _logger.BeginScope("ArchiveReference: {0} - Receiver.Id", sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id))
+            using (var scope = _logger.BeginScope("ArchiveReference: {0} - Receiver.Id: {1}", sendQueueItem.ArchiveReference, sendQueueItem.Receiver.Id))
             {
                 _logger.LogInformation($"C# ServiceBus queue trigger function processed message: {sendQueueItem.ArchiveReference} for {sendQueueItem.Receiver.Id}");
                 try

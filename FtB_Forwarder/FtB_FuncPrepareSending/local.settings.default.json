@@ -9,6 +9,8 @@
     "SubmittalQueueName": "sbq-submittal",
     "SendingQueueName": "sbq-sending",
     "FormProcessAPISettings:Uri": "xx",
+    "FormProcessAPISettings:BasicAuthUserName": "xx",
+    "FormProcessAPISettings:BasicAuthPassword": "xx",
     "EncryptionSettings:CertificateThumbprint": "xx"
   }
 }
