@@ -37,7 +37,7 @@ namespace Ftb_Repositories.HttpClients
                 requestContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                 _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/pdf"));
                 _client.DefaultRequestHeaders.Add("User-Agent", "Arbeidsflyt/2");
-                _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("X-API-KEY", _settings.Value.APIKey);
+                _client.DefaultRequestHeaders.Add("X-API-KEY", _settings.Value.APIKey);                
 
                 var response = _client.PostAsync(_settings.Value.API, requestContent).Result;
                 if (response.IsSuccessStatusCode)
