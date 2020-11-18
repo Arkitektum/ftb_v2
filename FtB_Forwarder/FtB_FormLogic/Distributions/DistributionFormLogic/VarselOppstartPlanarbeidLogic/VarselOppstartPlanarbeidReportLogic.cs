@@ -27,13 +27,14 @@ namespace FtB_FormLogic
 
         public VarselOppstartPlanarbeidReportLogic(IFormDataRepo repo,
                                                    ITableStorage tableStorage,
+                                                   ITableStorageOperations tableStorageOperations,
                                                    ILogger<VarselOppstartPlanarbeidReportLogic> log,
                                                    IBlobOperations blobOperations,
                                                    INotificationAdapter notificationAdapter,
                                                    DbUnitOfWork dbUnitOfWork,
                                                    IHtmlUtils htmlUtils,
                                                    HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
-            : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils, htmlToPdfConverterHttpClient)
+            : base(repo, tableStorage, tableStorageOperations, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils, htmlToPdfConverterHttpClient)
         {
             _blobOperations = blobOperations;
             _htmlUtils = htmlUtils;
@@ -96,7 +97,7 @@ namespace FtB_FormLogic
                 string planNavn = base.FormData.planforslag.plannavn == null ? "" : base.FormData.planforslag.plannavn;
                 string byggested = adresse != null && adresse.Trim().Length > 0 ? $"{adresse}, {planNavn}" : $"{planNavn}";
                 string kontaktperson = GetContactPersonExtendedInfo();
-                string htmlBody = _htmlUtils.GetHtmlFromTemplate("FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceipt.html");
+                string htmlBody = _htmlUtils.GetHtmlFromTemplate("FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceiptMessageBody.html");
                 
                 //TODO: Add Logo?
                 //string LogoResourceName = "KommIT.FIKS.AdapterAltinnSvarUt.Content.images.dibk_logo.png";
@@ -106,7 +107,8 @@ namespace FtB_FormLogic
 
                 var mess = new MessageDataType()
                 {
-                    MessageTitle = $"AF-Ver.2: Kvittering - varsel for oppstart av reguleringsplanarbeid, {byggested}",
+                    //TODO: Remove "AF-Ver.2: " and ({DateTime.Now.ToString("HH:mm:ss")}) from MessageTitle
+                    MessageTitle = $"AF-Ver.2: Kvittering - varsel for oppstart av reguleringsplanarbeid, {byggested} ({DateTime.Now.ToString("HH:mm:ss")})",
                     MessageSummary = "Trykk på vedleggene under for å laste ned varselet og kvittering med liste over hvilke berørte parter som har blitt varslet",
                     MessageBody = htmlBody
                 };
@@ -121,7 +123,7 @@ namespace FtB_FormLogic
             }
         }
 
-        protected override string GetSubmitterReceipt(string archiveReference)
+        protected override string GetSubmitterReceipt(ReportQueueItem reportQueueItem)
         {
             try
             {
@@ -134,17 +136,17 @@ namespace FtB_FormLogic
                 htmlTemplate = htmlTemplate.Replace("<planNavn />", planNavn);
                 htmlTemplate = htmlTemplate.Replace("<forslagsstiller />", forslagsstiller);
                 htmlTemplate = htmlTemplate.Replace("<kontaktperson />", kontaktperson);
-                htmlTemplate = htmlTemplate.Replace("<arkivReferanse />", archiveReference.ToUpper());
+                htmlTemplate = htmlTemplate.Replace("<arkivReferanse />", reportQueueItem.ArchiveReference.ToUpper());
                 var blobStorageTypes = new List<BlobStorageMetadataTypeEnum>();
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.MainForm);
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.SubmittalAttachment);
 
-                string publicContainerName = _blobOperations.GetPublicBlobContainerName(archiveReference.ToLower());
+                string publicContainerName = _blobOperations.GetPublicBlobContainerName(reportQueueItem.ArchiveReference.ToLower());
 
                 IEnumerable<(string attachmentType, string fileName)> listOfAttachmentsInSubmittal = _blobOperations.GetListOfBlobsWithMetadataType(BlobStorageEnum.Public, publicContainerName, blobStorageTypes);
                 string tableRowsAsHtml = "<tr><td>" + string.Join("</td></tr><tr><td>", listOfAttachmentsInSubmittal.Select(p => p.attachmentType + "</td><td>" + p.fileName)) + "</td></tr>";
                 htmlTemplate = htmlTemplate.Replace("<vedlegg />", tableRowsAsHtml);
-                htmlTemplate = htmlTemplate.Replace("<antallVarsledeMottakere />", GetReceiverSuccessfullyNotifiedCount().ToString());
+                htmlTemplate = htmlTemplate.Replace("<antallVarsledeMottakere />", GetReceiverSuccessfullyNotifiedCount(reportQueueItem).ToString());
 
                 var listOfDeniers = GetDigitalDisallowmentReceiverNames();
                 var deniersASHtml = new StringBuilder();
@@ -165,11 +167,7 @@ namespace FtB_FormLogic
         }
 
 
-        private int GetReceiverSuccessfullyNotifiedCount()
-        {
-            SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(ArchiveReference, ArchiveReference);
-            return submittalEntity.SuccessCount;
-        }
+
         private IEnumerable<string> GetDigitalDisallowmentReceiverNames()
         {
             var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);

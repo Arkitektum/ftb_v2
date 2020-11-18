@@ -45,7 +45,8 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<VarselOppstartPlanarbeidSendLogic>();
             builder.Services.AddScoped<IFormDataRepo, FormDataRepository>();
             builder.Services.AddScoped<ITableStorage, TableStorage>();
-            
+            builder.Services.AddScoped<ITableStorageOperations, TableStorageOperations>();
+
             builder.Services.AddScoped<IMessageManager, SlackManager>();
             
             builder.Services.AddScoped<IDistributionDataMapper<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>, VarselOppstartPlanarbeidSendDataProvider>();

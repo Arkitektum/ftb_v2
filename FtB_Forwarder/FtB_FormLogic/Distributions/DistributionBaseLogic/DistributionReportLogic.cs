@@ -22,10 +22,10 @@ namespace FtB_FormLogic
         private readonly IBlobOperations _blobOperations;
         private readonly HtmlToPdfConverterHttpClient _htmlToPdfConverterHttpClient;
         private readonly INotificationAdapter _notificationAdapter;
-        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log
+        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log
                                 , INotificationAdapter notificationAdapter, IBlobOperations blobOperations
                                 , DbUnitOfWork dbUnitOfWork, IHtmlUtils htmlUtils, HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
-            : base(repo, tableStorage, log, dbUnitOfWork)
+            : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
         {
             _blobOperations = blobOperations;
             _htmlToPdfConverterHttpClient = htmlToPdfConverterHttpClient;
@@ -40,7 +40,7 @@ namespace FtB_FormLogic
         {
             throw new NotImplementedException();
         }
-        protected virtual string GetSubmitterReceipt(string archiveReference)
+        protected virtual string GetSubmitterReceipt(ReportQueueItem reportQueueItem)
         {
             throw new NotImplementedException();
         }
@@ -48,117 +48,58 @@ namespace FtB_FormLogic
         public override string Execute(ReportQueueItem reportQueueItem)
         {
             var returnItem = base.Execute(reportQueueItem);
-            ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
-            base._log.LogDebug($"{GetType().Name}. Execute: ID={reportQueueItem.ArchiveReference}. RowKey={reportQueueItem.StorageRowKey}. ReceiverEntityStatus: {receiverEntity.Status}.");
-            Enum.TryParse(receiverEntity.Status, out ReceiverStatusEnum receiverStatus);
-            if (receiverEntity.Status != Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.ReadyForReporting))
+            AddReceiverProcessStatus(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverStatusEnum.ReadyForReporting);
+
+            if (AreAllReceiversReadyForReporting(reportQueueItem))
             {
-                UpdateSubmittalEntityAfterReceiverIsProcessed(reportQueueItem, receiverStatus);
+                SendReceiptToSubmitterWhenAllReceiversAreProcessed(reportQueueItem);
             }
-            SendReceiptToSubmitterWhenAllReceiversAreProcessed(reportQueueItem);
 
             return returnItem;
         }
-        protected void UpdateSubmittalEntityAfterReceiverIsProcessed(ReportQueueItem reportQueueItem, ReceiverStatusEnum receiverStatus)
-        {
-            bool runAgain;
-            string archiveReference = reportQueueItem.ArchiveReference;
-            do
-            {
-                runAgain = false;
-                try
-                {
-                    SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(archiveReference, archiveReference);
-                    base._log.LogDebug($"ID={archiveReference}. Before SubmittalEntity update for archiveRefrrence {archiveReference}. SubmittalEntityStatus: {submittalEntity.Status}. ReceiverStatusEnum: {receiverStatus}.");
-                    submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Processing);
-                    submittalEntity.ProcessedCount++;
-                    switch (receiverStatus)
-                    {
-                        case ReceiverStatusEnum.DigitalDisallowment:
-                            submittalEntity.DigitalDisallowmentCount++;
-                            break;
-                        case ReceiverStatusEnum.CorrespondenceSent:
-                            submittalEntity.SuccessCount++;
-                            break;
-                        default:
-                            submittalEntity.FailedCount++;
-                            break;
-                    }
-                    base._log.LogDebug($"ArchiveReference={archiveReference}. Updating  submittal. Status: Success: {submittalEntity.SuccessCount}, DigitalDisallowment: {submittalEntity.DigitalDisallowmentCount}, FailedCount: {submittalEntity.FailedCount}");
-                    var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
-                    ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(reportQueueItem.ArchiveReference, reportQueueItem.StorageRowKey);
-                    receiverEntity.Status = Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.ReadyForReporting);
-                    var updatedReceiverEntity = _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
-                }
-                catch (TableStorageConcurrentException ex)
-                {
-                    if (ex.HTTPStatusCode == 412)
-                    {
-                        //TODO - Make use of Polly and use a randomized exponential back off or similar to handle this
-                        int randomNumber = new Random().Next(0, 1000);
-                        base._log.LogInformation($"ArchiveReference={archiveReference}. Optimistic concurrency violation – entity has changed since it was retrieved. Run again after { randomNumber.ToString() } ms.");
-                        Thread.Sleep(randomNumber);
-                        runAgain = true;
-                    }
-                    else
-                    {
-                        base._log.LogError($"Error updating submittal record for ArchiveReference={archiveReference}. Message: {ex.Message}");
-                        throw ex;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    base._log.LogError($"Error updating submittal record for ArchiveReference={archiveReference}. Message: {ex.Message}");
-                    throw ex;
-                }
-            } while (runAgain);
 
-        }
         private void SendReceiptToSubmitterWhenAllReceiversAreProcessed(ReportQueueItem reportQueueItem)
         {
             try
             {
                 SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
                 base._log.LogDebug($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. ID={reportQueueItem.Receiver.Id}. SubmittalEntity.ProcessedCount={submittalEntity.ProcessedCount}, submittalEntity.ReceiverCount={submittalEntity.ReceiverCount}");
-                if (submittalEntity.ProcessedCount == submittalEntity.ReceiverCount)
-                {
-                    submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
-                    base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
-                    var notificationMessage = new AltinnNotificationMessage();
-                    notificationMessage.ArchiveReference = ArchiveReference;
-                    notificationMessage.Receiver = GetReceiver();
-                    notificationMessage.ArchiveReference = reportQueueItem.ArchiveReference;
-                    var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
-                    notificationMessage.MessageData = messageData;
-                    var plainReceiptHtml = GetSubmitterReceipt(reportQueueItem.ArchiveReference);
-                    byte[] PDFInbytes = _htmlToPdfConverterHttpClient.Get(plainReceiptHtml);
+                submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
+                base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
+                var notificationMessage = new AltinnNotificationMessage();
+                notificationMessage.ArchiveReference = ArchiveReference;
+                notificationMessage.Receiver = GetReceiver();
+                notificationMessage.ArchiveReference = reportQueueItem.ArchiveReference;
+                var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
+                notificationMessage.MessageData = messageData;
+                var plainReceiptHtml = GetSubmitterReceipt(reportQueueItem);
+                byte[] PDFInbytes = _htmlToPdfConverterHttpClient.Get(plainReceiptHtml);
                     
-                    var receiptAttachment = new AttachmentBinary()
-                    {
-                        BinaryContent = PDFInbytes,
-                        Filename = "Kvittering.pdf",
-                        Name = "Kvittering",
-                        ArchiveReference = ArchiveReference
-                    };
-                    string publicContainerName = _blobOperations.GetPublicBlobContainerName(reportQueueItem.ArchiveReference.ToLower());
-                    var metadataList = new List<KeyValuePair<string, string>>();
-                    metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));
-                    var mainFormFromBlobStorage = _blobOperations.GetBlobsAsBytesByMetadata(BlobStorageEnum.Public, publicContainerName, metadataList);
+                var receiptAttachment = new AttachmentBinary()
+                {
+                    BinaryContent = PDFInbytes,
+                    Filename = "Kvittering.pdf",
+                    Name = "Kvittering",
+                    ArchiveReference = ArchiveReference
+                };
+                string publicContainerName = _blobOperations.GetPublicBlobContainerName(reportQueueItem.ArchiveReference.ToLower());
+                var metadataList = new List<KeyValuePair<string, string>>();
+                metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));
+                var mainFormFromBlobStorage = _blobOperations.GetBlobsAsBytesByMetadata(BlobStorageEnum.Public, publicContainerName, metadataList);
 
-                    var mainFormAttachment = new AttachmentBinary()
-                    {
-                        BinaryContent = mainFormFromBlobStorage.First(),
-                        Filename = GetFileNameForMainForm().Filename,
-                        Name = GetFileNameForMainForm().Name,
-                        ArchiveReference = ArchiveReference
-                    };
+                var mainFormAttachment = new AttachmentBinary()
+                {
+                    BinaryContent = mainFormFromBlobStorage.First(),
+                    Filename = GetFileNameForMainForm().Filename,
+                    Name = GetFileNameForMainForm().Name,
+                    ArchiveReference = ArchiveReference
+                };
 
-                    notificationMessage.Attachments = new List<Attachment>() { receiptAttachment, mainFormAttachment };
-                    base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
-                    _notificationAdapter.SendNotification(notificationMessage);
-                    base._log.LogDebug($"{GetType().Name}: {plainReceiptHtml}");
-                    var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
-                }
+                notificationMessage.Attachments = new List<Attachment>() { receiptAttachment, mainFormAttachment };
+                base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
+                _notificationAdapter.SendNotification(notificationMessage);
+                base._log.LogDebug($"{GetType().Name}: {plainReceiptHtml}");
+                var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
             }
             catch (Exception ex)
             {

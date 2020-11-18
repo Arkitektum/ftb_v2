@@ -15,13 +15,15 @@ namespace FtB_FormLogic
     public class LogicBase<T>
     {
         protected readonly ITableStorage _tableStorage;
+        protected readonly ITableStorageOperations _tableStorageOperations;
         protected readonly ILogger _log;
         protected readonly DbUnitOfWork _dbUnitOfWork;
 
-        public LogicBase(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork)
+        public LogicBase(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, DbUnitOfWork dbUnitOfWork)
         {
             _repo = repo;
             _tableStorage = tableStorage;
+            _tableStorageOperations = tableStorageOperations;
             _log = log;
             _dbUnitOfWork = dbUnitOfWork;
         }
@@ -36,7 +38,7 @@ namespace FtB_FormLogic
             FormData = SerializeUtil.DeserializeFromString<T>(data);
         }
 
-        protected void UpdateReceiverEntity(string partitionKey, string rowKey, ReceiverStatusEnum status)
+        protected void AddReceiverProcessStatus(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverStatusEnum statusEnum)
         {
             bool runAgain;
             do
@@ -44,29 +46,13 @@ namespace FtB_FormLogic
                 runAgain = false;
                 try
                 {
-                    ReceiverEntity receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(partitionKey, rowKey);
-                    receiverEntity.Status = Enum.GetName(typeof(ReceiverStatusEnum), status);
-                    _log.LogDebug($"ID={rowKey}. Updating changed entity for {partitionKey} and {rowKey}. Status: {receiverEntity.Status}.....");
-                    var updatedEntity = _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
-                }
-                catch (TableStorageConcurrentException ex)
-                {
-                    if (ex.HTTPStatusCode == 412)
-                    {
-                        int randomNumber = new Random().Next(0, 1000);
-                        _log.LogInformation($"ID={rowKey}. ArchveReference={partitionKey}. Optimistic concurrency violation – entity has changed since it was retrieved. Run again after { randomNumber.ToString() } ms.");
-                        Thread.Sleep(randomNumber);
-                        runAgain = true;
-                    }
-                    else
-                    {
-                        _log.LogError($"Error incrementing submittal record for ID={rowKey}. ArchveReference={partitionKey}. Message: { ex.Message }");
-                        throw ex;
-                    }
+                    ReceiverEntity receiverEntity = new ReceiverEntity($"{archiveReference}-{receiverSequenceNumber}",$"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum, DateTime.Now);
+                    _log.LogDebug($"ID={receiverSequenceNumber}. Added receiver status for {archiveReference}, receiverID {receiverID} and {receiverSequenceNumber}. Status: {receiverEntity.Status}.....");
+                    _tableStorage.InsertEntityRecord<ReceiverEntity>(receiverEntity);
                 }
                 catch (Exception ex)
                 {
-                    _log.LogError($"Error incrementing submittal record for ID={rowKey}. ArchveReference={partitionKey}. Message: { ex.Message }");
+                    _log.LogError($"Error adding receiver record for ID={receiverSequenceNumber}. ArchveReference={archiveReference}. Message: { ex.Message }");
                     throw ex;
                 }
             } while (runAgain);

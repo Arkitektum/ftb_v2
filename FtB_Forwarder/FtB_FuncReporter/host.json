@@ -19,6 +19,13 @@
       "FtB_ProcessStrategies": "Debug",
       "FtB_FuncReporter": "Debug"
     }
+  },
+  "extensions": {
+    "serviceBus": {
+      "prefetchCount": 1,
+      "messageHandlerOptions": { "maxConcurrentCalls": 1 },
+      "sessionHandlerOptions": { "maxConcurrentCalls": 1 }
+    }
   }
 
 }

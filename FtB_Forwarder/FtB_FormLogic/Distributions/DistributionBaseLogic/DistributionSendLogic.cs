@@ -22,7 +22,8 @@ namespace FtB_FormLogic
         public AltinnDistributionMessage DistributionMessage { get; set; }
 
 
-        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IDistributionAdapter distributionAdapter, DbUnitOfWork dbUnitOfWork) : base(repo, tableStorage, log, dbUnitOfWork)
+        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, IDistributionAdapter distributionAdapter, DbUnitOfWork dbUnitOfWork) 
+            : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
         {
             _distributionAdapter = distributionAdapter;
         }
@@ -34,12 +35,11 @@ namespace FtB_FormLogic
             _log.LogDebug("Maps prefill data for {0}", sendQueueItem.Receiver.Id);
             MapPrefillData(sendQueueItem.Receiver.Id);
             MapDistributionMessage();
-            UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillCreated);
-
+            AddReceiverProcessStatus(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillCreated);
             //Which sendData to use
             var prefillData = prefillSendData.FirstOrDefault();
-
-
+            
+            
             prefillData.InitialExternalSystemReference = DistributionMessage.DistributionFormReferenceId.ToString();
             _log.LogDebug("Creates distribution form with reference {0} for {1} - {2}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
 
@@ -93,7 +93,7 @@ namespace FtB_FormLogic
                 _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon behandling ferdig");
                                 
                 //Use result of SendDistribution to update receiver entity
-                UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.CorrespondenceSent);
+                AddReceiverProcessStatus(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverStatusEnum.CorrespondenceSent);
             }
 
             return returnReportQueueItem;
@@ -174,7 +174,7 @@ namespace FtB_FormLogic
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
             _log.LogDebug($"{GetType().Name}: PersistPrefill for archiveReference {sendQueueItem.ArchiveReference}....");
             _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(DistributionMessage.PrefilledXmlDataString), metaData);
-            UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillPersisted);
+            AddReceiverProcessStatus(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillPersisted);
         }
 
         protected virtual void PersistMessage(SendQueueItem sendQueueItem)
@@ -182,7 +182,7 @@ namespace FtB_FormLogic
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("DistributionMessageReceiver", sendQueueItem.Receiver.Id) };
             _log.LogDebug($"{GetType().Name}: PersistMessage for archiveReference {sendQueueItem.ArchiveReference}....");
             _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Message-{Guid.NewGuid()}", Encoding.Default.GetBytes(SerializeUtil.Serialize(DistributionMessage.NotificationMessage.MessageData)), metaData);
-            UpdateReceiverEntity(sendQueueItem.ArchiveReference, sendQueueItem.StorageRowKey, ReceiverStatusEnum.PrefillPersisted);
+            AddReceiverProcessStatus(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillPersisted);
         }
 
         protected abstract void MapPrefillData(string receiverId);

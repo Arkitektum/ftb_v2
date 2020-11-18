@@ -6,6 +6,9 @@ namespace FtB_Common.BusinessModels
 {
     public class ReceiverEntity : TableEntity, IStorageEntity
     {
+        public string ReceiverId { get; set; }
+        public string Status { get; set; }
+        public DateTime CreatedTimeStamp { get; set; }
         public ReceiverEntity() { }
         
         public ReceiverEntity(string archiveReference, string storageRowKey, string receiverId, ReceiverStatusEnum status, DateTime createdTimestamp)
@@ -28,8 +31,6 @@ namespace FtB_Common.BusinessModels
             PartitionKey = archiveReference;
             RowKey = storageRowKey;
         }
-        public string ReceiverId { get; set; }
-        public string Status { get; set; }
-        public DateTime CreatedTimeStamp { get; set; }
+
     }
 }

@@ -22,7 +22,8 @@ namespace FtB_FormLogic
             set { _receivers = value; }
         }
 
-        public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory) : base(repo, tableStorage, log, dbUnitOfWork)
+        public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory) 
+            : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
         {
             _decryptionFactory = decryptionFactory;
         }
@@ -35,14 +36,13 @@ namespace FtB_FormLogic
 
             CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
 
-            var sendQueueItems = new List<SendQueueItem>();            
-
+            var sendQueueItems = new List<SendQueueItem>();
+            int receiverSequenceNumber = 0;
             foreach (var receiverVar in Receivers)
             {
-                var storageRowKey = Guid.NewGuid().ToString();
-                CreateReceiverDatabaseStatus(submittalQueueItem.ArchiveReference, storageRowKey, receiverVar);
-                //var receiver = new Receiver() { Type = receiverVar.Type, Id = receiverVar.Id };
-                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, StorageRowKey= storageRowKey, Receiver = receiverVar });
+                CreateReceiverDatabaseStatus(submittalQueueItem.ArchiveReference, receiverSequenceNumber.ToString(), receiverVar);
+                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverSequenceNumber = receiverSequenceNumber.ToString(), Receiver = receiverVar });
+                receiverSequenceNumber++;
             }
 
             return sendQueueItems;
@@ -63,14 +63,11 @@ namespace FtB_FormLogic
             }
         }
 
-        private void CreateReceiverDatabaseStatus(string archiveReference, string storageRowKey, Receiver receiver)
+        private void CreateReceiverDatabaseStatus(string archiveReference, string receiverSequenceNumber, Receiver receiver)
         {
             try
             {
-                //ReceiverEntity entity = new ReceiverEntity(archiveReference, receiver.Id.Replace("/", ""), ReceiverStatusEnum.Created, DateTime.Now);
-                ReceiverEntity entity = new ReceiverEntity(archiveReference, storageRowKey, receiver.Id, ReceiverStatusEnum.Created, DateTime.Now);
-                _tableStorage.InsertEntityRecordAsync<ReceiverEntity>(entity);
-                _log.LogInformation($"Create receiver database status for {archiveReference} and reciverId={receiver.Id}.");
+                AddReceiverProcessStatus(archiveReference, receiverSequenceNumber, receiver.Id, ReceiverStatusEnum.Created);
             }
             catch (Exception ex)
             {

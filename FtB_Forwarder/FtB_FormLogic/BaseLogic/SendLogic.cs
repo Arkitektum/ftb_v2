@@ -10,7 +10,8 @@ namespace FtB_FormLogic
 
         protected virtual Receiver Receiver { get; set; }
 
-        public SendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork) : base(repo, tableStorage, log, dbUnitOfWork)
+        public SendLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, DbUnitOfWork dbUnitOfWork) 
+            : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
         {
         }
 
@@ -20,7 +21,7 @@ namespace FtB_FormLogic
             _log.LogDebug($"{GetType().Name}: Processing logic for archiveReference {sendQueueItem.ArchiveReference}....");            
             base.LoadData(sendQueueItem.ArchiveReference);
 
-            return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, StorageRowKey = sendQueueItem.StorageRowKey, Receiver = sendQueueItem.Receiver };
+            return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber, Receiver = sendQueueItem.Receiver };
         }
     }
 }

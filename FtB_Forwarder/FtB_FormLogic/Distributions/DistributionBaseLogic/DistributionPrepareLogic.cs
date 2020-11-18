@@ -12,7 +12,8 @@ namespace FtB_FormLogic
         private readonly ILogger log;
         protected  override  List<Receiver> Receivers { get => base.Receivers; set => base.Receivers = value; }
 
-        public DistributionPrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory) : base(repo, tableStorage, log, dbUnitOfWork, decryptionFactory)
+        public DistributionPrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory) 
+            : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork, decryptionFactory)
         {
             this.log = log;
         }

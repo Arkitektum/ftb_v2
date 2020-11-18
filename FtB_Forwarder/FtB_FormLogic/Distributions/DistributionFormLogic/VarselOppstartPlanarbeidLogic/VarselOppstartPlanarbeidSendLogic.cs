@@ -25,13 +25,14 @@ namespace FtB_FormLogic
 
         public VarselOppstartPlanarbeidSendLogic(IFormDataRepo repo,
                                                  ITableStorage tableStorage,
+                                                 ITableStorageOperations tableStorageOperations,
                                                  IBlobOperations blobOperations,
                                                  ILogger<VarselOppstartPlanarbeidSendLogic> log,
                                                  IDistributionAdapter distributionAdapter,
                                                  IDistributionDataMapper<NabovarselPlanType> distributionDataMapper,
                                                  VarselOppstartPlanarbeidPrefillMapper prefillMapper, DbUnitOfWork dbUnitOfWork
             )
-            : base(repo, tableStorage, log, distributionAdapter, dbUnitOfWork)
+            : base(repo, tableStorage, tableStorageOperations, log, distributionAdapter, dbUnitOfWork)
         {
             _blobOperations = blobOperations;
             _distributionDataMapper = distributionDataMapper;
