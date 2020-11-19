@@ -50,7 +50,7 @@ namespace FtB_FormLogic
             var returnItem = base.Execute(reportQueueItem);
             AddReceiverProcessStatus(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverStatusEnum.ReadyForReporting);
 
-            if (AreAllReceiversReadyForReporting(reportQueueItem) && !SubmittalReceiptHasBeenSent(reportQueueItem))
+            if (AreAllReceiversReadyForReporting(reportQueueItem))
             {
                 SendReceiptToSubmitterWhenAllReceiversAreProcessed(reportQueueItem);
             }
@@ -58,12 +58,6 @@ namespace FtB_FormLogic
             return returnItem;
         }
 
-        private bool SubmittalReceiptHasBeenSent(ReportQueueItem reportQueueItem)
-        {
-            SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
-         
-            return submittalEntity.Status == Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
-        }
         private void SendReceiptToSubmitterWhenAllReceiversAreProcessed(ReportQueueItem reportQueueItem)
         {
             try
