@@ -50,7 +50,10 @@ namespace FtB_Common.Storage
             {
                 string tableNameFromType = GetTableName<T>();
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
-                cloudTable.CreateIfNotExists();
+
+                if(!cloudTable.Exists())
+                    cloudTable.CreateIfNotExists();
+
                 TableOperation insertOperation = TableOperation.Insert(entity);
                 TableResult result = await cloudTable.ExecuteAsync(insertOperation);
                 var insertedEntity = (TableEntity)result.Result;
@@ -68,7 +71,10 @@ namespace FtB_Common.Storage
             {
                 string tableNameFromType = GetTableName<T>();
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
-                cloudTable.CreateIfNotExists();
+
+                if(!cloudTable.Exists())
+                    cloudTable.CreateIfNotExists();
+
                 TableOperation insertOperation = TableOperation.Insert(entity);
                 TableResult result = cloudTable.Execute(insertOperation);
                 var insertedEntity = (TableEntity)result.Result;
