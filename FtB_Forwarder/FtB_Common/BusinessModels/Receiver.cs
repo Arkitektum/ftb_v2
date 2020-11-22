@@ -18,4 +18,17 @@
             }
         }
     }
+
+    public class ReceiverInternal
+    {
+        public ReceiverType Type { get; set; }
+        public string Id { get; set; }
+        public string DecryptedId { get; set; }
+
+        public ReceiverInternal(Receiver receiver)
+        {
+            Id = receiver.Id;
+            Type = receiver.Type;
+        }
+    }
 }

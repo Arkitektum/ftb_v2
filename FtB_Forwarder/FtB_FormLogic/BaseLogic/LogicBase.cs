@@ -8,7 +8,9 @@ using Ftb_Repositories;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -33,9 +35,37 @@ namespace FtB_FormLogic
         public void LoadData(string archiveReference)
         {
             _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {archiveReference}....");
-            ArchiveReference = archiveReference;            
+            ArchiveReference = archiveReference;
             var data = _repo.GetFormData(ArchiveReference);
             FormData = SerializeUtil.DeserializeFromString<T>(data);
+        }
+
+        protected void AddReceiversProcessStatus(IEnumerable<ReceiverEntity> receivers)
+        {
+            Parallel.ForEach(receivers, receiver =>
+            {
+                _tableStorage.InsertEntityRecord<ReceiverEntity>(receiver);
+            });
+
+            //foreach (var receiver in receivers)
+            //{
+            //    _tableStorage.InsertEntityRecord<ReceiverEntity>(receiver);
+            //}
+
+            //bool runAgain;
+            //do
+            //{
+            //    runAgain = false;
+            //    try
+            //    {
+            //        _tableStorage.InsertEntityRecords<ReceiverEntity>(receivers);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw ex;
+            //    }
+            //} while (runAgain);
+
         }
 
         protected void AddReceiverProcessStatus(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverStatusEnum statusEnum)
@@ -46,7 +76,7 @@ namespace FtB_FormLogic
                 runAgain = false;
                 try
                 {
-                    ReceiverEntity receiverEntity = new ReceiverEntity($"{archiveReference}-{receiverSequenceNumber}",$"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum, DateTime.Now);
+                    ReceiverEntity receiverEntity = new ReceiverEntity($"{archiveReference}-{receiverSequenceNumber}", $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum, DateTime.Now);
                     _log.LogDebug($"ID={receiverSequenceNumber}. Added receiver status for {archiveReference}, receiverID {receiverID} and {receiverSequenceNumber}. Status: {receiverEntity.Status}.....");
                     _tableStorage.InsertEntityRecord<ReceiverEntity>(receiverEntity);
                 }

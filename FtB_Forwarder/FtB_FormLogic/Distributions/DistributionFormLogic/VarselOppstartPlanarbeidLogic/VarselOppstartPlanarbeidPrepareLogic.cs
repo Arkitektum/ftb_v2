@@ -16,35 +16,57 @@ namespace FtB_FormLogic
             base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork, decryptionFactory)
         { }
 
-        private List<Receiver> receivers;
-        protected override List<Receiver> Receivers
+        //private List<Receiver> receivers;
+        //protected override List<Receiver> Receivers
+        //{
+        //    get
+        //    {
+        //        if (receivers == null)
+        //        {
+        //            receivers = new List<Receiver>();
+
+        //            foreach (var beroertPart in this.FormData.beroerteParter)
+        //            {
+        //                Enum.TryParse(beroertPart.partstype.kodeverdi, out ReceiverType receiverType);
+        //                string id;
+        //                if (receiverType.Equals(ReceiverType.Privatperson))
+        //                {
+        //                    id = beroertPart.foedselsnummer;
+        //                }
+        //                else
+        //                {
+        //                    id = beroertPart.organisasjonsnummer;
+        //                }
+        //                receivers.Add(new Receiver() { Type = receiverType, Id = id });
+        //            }
+        //            base.Receivers = receivers;
+        //        };
+
+        //        return base.Receivers;
+        //    }
+        //    set { base.Receivers = value; }
+        //}
+
+        public override void SetReceivers()
         {
-            get
+            var receivers = new List<Receiver>();
+
+            foreach (var beroertPart in this.FormData.beroerteParter)
             {
-                if (receivers == null)
+                Enum.TryParse(beroertPart.partstype.kodeverdi, out ReceiverType receiverType);
+                string id;
+                if (receiverType.Equals(ReceiverType.Privatperson))
                 {
-                    receivers = new List<Receiver>();
-
-                    foreach (var beroertPart in this.FormData.beroerteParter)
-                    {
-                        Enum.TryParse(beroertPart.partstype.kodeverdi, out ReceiverType receiverType);
-                        string id;
-                        if (receiverType.Equals(ReceiverType.Privatperson))
-                        {
-                            id = beroertPart.foedselsnummer;
-                        }
-                        else
-                        {
-                            id = beroertPart.organisasjonsnummer;
-                        }
-                        receivers.Add(new Receiver() { Type = receiverType, Id = id });
-                    }
-                    base.Receivers = receivers;
-                };
-
-                return base.Receivers;
+                    id = beroertPart.foedselsnummer;
+                }
+                else
+                {
+                    id = beroertPart.organisasjonsnummer;
+                }
+                receivers.Add(new Receiver() { Type = receiverType, Id = id });
             }
-            set { base.Receivers = value; }
+
+            base.SetReceivers(receivers);
         }
     }
 }

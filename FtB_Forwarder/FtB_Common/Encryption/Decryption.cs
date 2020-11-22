@@ -23,25 +23,33 @@ namespace FtB_Common.Encryption
             PrivateKey = cryptoProviders.Item1;
             PublicKey = cryptoProviders.Item2;
         }
-        
+
         public string DecryptText(string cipherText)
         {
             var retVal = cipherText;
             try
             {
-                retVal = DecryptString(PrivateKey, cipherText);
+                if (cipherText.Length > 11)
+                    retVal = DecryptString(PrivateKey, cipherText);
             }
-            catch{} //To be able to test decryption
+            catch { } //To be able to test decryption
 
             return retVal;
         }
-        
+
         private static string DecryptString(RSACng rsaCryptoPrivateKey, string cipherB64Text)
-        {           
-            var cipherBytes = Convert.FromBase64String(cipherB64Text);
-            var decryptedBytes = rsaCryptoPrivateKey.Decrypt(cipherBytes, RSAEncryptionPadding.Pkcs1);
-            var byteConverter = new UnicodeEncoding();
-            return byteConverter.GetString(decryptedBytes);
+        {
+            var retVal = string.Empty;
+            try
+            {
+                var cipherBytes = Convert.FromBase64String(cipherB64Text);
+                var decryptedBytes = rsaCryptoPrivateKey.Decrypt(cipherBytes, RSAEncryptionPadding.Pkcs1);
+                var byteConverter = new UnicodeEncoding();
+                retVal = byteConverter.GetString(decryptedBytes);
+            }
+            catch { }
+
+            return retVal;
         }
 
         public string EncryptText(string clearText)

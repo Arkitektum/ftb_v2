@@ -7,23 +7,24 @@ using System.Text;
 
 namespace FtB_Common.BusinessLogic
 {
-    public class ReceiverEqualtiyComparer : IEqualityComparer<Receiver>
+    public class ReceiverEqualtiyComparer : IEqualityComparer<ReceiverInternal>
     {
-        private readonly IDecryption _decryption;
+        //private readonly IDecryption _decryption;
 
-        public ReceiverEqualtiyComparer(IDecryptionFactory decryptionFactory)
+        //public ReceiverEqualtiyComparer(IDecryptionFactory decryptionFactory)
+        //{
+        //    _decryption = decryptionFactory.GetDecryptor();
+        //}
+        public bool Equals([AllowNull] ReceiverInternal x, [AllowNull] ReceiverInternal y)
         {
-            _decryption = decryptionFactory.GetDecryptor();
-        }
-        public bool Equals([AllowNull] Receiver x, [AllowNull] Receiver y)
-        {
-            bool result = _decryption.DecryptText(x.Id).Equals(_decryption.DecryptText(y.Id), StringComparison.InvariantCultureIgnoreCase);
+            bool result = x.DecryptedId.Equals(y.DecryptedId, StringComparison.InvariantCultureIgnoreCase);
+            //bool result = _decryption.DecryptText(x.Id).Equals(_decryption.DecryptText(y.Id), StringComparison.InvariantCultureIgnoreCase);
             return result;
         }
 
-        public int GetHashCode([DisallowNull] Receiver obj)
+        public int GetHashCode([DisallowNull] ReceiverInternal obj)
         {
-            return _decryption.DecryptText(obj.Id).GetHashCode();
+            return obj.DecryptedId.GetHashCode();
         }
     }
 }

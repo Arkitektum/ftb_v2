@@ -15,17 +15,37 @@ namespace FtB_FormLogic
     {
         private readonly IDecryptionFactory _decryptionFactory;
 
-        IEnumerable<Receiver> _receivers;
+        protected List<Receiver> _receivers;
         protected virtual List<Receiver> Receivers
         {
-            get { return _receivers.Distinct(new ReceiverEqualtiyComparer(_decryptionFactory)).ToList(); }
+            //get { return _receivers.Distinct(new ReceiverEqualtiyComparer(_decryptionFactory)).ToList(); }
+            get { return _receivers; }
             set { _receivers = value; }
         }
+
+        
 
         public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory) 
             : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
         {
             _decryptionFactory = decryptionFactory;
+        }
+
+        public virtual void SetReceivers()
+        {  }
+
+        public void SetReceivers(IEnumerable<Receiver> receivers)
+        {
+            var comparrisonSource = new List<ReceiverInternal>();
+            foreach (var receiver in receivers)
+            {
+                var receiverInternal = new ReceiverInternal(receiver);
+                receiverInternal.DecryptedId = receiverInternal.Id.Length > 11 ? _decryptionFactory.GetDecryptor().DecryptText(receiverInternal.Id) : receiver.Id;
+                comparrisonSource.Add(receiverInternal);
+            }
+            //_receivers = comparrisonSource.Distinct(new ReceiverEqualtiyComparer(_decryptionFactory)).ToList<Receiver>();
+            var distinctList = comparrisonSource.Distinct(new ReceiverEqualtiyComparer()).ToList();
+            _receivers = distinctList.Select(s => new Receiver() { Id = s.Id, Type = s.Type }).ToList();
         }
 
         public virtual IEnumerable<SendQueueItem> Execute(SubmittalQueueItem submittalQueueItem)
@@ -34,16 +54,30 @@ namespace FtB_FormLogic
             
             base.LoadData(submittalQueueItem.ArchiveReference);
 
+            SetReceivers();
+
             CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
 
             var sendQueueItems = new List<SendQueueItem>();
-            int receiverSequenceNumber = 0;
-            foreach (var receiverVar in Receivers)
+
+            //Bulk add receivers to database
+            //FUN FACT: Since the partition key differs for all receivers a true bulk operation cannot be performed..
+            var receiverEntities = new List<ReceiverEntity>();
+            for (int i = 0; i < Receivers.Count; i++)
             {
-                CreateReceiverDatabaseStatus(submittalQueueItem.ArchiveReference, receiverSequenceNumber.ToString(), receiverVar);
-                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverSequenceNumber = receiverSequenceNumber.ToString(), Receiver = receiverVar });
-                receiverSequenceNumber++;
+                receiverEntities.Add(new ReceiverEntity($"{ArchiveReference}-{i.ToString()}", $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", Receivers[i].Id, ReceiverStatusEnum.Created, DateTime.Now));
+                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverSequenceNumber = i.ToString(), Receiver = Receivers[i] });
             }
+
+            AddReceiversProcessStatus(receiverEntities);
+
+            //int receiverSequenceNumber = 0;
+            //foreach (var receiverVar in Receivers)
+            //{
+            //    CreateReceiverDatabaseStatus(submittalQueueItem.ArchiveReference, receiverSequenceNumber.ToString(), receiverVar);
+            //    sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverSequenceNumber = receiverSequenceNumber.ToString(), Receiver = receiverVar });
+            //    receiverSequenceNumber++;
+            //}
 
             return sendQueueItems;
         }
@@ -66,7 +100,7 @@ namespace FtB_FormLogic
         private void CreateReceiverDatabaseStatus(string archiveReference, string receiverSequenceNumber, Receiver receiver)
         {
             try
-            {
+            {                
                 AddReceiverProcessStatus(archiveReference, receiverSequenceNumber, receiver.Id, ReceiverStatusEnum.Created);
             }
             catch (Exception ex)
