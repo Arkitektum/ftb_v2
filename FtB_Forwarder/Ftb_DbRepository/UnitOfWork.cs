@@ -1,5 +1,6 @@
 ﻿using Ftb_Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Ftb_Repositories
 {
@@ -29,11 +30,11 @@ namespace Ftb_Repositories
         public IFormMetadataRepository FormMetadata { get; }
         public ILogEntryRepository LogEntries { get; }
 
-        public void Save()
+        public async Task Save()
         {
-            FormMetadata.Save();
-            DistributionForms.Save();
-            LogEntries.Save();
+            await FormMetadata.Save();
+            await DistributionForms.Save();
+            await LogEntries.Save();
         }
 
         //public void Dispose()

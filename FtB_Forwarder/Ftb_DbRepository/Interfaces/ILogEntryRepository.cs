@@ -1,11 +1,12 @@
 ﻿using Ftb_DbModels;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ftb_Repositories.Interfaces
 {
     public interface ILogEntryRepository
     {
-        void Save();
+        Task Save();
         //void Add(LogEntry logEntry);
         void AddInfo(string message);
         void AddInfo(string message, string eventId);

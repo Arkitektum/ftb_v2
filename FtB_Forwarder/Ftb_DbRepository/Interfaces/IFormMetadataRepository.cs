@@ -1,12 +1,13 @@
 ﻿using Ftb_DbModels;
+using System.Threading.Tasks;
 
 namespace Ftb_Repositories.Interfaces
 {
     public interface IFormMetadataRepository
     {
-        FormMetadata Get();
+        Task<FormMetadata> Get();
         void Update(FormMetadata formMetadata);
-        void Save();
+        Task Save();
         void SetArchiveReference(string archiveReference);
     }
 }

@@ -4,6 +4,7 @@ using Ftb_Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ftb_Repositories
 {
@@ -29,11 +30,11 @@ namespace Ftb_Repositories
         //    _logEntries.Add(logEntry);
         //}
 
-        public void Save()
+        public async Task Save()
         {
             _logger.LogInformation($"Persists {_logEntries.Count()} logentries using REST API");
             if (_logEntries != null)
-                _logEntryClient.Post(_archiveReference, _logEntries);
+                await _logEntryClient.Post(_archiveReference, _logEntries);
         }
 
         public void AddInfo(string message)

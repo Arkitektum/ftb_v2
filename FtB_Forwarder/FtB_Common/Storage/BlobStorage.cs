@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FtB_Common.Storage
@@ -34,7 +35,6 @@ namespace FtB_Common.Storage
             _containerClient = GetBlobContainerClient(containerName);
             return _containerClient.GetBlobs(traits: BlobTraits.Metadata);
         }
-
         /*
         public async Task<CloudBlobContainer> SetUpBlobContainerAsync(string containerName)
         {

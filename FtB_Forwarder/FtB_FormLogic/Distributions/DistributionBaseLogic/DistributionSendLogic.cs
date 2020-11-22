@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;using System.Text;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -28,23 +29,23 @@ namespace FtB_FormLogic
             _distributionAdapter = distributionAdapter;
         }
 
-        public override ReportQueueItem Execute(SendQueueItem sendQueueItem)
+        public override async Task<ReportQueueItem> Execute(SendQueueItem sendQueueItem)
         {
             _log.LogDebug("_dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
-            var returnReportQueueItem = base.Execute(sendQueueItem);
+            var returnReportQueueItem = await base.Execute(sendQueueItem);
             _log.LogDebug("Maps prefill data for {0}", sendQueueItem.Receiver.Id);
             MapPrefillData(sendQueueItem.Receiver.Id);
-            MapDistributionMessage();
+            await MapDistributionMessage();
             AddReceiverProcessStatus(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillCreated);
             //Which sendData to use
             var prefillData = prefillSendData.FirstOrDefault();
-            
-            
+
+
             prefillData.InitialExternalSystemReference = DistributionMessage.DistributionFormReferenceId.ToString();
             _log.LogDebug("Creates distribution form with reference {0} for {1} - {2}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
 
             _dbUnitOfWork.DistributionForms.Add(new DistributionForm() { Id = DistributionMessage.DistributionFormReferenceId, ExternalSystemReference = prefillData.ExternalSystemReference, InitialExternalSystemReference = prefillData.InitialExternalSystemReference, DistributionType = prefillData.PrefillFormName });
-            var distributionForm = _dbUnitOfWork.DistributionForms.Get()
+            var distributionForm = (await _dbUnitOfWork.DistributionForms.Get())
                                         .Where(d => d.Id == DistributionMessage.DistributionFormReferenceId).FirstOrDefault();
 
             //Creates combined distribution data structure -- BØR GJERAST ANLEIS.... BORT MED SEG!
@@ -91,7 +92,7 @@ namespace FtB_FormLogic
 
 
                 _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon behandling ferdig");
-                                
+
                 //Use result of SendDistribution to update receiver entity
                 AddReceiverProcessStatus(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverStatusEnum.CorrespondenceSent);
             }
@@ -187,7 +188,7 @@ namespace FtB_FormLogic
 
         protected abstract void MapPrefillData(string receiverId);
 
-        protected virtual void MapDistributionMessage()
+        protected virtual async Task MapDistributionMessage()
         {
             _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {prefillSendData.FirstOrDefault()?.ExternalSystemReference}");
         }

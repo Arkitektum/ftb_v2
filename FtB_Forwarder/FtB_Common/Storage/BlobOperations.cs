@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FtB_Common.Storage
@@ -35,14 +36,14 @@ namespace FtB_Common.Storage
         {
             _logger.LogDebug("Retrieving archived item from blob storage: {0}", containerName);
             try
-            {   
+            {
                 foreach (var blobItem in _privateBlobStorage.GetBlobContainerItems(containerName)) //Filter on metadata here?
                 {
                     var metadataItem = blobItem.Metadata.Where(m => m.Key.Equals("type", StringComparison.OrdinalIgnoreCase)
                             && m.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.ArchivedItemInformation), StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault();
 
-                    if(!metadataItem.Equals(default(KeyValuePair<string,string>)))
+                    if (!metadataItem.Equals(default(KeyValuePair<string, string>)))
                     {
                         StringBuilder sb = new StringBuilder();
                         var blobContainerClient = _privateBlobStorage.GetBlobContainerClient(containerName);
@@ -94,34 +95,59 @@ namespace FtB_Common.Storage
             return _archivedItem.DataFormatVersionID;
         }
 
-        public string GetFormdata(string containerName)
+        public async Task<string> GetFormdata(string containerName)
         {
             try
             {
                 foreach (var blobItem in _privateBlobStorage.GetBlobContainerItems(containerName))
                 {
-                    var blobContainerClient = _privateBlobStorage.GetBlobContainerClient(containerName);
-                    var client = blobContainerClient.GetBlobClient(blobItem.Name);
-                    BlobProperties properties = client.GetPropertiesAsync().GetAwaiter().GetResult();
-                    foreach (var metadataItem in properties.Metadata)
+
+                    var metadataItem = blobItem.Metadata.Where(m => (m.Key.Equals("Type", StringComparison.OrdinalIgnoreCase)
+                        && m.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.FormData), StringComparison.OrdinalIgnoreCase)))
+                        .FirstOrDefault();
+
+                    if (!metadataItem.Equals(default(KeyValuePair<string, string>)))
                     {
-                        if (metadataItem.Key.Equals("Type", StringComparison.OrdinalIgnoreCase) && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.FormData), StringComparison.OrdinalIgnoreCase))
+                        var blobContainerClient = _privateBlobStorage.GetBlobContainerClient(containerName);
+                        var client = blobContainerClient.GetBlobClient(blobItem.Name);
+
+                        StringBuilder sb = new StringBuilder();
+                        if (await client.ExistsAsync())
                         {
-                            StringBuilder sb = new StringBuilder();
-                            if (client.ExistsAsync().GetAwaiter().GetResult())
+                            var response = await client.DownloadAsync();
+                            using (var streamReader = new StreamReader(response.Value.Content))
                             {
-                                var response = client.DownloadAsync().GetAwaiter().GetResult();
-                                using (var streamReader = new StreamReader(response.Value.Content))
+                                while (!streamReader.EndOfStream)
                                 {
-                                    while (!streamReader.EndOfStream)
-                                    {
-                                        sb.Append(streamReader.ReadLineAsync().GetAwaiter().GetResult());
-                                    }
+                                    sb.Append(await streamReader.ReadLineAsync());
                                 }
                             }
-                            return sb.ToString();
                         }
+                        return sb.ToString();
                     }
+
+                    //var blobContainerClient = _privateBlobStorage.GetBlobContainerClient(containerName);
+                    //var client = blobContainerClient.GetBlobClient(blobItem.Name);
+                    //BlobProperties properties = client.GetPropertiesAsync().GetAwaiter().GetResult();
+                    //foreach (var metadataItem in properties.Metadata)
+                    //{
+                    //    if (metadataItem.Key.Equals("Type", StringComparison.OrdinalIgnoreCase) && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.FormData), StringComparison.OrdinalIgnoreCase))
+                    //    {
+                    //        StringBuilder sb = new StringBuilder();
+                    //        if (client.ExistsAsync().GetAwaiter().GetResult())
+                    //        {
+                    //            var response = client.DownloadAsync().GetAwaiter().GetResult();
+                    //            using (var streamReader = new StreamReader(response.Value.Content))
+                    //            {
+                    //                while (!streamReader.EndOfStream)
+                    //                {
+                    //                    sb.Append(streamReader.ReadLineAsync().GetAwaiter().GetResult());
+                    //                }
+                    //            }
+                    //        }
+                    //        return sb.ToString();
+                    //    }
+                    //}
                 }
                 throw new ArgumentException($"Formdata i container {containerName} finnes ikke i BlobStorage");
             }
@@ -199,7 +225,7 @@ namespace FtB_Common.Storage
             return blobs;
         }
 
-        public IEnumerable<(string attachmentFileName, string attachmentFileUrl, string attachmentType)> GetBlobUrlsFromPublicStorageByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
+        public async Task<IEnumerable<(string attachmentFileName, string attachmentFileUrl, string attachmentType)>> GetBlobUrlsFromPublicStorageByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
         {
             var blobItems = _publicBlobStorage.GetBlobContainerItems(containerName);
             List<(string attachmentFileName, string attachmentFileUrl, string attachmentType)> blobUrls = new List<(string attachmentFileName, string attachmentFileUrl, string attachmentType)>();
@@ -207,7 +233,7 @@ namespace FtB_Common.Storage
             foreach (var blobItem in blobItems)
             {
                 var blobBlock = _publicBlobStorage.GetBlockBlobClient(containerName, blobItem.Name);
-                BlobProperties properties = blobBlock.GetPropertiesAsync().GetAwaiter().GetResult();
+                BlobProperties properties = await blobBlock.GetPropertiesAsync();
                 var matchingMetadataElements = properties.Metadata?.Where(m => metaDataFilter.Any(f => m.Key == f.Key && m.Value == f.Value)).ToList();
                 foreach (var metadataElement in matchingMetadataElements)
                 {
@@ -223,26 +249,26 @@ namespace FtB_Common.Storage
         public string GetPublicBlobContainerName(string containerName)
         {
             var blobItems = _privateBlobStorage.GetBlobContainerItems(containerName);
-            List<KeyValuePair<string, string>> blobUrls = new List<KeyValuePair<string, string>>();
+            var blobUrls = new List<KeyValuePair<string, string>>();
 
             string publicBlobContainer = "";
-            var metadataFilter = new List<KeyValuePair<string, string>>();
-            metadataFilter.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.FormData)));
+            //var metadataFilter = new List<KeyValuePair<string, string>>();
+            //metadataFilter.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.FormData)));
+
             foreach (var blobItem in blobItems)
             {
-                var blobBlock = _privateBlobStorage.GetBlockBlobClient(containerName, blobItem.Name);
-                BlobProperties properties = blobBlock.GetPropertiesAsync().GetAwaiter().GetResult();
-                List<string> publicBlobContainerList = properties.Metadata.Where(x => x.Key.Equals("PublicBlobContainerName", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).ToList();
+                List<string> publicBlobContainerList = blobItem.Metadata.Where(x => x.Key.Equals("PublicBlobContainerName", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).ToList();
                 if (publicBlobContainerList.Count == 1)
                 {
                     publicBlobContainer = publicBlobContainerList[0];
+                    break;
                 }
             }
 
             return publicBlobContainer;
         }
 
-        public IEnumerable<(string attachmentType, string fileName)> GetListOfBlobsWithMetadataType(BlobStorageEnum storageEnum, string containerName, IEnumerable<BlobStorageMetadataTypeEnum> blobItemTypes)
+        public async Task<IEnumerable<(string attachmentType, string fileName)>> GetListOfBlobsWithMetadataType(BlobStorageEnum storageEnum, string containerName, IEnumerable<BlobStorageMetadataTypeEnum> blobItemTypes)
         {
             BlobStorage storage = GetBlobStorage(storageEnum);
             var listOfAttachments = new List<(string attachmentType, string fileName)>();
@@ -250,7 +276,7 @@ namespace FtB_Common.Storage
             foreach (var blobItem in blobItems)
             {
                 var blob = storage.GetBlockBlobClient(containerName, blobItem.Name);
-                BlobProperties properties = blob.GetPropertiesAsync().GetAwaiter().GetResult();
+                BlobProperties properties = await blob.GetPropertiesAsync();
                 var metadataList = properties.Metadata;
                 var blobItemTypesAsString = blobItemTypes.Select(x => Enum.GetName(typeof(BlobStorageMetadataTypeEnum), x)).ToList();
                 var blobIsOfRequestedType = metadataList.Any(x => x.Key.Equals("Type", StringComparison.OrdinalIgnoreCase) && blobItemTypesAsString.Contains(x.Value));

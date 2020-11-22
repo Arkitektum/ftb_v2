@@ -32,7 +32,7 @@ namespace FtB_ProcessStrategies
                 string formatId = await _blobOperations.GetFormatIdFromStoredBlob(submittalQueueItem.ArchiveReference);
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<IEnumerable<SendQueueItem>, SubmittalQueueItem>(formatId, FormLogicProcessingContext.Prepare);
                 
-                return formLogicBeingProcessed.Execute(submittalQueueItem);
+                return await formLogicBeingProcessed.Execute(submittalQueueItem);
             }
             catch (Azure.RequestFailedException rfEx)
             {

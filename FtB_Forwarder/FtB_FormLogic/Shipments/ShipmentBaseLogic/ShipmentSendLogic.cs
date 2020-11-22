@@ -2,6 +2,7 @@
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -18,9 +19,9 @@ namespace FtB_FormLogic
             this.svarUtAdapter = svarUtAdapter;
         }
 
-        public override  ReportQueueItem Execute(SendQueueItem sendQueueItem)
+        public override  async Task<ReportQueueItem> Execute(SendQueueItem sendQueueItem)
         {
-            var t = base.Execute(sendQueueItem);
+            var t = await base.Execute(sendQueueItem);
 
             //Map fra FormData til SvarUtPayload 
             svarUtAdapter.Send(new SvarUtPayload() { ReceiverId = Receiver.Id, ReceiverType = Receiver.Type.ToString(), BodyText = "formadata mapping inn i HTML greier sikkert.." });

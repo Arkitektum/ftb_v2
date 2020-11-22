@@ -2,6 +2,7 @@
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -15,11 +16,10 @@ namespace FtB_FormLogic
         {
         }
 
-        public virtual ReportQueueItem Execute(SendQueueItem sendQueueItem)
+        public virtual async Task<ReportQueueItem> Execute(SendQueueItem sendQueueItem)
         {
             this.Receiver = sendQueueItem.Receiver;
-            _log.LogDebug($"{GetType().Name}: Processing logic for archiveReference {sendQueueItem.ArchiveReference}....");            
-            base.LoadData(sendQueueItem.ArchiveReference);
+            await base.LoadData(sendQueueItem.ArchiveReference);
 
             return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber, Receiver = sendQueueItem.Receiver };
         }

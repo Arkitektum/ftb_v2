@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Ftb_Repositories.HttpClients
 {
@@ -19,7 +20,7 @@ namespace Ftb_Repositories.HttpClients
             _settings = settings;
         }
 
-        public void Post(string archiveReference, IEnumerable<DistributionForm> distributionForms)
+        public async Task Post(string archiveReference, IEnumerable<DistributionForm> distributionForms)
         {
             var requestUri = $"{archiveReference}/distributions";
             var json = JsonSerializer.Serialize(distributionForms);
@@ -27,21 +28,21 @@ namespace Ftb_Repositories.HttpClients
 
             Client.BaseAddress = new Uri(_settings.Value.Uri);
             Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
-            var result = Client.PostAsync(requestUri, stringContent).GetAwaiter().GetResult();
+            var result = await Client.PostAsync(requestUri, stringContent);
         }
 
-        public IEnumerable<DistributionForm> Get(string archiveReference)
+        public async Task<IEnumerable<DistributionForm>> Get(string archiveReference)
         {
             var requestUri = $"{archiveReference}/distributions";
 
             Client.BaseAddress = new Uri(_settings.Value.Uri);
             Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
-            var result = Client.GetAsync(requestUri).GetAwaiter().GetResult();
+            var result = await Client.GetAsync(requestUri);
 
             IEnumerable<DistributionForm> retVal = null;
             if (result.IsSuccessStatusCode)
             {
-                var content = result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var content = await result.Content.ReadAsStringAsync();
                 retVal = JsonSerializer.Deserialize<IEnumerable<DistributionForm>>(content);
             }
             return retVal;

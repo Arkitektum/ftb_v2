@@ -4,6 +4,7 @@ using FtB_Common.Interfaces;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -18,9 +19,9 @@ namespace FtB_FormLogic
             this.log = log;
         }
 
-        public override IEnumerable<SendQueueItem> Execute(SubmittalQueueItem submittalQueueItem)
+        public override async Task<IEnumerable<SendQueueItem>> Execute(SubmittalQueueItem submittalQueueItem)
         {
-            return base.Execute(submittalQueueItem);
+            return await base.Execute(submittalQueueItem);
         }
     }
 }

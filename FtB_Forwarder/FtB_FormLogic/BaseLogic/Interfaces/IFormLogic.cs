@@ -1,7 +1,9 @@
-﻿namespace FtB_FormLogic
+﻿using System.Threading.Tasks;
+
+namespace FtB_FormLogic
 {
     public interface IFormLogic<T,U>
     {
-        T Execute(U input);
+        Task<T> Execute(U input);
     }
 }

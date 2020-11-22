@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Ftb_Repositories.HttpClients
 {
@@ -19,7 +20,7 @@ namespace Ftb_Repositories.HttpClients
             _settings = settings;
         }
 
-        public void Post(string archiveReference, IEnumerable<LogEntry> logEntries)
+        public async Task Post(string archiveReference, IEnumerable<LogEntry> logEntries)
         {
             //api/formprocess/{archiveReference}/logentries
 
@@ -30,7 +31,7 @@ namespace Ftb_Repositories.HttpClients
             Client.BaseAddress = new Uri(_settings.Value.Uri);            
             Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
 
-            var result = Client.PostAsync(requestUri, stringContent).GetAwaiter().GetResult();
+            await Client.PostAsync(requestUri, stringContent);
         }
     }
 }

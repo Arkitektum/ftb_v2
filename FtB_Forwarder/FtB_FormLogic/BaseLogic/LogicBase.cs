@@ -32,11 +32,11 @@ namespace FtB_FormLogic
         public string ArchiveReference { get; set; }
         protected readonly IFormDataRepo _repo;
         public T FormData { get; set; }
-        public void LoadData(string archiveReference)
+        public async Task LoadData(string archiveReference)
         {
             _log.LogDebug($"{GetType().Name}: LoadFormData for ArchiveReference {archiveReference}....");
             ArchiveReference = archiveReference;
-            var data = _repo.GetFormData(ArchiveReference);
+            var data = await _repo.GetFormData(ArchiveReference);
             FormData = SerializeUtil.DeserializeFromString<T>(data);
         }
 

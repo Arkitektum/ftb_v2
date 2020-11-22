@@ -3,6 +3,7 @@ using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -55,9 +56,9 @@ namespace FtB_FormLogic
 
             return lastReceiverStatus == ReceiverStatusEnum.ReadyForReporting;
         }
-        public virtual string Execute(ReportQueueItem reportQueueItem)
+        public virtual async Task<string> Execute(ReportQueueItem reportQueueItem)
         {
-            base.LoadData(reportQueueItem.ArchiveReference);
+            await base.LoadData(reportQueueItem.ArchiveReference);
 
             return reportQueueItem.ArchiveReference;
         }

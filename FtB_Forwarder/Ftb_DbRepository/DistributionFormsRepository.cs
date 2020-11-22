@@ -6,6 +6,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ftb_Repositories
 {
@@ -26,19 +27,19 @@ namespace Ftb_Repositories
         {
             _archiveReference = archiveReference;
         }
-        public IEnumerable<DistributionForm> Get()
+        public async Task< IEnumerable<DistributionForm>> Get()
         {
             if (_distributionForms.Count == 0)
-                foreach (var item in _distributionFormsClient.Get(_archiveReference))
+                foreach (var item in await _distributionFormsClient.Get(_archiveReference))
                     _distributionForms.Add(item);
 
             return _distributionForms;
         }
 
-        public IEnumerable<DistributionForm> GetWithChildren(Guid id)
+        public async Task<IEnumerable<DistributionForm>> GetWithChildren(Guid id)
         {
             if (_distributionForms.Count == 0)
-                foreach (var item in _distributionFormsClient.Get(_archiveReference))
+                foreach (var item in await _distributionFormsClient.Get(_archiveReference))
                     _distributionForms.Add(item);
 
             return _distributionForms.Where(d => d.Id == id || d.DistributionReference == id);
@@ -53,13 +54,13 @@ namespace Ftb_Repositories
             _distributionForms.Add(distributionForm);
         }
 
-        public void Save()
+        public async Task Save()
         {
             if (_distributionForms?.Count > 0)
             {
                 SynchronizeDistributionData();
                 _logger.LogInformation("Persists distribution forms");
-                _distributionFormsClient.Post(_archiveReference, _distributionForms);
+                await _distributionFormsClient.Post(_archiveReference, _distributionForms);
             }
             else
                 _logger.LogWarning("No forms to persist!");

@@ -2,6 +2,7 @@
 using Ftb_Repositories.HttpClients;
 using Ftb_Repositories.Interfaces;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Ftb_Repositories
 {
@@ -18,9 +19,9 @@ namespace Ftb_Repositories
             _formMetadataClient = formMetadataClient;
         }
 
-        public FormMetadata Get()
+        public async Task<FormMetadata> Get()
         {
-            var result = _formMetadataClient.Get(_archiveReference);
+            var result = await _formMetadataClient.Get(_archiveReference);
             return result;
         }
 
@@ -29,10 +30,10 @@ namespace Ftb_Repositories
             _formMetadata = formMetadata;
         }
 
-        public void Save()
+        public async Task Save()
         {
             if (_formMetadata != null)
-                _formMetadataClient.Update(_formMetadata);
+                await _formMetadataClient.Update(_formMetadata);
         }
 
         public void SetArchiveReference(string archiveReference)

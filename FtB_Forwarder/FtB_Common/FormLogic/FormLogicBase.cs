@@ -4,6 +4,7 @@ using FtB_Common.Interfaces;
 using FtB_Common.Utils;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FtB_Common.FormLogic
 {
@@ -35,10 +36,10 @@ namespace FtB_Common.FormLogic
         public virtual void ProcessReportStep()
         { }
 
-        public void LoadFormData(string archiveReference)
+        public async Task LoadFormData(string archiveReference)
         {
             this.ArchiveReference = archiveReference;
-            var data = _repo.GetFormData(archiveReference);
+            var data = await _repo.GetFormData(archiveReference);
             DataForm = SerializeUtil.DeserializeFromString<T>(data);
         }
         //public abstract IFormDataValidator GetFormDataValidator();

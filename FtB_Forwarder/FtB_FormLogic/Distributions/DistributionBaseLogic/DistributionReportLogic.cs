@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -40,25 +41,25 @@ namespace FtB_FormLogic
         {
             throw new NotImplementedException();
         }
-        protected virtual string GetSubmitterReceipt(ReportQueueItem reportQueueItem)
+        protected virtual async Task<string> GetSubmitterReceipt(ReportQueueItem reportQueueItem)
         {
             throw new NotImplementedException();
         }
 
-        public override string Execute(ReportQueueItem reportQueueItem)
+        public override async Task<string> Execute(ReportQueueItem reportQueueItem)
         {
-            var returnItem = base.Execute(reportQueueItem);
+            var returnItem = await base.Execute(reportQueueItem);
             AddReceiverProcessStatus(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverStatusEnum.ReadyForReporting);
 
             if (AreAllReceiversReadyForReporting(reportQueueItem))
             {
-                SendReceiptToSubmitterWhenAllReceiversAreProcessed(reportQueueItem);
+                await SendReceiptToSubmitterWhenAllReceiversAreProcessed(reportQueueItem);
             }
 
             return returnItem;
         }
 
-        private void SendReceiptToSubmitterWhenAllReceiversAreProcessed(ReportQueueItem reportQueueItem)
+        private async Task SendReceiptToSubmitterWhenAllReceiversAreProcessed(ReportQueueItem reportQueueItem)
         {
             try
             {
@@ -72,7 +73,7 @@ namespace FtB_FormLogic
                 notificationMessage.ArchiveReference = reportQueueItem.ArchiveReference;
                 var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
                 notificationMessage.MessageData = messageData;
-                var plainReceiptHtml = GetSubmitterReceipt(reportQueueItem);
+                var plainReceiptHtml = await GetSubmitterReceipt(reportQueueItem);
                 byte[] PDFInbytes = _htmlToPdfConverterHttpClient.Get(plainReceiptHtml);
                     
                 var receiptAttachment = new AttachmentBinary()

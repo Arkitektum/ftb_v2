@@ -13,6 +13,7 @@ using no.kxml.skjema.dibk.nabovarselsvarPlan;
 using System;
 using System.Collections.Generic;
 using System.Linq;using System.Text;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -60,13 +61,13 @@ namespace FtB_FormLogic
 
         }
 
-        protected override void MapDistributionMessage()
+        protected override async Task MapDistributionMessage()
         {
             base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(prefillSendData, base.FormData, Guid.NewGuid(), base.ArchiveReference);
-            
+
             //Add list of URL attachments to body
-            var metadataList = new List<KeyValuePair<string, string>>();            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.SubmittalAttachment)));            string publicBlobContainer = _blobOperations.GetPublicBlobContainerName(base.ArchiveReference);
-            var urlToPublicAttachments = _blobOperations.GetBlobUrlsFromPublicStorageByMetadata(publicBlobContainer, metadataList);
+            var metadataList = new List<KeyValuePair<string, string>>();            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.SubmittalAttachment)));            var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(base.ArchiveReference);
+            var urlToPublicAttachments = await _blobOperations.GetBlobUrlsFromPublicStorageByMetadata(publicBlobContainer, metadataList);
             StringBuilder urlListAsHtml = new StringBuilder();
             foreach (var attachmentInfo in urlToPublicAttachments)
             {
@@ -74,7 +75,7 @@ namespace FtB_FormLogic
             }
 
             base.DistributionMessage.NotificationMessage.MessageData.MessageBody = base.DistributionMessage.NotificationMessage.MessageData.MessageBody.Replace("<vedleggsliste />", urlListAsHtml.ToString());
-            base.MapDistributionMessage();
+            await base.MapDistributionMessage();
         }
     }
 }

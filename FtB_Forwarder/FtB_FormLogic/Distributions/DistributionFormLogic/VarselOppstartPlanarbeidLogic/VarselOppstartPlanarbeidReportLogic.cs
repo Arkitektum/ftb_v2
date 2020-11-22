@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -123,7 +124,7 @@ namespace FtB_FormLogic
             }
         }
 
-        protected override string GetSubmitterReceipt(ReportQueueItem reportQueueItem)
+        protected override async Task<string> GetSubmitterReceipt(ReportQueueItem reportQueueItem)
         {
             try
             {
@@ -141,9 +142,9 @@ namespace FtB_FormLogic
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.MainForm);
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.SubmittalAttachment);
 
-                string publicContainerName = _blobOperations.GetPublicBlobContainerName(reportQueueItem.ArchiveReference.ToLower());
+                string publicContainerName =  _blobOperations.GetPublicBlobContainerName(reportQueueItem.ArchiveReference.ToLower());
 
-                IEnumerable<(string attachmentType, string fileName)> listOfAttachmentsInSubmittal = _blobOperations.GetListOfBlobsWithMetadataType(BlobStorageEnum.Public, publicContainerName, blobStorageTypes);
+                IEnumerable<(string attachmentType, string fileName)> listOfAttachmentsInSubmittal = await _blobOperations.GetListOfBlobsWithMetadataType(BlobStorageEnum.Public, publicContainerName, blobStorageTypes);
                 string tableRowsAsHtml = "<tr><td>" + string.Join("</td></tr><tr><td>", listOfAttachmentsInSubmittal.Select(p => p.attachmentType + "</td><td>" + p.fileName)) + "</td></tr>";
                 htmlTemplate = htmlTemplate.Replace("<vedlegg />", tableRowsAsHtml);
                 htmlTemplate = htmlTemplate.Replace("<antallVarsledeMottakere />", GetReceiverSuccessfullyNotifiedCount(reportQueueItem).ToString());

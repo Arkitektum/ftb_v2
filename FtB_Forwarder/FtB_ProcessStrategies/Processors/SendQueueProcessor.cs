@@ -39,7 +39,7 @@ namespace FtB_ProcessStrategies
 
                 _log.LogDebug("Executes form logic");
                                 
-                var result = formLogicBeingProcessed.Execute(sendQueueItem);  
+                var result = await formLogicBeingProcessed.Execute(sendQueueItem);  
                 //var result = new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, Receiver = sendQueueItem.Receiver, ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber };
                 return result;
             }
@@ -51,7 +51,7 @@ namespace FtB_ProcessStrategies
             finally
             {
                 //?????????????????
-              //  _dbUnitOfWork.Save();
+                await _dbUnitOfWork.Save();
             }
 
 

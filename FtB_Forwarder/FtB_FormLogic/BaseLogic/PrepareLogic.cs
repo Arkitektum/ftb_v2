@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -48,11 +49,11 @@ namespace FtB_FormLogic
             _receivers = distinctList.Select(s => new Receiver() { Id = s.Id, Type = s.Type }).ToList();
         }
 
-        public virtual IEnumerable<SendQueueItem> Execute(SubmittalQueueItem submittalQueueItem)
+        public virtual async Task<IEnumerable<SendQueueItem>> Execute(SubmittalQueueItem submittalQueueItem)
         {
             _log.LogDebug($"{GetType().Name}: Processing logic for archveReference {submittalQueueItem.ArchiveReference}....");
             
-            base.LoadData(submittalQueueItem.ArchiveReference);
+            await base.LoadData(submittalQueueItem.ArchiveReference);
 
             SetReceivers();
 

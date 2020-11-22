@@ -1,7 +1,7 @@
 {
   "version": "2.0",
   "logging": {
-    "includeScopes" :  true,
+    "includeScopes": true,
     "applicationInsights": {
       "samplingExcludedTypes": "Request",
       "samplingSettings": {
@@ -11,6 +11,13 @@
     "logLevel": {
       "default": "Debug",
       "Microsoft": "Error"
+    }
+  },
+  "extensions": {
+    "serviceBus": {
+      "prefetchCount": 10,
+      "messageHandlerOptions": { "maxConcurrentCalls": 10 },
+      "sessionHandlerOptions": { "maxConcurrentCalls": 10 }
     }
   }
 }

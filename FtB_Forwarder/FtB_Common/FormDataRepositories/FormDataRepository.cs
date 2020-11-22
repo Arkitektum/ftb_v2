@@ -4,6 +4,7 @@ using FtB_Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FtB_Common.FormDataRepositories
 {
@@ -15,9 +16,9 @@ namespace FtB_Common.FormDataRepositories
             _blobOperations = blobOperations;
         }
 
-        public string GetFormData(string archiveReference)
+        public async Task<string> GetFormData(string archiveReference)
         {
-            return _blobOperations.GetFormdata(archiveReference);
+            return await _blobOperations.GetFormdata(archiveReference);
         }
 
         public void AddBytesAsBlob(string containerName, string fileName, byte[] fileBytes, IEnumerable<KeyValuePair<string, string>> metadata = null)
