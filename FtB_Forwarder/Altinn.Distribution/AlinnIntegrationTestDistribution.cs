@@ -11,14 +11,14 @@ namespace Altinn.Distribution
 {
     public class AlinnIntegrationTestDistribution : IDistributionAdapter
     {
-        public IEnumerable<DistributionResult> SendDistribution(AltinnDistributionMessage altinnMessage)
+        public async Task<IEnumerable<DistributionResult>> SendDistribution(AltinnDistributionMessage altinnMessage)
         {
             var results = new List<DistributionResult>();
             
             //Prefill
             results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Ok", Step = DistriutionStep.Sent });
             var prefillSleepMs = new Random(5).Next(100, 600);
-            Task.Delay(prefillSleepMs);
+            await Task.Delay(prefillSleepMs);
 
             //Thread.Sleep(prefillSleepMs);
 
@@ -26,7 +26,7 @@ namespace Altinn.Distribution
             results.Add(new DistributionResult(DistributionComponent.Correspondence) { Message = "Ok", Step = DistriutionStep.Sent });
             var correspondenceSleepMs = new Random(5).Next(100, 600);
             //Thread.Sleep(correspondenceSleepMs);
-            Task.Delay(prefillSleepMs);
+            await Task.Delay(prefillSleepMs);
 
             return results;
         }

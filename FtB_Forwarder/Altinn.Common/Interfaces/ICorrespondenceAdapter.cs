@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Altinn.Common.Interfaces
 {
     public interface ICorrespondenceAdapter
     {
-        IEnumerable<DistributionResult> SendMessage(AltinnMessageBase altinnMessage);
-        IEnumerable<DistributionResult> SendMessage(AltinnMessageBase altinnMessage, string externalShipmentReference);
+        Task<IEnumerable<DistributionResult>> SendMessage(AltinnMessageBase altinnMessage);
+        Task<IEnumerable<DistributionResult>> SendMessage(AltinnMessageBase altinnMessage, string externalShipmentReference);
     }
 }

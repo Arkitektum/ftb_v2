@@ -1,10 +1,11 @@
 ﻿using AltinnWebServices.WS.Prefill;
 using System;
+using System.Threading.Tasks;
 
 namespace Altinn2.Adapters.WS.Prefill
 {
     public interface IPrefillClient
     {
-        ReceiptExternal SendPrefill(PrefillFormTask prefillFormTask, DateTime? dueDate);
+        Task<ReceiptExternal> SendPrefill(PrefillFormTask prefillFormTask, DateTime? dueDate);
     }
 }

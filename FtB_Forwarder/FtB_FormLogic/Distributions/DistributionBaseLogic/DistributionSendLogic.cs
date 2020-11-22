@@ -23,7 +23,7 @@ namespace FtB_FormLogic
         public AltinnDistributionMessage DistributionMessage { get; set; }
 
 
-        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, IDistributionAdapter distributionAdapter, DbUnitOfWork dbUnitOfWork) 
+        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, IDistributionAdapter distributionAdapter, DbUnitOfWork dbUnitOfWork)
             : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
         {
             _distributionAdapter = distributionAdapter;
@@ -76,7 +76,7 @@ namespace FtB_FormLogic
             }
             else
             {
-                var result = _distributionAdapter.SendDistribution(DistributionMessage);
+                var result = await _distributionAdapter.SendDistribution(DistributionMessage);
 
                 //Remember "postdistribution metadata SendPrefillServiceV2 line 152 - 162
 

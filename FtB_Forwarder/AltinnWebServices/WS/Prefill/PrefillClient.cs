@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.ServiceModel;
+using System.Threading.Tasks;
 
 namespace Altinn2.Adapters.WS.Prefill
 {
@@ -26,14 +27,14 @@ namespace Altinn2.Adapters.WS.Prefill
             _log = log;
         }
 
-        public ReceiptExternal SendPrefill(PrefillFormTask prefillFormTask, DateTime? dueDate)
+        public async Task<ReceiptExternal> SendPrefill(PrefillFormTask prefillFormTask, DateTime? dueDate)
         {
             try
             {
 //                _log.LogDebug("Sends prefill", _client);
                 prefillFormTask.ServiceOwnerCode = _connectionOptions.Value.ServiceOwnerCode;
 
-                var result = _client.SubmitAndInstantiatePrefilledFormTaskBasicAsync(_connectionOptions.Value.UserName,
+                var result = await _client.SubmitAndInstantiatePrefilledFormTaskBasicAsync(_connectionOptions.Value.UserName,
                     _connectionOptions.Value.Password,
                     _externalBatchId,
                     prefillFormTask,
@@ -41,7 +42,7 @@ namespace Altinn2.Adapters.WS.Prefill
                     _doinstantiateFormTask,
                     _caseId,
                     dueDate,
-                    _instantitedOnBehalfOf).ConfigureAwait(true).GetAwaiter().GetResult();
+                    _instantitedOnBehalfOf).ConfigureAwait(true);
 
                 return result;
             }

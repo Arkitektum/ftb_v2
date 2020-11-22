@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Altinn3.Adapters
 {
@@ -20,7 +21,7 @@ namespace Altinn3.Adapters
             _logger = logger;
             this.httpClient = httpClient;
         }
-        IEnumerable<PrefillResult> IPrefillAdapter.SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
+        public async Task<IEnumerable<PrefillResult>> SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
         {
             _logger.LogDebug(@"*               _ _   _               ____   ___  ");
             _logger.LogDebug(@"*         /\   | | | (_)             |___ \ / _ \ ");
@@ -55,7 +56,7 @@ namespace Altinn3.Adapters
                 try
                 {   
 
-                    Instance instanceResult = httpClient.PostPrefilledInstance(content, "nabovarsel-plan");                    
+                    Instance instanceResult = await httpClient.PostPrefilledInstance(content, "nabovarsel-plan");                    
 
                     if (instanceResult == null)
                     {

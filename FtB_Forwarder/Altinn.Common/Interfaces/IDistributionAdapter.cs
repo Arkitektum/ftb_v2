@@ -1,10 +1,11 @@
 ﻿using Altinn.Common.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Altinn.Common.Interfaces
 {
     public interface IDistributionAdapter
     {
-        IEnumerable<DistributionResult> SendDistribution(AltinnDistributionMessage altinnMessage);
+        Task<IEnumerable<DistributionResult>> SendDistribution(AltinnDistributionMessage altinnMessage);
     }
 }

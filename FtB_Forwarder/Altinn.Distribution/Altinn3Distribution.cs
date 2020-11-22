@@ -2,10 +2,9 @@
 using Altinn.Common.Interfaces;
 using Altinn.Common.Models;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Altinn.Distribution
 {
@@ -22,11 +21,11 @@ namespace Altinn.Distribution
             _correspondenceAdapter = correspondenceAdapter;
         }
 
-        IEnumerable<DistributionResult> IDistributionAdapter.SendDistribution(AltinnDistributionMessage altinnMessage)
+        public async Task<IEnumerable<DistributionResult>> SendDistribution(AltinnDistributionMessage altinnMessage)
         {
             var results = new List<DistributionResult>();
             //Send prefill
-            var prefillResult = _prefillAdapter.SendPrefill(altinnMessage);
+            var prefillResult = await _prefillAdapter.SendPrefill(altinnMessage);
 
             if (prefillResult.Where(r => r.Step == DistriutionStep.Sent).Any())
             {
@@ -34,7 +33,7 @@ namespace Altinn.Distribution
                 //prefillResult.PrefillReferenceId
                 //Transform body!!!!! 
                 //, prefillResult.PrefillReferenceId
-                var correspondenceResults = _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage);
+                var correspondenceResults = await _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage);
 
                 results.AddRange(correspondenceResults); 
             }           

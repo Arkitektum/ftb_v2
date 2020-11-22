@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Altinn2.Adapters
 {
@@ -24,7 +25,7 @@ namespace Altinn2.Adapters
             _correspondenceBuilder = correspondenceBuilder;
             _correspondenceClient = correspondenceClient;
         }
-        public IEnumerable<DistributionResult> SendMessage(AltinnMessageBase altinnMessage, string externalShipmentReference)
+        public async Task<IEnumerable<DistributionResult>> SendMessage(AltinnMessageBase altinnMessage, string externalShipmentReference)
         {
             var correspondenceResults = new List<DistributionResult>();
 
@@ -72,7 +73,7 @@ namespace Altinn2.Adapters
             var correspondenceResult = new CorrespondenceResult();
             try
             {
-                var correspondenceResponse = _correspondenceClient.SendCorrespondence(correspondence, externalShipmentReference);
+                var correspondenceResponse = await _correspondenceClient.SendCorrespondence(correspondence, externalShipmentReference);
 
                 correspondenceResult.Message = correspondenceResponse.ReceiptText;
                 if (correspondenceResponse.ReceiptStatusCode == ReceiptStatusEnum.OK)
@@ -93,9 +94,9 @@ namespace Altinn2.Adapters
             return correspondenceResults;
         }
 
-        public IEnumerable<DistributionResult> SendMessage(AltinnMessageBase altinnMessage)
+        public async Task<IEnumerable<DistributionResult>> SendMessage(AltinnMessageBase altinnMessage)
         {
-            return SendMessage(altinnMessage, altinnMessage.ArchiveReference);
+            return await SendMessage(altinnMessage, altinnMessage.ArchiveReference);
         }
     }
 }

@@ -4,6 +4,7 @@ using Altinn.Common.Models;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Altinn.Distribution
 {
@@ -20,12 +21,12 @@ namespace Altinn.Distribution
             _correspondenceAdapter = correspondenceAdapter;
         }
 
-        public IEnumerable<DistributionResult> SendDistribution(AltinnDistributionMessage altinnMessage)
+        public async Task<IEnumerable<DistributionResult>> SendDistribution(AltinnDistributionMessage altinnMessage)
         {
             var results = new List<DistributionResult>();
             
             //Send prefill
-            var prefillResults = _prefillAdapter.SendPrefill(altinnMessage);
+            var prefillResults = await _prefillAdapter.SendPrefill(altinnMessage);
             results.AddRange(prefillResults);
 
             if (prefillResults.Where(p => p.Step == Common.DistriutionStep.Sent).FirstOrDefault() != null)
@@ -40,7 +41,7 @@ namespace Altinn.Distribution
                     altinnMessage.NotificationMessage.ReplyLink.Url = $"https://tt02.altinn.no/Pages/ServiceEngine/Dispatcher/Dispatcher.aspx?ReporteeElementID={prefillSentResult?.PrefillReferenceId}";
                 }
 
-                var correspondenceResults = _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage, altinnMessage.DistributionFormReferenceId.ToString());
+                var correspondenceResults = await _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage, altinnMessage.DistributionFormReferenceId.ToString());
 
                 results.AddRange(correspondenceResults);
             }

@@ -1,9 +1,10 @@
 ﻿using AltinnWebServices.WS.Correspondence;
+using System.Threading.Tasks;
 
 namespace Altinn2.Adapters.WS.Correspondence
 {
     public interface ICorrespondenceClient
     {
-        ReceiptExternal SendCorrespondence(InsertCorrespondenceV2 correspondenceItem, string externalShipmentReference);
+        Task<ReceiptExternal> SendCorrespondence(InsertCorrespondenceV2 correspondenceItem, string externalShipmentReference);
     }
 }

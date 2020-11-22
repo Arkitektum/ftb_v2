@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Security.AccessControl;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Altinn3.Adapters
 {
@@ -49,7 +50,7 @@ namespace Altinn3.Adapters
             return token;
         }
 
-        public Instance PostPrefilledInstance(MultipartContent content, string appName)
+        public async Task<Instance> PostPrefilledInstance(MultipartContent content, string appName)
         {
             var token = GetToken();
             Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
@@ -60,8 +61,8 @@ namespace Altinn3.Adapters
                                 .Replace(_ownerIdPlaceHolder, _options.Value.OwnerUrlIdentifier);
 
             _logger.LogDebug("Instantiates prefilled {0}", appName);
-            HttpResponseMessage response = Client.PostAsync(requestUri, content).Result;
-            string result = response.Content.ReadAsStringAsync().Result;
+            HttpResponseMessage response = await Client.PostAsync(requestUri, content);
+            string result = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
             {

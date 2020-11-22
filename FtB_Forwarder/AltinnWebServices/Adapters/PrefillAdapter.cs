@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Altinn2.Adapters
 {
@@ -23,7 +24,7 @@ namespace Altinn2.Adapters
             _altinnPrefillClient = altinnPrefillClient;
         }
 
-        public IEnumerable<PrefillResult> SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
+        public async Task<IEnumerable<PrefillResult>> SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
         {
             var results = new List<PrefillResult>();
             _logger.LogDebug($"{GetType().Name}: SendPrefill for receiver {altinnDistributionMessage.NotificationMessage.Receiver.Id}....");
@@ -80,7 +81,7 @@ namespace Altinn2.Adapters
             ReceiptExternal receiptExternal = null;
             try
             {
-                receiptExternal = _altinnPrefillClient.SendPrefill(prefillFormTask, altinnDistributionMessage.DueDate);
+                receiptExternal = await _altinnPrefillClient.SendPrefill(prefillFormTask, altinnDistributionMessage.DueDate);
             }
             catch (Exception ex)
             {

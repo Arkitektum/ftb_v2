@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.ServiceModel;
+using System.Threading.Tasks;
 
 namespace Altinn2.Adapters.WS.Correspondence
 {
@@ -20,12 +21,12 @@ namespace Altinn2.Adapters.WS.Correspondence
             _connectionOptions = connectionOptions;
         }
 
-        public ReceiptExternal SendCorrespondence(InsertCorrespondenceV2 correspondenceItem, string externalShipmentReference)
+        public async Task<ReceiptExternal> SendCorrespondence(InsertCorrespondenceV2 correspondenceItem, string externalShipmentReference)
         {
             try
             {
-                var taskResult = _client.InsertCorrespondenceBasicV2Async(_connectionOptions.Value.UserName, _connectionOptions.Value.Password, _connectionOptions.Value.ServiceOwnerCode, externalShipmentReference, correspondenceItem);
-                var result = taskResult.GetAwaiter().GetResult();
+                var result = await _client.InsertCorrespondenceBasicV2Async(_connectionOptions.Value.UserName, _connectionOptions.Value.Password, _connectionOptions.Value.ServiceOwnerCode, externalShipmentReference, correspondenceItem);
+                
                 return result.Body.InsertCorrespondenceBasicV2Result;
 
             }
