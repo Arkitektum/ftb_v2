@@ -7,6 +7,7 @@ using FtB_MessageManager;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FtB_ProcessStrategies
 {
@@ -27,9 +28,9 @@ namespace FtB_ProcessStrategies
             _formatIdToFormMapper = formatIdToFormMapper;
         }
 
-        public string ExecuteProcessingStrategy(ReportQueueItem reportQueueItem)
+        public async Task<string> ExecuteProcessingStrategy(ReportQueueItem reportQueueItem)
         {
-            string formatId = _blobOperations.GetFormatIdFromStoredBlob(reportQueueItem.ArchiveReference);
+            string formatId = await _blobOperations.GetFormatIdFromStoredBlob(reportQueueItem.ArchiveReference);
             var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<string, ReportQueueItem>(formatId, FormLogicProcessingContext.Report);
                         
             return formLogicBeingProcessed.Execute(reportQueueItem);

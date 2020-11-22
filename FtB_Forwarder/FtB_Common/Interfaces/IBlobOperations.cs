@@ -3,14 +3,15 @@ using Azure.Storage.Blobs.Specialized;
 using FtB_Common.Enums;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FtB_Common.Storage
 {
     public interface IBlobOperations
     {
-        string GetFormatIdFromStoredBlob(string containerName);
-        int GetFormatVersionIdFromStoredBlob(string containerName);
-        string GetServiceCodeFromStoredBlob(string containerName);
+        Task<string> GetFormatIdFromStoredBlob(string containerName);
+        Task<int> GetFormatVersionIdFromStoredBlob(string containerName);
+        Task<string> GetServiceCodeFromStoredBlob(string containerName);
         string GetFormdata(string archiveReference);
         void AddByteStreamToBlobStorage(BlobStorageEnum storageEnum, string containerName, string identifier, byte[] fileBytes, string mimeType, IEnumerable<KeyValuePair<string, string>> metadata = null);
         string GetBlobASStringByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaData);

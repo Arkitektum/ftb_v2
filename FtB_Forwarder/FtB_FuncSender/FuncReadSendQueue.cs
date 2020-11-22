@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FtB_FuncSender
 {
@@ -21,8 +22,8 @@ namespace FtB_FuncSender
         }
 
         [FunctionName("FuncReadSendQueue")]
-        public void Run([ServiceBusTrigger("%SendingQueueName%", Connection = "QueueConnectionString")] string myQueueItem,
-            [ServiceBus("%ReportQueueName%", Connection = "QueueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<ReportQueueItem> queueCollector)
+        [return: ServiceBus("%ReportQueueName%", Connection = "QueueConnectionString", EntityType = EntityType.Queue)]
+        public async Task<ReportQueueItem> Run([ServiceBusTrigger("%SendingQueueName%", Connection = "QueueConnectionString")] string myQueueItem)
         {
             SendQueueItem sendQueueItem = JsonConvert.DeserializeObject<SendQueueItem>(myQueueItem);
             
@@ -32,11 +33,8 @@ namespace FtB_FuncSender
                 try
                 {
 
-                    var result = _queueProcessor.ExecuteProcessingStrategy(sendQueueItem);
-                    if (result != null)
-                    {
-                        queueCollector.AddAsync(result);
-                    }
+                    return await _queueProcessor.ExecuteProcessingStrategy(sendQueueItem);
+                    
                 }
                 catch (Exception ex)
                 {

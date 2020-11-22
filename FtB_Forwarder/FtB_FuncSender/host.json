@@ -12,12 +12,5 @@
       "default": "Debug",
       "Microsoft": "Error"
     }
-  },
-  "extensions": {
-    "serviceBus": {
-      "prefetchCount": 1,
-      "messageHandlerOptions": { "maxConcurrentCalls": 1 },
-      "sessionHandlerOptions": { "maxConcurrentCalls": 1 }
-    }
   }
 }

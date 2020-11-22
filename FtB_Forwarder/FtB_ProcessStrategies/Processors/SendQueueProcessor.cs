@@ -6,6 +6,7 @@ using FtB_FormLogic;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace FtB_ProcessStrategies
 {
@@ -15,7 +16,7 @@ namespace FtB_ProcessStrategies
         private readonly IBlobOperations _blobOperations;
         private readonly ILogger _log;
         private readonly DbUnitOfWork _dbUnitOfWork;
-        
+
 
         public SendQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, ILogger<SendQueueProcessor> log, DbUnitOfWork dbUnitOfWork)
         {
@@ -25,19 +26,21 @@ namespace FtB_ProcessStrategies
             _dbUnitOfWork = dbUnitOfWork;
         }
 
-        public ReportQueueItem ExecuteProcessingStrategy(SendQueueItem sendQueueItem)
+        public async Task<ReportQueueItem> ExecuteProcessingStrategy(SendQueueItem sendQueueItem)
         {
             try
             {
                 _log.LogDebug("_dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
                 
                 _dbUnitOfWork.SetArhiveReference(sendQueueItem.ArchiveReference);
-                //string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
-                string formatId = _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
+                string serviceCode = await _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
+                string formatId = await _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<ReportQueueItem, SendQueueItem>(formatId, FormLogicProcessingContext.Send);
 
                 _log.LogDebug("Executes form logic");
-                var result = formLogicBeingProcessed.Execute(sendQueueItem);                
+                                
+                var result = formLogicBeingProcessed.Execute(sendQueueItem);  
+                //var result = new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, Receiver = sendQueueItem.Receiver, ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber };
                 return result;
             }
             catch (Exception ex)
@@ -48,7 +51,7 @@ namespace FtB_ProcessStrategies
             finally
             {
                 //?????????????????
-                _dbUnitOfWork.Save();
+              //  _dbUnitOfWork.Save();
             }
 
 

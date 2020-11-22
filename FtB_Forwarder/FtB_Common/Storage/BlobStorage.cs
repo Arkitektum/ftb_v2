@@ -32,9 +32,8 @@ namespace FtB_Common.Storage
         public Azure.Pageable<BlobItem> GetBlobContainerItems(string containerName)
         {
             _containerClient = GetBlobContainerClient(containerName);
-            return _containerClient.GetBlobs();
+            return _containerClient.GetBlobs(traits: BlobTraits.Metadata);
         }
-
 
         /*
         public async Task<CloudBlobContainer> SetUpBlobContainerAsync(string containerName)

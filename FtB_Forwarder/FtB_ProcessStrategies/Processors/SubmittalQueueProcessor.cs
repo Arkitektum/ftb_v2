@@ -5,6 +5,7 @@ using FtB_FormLogic;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FtB_ProcessStrategies
 {
@@ -23,12 +24,12 @@ namespace FtB_ProcessStrategies
 
             _log = log;
         }
-        public IEnumerable<SendQueueItem> ExecuteProcessingStrategy(SubmittalQueueItem submittalQueueItem)
+        public async Task<IEnumerable<SendQueueItem>> ExecuteProcessingStrategy(SubmittalQueueItem submittalQueueItem)
         {
             try
             {
                 //string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(submittalQueueItem.ArchiveReference);
-                string formatId = _blobOperations.GetFormatIdFromStoredBlob(submittalQueueItem.ArchiveReference);
+                string formatId = await _blobOperations.GetFormatIdFromStoredBlob(submittalQueueItem.ArchiveReference);
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<IEnumerable<SendQueueItem>, SubmittalQueueItem>(formatId, FormLogicProcessingContext.Prepare);
                 
                 return formLogicBeingProcessed.Execute(submittalQueueItem);

@@ -35,33 +35,31 @@ namespace FtB_Common.Storage
         {
             _logger.LogDebug("Retrieving archived item from blob storage: {0}", containerName);
             try
-            {
-                var stream = new MemoryStream();
-                foreach (var blobItem in _privateBlobStorage.GetBlobContainerItems(containerName))
+            {   
+                foreach (var blobItem in _privateBlobStorage.GetBlobContainerItems(containerName)) //Filter on metadata here?
                 {
-                    var blobContainerClient = _privateBlobStorage.GetBlobContainerClient(containerName);
-                    var client = blobContainerClient.GetBlobClient(blobItem.Name);
-                    BlobProperties properties = await client.GetPropertiesAsync();
-                    foreach (var metadataItem in properties.Metadata)
+                    var metadataItem = blobItem.Metadata.Where(m => m.Key.Equals("type", StringComparison.OrdinalIgnoreCase)
+                            && m.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.ArchivedItemInformation), StringComparison.OrdinalIgnoreCase))
+                        .FirstOrDefault();
+
+                    if(!metadataItem.Equals(default(KeyValuePair<string,string>)))
                     {
-                        
-                        if (metadataItem.Key.Equals("type", StringComparison.OrdinalIgnoreCase) 
-                            && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.ArchivedItemInformation), StringComparison.OrdinalIgnoreCase))
+                        StringBuilder sb = new StringBuilder();
+                        var blobContainerClient = _privateBlobStorage.GetBlobContainerClient(containerName);
+                        var client = blobContainerClient.GetBlobClient(blobItem.Name);
+                        if (await client.ExistsAsync())
                         {
-                            StringBuilder sb = new StringBuilder();
-                            if (await client.ExistsAsync())
+                            var response = await client.DownloadAsync();
+                            using (var streamReader = new StreamReader(response.Value.Content))
                             {
-                                var response = await client.DownloadAsync();
-                                using (var streamReader = new StreamReader(response.Value.Content))
+                                while (!streamReader.EndOfStream)
                                 {
-                                    while (!streamReader.EndOfStream)
-                                    {
-                                        sb.Append(await streamReader.ReadLineAsync());
-                                    }
+                                    sb.Append(await streamReader.ReadLineAsync());
                                 }
                             }
-                            _archivedItem = JsonConvert.DeserializeObject<ArchivedItemInformation>(sb.ToString());
                         }
+                        _archivedItem = JsonConvert.DeserializeObject<ArchivedItemInformation>(sb.ToString());
+                        break;
                     }
                 }
             }
@@ -71,27 +69,27 @@ namespace FtB_Common.Storage
             }
         }
 
-        public string GetServiceCodeFromStoredBlob(string containerName)
+        public async Task<string> GetServiceCodeFromStoredBlob(string containerName)
         {
             if (_archivedItem == null)
             {
-                GetArchivedItemFromBlobAsync(containerName).GetAwaiter().GetResult();
+                await GetArchivedItemFromBlobAsync(containerName); //.GetAwaiter().GetResult();
             }
             return _archivedItem.ServiceCode;
         }
-        public string GetFormatIdFromStoredBlob(string containerName)
+        public async Task<string> GetFormatIdFromStoredBlob(string containerName)
         {
             if (_archivedItem == null)
             {
-                GetArchivedItemFromBlobAsync(containerName).GetAwaiter().GetResult();
+                await GetArchivedItemFromBlobAsync(containerName);
             }
             return _archivedItem.DataFormatID;
         }
-        public int GetFormatVersionIdFromStoredBlob(string containerName)
+        public async Task<int> GetFormatVersionIdFromStoredBlob(string containerName)
         {
             if (_archivedItem == null)
             {
-                GetArchivedItemFromBlobAsync(containerName).GetAwaiter().GetResult();
+                await GetArchivedItemFromBlobAsync(containerName);
             }
             return _archivedItem.DataFormatVersionID;
         }
@@ -165,9 +163,9 @@ namespace FtB_Common.Storage
                 if (t?.Count() == metaDataFilter.Count())
                 {
                     var response = blob.Download();
-                    
+
                     using (var reader = new StreamReader(response.Value.Content))
-                    {   
+                    {
                         data = reader.ReadToEnd();
                     }
                     break;
@@ -197,7 +195,7 @@ namespace FtB_Common.Storage
                     }
                 }
             }
-            
+
             return blobs;
         }
 
@@ -285,7 +283,7 @@ namespace FtB_Common.Storage
                 if (matchingMetadataElements?.Count() > 0)
                 {
                     var response = blobBlock.Download();
-                                        
+
                     if (blobIsPDF)
                     {
                         var attachment = new AttachmentBinary();
@@ -328,7 +326,7 @@ namespace FtB_Common.Storage
 
             return attachments;
         }
-        
+
         private Attachment EnrichTheAttachment(Attachment attachment, string containerName, BlobItem blobItem, BlobProperties properties)
         {
             attachment.ArchiveReference = containerName.ToUpper();
@@ -340,6 +338,6 @@ namespace FtB_Common.Storage
             //attachment.Url
 
             return attachment;
-        }   
+        }
     }
 }
