@@ -45,8 +45,8 @@ namespace FtB_Common.Storage
                     foreach (var metadataItem in properties.Metadata)
                     {
                         
-                        if (metadataItem.Key.Equals("Type") 
-                            && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.ArchivedItemInformation)))
+                        if (metadataItem.Key.Equals("type", StringComparison.OrdinalIgnoreCase) 
+                            && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.ArchivedItemInformation), StringComparison.OrdinalIgnoreCase))
                         {
                             StringBuilder sb = new StringBuilder();
                             if (await client.ExistsAsync())
@@ -107,7 +107,7 @@ namespace FtB_Common.Storage
                     BlobProperties properties = client.GetPropertiesAsync().GetAwaiter().GetResult();
                     foreach (var metadataItem in properties.Metadata)
                     {
-                        if (metadataItem.Key.Equals("Type") && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.FormData)))
+                        if (metadataItem.Key.Equals("Type", StringComparison.OrdinalIgnoreCase) && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.FormData), StringComparison.OrdinalIgnoreCase))
                         {
                             StringBuilder sb = new StringBuilder();
                             if (client.ExistsAsync().GetAwaiter().GetResult())
@@ -234,7 +234,7 @@ namespace FtB_Common.Storage
             {
                 var blobBlock = _privateBlobStorage.GetBlockBlobClient(containerName, blobItem.Name);
                 BlobProperties properties = blobBlock.GetPropertiesAsync().GetAwaiter().GetResult();
-                List<string> publicBlobContainerList = properties.Metadata.Where(x => x.Key.Equals("PublicBlobContainerName")).Select(x => x.Value).ToList();
+                List<string> publicBlobContainerList = properties.Metadata.Where(x => x.Key.Equals("PublicBlobContainerName", StringComparison.OrdinalIgnoreCase)).Select(x => x.Value).ToList();
                 if (publicBlobContainerList.Count == 1)
                 {
                     publicBlobContainer = publicBlobContainerList[0];
@@ -255,8 +255,8 @@ namespace FtB_Common.Storage
                 BlobProperties properties = blob.GetPropertiesAsync().GetAwaiter().GetResult();
                 var metadataList = properties.Metadata;
                 var blobItemTypesAsString = blobItemTypes.Select(x => Enum.GetName(typeof(BlobStorageMetadataTypeEnum), x)).ToList();
-                var blobIsOfRequestedType = metadataList.Any(x => x.Key.Equals("Type") && blobItemTypesAsString.Contains(x.Value));
-                var attachment = metadataList.Where(x => x.Key.Equals("AttachmentTypeName")).Select(x => (attachmentType: x.Value, fileName: blobItem.Name));
+                var blobIsOfRequestedType = metadataList.Any(x => x.Key.Equals("Type", StringComparison.OrdinalIgnoreCase) && blobItemTypesAsString.Contains(x.Value));
+                var attachment = metadataList.Where(x => x.Key.Equals("AttachmentTypeName", StringComparison.OrdinalIgnoreCase)).Select(x => (attachmentType: x.Value, fileName: blobItem.Name));
                 listOfAttachments.AddRange(attachment);
             }
 
@@ -272,11 +272,11 @@ namespace FtB_Common.Storage
             {
                 var blobBlock = storage.GetBlockBlobClient(containerName, blobItem.Name);
                 BlobProperties properties = blobBlock.GetPropertiesAsync().GetAwaiter().GetResult();
-                var blobIsPDF = (properties.ContentType != null && properties.ContentType.ToLower().Equals("application/pdf"))
+                var blobIsPDF = (properties.ContentType != null && properties.ContentType.ToLower().Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
                                     || blobItem.Name.ToLower().Contains(".pdf");
-                var blobIsXML = (properties.ContentType != null && properties.ContentType.ToLower().Equals("application/xml"))
+                var blobIsXML = (properties.ContentType != null && properties.ContentType.ToLower().Equals("application/xml", StringComparison.OrdinalIgnoreCase))
                                     || blobItem.Name.ToLower().Contains(".xml");
-                var blobIsJson = (properties.ContentType != null && properties.ContentType.ToLower().Equals("application/json"))
+                var blobIsJson = (properties.ContentType != null && properties.ContentType.ToLower().Equals("application/json", StringComparison.OrdinalIgnoreCase))
                                     || blobItem.Name.ToLower().Contains(".json");
 
                 var matchingMetadataElements = properties.Metadata?.Where(meta => metaDataFilter.ToList()
@@ -332,9 +332,9 @@ namespace FtB_Common.Storage
         private Attachment EnrichTheAttachment(Attachment attachment, string containerName, BlobItem blobItem, BlobProperties properties)
         {
             attachment.ArchiveReference = containerName.ToUpper();
-            attachment.AttachmentTypeName = properties.Metadata?.FirstOrDefault(x => x.Key.Equals("AttachmentTypeName")).Value;
+            attachment.AttachmentTypeName = properties.Metadata?.FirstOrDefault(x => x.Key.Equals("AttachmentTypeName", StringComparison.OrdinalIgnoreCase)).Value;
             attachment.Filename = blobItem.Name;
-            attachment.Name = properties.Metadata?.FirstOrDefault(x => x.Key.Equals("AttachmentTypeName")).Value;
+            attachment.Name = properties.Metadata?.FirstOrDefault(x => x.Key.Equals("AttachmentTypeName", StringComparison.OrdinalIgnoreCase)).Value;
             attachment.Type = properties.ContentType;
             //TODO Add url?
             //attachment.Url
