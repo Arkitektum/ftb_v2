@@ -1,11 +1,9 @@
 ﻿using FtB_Common.BusinessModels;
 using FtB_Common.FormLogic;
-using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using FtB_FormLogic;
 using FtB_MessageManager;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -16,14 +14,11 @@ namespace FtB_ProcessStrategies
         private readonly FormatIdToFormMapper _formatIdToFormMapper;
         private readonly IBlobOperations _blobOperations;
         
-        private readonly IEnumerable<IMessageManager> _messageManagers;
         private readonly ILogger _log;
 
-        public ReportQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations
-                                    , IEnumerable<IMessageManager> messageManagers, ILogger<ReportQueueProcessor> log)
+        public ReportQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, ILogger<ReportQueueProcessor> log)
         {
             _blobOperations = blobOperations;
-            _messageManagers = messageManagers;
             _log = log;
             _formatIdToFormMapper = formatIdToFormMapper;
         }
