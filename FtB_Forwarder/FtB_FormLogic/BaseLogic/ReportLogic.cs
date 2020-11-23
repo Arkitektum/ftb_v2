@@ -25,7 +25,7 @@ namespace FtB_FormLogic
             string partitionKey;
             for (int i = 0; i < totalNumberOfReceivers; i++)
             {
-                partitionKey = reportQueueItem.ArchiveReference + "-" + reportQueueItem.ReceiverSequenceNumber;
+                partitionKey = reportQueueItem.ArchiveReference + "-" + i;
                 if (IsReceiverReadyForReporting(partitionKey) == false)
                 {
                     return false;
