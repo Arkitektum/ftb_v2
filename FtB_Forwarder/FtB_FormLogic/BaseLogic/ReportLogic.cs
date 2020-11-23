@@ -9,7 +9,7 @@ namespace FtB_FormLogic
 {
     public class ReportLogic<T> : LogicBase<T>, IFormLogic<string, ReportQueueItem>, IReportLogic
     {
-        public ReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, DbUnitOfWork dbUnitOfWork) 
+        public ReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, DbUnitOfWork dbUnitOfWork)
             : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
         {
         }
@@ -39,9 +39,11 @@ namespace FtB_FormLogic
         {
             SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(ArchiveReference, ArchiveReference);
             int receiverCountReadyForReporting = 0;
-            string partitionKey = reportQueueItem.ArchiveReference + "-" + reportQueueItem.ReceiverSequenceNumber;
+            //string partitionKey = reportQueueItem.ArchiveReference + "-" + reportQueueItem.ReceiverSequenceNumber;
             for (int i = 0; i < submittalEntity.ReceiverCount; i++)
             {
+                string partitionKey = reportQueueItem.ArchiveReference + "-" + i;
+
                 if (IsReceiverReadyForReporting(partitionKey))
                 {
                     receiverCountReadyForReporting++;
