@@ -100,8 +100,6 @@ namespace FtB_FormLogic
                 string kontaktperson = GetContactPersonExtendedInfo();
                 string htmlBody = _htmlUtils.GetHtmlFromTemplate("FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Report.VarselOppstartPlanarbeidReceiptMessageBody.html");
                 
-                //TODO: Add Logo?
-                //string LogoResourceName = "KommIT.FIKS.AdapterAltinnSvarUt.Content.images.dibk_logo.png";
                 htmlBody = htmlBody.Replace("<byggested/>", byggested);
                 htmlBody = htmlBody.Replace("<kontaktperson/>", kontaktperson);
                 htmlBody = htmlBody.Replace("<arkivReferanse/>", archiveReference.ToUpper());
@@ -149,9 +147,9 @@ namespace FtB_FormLogic
                 htmlTemplate = htmlTemplate.Replace("<vedlegg />", tableRowsAsHtml);
                 htmlTemplate = htmlTemplate.Replace("<antallVarsledeMottakere />", GetReceiverSuccessfullyNotifiedCount(reportQueueItem).ToString());
 
-                var listOfDeniers = GetDigitalDisallowmentReceiverNames();
+                var listOfReservedReporteeNames = GetReservedReporteeNames();
                 var deniersASHtml = new StringBuilder();
-                foreach (var denier in listOfDeniers)
+                foreach (var denier in listOfReservedReporteeNames)
                 {
                     deniersASHtml.Append($"{denier}<br />");
                 }
@@ -167,13 +165,12 @@ namespace FtB_FormLogic
             }
         }
 
-
-        private IEnumerable<string> GetDigitalDisallowmentReceiverNames()
+        private IEnumerable<string> GetReservedReporteeNames()
         {
-            var allReceiversStatusRows = _tableStorage.GetRowsFromPartialPartitionKey<ReceiverEntity>(ArchiveReference);
+            var allReceiversInSubmittal = _tableStorage.GetTableEntities<ReceiverEntity>(ArchiveReference);
 
-            var digitalDisallowmentReceiverIds = allReceiversStatusRows
-                    .Where(x => x.Status == Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.DigitalDisallowment))
+            var reservedReporteeReceiverIds = allReceiversInSubmittal
+                    .Where(x => x.ProcessOutcome == Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.ReservedReportee))
                     .Select( x => x.ReceiverId);
 
             var socialSecurityNumbers = FormData.beroerteParter
@@ -183,11 +180,11 @@ namespace FtB_FormLogic
                     .Where(x => x.organisasjonsnummer != null)
                     .Select(x => new { Id = x.organisasjonsnummer, x.navn });
 
-            var denierNames = socialSecurityNumbers.Union(orgNumbers)
-                    .Where(x => digitalDisallowmentReceiverIds.Any(y => y == x.Id))
+            var reservedReporteeNames = socialSecurityNumbers.Union(orgNumbers)
+                    .Where(x => reservedReporteeReceiverIds.Any(y => y == x.Id))
                     .Select(x => x.navn);
 
-            return denierNames;
+            return reservedReporteeNames;
         }
 
         protected override (string Filename, string Name) GetFileNameForMainForm()

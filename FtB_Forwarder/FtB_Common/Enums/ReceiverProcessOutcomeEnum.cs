@@ -4,10 +4,10 @@ using System.Text;
 
 namespace FtB_Common.Enums
 {
-    public enum SubmittalStatusEnum
+    public enum ReceiverProcessOutcomeEnum
     {
-        Created,
-        Processing,
-        Completed
+        Sent,
+        ReservedReportee,
+        Failed
     }
 }

@@ -1,5 +1,6 @@
 ﻿using FtB_Common;
 using FtB_Common.BusinessModels;
+using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
@@ -24,50 +25,19 @@ namespace FtB_FormLogic
         {
             SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
             var totalNumberOfReceivers = submittalEntity.ReceiverCount;
-            string partitionKey;
-            for (int i = 0; i < totalNumberOfReceivers; i++)
-            {
-                partitionKey = reportQueueItem.ArchiveReference + "-" + i;
-                if (IsReceiverReadyForReporting(partitionKey) == false)
-                {
-                    return false;
-                }
-            }
+            var allReceiversInSubmittal = _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference);
+            //Get number of receivers with process-stage = Done, and compare this number to the totalNumberOfReceivers
+            var receiversReadyForReporting = allReceiversInSubmittal.Where(x => x.ProcessStage.Equals(Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.ReadyForReporting))).Count();
 
-            return true;
+            return receiversReadyForReporting == totalNumberOfReceivers;
         }
 
         protected int GetReceiverSuccessfullyNotifiedCount(ReportQueueItem reportQueueItem)
         {
-            SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(ArchiveReference, ArchiveReference);
-            int receiverSuccessfullyNotified = 0;
-            //string partitionKey = reportQueueItem.ArchiveReference + "-" + reportQueueItem.ReceiverSequenceNumber;
-            for (int i = 0; i < submittalEntity.ReceiverCount; i++)
-            {
-                string partitionKey = reportQueueItem.ArchiveReference + "-" + i;
-
-                if (IsReceiverSuccessfullyNotified(partitionKey))
-                {
-                    receiverSuccessfullyNotified++;
-                }
-            }
-            return receiverSuccessfullyNotified;
+            var allReceiversInSubmittal = _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference);
+            
+            return allReceiversInSubmittal.Where(x => x.ProcessOutcome.Equals(Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.Sent))).Count();
         }
-
-        private bool IsReceiverReadyForReporting(string partitionKey)
-        {
-            var lastReceiverStatus = _tableStorageOperations.GetReceiverLastProcessStatus(partitionKey);
-
-            return lastReceiverStatus == ReceiverStatusEnum.ReadyForReporting;
-        }
-
-        private bool IsReceiverSuccessfullyNotified(string partitionKey)
-        {
-            var lastReceiverStatus = _tableStorageOperations.GetReceiverLastProcessStatus(partitionKey);
-            var xx = _tableStorage.GetRowsFromPartitionKey<ReceiverEntity>(partitionKey);
-            return xx.Any(x => x.Status.Equals(Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.CorrespondenceSent)));
-        }
-
 
         public virtual async Task<string> Execute(ReportQueueItem reportQueueItem)
         {

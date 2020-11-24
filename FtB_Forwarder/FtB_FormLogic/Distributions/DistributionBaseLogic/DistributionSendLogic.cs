@@ -1,7 +1,7 @@
 ﻿using Altinn.Common;
 using Altinn.Common.Interfaces;
 using Altinn.Common.Models;
-using FtB_Common;
+using FtB_Common.Enums;
 using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
@@ -36,7 +36,10 @@ namespace FtB_FormLogic
             _log.LogDebug("Maps prefill data for {0}", sendQueueItem.Receiver.Id);
             MapPrefillData(sendQueueItem.Receiver.Id);
             await MapDistributionMessage();
-            AddReceiverProcessStatus(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillCreated);
+            
+            UpdateReceiverProcessStage(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processing);
+            AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillCreated);
+            
             //Which sendData to use
             var prefillData = prefillSendData.FirstOrDefault();
 
@@ -88,17 +91,30 @@ namespace FtB_FormLogic
                 {
                     distributionForm.DistributionStatus = DistributionStatus.error;
                     distributionForm.ErrorMessage = "Send manuelt";
+
+                    UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Failed);
+                    AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSendingFailed);
+                }
+                else if (result.Where(r => r.Step == DistriutionStep.ReservedReportee).Any())
+                {
+                    UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
+                    AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReservedReportee);
+                }
+                else
+                {
+                    _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon behandling ferdig");
+                    UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Sent);
+                    AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSent);
                 }
 
+                UpdateReceiverProcessStage(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processed);
 
-                _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon behandling ferdig");
-
-                //Use result of SendDistribution to update receiver entity
-                AddReceiverProcessStatus(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusEnum.CorrespondenceSent);
             }
-            ////TODO - Remove: for TEST
-            //AddReceiverProcessStatus(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusEnum.DigitalDisallowment);
-            //_log.LogDebug($"Legger {sendQueueItem.Receiver.Id} til som denier");
+            //TODO - Has been temp used for testing of ReservedReportee
+            //if (sendQueueItem.Receiver.Id.Equals("910041126"))
+            //{
+            //    UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
+            //}
 
             return returnReportQueueItem;
         }
@@ -178,7 +194,8 @@ namespace FtB_FormLogic
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
             _log.LogDebug($"{GetType().Name}: PersistPrefill for archiveReference {sendQueueItem.ArchiveReference}....");
             _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(DistributionMessage.PrefilledXmlDataString), metaData);
-            AddReceiverProcessStatus(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillPersisted);
+            
+            AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
         }
 
         protected virtual void PersistMessage(SendQueueItem sendQueueItem)
@@ -186,7 +203,8 @@ namespace FtB_FormLogic
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("DistributionMessageReceiver", sendQueueItem.Receiver.Id) };
             _log.LogDebug($"{GetType().Name}: PersistMessage for archiveReference {sendQueueItem.ArchiveReference}....");
             _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Message-{Guid.NewGuid()}", Encoding.Default.GetBytes(SerializeUtil.Serialize(DistributionMessage.NotificationMessage.MessageData)), metaData);
-            AddReceiverProcessStatus(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusEnum.PrefillPersisted);
+            
+            AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
         }
 
         protected abstract void MapPrefillData(string receiverId);

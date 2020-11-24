@@ -17,7 +17,6 @@ namespace FtB_ProcessStrategies
         private readonly ILogger _log;
         private readonly DbUnitOfWork _dbUnitOfWork;
 
-
         public SendQueueProcessor(FormatIdToFormMapper formatIdToFormMapper, IBlobOperations blobOperations, ILogger<SendQueueProcessor> log, DbUnitOfWork dbUnitOfWork)
         {
             _formatIdToFormMapper = formatIdToFormMapper;
@@ -40,7 +39,6 @@ namespace FtB_ProcessStrategies
                 _log.LogDebug("Executes form logic");
                                 
                 var result = await formLogicBeingProcessed.Execute(sendQueueItem);  
-                //var result = new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, Receiver = sendQueueItem.Receiver, ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber };
                 return result;
             }
             catch (Exception ex)
@@ -53,8 +51,6 @@ namespace FtB_ProcessStrategies
                 //?????????????????
                 await _dbUnitOfWork.Save();
             }
-
-
         }
     }
 }

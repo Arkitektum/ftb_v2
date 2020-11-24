@@ -21,7 +21,8 @@ namespace FtB_FormLogic
             this.Receiver = sendQueueItem.Receiver;
             await base.LoadData(sendQueueItem.ArchiveReference);
 
-            return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, ReceiverPartitionKey = sendQueueItem.ReceiverPartitionKey, Receiver = sendQueueItem.Receiver };
+            return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, ReceiverLogPartitionKey = sendQueueItem.ReceiverLogPartitionKey, 
+                                           ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber, Receiver = sendQueueItem.Receiver };
         }
     }
 }

@@ -9,14 +9,11 @@ namespace FtB_Common.Interfaces
 {
     public interface ITableStorage
     {
-        Task<TableEntity> InsertEntityRecordAsync<T>(TableEntity tableEntity);
-        TableEntity InsertEntityRecord<T>(TableEntity tableEntity);
+        Task<TableEntity> InsertEntityRecordAsync<T>(ITableEntity tableEntity);
+        TableEntity InsertEntityRecord<T>(ITableEntity tableEntity);
         TableEntity UpdateEntityRecord<T>(TableEntity entity);
+        void UpdateEntities<T>(IEnumerable<T> entities) where T : ITableEntity;
         T GetTableEntity<T>(string partitionKey, string rowKey) where T : ITableEntity;
-        //Task<T> GetTableEntityAsync<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity;
-        IEnumerable<ReceiverEntity> GetReceivers(string partitionKey);
-        IEnumerable<T> GetRowsFromPartitionKey<T>(string partitionKey) where T : ITableEntity, new();
-        IEnumerable<T> GetRowsFromPartialPartitionKey<T>(string partialPartitionKey) where T : ITableEntity, new();
-
+        IEnumerable<T> GetTableEntities<T>(string partitionKey) where T : ITableEntity, new();
     }
 }

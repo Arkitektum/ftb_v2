@@ -49,7 +49,8 @@ namespace FtB_FormLogic
         public override async Task<string> Execute(ReportQueueItem reportQueueItem)
         {
             var returnItem = await base.Execute(reportQueueItem);
-            AddReceiverProcessStatus(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusEnum.ReadyForReporting);
+            UpdateReceiverProcessStage(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverProcessStageEnum.ReadyForReporting);
+            AddToReceiverProcessLog(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReadyForReporting);
 
             if (AreAllReceiversReadyForReporting(reportQueueItem))
             {
@@ -100,6 +101,12 @@ namespace FtB_FormLogic
                 _notificationAdapter.SendNotification(notificationMessage);
                 base._log.LogDebug($"{GetType().Name}: {plainReceiptHtml}");
                 var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
+
+                var allReceivers = _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference.ToLower()).ToList();
+                allReceivers.ForEach(x => x.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.Completed));
+                UpdateEntities(allReceivers);
+
+                BulkAddLogEntryToReceivers(reportQueueItem,ReceiverStatusLogEnum.Completed);
             }
             catch (Exception ex)
             {

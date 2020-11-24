@@ -1,6 +1,7 @@
 ﻿
 using FtB_Common;
 using FtB_Common.BusinessModels;
+using FtB_Common.Enums;
 using FtB_Common.Exceptions;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
@@ -40,52 +41,74 @@ namespace FtB_FormLogic
             FormData = SerializeUtil.DeserializeFromString<T>(data);
         }
 
-        protected void AddReceiversProcessStatus(IEnumerable<ReceiverEntity> receivers)
+        protected void BulkInsertEntities<T>(IEnumerable<T> entities) where T : ITableEntity
         {
-            Parallel.ForEach(receivers, receiver =>
+            Parallel.ForEach(entities, entity =>
             {
-                _tableStorage.InsertEntityRecord<ReceiverEntity>(receiver);
+                _tableStorage.InsertEntityRecord<T>(entity);
             });
-
-            //foreach (var receiver in receivers)
-            //{
-            //    _tableStorage.InsertEntityRecord<ReceiverEntity>(receiver);
-            //}
-
-            //bool runAgain;
-            //do
-            //{
-            //    runAgain = false;
-            //    try
-            //    {
-            //        _tableStorage.InsertEntityRecords<ReceiverEntity>(receivers);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        throw ex;
-            //    }
-            //} while (runAgain);
-
         }
 
-        protected void AddReceiverProcessStatus(string archiveReference, string receiverPartitionKey, string receiverID, ReceiverStatusEnum statusEnum)
+        protected void BulkAddLogEntryToReceivers(ReportQueueItem reportQueueItem, ReceiverStatusLogEnum statusEnum)
         {
-            bool runAgain;
-            do
+            SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference.ToLower(), reportQueueItem.ArchiveReference.ToLower());
+            var totalNumberOfReceivers = submittalEntity.ReceiverCount;
+            for (int i = 0; i < totalNumberOfReceivers; i++)
             {
-                runAgain = false;
-                try
-                {
-                    ReceiverEntity receiverEntity = new ReceiverEntity(receiverPartitionKey, $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum, DateTime.Now);
-                    _log.LogDebug($"ID={receiverPartitionKey}. Added receiver status for {archiveReference} and receiverID {receiverID}. Status: {receiverEntity.Status}.....");
-                    _tableStorage.InsertEntityRecord<ReceiverEntity>(receiverEntity);
-                }
-                catch (Exception ex)
-                {
-                    _log.LogError($"Error adding receiver record for ID={receiverPartitionKey} and receiverID {receiverID}. ArchveReference={archiveReference}. Message: { ex.Message }");
-                    throw ex;
-                }
-            } while (runAgain);
+                AddToReceiverProcessLog(reportQueueItem.ArchiveReference.ToLower(), $"{reportQueueItem.ArchiveReference.ToLower()}-{i.ToString()}", "", statusEnum);
+            }
+        }
+
+        protected void UpdateEntities<T>(IEnumerable<T> entities) where T : ITableEntity
+        {
+            _tableStorage.UpdateEntities<T>(entities);
+        }
+
+
+        protected void UpdateReceiverProcessStage(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverProcessStageEnum processStageEnum)
+        {
+            try
+            {
+                var receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(archiveReference, receiverSequenceNumber);
+                receiverEntity.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum);
+                var result = _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
+                _log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum)}.....");
+            }
+            catch (Exception ex)
+            {
+                _log.LogError($"UpdateReceiverProcessStage: ArchveReference={archiveReference}. Error adding receiver record for ID={receiverSequenceNumber} and receiverID {receiverID}. Message: { ex.Message }");
+                throw ex;
+            }
+        }
+        protected void UpdateReceiverProcessOutcome(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverProcessOutcomeEnum processOutcomeEnum)
+        {
+            try
+            {
+                var receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(archiveReference, receiverSequenceNumber);
+                receiverEntity.ProcessOutcome = Enum.GetName(typeof(ReceiverProcessOutcomeEnum), processOutcomeEnum);
+                var result = _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
+                _log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processOutcomeEnum)}.....");
+            }
+            catch (Exception ex)
+            {
+                _log.LogError($"UpdateReceiverProcessOutcome: ArchveReference={archiveReference}. Error adding receiver record for ID={receiverSequenceNumber} and receiverID {receiverID}. Message: { ex.Message }");
+                throw ex;
+            }
+        }
+
+        protected void AddToReceiverProcessLog(string archiveReference, string receiverPartitionKey, string receiverID, ReceiverStatusLogEnum statusEnum)
+        {
+            try
+            {
+                ReceiverLogEntity receiverEntity = new ReceiverLogEntity(receiverPartitionKey, $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum);
+                _log.LogDebug($"ID={receiverPartitionKey}. Added receiver status for {archiveReference} and receiverID {receiverID}. Status: {receiverEntity.Status}.....");
+                _tableStorage.InsertEntityRecord<ReceiverLogEntity>(receiverEntity);
+            }
+            catch (Exception ex)
+            {
+                _log.LogError($"Error adding receiver record for ID={receiverPartitionKey} and receiverID {receiverID}. ArchveReference={archiveReference}. Message: { ex.Message }");
+                throw ex;
+            }
         }
     }
 }

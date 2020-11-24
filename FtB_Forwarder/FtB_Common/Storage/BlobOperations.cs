@@ -26,10 +26,10 @@ namespace FtB_Common.Storage
             _publicBlobStorage = publicBlobStorage;
         }
 
-        private void GetArchivedItem(string containerName)
-        {
-            GetArchivedItemFromBlobAsync(containerName).GetAwaiter().GetResult();
-        }
+        //private void GetArchivedItem(string containerName)
+        //{
+        //    GetArchivedItemFromBlobAsync(containerName).GetAwaiter().GetResult();
+        //}
         private async Task GetArchivedItemFromBlobAsync(string containerName)
         {
             _logger.LogDebug("Retrieving archived item from blob storage: {0}", containerName);
@@ -72,8 +72,9 @@ namespace FtB_Common.Storage
         {
             if (_archivedItem == null)
             {
-                await GetArchivedItemFromBlobAsync(containerName); //.GetAwaiter().GetResult();
+                await GetArchivedItemFromBlobAsync(containerName);
             }
+
             return _archivedItem.ServiceCode;
         }
         public async Task<string> GetFormatIdFromStoredBlob(string containerName)
@@ -123,29 +124,6 @@ namespace FtB_Common.Storage
                         }
                         return sb.ToString();
                     }
-
-                    //var blobContainerClient = _privateBlobStorage.GetBlobContainerClient(containerName);
-                    //var client = blobContainerClient.GetBlobClient(blobItem.Name);
-                    //BlobProperties properties = client.GetPropertiesAsync().GetAwaiter().GetResult();
-                    //foreach (var metadataItem in properties.Metadata)
-                    //{
-                    //    if (metadataItem.Key.Equals("Type", StringComparison.OrdinalIgnoreCase) && metadataItem.Value.Equals(Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.FormData), StringComparison.OrdinalIgnoreCase))
-                    //    {
-                    //        StringBuilder sb = new StringBuilder();
-                    //        if (client.ExistsAsync().GetAwaiter().GetResult())
-                    //        {
-                    //            var response = client.DownloadAsync().GetAwaiter().GetResult();
-                    //            using (var streamReader = new StreamReader(response.Value.Content))
-                    //            {
-                    //                while (!streamReader.EndOfStream)
-                    //                {
-                    //                    sb.Append(streamReader.ReadLineAsync().GetAwaiter().GetResult());
-                    //                }
-                    //            }
-                    //        }
-                    //        return sb.ToString();
-                    //    }
-                    //}
                 }
                 throw new ArgumentException($"Formdata i container {containerName} finnes ikke i BlobStorage");
             }

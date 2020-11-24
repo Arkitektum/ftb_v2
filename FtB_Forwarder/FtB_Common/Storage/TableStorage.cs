@@ -44,7 +44,7 @@ namespace FtB_Common.Storage
             return storageAccount;
         }
 
-        public async Task<TableEntity> InsertEntityRecordAsync<T>(TableEntity entity)
+        public async Task<TableEntity> InsertEntityRecordAsync<T>(ITableEntity entity)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace FtB_Common.Storage
             }
         }
 
-        public TableEntity InsertEntityRecord<T>(TableEntity entity)
+        public TableEntity InsertEntityRecord<T>(ITableEntity entity)
         {
             try
             {
@@ -85,6 +85,32 @@ namespace FtB_Common.Storage
                 throw ex;
             }
         }
+
+        public void UpdateEntities<T>(IEnumerable<T> entities) where T : ITableEntity
+        {
+            try
+            {
+                string tableNameFromType = GetTableName<T>();
+                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
+
+                Parallel.ForEach(entities, entity =>
+                {
+                    TableOperation operation = TableOperation.Replace(entity);
+                    TableResult result = cloudTable.Execute(operation);
+                });
+
+            }
+            catch (StorageException ex)
+            {
+                if (ex.RequestInformation.HttpStatusCode == 412)
+                {
+                    throw new TableStorageConcurrentException("Optimistic concurrency violation – entity has changed since it was retrieved.", 412);
+                }
+                else
+                    throw;
+            }
+        }
+
 
         public TableEntity UpdateEntityRecord<T>(TableEntity entity)
         {
@@ -126,30 +152,7 @@ namespace FtB_Common.Storage
             }
         }
 
-        public IEnumerable<T> GetRowsFromPartialPartitionKey<T>(string partialPartitionKey) where T : ITableEntity, new()
-        {
-            try
-            {
-                string tableNameFromType = GetTableName<T>();
-                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
-                //var condition = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons., partialPartitionKey);
-                //var query = new TableQuery<T>().Where(condition);
-                var query = new TableQuery<T>().Where("PartitionKey".GetStartsWithFilter(partialPartitionKey));
-
-                var lst = cloudTable.ExecuteQuery(query);
-
-                return lst;
-            }
-            catch (StorageException e)
-            {
-                Console.WriteLine(e.Message);
-                Console.ReadLine();
-                throw;
-            }
-        }
-
-
-        public IEnumerable<T> GetRowsFromPartitionKey<T>(string partitionKey) where T : ITableEntity, new()
+        public IEnumerable<T> GetTableEntities<T>(string partitionKey) where T : ITableEntity, new()
         {
             try
             {
@@ -158,32 +161,8 @@ namespace FtB_Common.Storage
                 var condition = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
                 var query = new TableQuery<T>().Where(condition);
                 var lst = cloudTable.ExecuteQuery(query);
-                
+
                 return lst;
-            }
-            catch (StorageException e)
-            {
-                Console.WriteLine(e.Message);
-                Console.ReadLine();
-                throw;
-            }
-        }
-
-        public IEnumerable<ReceiverEntity> GetReceivers(string partitionKey)
-        {
-            try
-            {
-                string filter = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
-                var receivers = new List<ReceiverEntity>();
-                TableQuery<ReceiverEntity> tableQuery = new TableQuery<ReceiverEntity>().Where(filter);
-                CloudTable cloudTable = _cloudTableClient.GetTableReference("ftbReceivers");
-                var list = cloudTable.ExecuteQuery(tableQuery);
-                foreach (var item in list)
-                {
-                    receivers.Add(item);
-                }
-
-                return receivers;
             }
             catch (StorageException e)
             {
@@ -195,15 +174,20 @@ namespace FtB_Common.Storage
 
         private string GetTableName<T>()
         {
-            if (typeof(T) == typeof(ReceiverEntity))
+            if (typeof(T) == typeof(ReceiverLogEntity))
             {
-                return "ftbReceivers";
+                return "ftbReceiverLog";
+            }
+            else if (typeof(T) == typeof(ReceiverEntity))
+            {
+                return "ftbReceiver";
             }
             else if (typeof(T) == typeof(SubmittalEntity))
             {
-                return "ftbSubmittals";
+                return "ftbSubmittal";
             }
             throw new Exception("Illegal table storage name");
         }
+
     }
 }

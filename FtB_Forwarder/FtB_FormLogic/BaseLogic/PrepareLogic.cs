@@ -2,6 +2,7 @@
 using FtB_Common.BusinessLogic;
 using FtB_Common.BusinessModels;
 using FtB_Common.Encryption;
+using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
@@ -64,24 +65,21 @@ namespace FtB_FormLogic
             //Bulk add receivers to database
             //FUN FACT: Since the partition key differs for all receivers a true bulk operation cannot be performed..
             var receiverEntities = new List<ReceiverEntity>();
+            var receiverLogEntities = new List<ReceiverLogEntity>();
             for (int i = 0; i < Receivers.Count; i++)
             {
                 string partitionKey = $"{ArchiveReference}-{i.ToString()}";
                 string rowKey = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}";
-                receiverEntities.Add(new ReceiverEntity(partitionKey, rowKey, Receivers[i].Id, ReceiverStatusEnum.Created, DateTime.Now));
+                
+                receiverEntities.Add(new ReceiverEntity(ArchiveReference, i.ToString(), Receivers[i].Id, ReceiverProcessStageEnum.Created, DateTime.Now));
+                receiverLogEntities.Add(new ReceiverLogEntity(partitionKey, rowKey, Receivers[i].Id, ReceiverStatusLogEnum.Created));
+                
                 sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverSequenceNumber = i.ToString(),
-                                                         ReceiverPartitionKey = partitionKey, Receiver = Receivers[i] });
+                                                         ReceiverLogPartitionKey = partitionKey, Receiver = Receivers[i] });
             }
 
-            AddReceiversProcessStatus(receiverEntities);
-
-            //int receiverSequenceNumber = 0;
-            //foreach (var receiverVar in Receivers)
-            //{
-            //    CreateReceiverDatabaseStatus(submittalQueueItem.ArchiveReference, receiverSequenceNumber.ToString(), receiverVar);
-            //    sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverSequenceNumber = receiverSequenceNumber.ToString(), Receiver = receiverVar });
-            //    receiverSequenceNumber++;
-            //}
+            BulkInsertEntities(receiverEntities);
+            BulkInsertEntities(receiverLogEntities);
 
             return sendQueueItems;
         }
@@ -100,18 +98,5 @@ namespace FtB_FormLogic
                 throw ex;
             }
         }
-
-        //private void CreateReceiverDatabaseStatus(string archiveReference, string receiverSequenceNumber, Receiver receiver)
-        //{
-        //    try
-        //    {                
-        //        AddReceiverProcessStatus(archiveReference, receiverSequenceNumber, receiver.Id, ReceiverStatusEnum.Created);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _log.LogError($"Error creating receiver records for archiveReference={archiveReference} and reciverId={receiver.Id}. Message: {ex.Message}");
-        //        throw ex;
-        //    }
-        //}
     }
 }

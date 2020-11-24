@@ -1,4 +1,5 @@
 ﻿using FtB_Common.BusinessModels;
+using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -15,19 +16,14 @@ namespace FtB_Common.Storage
         {
             _tableStorage = tableStorage;
         }
-        public ReceiverStatusEnum GetReceiverLastProcessStatus(string partitionKey)
+        public ReceiverStatusLogEnum GetReceiverLastProcessStatus(string partitionKey)
         {
-            var receiverRows = _tableStorage.GetRowsFromPartitionKey<ReceiverEntity>(partitionKey);
+            var receiverRows = _tableStorage.GetTableEntities<ReceiverLogEntity>(partitionKey);
             var lastRow = receiverRows.OrderByDescending(x => x.RowKey).First();
 
-            return (ReceiverStatusEnum)Enum.Parse(typeof(ReceiverStatusEnum), lastRow.Status);
+            return (ReceiverStatusLogEnum)Enum.Parse(typeof(ReceiverStatusLogEnum), lastRow.Status);
         }
 
-        public bool SuccessfullySentToReceiver(string partitionKey)
-        {
-            var receiverRows = _tableStorage.GetRowsFromPartitionKey<ReceiverEntity>(partitionKey);
 
-            return receiverRows.Any(x => x.Status.Equals(Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.CorrespondenceSent)));
-        }
     }
 }
