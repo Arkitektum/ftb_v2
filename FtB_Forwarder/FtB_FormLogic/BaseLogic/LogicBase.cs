@@ -68,7 +68,7 @@ namespace FtB_FormLogic
 
         }
 
-        protected void AddReceiverProcessStatus(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverStatusEnum statusEnum)
+        protected void AddReceiverProcessStatus(string archiveReference, string receiverPartitionKey, string receiverID, ReceiverStatusEnum statusEnum)
         {
             bool runAgain;
             do
@@ -76,13 +76,13 @@ namespace FtB_FormLogic
                 runAgain = false;
                 try
                 {
-                    ReceiverEntity receiverEntity = new ReceiverEntity($"{archiveReference}-{receiverSequenceNumber}", $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum, DateTime.Now);
-                    _log.LogDebug($"ID={receiverSequenceNumber}. Added receiver status for {archiveReference}, receiverID {receiverID} and {receiverSequenceNumber}. Status: {receiverEntity.Status}.....");
+                    ReceiverEntity receiverEntity = new ReceiverEntity(receiverPartitionKey, $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum, DateTime.Now);
+                    _log.LogDebug($"ID={receiverPartitionKey}. Added receiver status for {archiveReference} and receiverID {receiverID}. Status: {receiverEntity.Status}.....");
                     _tableStorage.InsertEntityRecord<ReceiverEntity>(receiverEntity);
                 }
                 catch (Exception ex)
                 {
-                    _log.LogError($"Error adding receiver record for ID={receiverSequenceNumber}. ArchveReference={archiveReference}. Message: { ex.Message }");
+                    _log.LogError($"Error adding receiver record for ID={receiverPartitionKey} and receiverID {receiverID}. ArchveReference={archiveReference}. Message: { ex.Message }");
                     throw ex;
                 }
             } while (runAgain);

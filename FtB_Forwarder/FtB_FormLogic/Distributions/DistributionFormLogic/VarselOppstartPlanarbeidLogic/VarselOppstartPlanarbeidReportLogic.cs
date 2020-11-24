@@ -168,11 +168,11 @@ namespace FtB_FormLogic
         }
 
 
-
         private IEnumerable<string> GetDigitalDisallowmentReceiverNames()
         {
-            var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
-            var digitalDisallowmentReceiverIds = receiversProcessedFromSubmittal
+            var allReceiversStatusRows = _tableStorage.GetRowsFromPartialPartitionKey<ReceiverEntity>(ArchiveReference);
+
+            var digitalDisallowmentReceiverIds = allReceiversStatusRows
                     .Where(x => x.Status == Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.DigitalDisallowment))
                     .Select( x => x.ReceiverId);
 
@@ -185,25 +185,6 @@ namespace FtB_FormLogic
 
             var denierNames = socialSecurityNumbers.Union(orgNumbers)
                     .Where(x => digitalDisallowmentReceiverIds.Any(y => y == x.Id))
-                    .Select(x => x.navn);
-
-            return denierNames;
-        }
-
-        public IEnumerable<string> FOR_TEST_GetDigitalDisallowmentReceiverNames()
-        {
-            var receiversProcessedFromSubmittal = _tableStorage.GetReceivers(ArchiveReference);
-            var digitalDisallowmentReceiverIds = receiversProcessedFromSubmittal.First().ReceiverId;
-
-            var socialSecurityNumbers = FormData.beroerteParter
-                    .Where(x => x.foedselsnummer != null)
-                    .Select(x => new { Id = x.foedselsnummer, x.navn });
-            var orgNumbers = FormData.beroerteParter
-                    .Where(x => x.organisasjonsnummer != null)
-                    .Select(x => new { Id = x.organisasjonsnummer, x.navn });
-
-            var denierNames = socialSecurityNumbers.Union(orgNumbers)
-                    .Where(x => x.Id == digitalDisallowmentReceiverIds)
                     .Select(x => x.navn);
 
             return denierNames;

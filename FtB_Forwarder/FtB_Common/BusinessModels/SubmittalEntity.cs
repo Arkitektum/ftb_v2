@@ -10,6 +10,13 @@ namespace FtB_Common.BusinessModels
 {
     public class SubmittalEntity : TableEntity, IStorageEntity
     {
+        public int ReceiverCount { get; set; }
+        //public int ProcessedCount { get; set; }
+        //public int FailedCount { get; set; }
+        //public int SuccessCount { get; set; }
+        //public int DigitalDisallowmentCount { get; set; }
+        public DateTime CreatedTimeStamp { get; set; }
+        public string Status { get; set; }
         public SubmittalEntity()
         {
         }
@@ -19,10 +26,10 @@ namespace FtB_Common.BusinessModels
             PartitionKey = archiveReference;
             RowKey = archiveReference;
             ReceiverCount = receiverCount;
-            ProcessedCount = 0;
-            FailedCount = 0;
-            SuccessCount = 0;
-            DigitalDisallowmentCount = 0;
+            //ProcessedCount = 0;
+            //FailedCount = 0;
+            //SuccessCount = 0;
+            //DigitalDisallowmentCount = 0;
             Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Created);
             CreatedTimeStamp = createdTimestamp;
         }
@@ -39,13 +46,7 @@ namespace FtB_Common.BusinessModels
             RowKey = archiveReference;
         }
 
-        public int ReceiverCount { get; set; }
-        public int ProcessedCount { get; set; }
-        public int FailedCount { get; set; }
-        public int SuccessCount { get; set; }
-        public int DigitalDisallowmentCount { get; set; }
-        public DateTime CreatedTimeStamp { get; set; }
-        public string Status { get; set; }
+
 
     }
 }

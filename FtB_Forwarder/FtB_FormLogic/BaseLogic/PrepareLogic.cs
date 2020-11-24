@@ -66,8 +66,11 @@ namespace FtB_FormLogic
             var receiverEntities = new List<ReceiverEntity>();
             for (int i = 0; i < Receivers.Count; i++)
             {
-                receiverEntities.Add(new ReceiverEntity($"{ArchiveReference}-{i.ToString()}", $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", Receivers[i].Id, ReceiverStatusEnum.Created, DateTime.Now));
-                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverSequenceNumber = i.ToString(), Receiver = Receivers[i] });
+                string partitionKey = $"{ArchiveReference}-{i.ToString()}";
+                string rowKey = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}";
+                receiverEntities.Add(new ReceiverEntity(partitionKey, rowKey, Receivers[i].Id, ReceiverStatusEnum.Created, DateTime.Now));
+                sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverSequenceNumber = i.ToString(),
+                                                         ReceiverPartitionKey = partitionKey, Receiver = Receivers[i] });
             }
 
             AddReceiversProcessStatus(receiverEntities);
@@ -98,17 +101,17 @@ namespace FtB_FormLogic
             }
         }
 
-        private void CreateReceiverDatabaseStatus(string archiveReference, string receiverSequenceNumber, Receiver receiver)
-        {
-            try
-            {                
-                AddReceiverProcessStatus(archiveReference, receiverSequenceNumber, receiver.Id, ReceiverStatusEnum.Created);
-            }
-            catch (Exception ex)
-            {
-                _log.LogError($"Error creating receiver records for archiveReference={archiveReference} and reciverId={receiver.Id}. Message: {ex.Message}");
-                throw ex;
-            }
-        }
+        //private void CreateReceiverDatabaseStatus(string archiveReference, string receiverSequenceNumber, Receiver receiver)
+        //{
+        //    try
+        //    {                
+        //        AddReceiverProcessStatus(archiveReference, receiverSequenceNumber, receiver.Id, ReceiverStatusEnum.Created);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _log.LogError($"Error creating receiver records for archiveReference={archiveReference} and reciverId={receiver.Id}. Message: {ex.Message}");
+        //        throw ex;
+        //    }
+        //}
     }
 }

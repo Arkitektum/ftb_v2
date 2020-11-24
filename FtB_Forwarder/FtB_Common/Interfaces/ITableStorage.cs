@@ -16,6 +16,7 @@ namespace FtB_Common.Interfaces
         //Task<T> GetTableEntityAsync<T>(string tableName, string partitionKey, string rowKey) where T : ITableEntity;
         IEnumerable<ReceiverEntity> GetReceivers(string partitionKey);
         IEnumerable<T> GetRowsFromPartitionKey<T>(string partitionKey) where T : ITableEntity, new();
+        IEnumerable<T> GetRowsFromPartialPartitionKey<T>(string partialPartitionKey) where T : ITableEntity, new();
 
     }
 }

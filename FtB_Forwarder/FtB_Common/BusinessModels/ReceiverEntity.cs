@@ -11,10 +11,10 @@ namespace FtB_Common.BusinessModels
         public DateTime CreatedTimeStamp { get; set; }
         public ReceiverEntity() { }
         
-        public ReceiverEntity(string archiveReference, string storageRowKey, string receiverId, ReceiverStatusEnum status, DateTime createdTimestamp)
+        public ReceiverEntity(string partitionKey, string rowKey, string receiverId, ReceiverStatusEnum status, DateTime createdTimestamp)
         {
-            PartitionKey = archiveReference;
-            RowKey = storageRowKey;
+            PartitionKey = partitionKey;
+            RowKey = rowKey;
             ReceiverId = receiverId;
             Status = Enum.GetName(typeof(ReceiverStatusEnum), status);
             CreatedTimeStamp = createdTimestamp;

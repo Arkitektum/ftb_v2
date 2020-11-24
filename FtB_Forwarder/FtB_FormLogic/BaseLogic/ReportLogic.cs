@@ -3,6 +3,8 @@ using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FtB_FormLogic
@@ -38,18 +40,18 @@ namespace FtB_FormLogic
         protected int GetReceiverSuccessfullyNotifiedCount(ReportQueueItem reportQueueItem)
         {
             SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(ArchiveReference, ArchiveReference);
-            int receiverCountReadyForReporting = 0;
+            int receiverSuccessfullyNotified = 0;
             //string partitionKey = reportQueueItem.ArchiveReference + "-" + reportQueueItem.ReceiverSequenceNumber;
             for (int i = 0; i < submittalEntity.ReceiverCount; i++)
             {
                 string partitionKey = reportQueueItem.ArchiveReference + "-" + i;
 
-                if (IsReceiverReadyForReporting(partitionKey))
+                if (IsReceiverSuccessfullyNotified(partitionKey))
                 {
-                    receiverCountReadyForReporting++;
+                    receiverSuccessfullyNotified++;
                 }
             }
-            return receiverCountReadyForReporting;
+            return receiverSuccessfullyNotified;
         }
 
         private bool IsReceiverReadyForReporting(string partitionKey)
@@ -58,6 +60,15 @@ namespace FtB_FormLogic
 
             return lastReceiverStatus == ReceiverStatusEnum.ReadyForReporting;
         }
+
+        private bool IsReceiverSuccessfullyNotified(string partitionKey)
+        {
+            var lastReceiverStatus = _tableStorageOperations.GetReceiverLastProcessStatus(partitionKey);
+            var xx = _tableStorage.GetRowsFromPartitionKey<ReceiverEntity>(partitionKey);
+            return xx.Any(x => x.Status.Equals(Enum.GetName(typeof(ReceiverStatusEnum), ReceiverStatusEnum.CorrespondenceSent)));
+        }
+
+
         public virtual async Task<string> Execute(ReportQueueItem reportQueueItem)
         {
             await base.LoadData(reportQueueItem.ArchiveReference);

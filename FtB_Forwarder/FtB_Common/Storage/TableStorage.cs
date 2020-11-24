@@ -126,6 +126,28 @@ namespace FtB_Common.Storage
             }
         }
 
+        public IEnumerable<T> GetRowsFromPartialPartitionKey<T>(string partialPartitionKey) where T : ITableEntity, new()
+        {
+            try
+            {
+                string tableNameFromType = GetTableName<T>();
+                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
+                //var condition = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons., partialPartitionKey);
+                //var query = new TableQuery<T>().Where(condition);
+                var query = new TableQuery<T>().Where("PartitionKey".GetStartsWithFilter(partialPartitionKey));
+
+                var lst = cloudTable.ExecuteQuery(query);
+
+                return lst;
+            }
+            catch (StorageException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.ReadLine();
+                throw;
+            }
+        }
+
 
         public IEnumerable<T> GetRowsFromPartitionKey<T>(string partitionKey) where T : ITableEntity, new()
         {

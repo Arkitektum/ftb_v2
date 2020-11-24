@@ -49,7 +49,7 @@ namespace FtB_FormLogic
         public override async Task<string> Execute(ReportQueueItem reportQueueItem)
         {
             var returnItem = await base.Execute(reportQueueItem);
-            AddReceiverProcessStatus(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverStatusEnum.ReadyForReporting);
+            AddReceiverProcessStatus(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusEnum.ReadyForReporting);
 
             if (AreAllReceiversReadyForReporting(reportQueueItem))
             {
@@ -64,7 +64,6 @@ namespace FtB_FormLogic
             try
             {
                 SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
-                base._log.LogDebug($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. ID={reportQueueItem.Receiver.Id}. SubmittalEntity.ProcessedCount={submittalEntity.ProcessedCount}, submittalEntity.ReceiverCount={submittalEntity.ReceiverCount}");
                 submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
                 base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
                 var notificationMessage = new AltinnNotificationMessage();

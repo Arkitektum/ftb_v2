@@ -358,8 +358,6 @@ namespace FtB_Common.Storage
             attachment.Filename = blobItem.Name;
             attachment.Name = properties.Metadata?.FirstOrDefault(x => x.Key.Equals("AttachmentTypeName", StringComparison.OrdinalIgnoreCase)).Value;
             attachment.Type = properties.ContentType;
-            //TODO Add url?
-            //attachment.Url
 
             return attachment;
         }
