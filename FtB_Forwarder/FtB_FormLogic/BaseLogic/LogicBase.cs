@@ -49,14 +49,22 @@ namespace FtB_FormLogic
             });
         }
 
+        public string GetReceiverIDFromStorage(string partitionKey, string rowKey)
+        {
+            var receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(partitionKey, rowKey);
+            return receiverEntity.ReceiverId;
+        }
+
         protected void BulkAddLogEntryToReceivers(ReportQueueItem reportQueueItem, ReceiverStatusLogEnum statusEnum)
         {
+            _log.LogDebug("Inside BulkAddLogEntryToReceivers - start");
             SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference.ToLower(), reportQueueItem.ArchiveReference.ToLower());
             var totalNumberOfReceivers = submittalEntity.ReceiverCount;
             for (int i = 0; i < totalNumberOfReceivers; i++)
             {
-                AddToReceiverProcessLog(reportQueueItem.ArchiveReference.ToLower(), $"{reportQueueItem.ArchiveReference.ToLower()}-{i.ToString()}", "", statusEnum);
+                AddToReceiverProcessLog(reportQueueItem.ArchiveReference.ToLower(), $"{reportQueueItem.ArchiveReference.ToLower()}-{i.ToString()}", GetReceiverIDFromStorage(reportQueueItem.ArchiveReference.ToLower(), i.ToString()), statusEnum);
             }
+            _log.LogDebug("Inside BulkAddLogEntryToReceivers - end");
         }
 
         protected void UpdateEntities<T>(IEnumerable<T> entities) where T : ITableEntity

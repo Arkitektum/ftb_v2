@@ -64,6 +64,7 @@ namespace FtB_FormLogic
         {
             try
             {
+                _log.LogDebug("Start SendReceiptToSubmitterWhenAllReceiversAreProcessed");
                 SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
                 submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
                 base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
@@ -71,11 +72,14 @@ namespace FtB_FormLogic
                 notificationMessage.ArchiveReference = ArchiveReference;
                 notificationMessage.Receiver = GetReceiver();
                 notificationMessage.ArchiveReference = reportQueueItem.ArchiveReference;
+                _log.LogDebug("Start GetSubmitterReceiptMessage");
                 var messageData = GetSubmitterReceiptMessage(reportQueueItem.ArchiveReference);
                 notificationMessage.MessageData = messageData;
+                _log.LogDebug("Start GetSubmitterReceipt");
                 var plainReceiptHtml = await GetSubmitterReceipt(reportQueueItem);
+                _log.LogDebug("Start Convert to PDF");
                 byte[] PDFInbytes = _htmlToPdfConverterHttpClient.Get(plainReceiptHtml);
-                    
+                _log.LogDebug("Converted to PDF");
                 var receiptAttachment = new AttachmentBinary()
                 {
                     BinaryContent = PDFInbytes,
@@ -83,6 +87,7 @@ namespace FtB_FormLogic
                     Name = "Kvittering",
                     ArchiveReference = ArchiveReference
                 };
+                _log.LogDebug("Get from blob storage");
                 string publicContainerName = _blobOperations.GetPublicBlobContainerName(reportQueueItem.ArchiveReference.ToLower());
                 var metadataList = new List<KeyValuePair<string, string>>();
                 metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));
@@ -98,15 +103,17 @@ namespace FtB_FormLogic
 
                 notificationMessage.Attachments = new List<Attachment>() { receiptAttachment, mainFormAttachment };
                 base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
+                _log.LogDebug("Start SendNotification");
                 _notificationAdapter.SendNotification(notificationMessage);
                 base._log.LogDebug($"{GetType().Name}: {plainReceiptHtml}");
                 var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
-
+                _log.LogDebug("Start Update all receiver entities");
                 var allReceivers = _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference.ToLower()).ToList();
                 allReceivers.ForEach(x => x.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.Completed));
                 UpdateEntities(allReceivers);
-
+                _log.LogDebug("Start BulkAddLogEntryToReceivers");
                 BulkAddLogEntryToReceivers(reportQueueItem,ReceiverStatusLogEnum.Completed);
+                _log.LogDebug("End SendReceiptToSubmitterWhenAllReceiversAreProcessed");
             }
             catch (Exception ex)
             {
