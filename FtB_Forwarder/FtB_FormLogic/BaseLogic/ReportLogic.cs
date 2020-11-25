@@ -12,8 +12,8 @@ namespace FtB_FormLogic
 {
     public class ReportLogic<T> : LogicBase<T>, IFormLogic<string, ReportQueueItem>, IReportLogic
     {
-        public ReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, DbUnitOfWork dbUnitOfWork)
-            : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
+        public ReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork)
+            : base(repo, tableStorage, log, dbUnitOfWork)
         {
         }
 

@@ -10,8 +10,8 @@ namespace FtB_FormLogic.OTSFormLogic
     [FormDataFormat(DataFormatId = "Arbeidstilsynet", DataFormatVersion = "1111", ProcessingContext = FormLogicProcessingContext.Send)]
     public class SoknadOmTilatelseSendLogic : ShipmentSendLogic<no.kxml.skjema.dibk.arbeidstilsynetsSamtykke.ArbeidstilsynetsSamtykkeType>
     {
-        public SoknadOmTilatelseSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, ISvarUtAdapter svarUtAdapter, DbUnitOfWork dbUnitOfWork) : 
-            base(repo, tableStorage, tableStorageOperations, log, svarUtAdapter, dbUnitOfWork)
+        public SoknadOmTilatelseSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, ISvarUtAdapter svarUtAdapter, DbUnitOfWork dbUnitOfWork) : 
+            base(repo, tableStorage, log, svarUtAdapter, dbUnitOfWork)
         {
         }
 

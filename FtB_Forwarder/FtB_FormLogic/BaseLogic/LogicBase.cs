@@ -10,6 +10,7 @@ using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,15 +19,13 @@ namespace FtB_FormLogic
     public class LogicBase<T>
     {
         protected readonly ITableStorage _tableStorage;
-        protected readonly ITableStorageOperations _tableStorageOperations;
         protected readonly ILogger _log;
         protected readonly DbUnitOfWork _dbUnitOfWork;
 
-        public LogicBase(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, DbUnitOfWork dbUnitOfWork)
+        public LogicBase(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork)
         {
             _repo = repo;
             _tableStorage = tableStorage;
-            _tableStorageOperations = tableStorageOperations;
             _log = log;
             _dbUnitOfWork = dbUnitOfWork;
         }
@@ -47,6 +46,14 @@ namespace FtB_FormLogic
             {
                 _tableStorage.InsertEntityRecord<T>(entity);
             });
+        }
+
+        public ReceiverStatusLogEnum GetReceiverLastLogStatus(string partitionKey)
+        {
+            var receiverRows = _tableStorage.GetTableEntities<ReceiverLogEntity>(partitionKey);
+            var lastRow = receiverRows.OrderByDescending(x => x.RowKey).First();
+
+            return (ReceiverStatusLogEnum)Enum.Parse(typeof(ReceiverStatusLogEnum), lastRow.Status);
         }
 
         public string GetReceiverIDFromStorage(string partitionKey, string rowKey)

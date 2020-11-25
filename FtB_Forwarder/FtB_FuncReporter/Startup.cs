@@ -37,7 +37,6 @@ namespace FtB_FuncReporter
             builder.Services.AddScoped<VarselOppstartPlanarbeidReportLogic>();
             builder.Services.AddScoped<IFormDataRepo, FormDataRepository>();
             builder.Services.AddScoped<ITableStorage, TableStorage>();
-            builder.Services.AddScoped<ITableStorageOperations, TableStorageOperations>();
             builder.Services.AddAltinnNotification(configuration);
             builder.Services.AddFtbRepositories(configuration);
             builder.Services.Configure<HtmlUtilSettings>(configuration.GetSection("HtmlUtilSettings"));

@@ -11,8 +11,8 @@ namespace FtB_FormLogic
 
         protected virtual Receiver Receiver { get; set; }
 
-        public SendLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, DbUnitOfWork dbUnitOfWork) 
-            : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
+        public SendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork) 
+            : base(repo, tableStorage, log, dbUnitOfWork)
         {
         }
 

@@ -28,14 +28,13 @@ namespace FtB_FormLogic
 
         public VarselOppstartPlanarbeidReportLogic(IFormDataRepo repo,
                                                    ITableStorage tableStorage,
-                                                   ITableStorageOperations tableStorageOperations,
                                                    ILogger<VarselOppstartPlanarbeidReportLogic> log,
                                                    IBlobOperations blobOperations,
                                                    INotificationAdapter notificationAdapter,
                                                    DbUnitOfWork dbUnitOfWork,
                                                    IHtmlUtils htmlUtils,
                                                    HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
-            : base(repo, tableStorage, tableStorageOperations, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils, htmlToPdfConverterHttpClient)
+            : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils, htmlToPdfConverterHttpClient)
         {
             _blobOperations = blobOperations;
             _htmlUtils = htmlUtils;

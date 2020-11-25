@@ -23,8 +23,8 @@ namespace FtB_FormLogic
         public AltinnDistributionMessage DistributionMessage { get; set; }
 
 
-        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, IDistributionAdapter distributionAdapter, DbUnitOfWork dbUnitOfWork)
-            : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
+        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IDistributionAdapter distributionAdapter, DbUnitOfWork dbUnitOfWork)
+            : base(repo, tableStorage, log, dbUnitOfWork)
         {
             _distributionAdapter = distributionAdapter;
         }

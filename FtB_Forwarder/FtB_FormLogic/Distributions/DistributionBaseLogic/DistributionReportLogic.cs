@@ -23,10 +23,10 @@ namespace FtB_FormLogic
         private readonly IBlobOperations _blobOperations;
         private readonly HtmlToPdfConverterHttpClient _htmlToPdfConverterHttpClient;
         private readonly INotificationAdapter _notificationAdapter;
-        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log
+        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log
                                 , INotificationAdapter notificationAdapter, IBlobOperations blobOperations
                                 , DbUnitOfWork dbUnitOfWork, IHtmlUtils htmlUtils, HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
-            : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
+            : base(repo, tableStorage, log, dbUnitOfWork)
         {
             _blobOperations = blobOperations;
             _htmlToPdfConverterHttpClient = htmlToPdfConverterHttpClient;

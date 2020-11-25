@@ -27,8 +27,8 @@ namespace FtB_FormLogic
 
         
 
-        public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ITableStorageOperations tableStorageOperations, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory) 
-            : base(repo, tableStorage, tableStorageOperations, log, dbUnitOfWork)
+        public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory) 
+            : base(repo, tableStorage, log, dbUnitOfWork)
         {
             _decryptionFactory = decryptionFactory;
         }
