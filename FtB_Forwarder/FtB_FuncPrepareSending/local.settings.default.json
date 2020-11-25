@@ -11,6 +11,10 @@
     "FormProcessAPISettings:Uri": "xx",
     "FormProcessAPISettings:BasicAuthUserName": "xx",
     "FormProcessAPISettings:BasicAuthPassword": "xx",
-    "EncryptionSettings:CertificateThumbprint": "xx"
+    "EncryptionSettings:CertificateThumbprint": "xx",
+
+    "TableStorage:SubmittalTable": "ftbSubmittal",
+    "TableStorage:ReceiverTable": "ftbReceiver",
+    "TableStorage:ReceiverLogTable": "ftbReceiverLog"
   }
 }

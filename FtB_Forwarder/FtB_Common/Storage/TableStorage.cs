@@ -15,10 +15,16 @@ namespace FtB_Common.Storage
     {
         private CloudStorageAccount _storageAccount;
         private CloudTableClient _cloudTableClient;
+        private readonly string _submittalTable;
+        private readonly string _receiverTable;
+        private readonly string _receiverLogTable;
 
         public TableStorage(IConfiguration configuration)
         {
             _storageAccount = CreateStorageAccountFromConnectionString(configuration["PrivateAzureStorageConnectionString"]);
+            _submittalTable = configuration["TableStorage:SubmittalTable"];
+            _receiverTable = configuration["TableStorage:ReceiverTable"];
+            _receiverLogTable = configuration["TableStorage:ReceiverLogTable"];
             _cloudTableClient = _storageAccount.CreateCloudTableClient();
         }
 
@@ -176,15 +182,15 @@ namespace FtB_Common.Storage
         {
             if (typeof(T) == typeof(ReceiverLogEntity))
             {
-                return "ftbReceiverLog";
+                return _receiverLogTable;
             }
             else if (typeof(T) == typeof(ReceiverEntity))
             {
-                return "ftbReceiver";
+                return _receiverTable;
             }
             else if (typeof(T) == typeof(SubmittalEntity))
             {
-                return "ftbSubmittal";
+                return _submittalTable;
             }
             throw new Exception("Illegal table storage name");
         }

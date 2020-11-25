@@ -29,6 +29,10 @@
     "FormProcessAPISettings:BasicAuthUserName": "xx",
     "FormProcessAPISettings:BasicAuthPassword": "xx",
 
-    "HtmlUtilSettings:HtmlTemplateAssembly": "FtB_FormLogic"
+    "HtmlUtilSettings:HtmlTemplateAssembly": "FtB_FormLogic",
+
+    "TableStorage:SubmittalTable": "ftbSubmittal",
+    "TableStorage:ReceiverTable": "ftbReceiver",
+    "TableStorage:ReceiverLogTable": "ftbReceiverLog"
   }
 }

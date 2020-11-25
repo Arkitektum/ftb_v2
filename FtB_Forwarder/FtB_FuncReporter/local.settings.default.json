@@ -26,6 +26,10 @@
     "HtmlToPdfConverterSettings:API": "PDF",
     "HtmlToPdfConverterSettings:APIKey": "",
 
-    "HtmlUtilSettings:HtmlTemplateAssembly": "FtB_FormLogic"
+    "HtmlUtilSettings:HtmlTemplateAssembly": "FtB_FormLogic",
+
+    "TableStorage:SubmittalTable": "ftbSubmittal",
+    "TableStorage:ReceiverTable": "ftbReceiver",
+    "TableStorage:ReceiverLogTable": "ftbReceiverLog"
   }
 }
