@@ -20,15 +20,13 @@ namespace FtB_FormLogic
 {
     public class DistributionReportLogic<T> : ReportLogic<T>
     {
-        private readonly IBlobOperations _blobOperations;
         private readonly HtmlToPdfConverterHttpClient _htmlToPdfConverterHttpClient;
         private readonly INotificationAdapter _notificationAdapter;
         public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log
                                 , INotificationAdapter notificationAdapter, IBlobOperations blobOperations
                                 , DbUnitOfWork dbUnitOfWork, IHtmlUtils htmlUtils, HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
-            : base(repo, tableStorage, log, dbUnitOfWork)
+            : base(repo, tableStorage, blobOperations, log, dbUnitOfWork)
         {
-            _blobOperations = blobOperations;
             _htmlToPdfConverterHttpClient = htmlToPdfConverterHttpClient;
             _notificationAdapter = notificationAdapter;
         }
@@ -52,7 +50,7 @@ namespace FtB_FormLogic
             UpdateReceiverProcessStage(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverProcessStageEnum.ReadyForReporting);
             AddToReceiverProcessLog(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReadyForReporting);
 
-            if (AreAllReceiversReadyForReporting(reportQueueItem))
+            if (ReadyForSubmittalReporting(reportQueueItem))
             {
                 await SendReceiptToSubmitterWhenAllReceiversAreProcessed(reportQueueItem);
             }
@@ -64,7 +62,7 @@ namespace FtB_FormLogic
         {
             try
             {
-                _log.LogDebug("Start SendReceiptToSubmitterWhenAllReceiversAreProcessed");
+                _log.LogDebug($"Start SendReceiptToSubmitterWhenAllReceiversAreProcessed. Queue item: {reportQueueItem.ReceiverLogPartitionKey}");
                 SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
                 submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
                 base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
@@ -102,10 +100,9 @@ namespace FtB_FormLogic
                 };
 
                 notificationMessage.Attachments = new List<Attachment>() { receiptAttachment, mainFormAttachment };
-                base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
+                _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
                 _log.LogDebug("Start SendNotification");
                 _notificationAdapter.SendNotification(notificationMessage);
-                base._log.LogDebug($"{GetType().Name}: {plainReceiptHtml}");
                 var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
                 _log.LogDebug("Start Update all receiver entities");
                 var allReceivers = _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference.ToLower()).ToList();
@@ -114,6 +111,9 @@ namespace FtB_FormLogic
                 _log.LogDebug("Start BulkAddLogEntryToReceivers");
                 BulkAddLogEntryToReceivers(reportQueueItem,ReceiverStatusLogEnum.Completed);
                 _log.LogDebug("End SendReceiptToSubmitterWhenAllReceiversAreProcessed");
+
+                _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
+
             }
             catch (Exception ex)
             {

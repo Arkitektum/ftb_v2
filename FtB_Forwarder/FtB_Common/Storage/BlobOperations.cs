@@ -1,5 +1,7 @@
 ﻿using Altinn.Common.Models;
+using Azure;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using FtB_Common.BusinessModels;
 using FtB_Common.Enums;
 using Microsoft.Extensions.Logging;
@@ -16,23 +18,71 @@ namespace FtB_Common.Storage
     public class BlobOperations : IBlobOperations
     {
         private ArchivedItemInformation _archivedItem;
-        private readonly ILogger<BlobOperations> _logger;
+        private readonly ILogger<BlobOperations> _log;
         private PrivateBlobStorage _privateBlobStorage;
         private PublicBlobStorage _publicBlobStorage;
+        private string _blobContainerLeaseId;
+
         public BlobOperations(ILogger<BlobOperations> logger, PrivateBlobStorage privateBlobStorage, PublicBlobStorage publicBlobStorage)
         {
-            _logger = logger;
+            _log = logger;
             _privateBlobStorage = privateBlobStorage;
             _publicBlobStorage = publicBlobStorage;
         }
 
-        //private void GetArchivedItem(string containerName)
-        //{
-        //    GetArchivedItemFromBlobAsync(containerName).GetAwaiter().GetResult();
-        //}
+        public bool AcquireContainerLease(string containerName, int seconds)
+        {
+            try
+            {
+                var containerClient = _privateBlobStorage.GetBlobContainerClient(containerName);
+
+                BlobLeaseClient blobLeaseClient = containerClient.GetBlobLeaseClient();
+                var blobLeaseResponse = blobLeaseClient.AcquireAsync(TimeSpan.FromSeconds(seconds));
+                _blobContainerLeaseId = blobLeaseClient.LeaseId;
+                var httpStatusCode = blobLeaseResponse.Result.GetRawResponse().Status;
+                if (httpStatusCode == 201)
+                {
+                    _log.LogInformation($"Blob in container {containerName} successfully leased with LeaseId={_blobContainerLeaseId}.");
+                    return true;
+                }
+                _log.LogError($"Blob in container {containerName} failed for leasing.");
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _log.LogError($"Exception: Blob in container {containerName} failed for leasing. Message: {ex.Message}");
+                throw ex;
+            }
+        }
+
+        public bool ReleaseContainerLease(string containerName)
+        {
+            try
+            {
+                var containerClient = _privateBlobStorage.GetBlobContainerClient(containerName);
+                BlobLeaseClient blobLeaseClient = containerClient.GetBlobLeaseClient(_blobContainerLeaseId);
+                Response<ReleasedObjectInfo> releaseObjectInfo = blobLeaseClient.Release();
+                var xx = releaseObjectInfo.GetRawResponse().Status;
+                if (xx == 200)
+                {
+                    _log.LogInformation($"Blob with LeaseId {_blobContainerLeaseId} in container {containerName} successfully released.");
+                    return true;
+                }
+                _log.LogError($"Blob with LeaseId {_blobContainerLeaseId} in container {containerName} failed for releasing.");
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _log.LogError($"Exception: Blob with LeaseId {_blobContainerLeaseId} in container {containerName} failed for releasing. Message: {ex.Message}");
+                return false;
+            }
+        }
+
         private async Task GetArchivedItemFromBlobAsync(string containerName)
         {
-            _logger.LogDebug("Retrieving archived item from blob storage: {0}", containerName);
+            _log.LogDebug("Retrieving archived item from blob storage: {0}", containerName);
             try
             {
                 foreach (var blobItem in _privateBlobStorage.GetBlobContainerItems(containerName)) //Filter on metadata here?
@@ -226,10 +276,7 @@ namespace FtB_Common.Storage
         {
             var blobItems = _privateBlobStorage.GetBlobContainerItems(containerName);
             var blobUrls = new List<KeyValuePair<string, string>>();
-
             string publicBlobContainer = "";
-            //var metadataFilter = new List<KeyValuePair<string, string>>();
-            //metadataFilter.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.FormData)));
 
             foreach (var blobItem in blobItems)
             {
