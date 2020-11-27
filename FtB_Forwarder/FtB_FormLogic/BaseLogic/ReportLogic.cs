@@ -26,11 +26,11 @@ namespace FtB_FormLogic
         {
         }
 
-        protected bool ReadyForSubmittalReporting(ReportQueueItem reportQueueItem)
+        protected async Task< bool> ReadyForSubmittalReporting(ReportQueueItem reportQueueItem)
         {
             if (AllReceiversReadyForReporting(reportQueueItem))
             {
-                return SetReportingFlagForSubmittal(reportQueueItem.ArchiveReference.ToLower());
+                return await SetReportingFlagForSubmittal(reportQueueItem.ArchiveReference.ToLower());
             }
             else
             {
@@ -44,9 +44,9 @@ namespace FtB_FormLogic
         /// This is due to a preceeding process already ha acqired the lease, and is therefore sending the submittal receipt
         /// </summary>
         /// <returns></returns>
-        private bool SetReportingFlagForSubmittal(string containerName)
+        private async Task<bool> SetReportingFlagForSubmittal(string containerName)
         {
-            return _blobOperations.AcquireContainerLease(containerName, BLOB_CONTAINER_LEASE_DURATION_MAX);
+            return await _blobOperations.AcquireContainerLease(containerName, BLOB_CONTAINER_LEASE_DURATION_MAX);
         }
 
         private bool AllReceiversReadyForReporting(ReportQueueItem reportQueueItem)

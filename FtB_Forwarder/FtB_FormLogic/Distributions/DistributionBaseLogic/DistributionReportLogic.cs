@@ -50,7 +50,7 @@ namespace FtB_FormLogic
             UpdateReceiverProcessStage(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverProcessStageEnum.ReadyForReporting);
             AddToReceiverProcessLog(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReadyForReporting);
 
-            if (ReadyForSubmittalReporting(reportQueueItem))
+            if (await ReadyForSubmittalReporting(reportQueueItem))
             {
                 await SendReceiptToSubmitterWhenAllReceiversAreProcessed(reportQueueItem);
             }

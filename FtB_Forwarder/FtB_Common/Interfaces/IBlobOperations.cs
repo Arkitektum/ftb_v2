@@ -20,8 +20,8 @@ namespace FtB_Common.Storage
         Task<IEnumerable<(string attachmentType, string fileName)>> GetListOfBlobsWithMetadataType(BlobStorageEnum storageEnum, string archiveReference, IEnumerable<BlobStorageMetadataTypeEnum> blobStorageTypes);
         Task<IEnumerable<(string attachmentFileName, string attachmentFileUrl, string attachmentType)>> GetBlobUrlsFromPublicStorageByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter);
         string GetPublicBlobContainerName(string containerName);
-        bool AcquireContainerLease(string containerName, int seconds);
-        bool ReleaseContainerLease(string containerName);
+        Task<bool> AcquireContainerLease(string containerName, int seconds);
+        Task<bool> ReleaseContainerLease(string containerName);
 
     }
 }
