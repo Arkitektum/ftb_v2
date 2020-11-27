@@ -66,7 +66,7 @@ namespace FtB_FormLogic
                 _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} kombinert med {childDistribution.Id}", "Info");
             }
 
-            PersistPrefill(sendQueueItem);
+            //PersistPrefill(sendQueueItem);
 
             _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {prefillData.ExternalSystemReference}");
             _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon av {prefillData.PrefillFormName} til tjeneste {prefillData.PrefillServiceCode}/{prefillData.PrefillServiceEditionCode}");
