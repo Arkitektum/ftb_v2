@@ -71,6 +71,40 @@ namespace FtB_Common.Storage
             }
         }
 
+        public void InsertEntityRecords<T>(IEnumerable<ITableEntity> entities)
+        {
+            try
+            {
+                var batchResults = new List<TableBatchResult>();
+                string tableNameFromType = GetTableName<T>();
+                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
+
+                if (!cloudTable.Exists())
+                    cloudTable.CreateIfNotExists();
+
+                var batches = entities.Batch(100);
+
+                TableBatchOperation batchOperations;
+                foreach (var batch in batches)
+                {
+                    batchOperations = new TableBatchOperation();
+
+                    foreach (var entity in batch)
+                    {
+                        batchOperations.InsertOrReplace(entity);
+                    }
+
+                    var result = cloudTable.ExecuteBatch(batchOperations);
+                    batchResults.Add(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
         public TableEntity InsertEntityRecord<T>(ITableEntity entity)
         {
             try
@@ -193,6 +227,29 @@ namespace FtB_Common.Storage
                 return _submittalTable;
             }
             throw new Exception("Illegal table storage name");
+        }
+
+    }
+
+    public static class BatchExtensions
+    {
+        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> collection, int batchSize)
+        {
+            var nextbatch = new List<T>(batchSize);
+            foreach (T item in collection)
+            {
+                nextbatch.Add(item);
+                if (nextbatch.Count == batchSize)
+                {
+                    yield return nextbatch;
+                    nextbatch = new List<T>(batchSize);
+                }
+            }
+
+            if (nextbatch.Count > 0)
+            {
+                yield return nextbatch;
+            }
         }
 
     }

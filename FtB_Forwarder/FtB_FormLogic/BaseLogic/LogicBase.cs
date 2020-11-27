@@ -36,12 +36,17 @@ namespace FtB_FormLogic
             FormData = SerializeUtil.DeserializeFromString<T>(data);
         }
 
-        protected void BulkInsertEntities<T>(IEnumerable<T> entities) where T : ITableEntity
+        protected void ParallelInsertEntities(IEnumerable<ReceiverLogEntity> entities)
         {
             Parallel.ForEach(entities, entity =>
             {
-                _tableStorage.InsertEntityRecord<T>(entity);
+                _tableStorage.InsertEntityRecord<ReceiverLogEntity>(entity);
             });
+        }
+
+        protected void BulkInsertEntities(IEnumerable<ReceiverEntity> entities)
+        {
+            _tableStorage.InsertEntityRecords<ReceiverEntity>(entities);            
         }
 
         public ReceiverStatusLogEnum GetReceiverLastLogStatus(string partitionKey)
