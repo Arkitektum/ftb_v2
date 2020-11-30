@@ -79,7 +79,7 @@ namespace FtB_FormLogic
             }
 
             BulkInsertEntities(receiverEntities);
-            ParallelInsertEntities(receiverLogEntities);
+            await ParallelInsertEntities(receiverLogEntities);
 
             return sendQueueItems;
         }

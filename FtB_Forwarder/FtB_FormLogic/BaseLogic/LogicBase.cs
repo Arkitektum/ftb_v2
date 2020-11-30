@@ -3,7 +3,6 @@ using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
 using Ftb_Repositories;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -36,8 +35,10 @@ namespace FtB_FormLogic
             FormData = SerializeUtil.DeserializeFromString<T>(data);
         }
 
-        protected void ParallelInsertEntities(IEnumerable<ReceiverLogEntity> entities)
+        protected async Task ParallelInsertEntities(IEnumerable<ReceiverLogEntity> entities)
         {
+            await _tableStorage.EnsureTableExists<ReceiverLogEntity>();
+
             Parallel.ForEach(entities, entity =>
             {
                 _tableStorage.InsertEntityRecord<ReceiverLogEntity>(entity);
@@ -75,9 +76,9 @@ namespace FtB_FormLogic
             _log.LogDebug("Inside BulkAddLogEntryToReceivers - end");
         }
 
-        protected void UpdateEntities<T>(IEnumerable<T> entities) where T : ITableEntity
+        protected void UpdateEntities(IEnumerable<ReceiverEntity> entities)
         {
-            _tableStorage.UpdateEntities<T>(entities);
+            _tableStorage.UpdateEntities(entities);
         }
 
 
