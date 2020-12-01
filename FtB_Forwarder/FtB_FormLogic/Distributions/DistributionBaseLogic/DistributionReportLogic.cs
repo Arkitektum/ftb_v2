@@ -47,8 +47,8 @@ namespace FtB_FormLogic
         public override async Task<string> Execute(ReportQueueItem reportQueueItem)
         {
             var returnItem = await base.Execute(reportQueueItem);
-            UpdateReceiverProcessStage(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverProcessStageEnum.ReadyForReporting);
-            AddToReceiverProcessLog(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReadyForReporting);
+            await UpdateReceiverProcessStage(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverProcessStageEnum.ReadyForReporting);
+            await AddToReceiverProcessLog(reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReadyForReporting);
 
             if (await ReadyForSubmittalReporting(reportQueueItem))
             {
@@ -63,7 +63,7 @@ namespace FtB_FormLogic
             try
             {
                 _log.LogDebug($"Start SendReceiptToSubmitterWhenAllReceiversAreProcessed. Queue item: {reportQueueItem.ReceiverLogPartitionKey}");
-                SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
+                SubmittalEntity submittalEntity = await _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
                 submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
                 base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
                 var notificationMessage = new AltinnNotificationMessage();
@@ -76,7 +76,7 @@ namespace FtB_FormLogic
                 _log.LogDebug("Start GetSubmitterReceipt");
                 var plainReceiptHtml = await GetSubmitterReceipt(reportQueueItem);
                 _log.LogDebug("Start Convert to PDF");
-                byte[] PDFInbytes = _htmlToPdfConverterHttpClient.Get(plainReceiptHtml);
+                byte[] PDFInbytes = await _htmlToPdfConverterHttpClient.Get(plainReceiptHtml);
                 _log.LogDebug("Converted to PDF");
                 var receiptAttachment = new AttachmentBinary()
                 {
@@ -105,20 +105,20 @@ namespace FtB_FormLogic
                 _notificationAdapter.SendNotification(notificationMessage);
                 var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
                 _log.LogDebug("Start Update all receiver entities");
-                var allReceivers = _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference.ToLower()).ToList();
-                allReceivers.ForEach(x => x.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.Completed));
-                UpdateEntities(allReceivers);
+                var allReceivers = await _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference.ToLower());
+                allReceivers.ToList().ForEach(x => x.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.Completed));
+                await UpdateEntities(allReceivers);
                 _log.LogDebug("Start BulkAddLogEntryToReceivers");
-                BulkAddLogEntryToReceivers(reportQueueItem,ReceiverStatusLogEnum.Completed);
+                await BulkAddLogEntryToReceivers(reportQueueItem,ReceiverStatusLogEnum.Completed);
                 _log.LogDebug("End SendReceiptToSubmitterWhenAllReceiversAreProcessed");
 
-                _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
+                await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
 
             }
             catch (Exception ex)
             {
-                base._log.LogError($"{GetType().Name}. Error: {ex.Message}");
-                throw ex;
+                base._log.LogError(ex, "Error occurred when creating and sending receipt");
+                throw;
             }
         }
 

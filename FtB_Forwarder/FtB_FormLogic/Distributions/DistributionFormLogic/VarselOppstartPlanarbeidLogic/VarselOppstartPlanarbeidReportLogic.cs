@@ -115,9 +115,9 @@ namespace FtB_FormLogic
             }
             catch (Exception ex)
             {
-                _log.LogError($"{GetType().Name}. Error: {ex.Message}");
+                _log.LogError(ex, "Error occurred while getting submitter receipt message");
 
-                throw ex;
+                throw;
             }
         }
 
@@ -144,9 +144,10 @@ namespace FtB_FormLogic
                 IEnumerable<(string attachmentType, string fileName)> listOfAttachmentsInSubmittal = await _blobOperations.GetListOfBlobsWithMetadataType(BlobStorageEnum.Public, publicContainerName, blobStorageTypes);
                 string tableRowsAsHtml = "<tr><td>" + string.Join("</td></tr><tr><td>", listOfAttachmentsInSubmittal.Select(p => p.attachmentType + "</td><td>" + p.fileName)) + "</td></tr>";
                 htmlTemplate = htmlTemplate.Replace("<vedlegg />", tableRowsAsHtml);
-                htmlTemplate = htmlTemplate.Replace("<antallVarsledeMottakere />", GetReceiverSuccessfullyNotifiedCount(reportQueueItem).ToString());
+                var successfullyNotifiedCount = await GetReceiverSuccessfullyNotifiedCount(reportQueueItem);
+                htmlTemplate = htmlTemplate.Replace("<antallVarsledeMottakere />", successfullyNotifiedCount.ToString());
 
-                var listOfReservedReporteeNames = GetReservedReporteeNames();
+                var listOfReservedReporteeNames = await GetReservedReporteeNames();
                 var deniersASHtml = new StringBuilder();
                 foreach (var denier in listOfReservedReporteeNames)
                 {
@@ -158,30 +159,30 @@ namespace FtB_FormLogic
             }
             catch (Exception ex)
             {
-                _log.LogError($"{GetType().Name}. Error: {ex.Message}");
+                _log.LogError(ex, "Error occurred when getting submitter receipt");
 
-                throw ex;
+                throw;
             }
         }
 
-        private IEnumerable<string> GetReservedReporteeNames()
+        private async Task<IEnumerable<string>> GetReservedReporteeNames()
         {
-            var allReceiversInSubmittal = _tableStorage.GetTableEntities<ReceiverEntity>(ArchiveReference);
+            var allReceiversInSubmittal = await _tableStorage.GetTableEntities<ReceiverEntity>(ArchiveReference);
 
             var reservedReporteeReceiverIds = allReceiversInSubmittal
                     .Where(x => x.ProcessOutcome == Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.ReservedReportee))
-                    .Select( x => x.ReceiverId);
+                    .Select( x => x.ReceiverId).ToList();
 
             var socialSecurityNumbers = FormData.beroerteParter
                     .Where(x => x.foedselsnummer != null)
-                    .Select(x => new { Id = x.foedselsnummer, x.navn });
+                    .Select(x => new { Id = x.foedselsnummer, x.navn }).ToList();
             var orgNumbers = FormData.beroerteParter
                     .Where(x => x.organisasjonsnummer != null)
                     .Select(x => new { Id = x.organisasjonsnummer, x.navn });
 
             var reservedReporteeNames = socialSecurityNumbers.Union(orgNumbers)
                     .Where(x => reservedReporteeReceiverIds.Any(y => y == x.Id))
-                    .Select(x => x.navn);
+                    .Select(x => x.navn).ToList();
 
             return reservedReporteeNames;
         }

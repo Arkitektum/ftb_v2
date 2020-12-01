@@ -9,22 +9,18 @@
       }
     },
     "logLevel": {
-      "Default": "Error",
-      "FtB_Common": "Debug",
-      "FtB_DataModels": "Debug",
-      "Ftb_DbModels": "Debug",
-      "FtB_FormLogic": "Debug",
-      "Ftb_DbRepository": "Debug",
-      "FtB_MessageManager": "Debug",
-      "FtB_ProcessStrategies": "Debug",
-      "FtB_FuncPrepareSending": "Debug"
+      "default": "Debug",
+      "Microsoft": "Error"
     }
   },
   "extensions": {
     "serviceBus": {
       "prefetchCount": 1,
-      "messageHandlerOptions": { "maxConcurrentCalls": 1 },
-      "sessionHandlerOptions": { "maxConcurrentCalls": 1 }
+      "messageHandlerOptions": {
+        "maxConcurrentCalls": 1,
+        "maxAutoRenewDuration": "00:10:00"
+      },
+      "sessionHandlerOptions": { "maxConcurrentCalls": 1   }
       }
     }
   }

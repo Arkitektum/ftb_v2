@@ -1,5 +1,6 @@
 using FtB_Common.BusinessModels;
 using FtB_ProcessStrategies;
+using Microsoft.Azure.ServiceBus.Core;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.ServiceBus;
 using Microsoft.Extensions.Logging;
@@ -32,13 +33,15 @@ namespace FtB_FuncPrepareSending
             {
                 _logger.LogInformation($"C# ServiceBus queue trigger function processed message: {submittalQueueItem.ArchiveReference}");
 
-                var result = await _queueProcessor.ExecuteProcessingStrategy(submittalQueueItem);
+                var results = await _queueProcessor.ExecuteProcessingStrategy(submittalQueueItem);
                 var tasks = new List<Task>();
-                foreach (var item in result)
+
+                foreach (var item in results)
                 {
                     tasks.Add(queueCollector.AddAsync(item));
                 }
                 await Task.WhenAll(tasks);
+//                await queueCollector.FlushAsync();
             }
         }
     }

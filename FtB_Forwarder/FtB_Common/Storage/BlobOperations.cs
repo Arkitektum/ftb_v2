@@ -123,7 +123,7 @@ namespace FtB_Common.Storage
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
@@ -188,7 +188,7 @@ namespace FtB_Common.Storage
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 

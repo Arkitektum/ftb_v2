@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Ftb_Repositories.HttpClients
 {
@@ -23,7 +24,7 @@ namespace Ftb_Repositories.HttpClients
             _log = log;
         }
 
-        public byte[] Get(string html)
+        public async Task<byte[]> Get(string html)
         {
             try
             {
@@ -37,11 +38,11 @@ namespace Ftb_Repositories.HttpClients
                 _client.DefaultRequestHeaders.Add("User-Agent", "Arbeidsflyt/2");
                 _client.DefaultRequestHeaders.Add("X-API-KEY", _settings.Value.APIKey);
 
-                var response = _client.PostAsync(_settings.Value.API, requestContent).Result;
+                var response = await _client.PostAsync(_settings.Value.API, requestContent);
                 if (response.IsSuccessStatusCode)
                 {
                     _log.LogDebug($"{GetType().Name}. Successfully converted the HTML: {html}");
-                    PDFInbytes = response.Content.ReadAsByteArrayAsync().Result;
+                    PDFInbytes = await response.Content.ReadAsByteArrayAsync();
                 }
                 else
                 {
@@ -53,7 +54,7 @@ namespace Ftb_Repositories.HttpClients
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
 
         }
