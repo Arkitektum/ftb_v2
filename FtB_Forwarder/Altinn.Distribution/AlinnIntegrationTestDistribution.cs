@@ -16,12 +16,21 @@ namespace Altinn.Distribution
             var results = new List<DistributionResult>();
 
             //Prefill
+            var prefillSleepMs = new Random(5).Next(100, 600);
+            await Task.Delay(prefillSleepMs);
+
             var random = new Random();
 
             var randomNumber = random.Next(0, 100);
 
             if (randomNumber < 80)
+            {
                 results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Ok", Step = DistriutionStep.Sent });
+                //Correspondence
+                results.Add(new DistributionResult(DistributionComponent.Correspondence) { Message = "Ok", Step = DistriutionStep.Sent });
+                var correspondenceSleepMs = new Random(5).Next(100, 600);
+                await Task.Delay(correspondenceSleepMs);
+            }
             else
             {
                 if (randomNumber >= 80 && randomNumber < 90)
@@ -31,17 +40,6 @@ namespace Altinn.Distribution
                 else
                     results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Error", Step = DistriutionStep.UnkownErrorOccurred });
             }
-
-            var prefillSleepMs = new Random(5).Next(100, 600);
-            await Task.Delay(prefillSleepMs);
-
-            //Thread.Sleep(prefillSleepMs);
-
-            //Correspondence
-            results.Add(new DistributionResult(DistributionComponent.Correspondence) { Message = "Ok", Step = DistriutionStep.Sent });
-            var correspondenceSleepMs = new Random(5).Next(100, 600);
-            //Thread.Sleep(correspondenceSleepMs);
-            await Task.Delay(prefillSleepMs);
 
             return results;
         }
