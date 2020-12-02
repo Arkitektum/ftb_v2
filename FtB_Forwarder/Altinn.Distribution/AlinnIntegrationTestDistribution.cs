@@ -14,9 +14,24 @@ namespace Altinn.Distribution
         public async Task<IEnumerable<DistributionResult>> SendDistribution(AltinnDistributionMessage altinnMessage)
         {
             var results = new List<DistributionResult>();
-            
+
             //Prefill
-            results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Ok", Step = DistriutionStep.Sent });
+            var random = new Random();
+
+            var randomNumber = random.Next(0, 100);
+
+            if (randomNumber < 80)
+                results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Ok", Step = DistriutionStep.Sent });
+            else
+            {
+                if (randomNumber >= 80 && randomNumber < 90)
+                    results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Reserved", Step = DistriutionStep.ReservedReportee });
+                else if (randomNumber >= 90 && randomNumber < 95)
+                    results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Unable to reach", Step = DistriutionStep.UnableToReachReceiver });
+                else
+                    results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Error", Step = DistriutionStep.UnkownErrorOccurred });
+            }
+
             var prefillSleepMs = new Random(5).Next(100, 600);
             await Task.Delay(prefillSleepMs);
 
