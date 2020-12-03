@@ -50,27 +50,6 @@ namespace FtB_Common.Storage
             return storageAccount;
         }
 
-        public async Task<TableEntity> InsertEntityRecordAsync<T>(ITableEntity entity)
-        {
-            try
-            {
-                string tableNameFromType = GetTableName<T>();
-                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
-
-                if(!cloudTable.Exists())
-                    cloudTable.CreateIfNotExists();
-
-                TableOperation insertOperation = TableOperation.Insert(entity);
-                TableResult result = await cloudTable.ExecuteAsync(insertOperation);
-                var insertedEntity = (TableEntity)result.Result;
-                return insertedEntity;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         public TableEntity InsertEntityRecord<T>(ITableEntity entity)
         {
             try
@@ -78,7 +57,7 @@ namespace FtB_Common.Storage
                 string tableNameFromType = GetTableName<T>();
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
 
-                if(!cloudTable.Exists())
+                if (!cloudTable.Exists())
                     cloudTable.CreateIfNotExists();
 
                 TableOperation insertOperation = TableOperation.Insert(entity);
@@ -88,22 +67,88 @@ namespace FtB_Common.Storage
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw;
             }
         }
 
-        public void UpdateEntities<T>(IEnumerable<T> entities) where T : ITableEntity
+        public async Task<TableEntity> InsertEntityRecordAsync<T>(ITableEntity entity)
         {
             try
             {
                 string tableNameFromType = GetTableName<T>();
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
 
-                Parallel.ForEach(entities, entity =>
+                if (!await cloudTable.ExistsAsync())
+                    await cloudTable.CreateIfNotExistsAsync();
+
+                var insertOperation = TableOperation.Insert(entity);
+                var result = await cloudTable.ExecuteAsync(insertOperation);
+                var insertedEntity = (TableEntity)result.Result;
+                return insertedEntity;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task InsertEntityRecords<T>(IEnumerable<ITableEntity> entities)
+        {
+            try
+            {
+                var batchResults = new List<TableBatchResult>();
+                string tableNameFromType = GetTableName<T>();
+                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
+
+                if (!await cloudTable.ExistsAsync())
+                    await cloudTable.CreateIfNotExistsAsync();
+
+                var batches = entities.Batch(100);
+
+                TableBatchOperation batchOperations;
+                foreach (var batch in batches)
                 {
-                    TableOperation operation = TableOperation.Replace(entity);
-                    TableResult result = cloudTable.Execute(operation);
-                });
+                    batchOperations = new TableBatchOperation();
+
+                    foreach (var entity in batch)
+                    {
+                        batchOperations.InsertOrReplace(entity);
+                    }
+
+                    var result = await cloudTable.ExecuteBatchAsync(batchOperations);
+                    batchResults.Add(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task EnsureTableExists<T>()
+        {
+            string tableNameFromType = GetTableName<T>();
+            CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
+
+            if (!await cloudTable.ExistsAsync())
+                await cloudTable.CreateIfNotExistsAsync();
+        }
+
+        public async Task UpdateEntities<T>(IEnumerable<T> entities) where T : ITableEntity
+        {
+            try
+            {
+                string tableNameFromType = GetTableName<T>();
+                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
+
+                var tasks = entities.Select(async (x) => await UpdateEntity(x, cloudTable));
+                await Task.WhenAll(tasks);
+
+                //Parallel.ForEach(entities, entity =>
+                //{
+                //    TableOperation operation = TableOperation.Replace(entity);
+                //    TableResult result = cloudTable.Execute(operation);
+                //});
 
             }
             catch (StorageException ex)
@@ -117,15 +162,22 @@ namespace FtB_Common.Storage
             }
         }
 
+        private async Task<TableResult> UpdateEntity<T>(T entity, CloudTable cloudTable) where T : ITableEntity
+        {
+            TableOperation operation = TableOperation.Replace(entity);
+            return await cloudTable.ExecuteAsync(operation);
 
-        public TableEntity UpdateEntityRecord<T>(TableEntity entity)
+        }
+
+
+        public async Task<TableEntity> UpdateEntityRecord<T>(TableEntity entity)
         {
             try
             {
                 string tableNameFromType = GetTableName<T>();
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
                 TableOperation operation = TableOperation.Replace(entity);
-                TableResult result = cloudTable.Execute(operation);
+                TableResult result = await cloudTable.ExecuteAsync(operation);
                 var insertedEntity = (TableEntity)result.Result;
                 return insertedEntity;
             }
@@ -140,25 +192,23 @@ namespace FtB_Common.Storage
             }
         }
 
-        public T GetTableEntity<T>(string partitionKey, string rowKey) where T : ITableEntity
+        public async Task<T> GetTableEntity<T>(string partitionKey, string rowKey) where T : ITableEntity
         {
             try
             {
                 string tableNameFromType = GetTableName<T>();
                 TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey, rowKey);
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
-                TableResult result = cloudTable.Execute(retrieveOperation);
+                TableResult result = await cloudTable.ExecuteAsync(retrieveOperation);
                 return (T)result.Result;
             }
             catch (StorageException e)
             {
-                Console.WriteLine(e.Message);
-                Console.ReadLine();
                 throw;
             }
         }
 
-        public IEnumerable<T> GetTableEntities<T>(string partitionKey) where T : ITableEntity, new()
+        public async Task<IEnumerable<T>> GetTableEntities<T>(string partitionKey) where T : ITableEntity, new()
         {
             try
             {
@@ -172,8 +222,6 @@ namespace FtB_Common.Storage
             }
             catch (StorageException e)
             {
-                Console.WriteLine(e.Message);
-                Console.ReadLine();
                 throw;
             }
         }

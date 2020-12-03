@@ -58,7 +58,7 @@ namespace FtB_FormLogic
 
             SetReceivers();
 
-            CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
+            await CreateSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Receivers.Count);
 
             var sendQueueItems = new List<SendQueueItem>();
 
@@ -68,34 +68,36 @@ namespace FtB_FormLogic
             var receiverLogEntities = new List<ReceiverLogEntity>();
             for (int i = 0; i < Receivers.Count; i++)
             {
-                string partitionKey = $"{ArchiveReference}-{i.ToString()}";
+                string receiverLogPartitionKey = $"{ArchiveReference}-{i.ToString()}";
                 string rowKey = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}";
                 
-                receiverEntities.Add(new ReceiverEntity(ArchiveReference, i.ToString(), Receivers[i].Id, ReceiverProcessStageEnum.Created, DateTime.Now));
-                receiverLogEntities.Add(new ReceiverLogEntity(partitionKey, rowKey, Receivers[i].Id, ReceiverStatusLogEnum.Created));
+                receiverEntities.Add(new ReceiverEntity(ArchiveReference, i.ToString(), Receivers[i].Id, ReceiverProcessStageEnum.Created, DateTime.Now, receiverLogPartitionKey));
+                receiverLogEntities.Add(new ReceiverLogEntity(receiverLogPartitionKey, rowKey, Receivers[i].Id, ReceiverStatusLogEnum.Created));
                 
                 sendQueueItems.Add(new SendQueueItem() { ArchiveReference = ArchiveReference, ReceiverSequenceNumber = i.ToString(),
-                                                         ReceiverLogPartitionKey = partitionKey, Receiver = Receivers[i] });
+                                                         ReceiverLogPartitionKey = receiverLogPartitionKey, Receiver = Receivers[i] });
             }
 
-            BulkInsertEntities(receiverEntities);
-            BulkInsertEntities(receiverLogEntities);
+            _log.LogDebug($"Created {receiverEntities.Count()} receiver entities for {submittalQueueItem.ArchiveReference}");
+
+            await BulkInsertEntities(receiverEntities);
+            await ParallelInsertEntities(receiverLogEntities);
 
             return sendQueueItems;
         }
 
-        private void CreateSubmittalDatabaseStatus(string archiveReference, int receiverCount)
+        private async Task CreateSubmittalDatabaseStatus(string archiveReference, int receiverCount)
         {
             try
             {
-                SubmittalEntity entity = new SubmittalEntity(archiveReference, receiverCount, DateTime.Now);
-                _tableStorage.InsertEntityRecordAsync<SubmittalEntity>(entity);
+                var entity = new SubmittalEntity(archiveReference, receiverCount, DateTime.Now);
+                await _tableStorage.InsertEntityRecordAsync<SubmittalEntity>(entity);
                 _log.LogDebug($"Create submittal database status for {archiveReference} with receiver count: {receiverCount}.");
             }
             catch (Exception ex)
             {
-                _log.LogError($"Error creating submittal record for archiveReference={archiveReference}. Message: {ex.Message}");
-                throw ex;
+                _log.LogError(ex, $"Error creating submittal record for archiveReference={archiveReference}.");
+                throw;
             }
         }
     }

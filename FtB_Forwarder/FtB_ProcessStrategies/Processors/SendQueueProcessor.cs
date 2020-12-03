@@ -44,7 +44,7 @@ namespace FtB_ProcessStrategies
             catch (Exception ex)
             {
                 _log.LogError(ex, "An error occured while processing: {0}", sendQueueItem?.ArchiveReference);
-                throw ex;
+                throw;
             }
             finally
             {

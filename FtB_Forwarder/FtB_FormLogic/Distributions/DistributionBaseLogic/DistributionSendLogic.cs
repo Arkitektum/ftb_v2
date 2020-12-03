@@ -37,8 +37,8 @@ namespace FtB_FormLogic
             MapPrefillData(sendQueueItem.Receiver.Id);
             await MapDistributionMessage();
             
-            UpdateReceiverProcessStage(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processing);
-            AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillCreated);
+            await UpdateReceiverProcessStage(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processing);
+            await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillCreated);
             
             //Which sendData to use
             var prefillData = prefillSendData.FirstOrDefault();
@@ -66,7 +66,7 @@ namespace FtB_FormLogic
                 _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} kombinert med {childDistribution.Id}", "Info");
             }
 
-            PersistPrefill(sendQueueItem);
+            //PersistPrefill(sendQueueItem);
 
             _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {prefillData.ExternalSystemReference}");
             _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon av {prefillData.PrefillFormName} til tjeneste {prefillData.PrefillServiceCode}/{prefillData.PrefillServiceEditionCode}");
@@ -92,22 +92,22 @@ namespace FtB_FormLogic
                     distributionForm.DistributionStatus = DistributionStatus.error;
                     distributionForm.ErrorMessage = "Send manuelt";
 
-                    UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Failed);
-                    AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSendingFailed);
+                    await UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Failed);
+                    await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSendingFailed);
                 }
                 else if (result.Where(r => r.Step == DistributionStep.ReservedReportee).Any())
                 {
-                    UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
-                    AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReservedReportee);
+                    await UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
+                    await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReservedReportee);
                 }
                 else
                 {
                     _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon behandling ferdig");
-                    UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Sent);
-                    AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSent);
+                    await UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Sent);
+                    await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSent);
                 }
 
-                UpdateReceiverProcessStage(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processed);
+                await UpdateReceiverProcessStage(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processed);
 
             }
             //TODO - Has been temp used for testing of ReservedReportee
@@ -189,22 +189,22 @@ namespace FtB_FormLogic
             }
         }
 
-        protected virtual void PersistPrefill(SendQueueItem sendQueueItem)
+        protected virtual async Task PersistPrefill(SendQueueItem sendQueueItem)
         {
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
             _log.LogDebug($"{GetType().Name}: PersistPrefill for archiveReference {sendQueueItem.ArchiveReference}....");
             _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(DistributionMessage.PrefilledXmlDataString), metaData);
             
-            AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
+            await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
         }
 
-        protected virtual void PersistMessage(SendQueueItem sendQueueItem)
+        protected virtual async Task PersistMessage(SendQueueItem sendQueueItem)
         {
             var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("DistributionMessageReceiver", sendQueueItem.Receiver.Id) };
             _log.LogDebug($"{GetType().Name}: PersistMessage for archiveReference {sendQueueItem.ArchiveReference}....");
             _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Message-{Guid.NewGuid()}", Encoding.Default.GetBytes(SerializeUtil.Serialize(DistributionMessage.NotificationMessage.MessageData)), metaData);
             
-            AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
+            await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
         }
 
         protected abstract void MapPrefillData(string receiverId);

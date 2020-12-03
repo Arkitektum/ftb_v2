@@ -14,19 +14,32 @@ namespace Altinn.Distribution
         public async Task<IEnumerable<DistributionResult>> SendDistribution(AltinnDistributionMessage altinnMessage)
         {
             var results = new List<DistributionResult>();
-            
+
             //Prefill
-            results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Ok", Step = DistributionStep.Sent });
             var prefillSleepMs = new Random(5).Next(100, 600);
             await Task.Delay(prefillSleepMs);
 
-            //Thread.Sleep(prefillSleepMs);
+            var random = new Random();
 
-            //Correspondence
-            results.Add(new DistributionResult(DistributionComponent.Correspondence) { Message = "Ok", Step = DistributionStep.Sent });
-            var correspondenceSleepMs = new Random(5).Next(100, 600);
-            //Thread.Sleep(correspondenceSleepMs);
-            await Task.Delay(prefillSleepMs);
+            var randomNumber = random.Next(0, 100);
+
+            if (randomNumber < 80)
+            {
+                results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Ok", Step = DistributionStep.Sent });
+                //Correspondence
+                results.Add(new DistributionResult(DistributionComponent.Correspondence) { Message = "Ok", Step = DistributionStep.Sent });
+                var correspondenceSleepMs = new Random(5).Next(100, 600);
+                await Task.Delay(correspondenceSleepMs);
+            }
+            else
+            {
+                if (randomNumber >= 80 && randomNumber < 90)
+                    results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Reserved", Step = DistributionStep.ReservedReportee });
+                else if (randomNumber >= 90 && randomNumber < 95)
+                    results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Unable to reach", Step = DistributionStep.UnableToReachReceiver });
+                else
+                    results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Error", Step = DistributionStep.UnkownErrorOccurred });
+            }
 
             return results;
         }

@@ -1,11 +1,12 @@
-﻿using FtB_Common.BusinessModels;
+﻿using FtB_Common;
+using FtB_Common.BusinessModels;
 using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
 using Ftb_Repositories;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,89 +37,125 @@ namespace FtB_FormLogic
             FormData = SerializeUtil.DeserializeFromString<T>(data);
         }
 
-        protected void BulkInsertEntities<T>(IEnumerable<T> entities) where T : ITableEntity
+        protected async Task ParallelInsertEntities(IEnumerable<ReceiverLogEntity> entities)
         {
-            Parallel.ForEach(entities, entity =>
+            _log.LogDebug($"Parallel insert receiver log entities");
+            await _tableStorage.EnsureTableExists<ReceiverLogEntity>();
+
+            var list = entities.ToList();
+
+            //Partitioner creates batches of elements. This makes a more predictable
+            //way of performing parallel executions of logic
+            var partitioner = Partitioner.Create(0, entities.Count(), 100);
+            var options = new ParallelOptions() { MaxDegreeOfParallelism = 8 };
+            Parallel.ForEach(partitioner, options, range =>
             {
-                _tableStorage.InsertEntityRecord<T>(entity);
+                for (int i = range.Item1; i < range.Item2; i++)
+                {
+                    _tableStorage.InsertEntityRecord<ReceiverLogEntity>(list[i]);
+                }
             });
+
+
+            //_log.LogDebug($"Ensures table exist for ReceiverLogEntity");
+            //await _tableStorage.EnsureTableExists<ReceiverLogEntity>();
+
+            //_log.LogDebug($"Creates tasks for inserts");
+            //var tasks = entities.Select(s => _tableStorage.InsertEntityRecord<ReceiverLogEntity>(s));
+            //var batchSize = 100;
+
+            //_log.LogDebug($"Creates batches of tasks");
+            //var batches = tasks.Batch(batchSize);
+
+            //foreach (var batchOfTasks in batches)
+            //{
+            //    _log.LogDebug($"Executes batches of tasks");
+            //    await Task.WhenAll(batchOfTasks);
+            //}
         }
 
-        public ReceiverStatusLogEnum GetReceiverLastLogStatus(string partitionKey)
+        protected async Task BulkInsertEntities(IEnumerable<ReceiverEntity> entities)
         {
-            var receiverRows = _tableStorage.GetTableEntities<ReceiverLogEntity>(partitionKey);
+            _log.LogDebug($"Bulk insert receiver entities");
+            await _tableStorage.InsertEntityRecords<ReceiverEntity>(entities);            
+        }
+
+        public async Task<ReceiverStatusLogEnum> GetReceiverLastLogStatus(string partitionKey)
+        {
+            var receiverRows = await _tableStorage.GetTableEntities<ReceiverLogEntity>(partitionKey);
             var lastRow = receiverRows.OrderByDescending(x => x.RowKey).First();
 
             return (ReceiverStatusLogEnum)Enum.Parse(typeof(ReceiverStatusLogEnum), lastRow.Status);
         }
 
-        public string GetReceiverIDFromStorage(string partitionKey, string rowKey)
+        public async Task<string> GetReceiverIDFromStorage(string partitionKey, string rowKey)
         {
-            var receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(partitionKey, rowKey);
+            var receiverEntity = await _tableStorage.GetTableEntity<ReceiverEntity>(partitionKey, rowKey);
             return receiverEntity.ReceiverId;
         }
 
-        protected void BulkAddLogEntryToReceivers(ReportQueueItem reportQueueItem, ReceiverStatusLogEnum statusEnum)
-        {
-            _log.LogDebug("Inside BulkAddLogEntryToReceivers - start");
-            SubmittalEntity submittalEntity = _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference.ToLower(), reportQueueItem.ArchiveReference.ToLower());
-            var totalNumberOfReceivers = submittalEntity.ReceiverCount;
-            for (int i = 0; i < totalNumberOfReceivers; i++)
-            {
-                AddToReceiverProcessLog(reportQueueItem.ArchiveReference.ToLower(), $"{reportQueueItem.ArchiveReference.ToLower()}-{i.ToString()}", GetReceiverIDFromStorage(reportQueueItem.ArchiveReference.ToLower(), i.ToString()), statusEnum);
-            }
-            _log.LogDebug("Inside BulkAddLogEntryToReceivers - end");
+        protected async Task BulkAddLogEntryToReceivers(ReportQueueItem reportQueueItem, ReceiverStatusLogEnum statusEnum)
+        {            
+            SubmittalEntity submittalEntity = await _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference.ToLower(), reportQueueItem.ArchiveReference.ToLower());
+            
+            var partititonKey = reportQueueItem.ArchiveReference.ToLower();
+
+            var receivers = await _tableStorage.GetTableEntities<ReceiverEntity>(partititonKey);
+
+            var tasks = receivers.Select(s => AddToReceiverProcessLog(s.ReceiverLogPartitionKey, s.ReceiverId, statusEnum));
+
+            await Task.WhenAll(tasks);
         }
 
-        protected void UpdateEntities<T>(IEnumerable<T> entities) where T : ITableEntity
+        protected async Task UpdateEntities(IEnumerable<ReceiverEntity> entities)
         {
-            _tableStorage.UpdateEntities<T>(entities);
+            await _tableStorage.UpdateEntities(entities);
         }
 
 
-        protected void UpdateReceiverProcessStage(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverProcessStageEnum processStageEnum)
+        protected async Task UpdateReceiverProcessStage(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverProcessStageEnum processStageEnum)
         {
             try
             {
-                var receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(archiveReference, receiverSequenceNumber);
+                var receiverEntity = await _tableStorage.GetTableEntity<ReceiverEntity>(archiveReference, receiverSequenceNumber);
                 receiverEntity.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum);
                 var result = _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
-                _log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum)}.....");
+                //_log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum)}.....");
             }
             catch (Exception ex)
             {
-                _log.LogError($"UpdateReceiverProcessStage: ArchveReference={archiveReference}. Error adding receiver record for ID={receiverSequenceNumber} and receiverID {receiverID}. Message: { ex.Message }");
-                throw ex;
+                _log.LogError(ex, $"UpdateReceiverProcessStage: ArchveReference={archiveReference}. Error adding receiver record for ID={receiverSequenceNumber} and receiverID {receiverID}");
+                throw;
             }
         }
-        protected void UpdateReceiverProcessOutcome(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverProcessOutcomeEnum processOutcomeEnum)
+        protected async Task UpdateReceiverProcessOutcome(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverProcessOutcomeEnum processOutcomeEnum)
         {
             try
             {
-                var receiverEntity = _tableStorage.GetTableEntity<ReceiverEntity>(archiveReference, receiverSequenceNumber);
+                var receiverEntity = await _tableStorage.GetTableEntity<ReceiverEntity>(archiveReference, receiverSequenceNumber);
                 receiverEntity.ProcessOutcome = Enum.GetName(typeof(ReceiverProcessOutcomeEnum), processOutcomeEnum);
-                var result = _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
-                _log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processOutcomeEnum)}.....");
+                var result = await _tableStorage.UpdateEntityRecord<ReceiverEntity>(receiverEntity);
+                //_log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processOutcomeEnum)}.....");
             }
             catch (Exception ex)
             {
-                _log.LogError($"UpdateReceiverProcessOutcome: ArchveReference={archiveReference}. Error adding receiver record for ID={receiverSequenceNumber} and receiverID {receiverID}. Message: { ex.Message }");
-                throw ex;
+                _log.LogError(ex, $"UpdateReceiverProcessOutcome: ArchveReference={archiveReference}. Error adding receiver record for ID={receiverSequenceNumber} and receiverID {receiverID}.");
+                throw;
             }
         }
 
-        protected void AddToReceiverProcessLog(string archiveReference, string receiverPartitionKey, string receiverID, ReceiverStatusLogEnum statusEnum)
+        protected async Task AddToReceiverProcessLog(string receiverPartitionKey, string receiverID, ReceiverStatusLogEnum statusEnum)
         {
             try
             {
                 ReceiverLogEntity receiverEntity = new ReceiverLogEntity(receiverPartitionKey, $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum);
-                _log.LogDebug($"ID={receiverPartitionKey}. Added receiver status for {archiveReference} and receiverID {receiverID}. Status: {receiverEntity.Status}.....");
-                _tableStorage.InsertEntityRecord<ReceiverLogEntity>(receiverEntity);
+               // _log.LogDebug($"ID={receiverPartitionKey}. Added receiver status for {archiveReference} and receiverID {receiverID}. Status: {receiverEntity.Status}.....");
+                await _tableStorage.InsertEntityRecordAsync<ReceiverLogEntity>(receiverEntity);
             }
             catch (Exception ex)
             {
-                _log.LogError($"Error adding receiver record for ID={receiverPartitionKey} and receiverID {receiverID}. ArchveReference={archiveReference}. Message: { ex.Message }");
-                throw ex;
+                _log.LogError(ex, $"Error adding receiver record for ID={receiverPartitionKey} and receiverID {receiverID}");
+                throw;
             }
         }
     }

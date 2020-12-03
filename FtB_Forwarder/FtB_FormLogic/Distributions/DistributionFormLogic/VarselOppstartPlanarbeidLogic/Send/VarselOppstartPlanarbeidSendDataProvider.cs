@@ -64,6 +64,8 @@ namespace FtB_FormLogic
                 Receiver = prefill.FormInstance.beroertPart.epost
             });
 
+            distributionMessage.NotificationMessage.Notifications = notifications;
+
             return distributionMessage;
         }
 

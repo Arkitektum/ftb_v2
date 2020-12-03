@@ -28,6 +28,10 @@ namespace FtB_ProcessStrategies
         {
             try
             {
+                //Check if queue item has already been received
+
+
+
                 //string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(submittalQueueItem.ArchiveReference);
                 string formatId = await _blobOperations.GetFormatIdFromStoredBlob(submittalQueueItem.ArchiveReference);
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<IEnumerable<SendQueueItem>, SubmittalQueueItem>(formatId, FormLogicProcessingContext.Prepare);
