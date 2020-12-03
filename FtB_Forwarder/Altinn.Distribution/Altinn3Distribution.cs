@@ -27,7 +27,7 @@ namespace Altinn.Distribution
             //Send prefill
             var prefillResult = await _prefillAdapter.SendPrefill(altinnMessage);
 
-            if (prefillResult.Where(r => r.Step == DistriutionStep.Sent).Any())
+            if (prefillResult.Where(r => r.Step == DistributionStep.Sent).Any())
             {
                 //Send correspondence
                 //prefillResult.PrefillReferenceId

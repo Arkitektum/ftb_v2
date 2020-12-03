@@ -73,7 +73,7 @@ namespace Altinn2.Adapters
 
 
             var prefillFormTask = _prefillFormTaskBuilder.Build();
-            results.Add(new PrefillResult() { Step = DistriutionStep.PayloadCreated, Message = $"{altinnDistributionMessage.NotificationMessage.Receiver.Id}" });
+            results.Add(new PrefillResult() { Step = DistributionStep.PayloadCreated, Message = $"{altinnDistributionMessage.NotificationMessage.Receiver.Id}" });
             _logger.LogDebug($"PrefillFormTask for {altinnDistributionMessage.NotificationMessage.Receiver.Id} - created");
 
             // ********** Should have retry for communication errors  *********
@@ -97,30 +97,30 @@ namespace Altinn2.Adapters
             {
                 prefillFinalResult = new PrefillSentResult() { PrefillReferenceId = receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).First().ReferenceValue };
                 prefillFinalResult.Message = "Ok - Prefill sent";
-                prefillFinalResult.Step = DistriutionStep.Sent;
+                prefillFinalResult.Step = DistributionStep.Sent;
             }
             else if (receiptExternal != null && receiptExternal.ReceiptStatusCode != ReceiptStatusEnum.OK)
                 if (receiptExternal.ReceiptText.Contains("Reportee is reserved against electronic communication"))
                 {
                     prefillFinalResult.Message = receiptExternal.ReceiptText;
-                    prefillFinalResult.Step = DistriutionStep.ReservedReportee;
+                    prefillFinalResult.Step = DistributionStep.ReservedReportee;
                 }
                 else if (receiptExternal.ReceiptText.Contains("One or more notification endpoint addresses is missing.") ||
                          receiptExternal.ReceiptText.Contains("Unable to properly identify notification receivers") ||
                          receiptExternal.ReceiptText.Contains("no official (kofuvi) notification endpoints found"))
                 {
                     prefillFinalResult.Message = receiptExternal.ReceiptText;
-                    prefillFinalResult.Step = DistriutionStep.UnableToReachReceiver;
+                    prefillFinalResult.Step = DistributionStep.UnableToReachReceiver;
                 }
                 else
                 {
                     prefillFinalResult.Message = "Unknown error occurred while sending prefill";
-                    prefillFinalResult.Step = DistriutionStep.UnkownErrorOccurred;
+                    prefillFinalResult.Step = DistributionStep.UnkownErrorOccurred;
                 }
             else
             {
                 prefillFinalResult.Message = "Unknown error occurred while sending prefill";
-                prefillFinalResult.Step = DistriutionStep.UnkownErrorOccurred;
+                prefillFinalResult.Step = DistributionStep.UnkownErrorOccurred;
             }
 
             results.Add(prefillFinalResult);

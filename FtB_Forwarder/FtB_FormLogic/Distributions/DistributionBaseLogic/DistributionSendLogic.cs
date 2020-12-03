@@ -87,7 +87,7 @@ namespace FtB_FormLogic
                 LogPrefillProcessing(result, prefillData);
                 LogDistributionProcessingResults(result, prefillData);
 
-                if (result.Where(r => r.Step == DistriutionStep.Failed || r.Step == DistriutionStep.UnkownErrorOccurred || r.Step == DistriutionStep.UnableToReachReceiver).Any())
+                if (result.Where(r => r.Step == DistributionStep.Failed || r.Step == DistributionStep.UnkownErrorOccurred || r.Step == DistributionStep.UnableToReachReceiver).Any())
                 {
                     distributionForm.DistributionStatus = DistributionStatus.error;
                     distributionForm.ErrorMessage = "Send manuelt";
@@ -95,7 +95,7 @@ namespace FtB_FormLogic
                     UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Failed);
                     AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSendingFailed);
                 }
-                else if (result.Where(r => r.Step == DistriutionStep.ReservedReportee).Any())
+                else if (result.Where(r => r.Step == DistributionStep.ReservedReportee).Any())
                 {
                     UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
                     AddToReceiverProcessLog(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReservedReportee);
@@ -127,9 +127,9 @@ namespace FtB_FormLogic
             {
                 switch (correspondenceResult.Step)
                 {
-                    case DistriutionStep.PayloadCreated:
+                    case DistributionStep.PayloadCreated:
                         break;
-                    case DistriutionStep.Sent:
+                    case DistributionStep.Sent:
                         _dbUnitOfWork.LogEntries.AddInfo($"Altinn kvittering for preutfylling til {Receiver.PresentationId} er OK");
                         _dbUnitOfWork.LogEntries.AddInfoInternal($"Dist id {prefill.InitialExternalSystemReference} - Distribusjon/correspondence komplett", "Correspondence");
                         _dbUnitOfWork.LogEntries.AddInfo($"Altinn {prefill.PrefillFormName} laget til ({Receiver.PresentationId}), Altinn kvitteringsid: TODO LEGG INN receiptExternal.ReceiptId");
@@ -140,19 +140,19 @@ namespace FtB_FormLogic
 
 
                         break;
-                    case DistriutionStep.Failed:
+                    case DistributionStep.Failed:
                         _dbUnitOfWork.LogEntries.AddError($"Dist id {prefill.InitialExternalSystemReference} - Feil ved Altinn utsendelse av melding til {Receiver.PresentationId} ");
                         _dbUnitOfWork.LogEntries.AddErrorInternal($"Dist id {prefill.InitialExternalSystemReference} - Distribusjon/correspondence Altinn feil for bruker {Receiver.PresentationId}: {correspondenceResult.Message}", "Correspondence");
                         _dbUnitOfWork.LogEntries.AddInfo($"Altinn {prefill.PrefillFormName} pefill OK men correspondence feilet til ({Receiver.PresentationId}), Altinn prefill kvitteringsid: TODO LEGG TIL receiptExternal.ReceiptId");
                         break;
-                    case DistriutionStep.UnkownErrorOccurred:
+                    case DistributionStep.UnkownErrorOccurred:
                         _dbUnitOfWork.LogEntries.AddErrorInternal($"Dist id {prefill.InitialExternalSystemReference} - Altinn correspondence WS avvik: {correspondenceResult.Message}", "Correspondence");
                         _dbUnitOfWork.LogEntries.AddError("Feil ved utsedning av melding til Altinn bruker. Preutfylt skjema ligger nå uten tilhørende melding for tjenesten");
                         _dbUnitOfWork.LogEntries.AddInfo($"Altinn {prefill.PrefillFormName} pefill OK men correspondence feilet til ({Receiver.PresentationId}), Altinn prefill kvitteringsid: TODO LEGG TIL receiptExternal.ReceiptId");
                         break;
-                    case DistriutionStep.ReservedReportee:
+                    case DistributionStep.ReservedReportee:
                         break;
-                    case DistriutionStep.UnableToReachReceiver:
+                    case DistributionStep.UnableToReachReceiver:
                         break;
                     default:
                         break;
@@ -166,22 +166,22 @@ namespace FtB_FormLogic
             {
                 switch (prefillResult.Step)
                 {
-                    case DistriutionStep.PayloadCreated:
+                    case DistributionStep.PayloadCreated:
                         _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefill.InitialExternalSystemReference} - Sender prefill kall til Altinn");
                         break;
-                    case DistriutionStep.Sent:
+                    case DistributionStep.Sent:
                         _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefill.InitialExternalSystemReference} - Prefill sendt til Altinn");
                         break;
-                    case DistriutionStep.Failed:
+                    case DistributionStep.Failed:
                         _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefill.InitialExternalSystemReference} - Sender prefill kall til Altinn");
                         break;
-                    case DistriutionStep.UnkownErrorOccurred:
+                    case DistributionStep.UnkownErrorOccurred:
                         _dbUnitOfWork.LogEntries.AddInfo($"Unntak ved Altinn utsendelse av {prefill.PrefillFormName} til {Receiver.PresentationId}", "Prefill");
                         break;
-                    case DistriutionStep.ReservedReportee:
+                    case DistributionStep.ReservedReportee:
                         _dbUnitOfWork.LogEntries.AddInfoInternal($"Dist id {prefill.InitialExternalSystemReference} - Nabovarsel print pga. reservasjon", "Prefill");
                         break;
-                    case DistriutionStep.UnableToReachReceiver:
+                    case DistributionStep.UnableToReachReceiver:
                         break;
                     default:
                         break;

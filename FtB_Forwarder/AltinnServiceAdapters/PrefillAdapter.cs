@@ -60,11 +60,11 @@ namespace Altinn3.Adapters
 
                     if (instanceResult == null)
                     {
-                        prefillResult.Step = DistriutionStep.Failed;                        
+                        prefillResult.Step = DistributionStep.Failed;                        
                     }
                     else
                     {                        
-                        prefillResult = new PrefillSentResult() { Step = DistriutionStep.Sent, PrefillReferenceId = instanceResult.SelfLinks.Apps };
+                        prefillResult = new PrefillSentResult() { Step = DistributionStep.Sent, PrefillReferenceId = instanceResult.SelfLinks.Apps };
                     }
                 }
                 catch (System.Exception)

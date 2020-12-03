@@ -1,4 +1,5 @@
-﻿using Altinn.Common.Interfaces;
+﻿using Altinn.Common;
+using Altinn.Common.Interfaces;
 using Altinn.Common.Models;
 using Microsoft.Extensions.Logging;
 using System;
@@ -18,9 +19,10 @@ namespace Altinn.Distribution
             _correspondenceAdapter = correspondenceAdapter;
         }
 
-        public void SendNotification(AltinnMessageBase altinnMessage)
+        public IEnumerable<DistributionResult> SendNotification(AltinnMessageBase altinnMessage)
         {
-            _correspondenceAdapter.SendMessage(altinnMessage);
+            var distributionResult = _correspondenceAdapter.SendMessage(altinnMessage);
+            return distributionResult.Result;
         }
     }
 }

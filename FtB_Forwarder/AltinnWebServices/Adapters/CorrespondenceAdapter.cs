@@ -68,7 +68,7 @@ namespace Altinn2.Adapters
             }
 
             InsertCorrespondenceV2 correspondence = _correspondenceBuilder.Build();
-            correspondenceResults.Add(new CorrespondenceResult() { Step = DistriutionStep.PayloadCreated });
+            correspondenceResults.Add(new CorrespondenceResult() { Step = DistributionStep.PayloadCreated });
 
             var correspondenceResult = new CorrespondenceResult();
             try
@@ -77,19 +77,20 @@ namespace Altinn2.Adapters
 
                 correspondenceResult.Message = correspondenceResponse.ReceiptText;
                 if (correspondenceResponse.ReceiptStatusCode == ReceiptStatusEnum.OK)
-                    correspondenceResult.Step = DistriutionStep.Sent;
+                    correspondenceResult.Step = DistributionStep.Sent;
                 else
                 {
-                    correspondenceResult.Step = DistriutionStep.Failed;
+                    correspondenceResult.Step = DistributionStep.Failed;
                     correspondenceResult.Message = $"{correspondenceResult.Message} - {correspondenceResponse.ReceiptHistory}";
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred when sending correspondence to Altinn");
-                correspondenceResult.Step = DistriutionStep.UnkownErrorOccurred;
+                correspondenceResult.Step = DistributionStep.UnkownErrorOccurred;
                 correspondenceResult.Message = $"An error occurred when sending correspondence to Altinn - {ex.Message}";
             }
+            correspondenceResults.Add(correspondenceResult);
 
             return correspondenceResults;
         }

@@ -8,6 +8,6 @@
         }
         public DistributionComponent DistributionComponent { get; }
         public string Message { get; set; }
-        public DistriutionStep Step { get; set; }     
+        public DistributionStep Step { get; set; }     
     }
 }

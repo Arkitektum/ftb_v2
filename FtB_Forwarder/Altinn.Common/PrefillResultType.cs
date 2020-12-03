@@ -2,7 +2,7 @@
 
 namespace Altinn.Common
 {
-    public enum DistriutionStep
+    public enum DistributionStep
     {
         PayloadCreated,
         Sent,

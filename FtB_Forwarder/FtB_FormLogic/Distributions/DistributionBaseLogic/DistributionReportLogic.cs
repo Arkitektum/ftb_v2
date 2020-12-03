@@ -1,4 +1,6 @@
-﻿using Altinn.Common.Interfaces;
+﻿using Altinn.Common;
+using Altinn.Common.Exceptions;
+using Altinn.Common.Interfaces;
 using Altinn.Common.Models;
 using FtB_Common;
 using FtB_Common.BusinessModels;
@@ -102,18 +104,42 @@ namespace FtB_FormLogic
                 notificationMessage.Attachments = new List<Attachment>() { receiptAttachment, mainFormAttachment };
                 _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
                 _log.LogDebug("Start SendNotification");
-                _notificationAdapter.SendNotification(notificationMessage);
-                var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
-                _log.LogDebug("Start Update all receiver entities");
-                var allReceivers = _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference.ToLower()).ToList();
-                allReceivers.ForEach(x => x.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.Completed));
-                UpdateEntities(allReceivers);
-                _log.LogDebug("Start BulkAddLogEntryToReceivers");
-                BulkAddLogEntryToReceivers(reportQueueItem,ReceiverStatusLogEnum.Completed);
-                _log.LogDebug("End SendReceiptToSubmitterWhenAllReceiversAreProcessed");
+                IEnumerable<DistributionResult> result = _notificationAdapter.SendNotification(notificationMessage);
+                
+                var sendingFailed = result.Any(x => x.DistributionComponent.Equals(DistributionComponent.Correspondence)
+                                                   && (
+                                                          x.Step.Equals(DistributionStep.Failed)
+                                                        || x.Step.Equals(DistributionStep.UnableToReachReceiver)
+                                                        || x.Step.Equals(DistributionStep.UnkownErrorOccurred)
+                                                        ));
 
-                _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
+                if (!sendingFailed)
+                {
+                    var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
+                    _log.LogDebug("Start Update all receiver entities");
+                    var allReceivers = _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference.ToLower()).ToList();
+                    allReceivers.ForEach(x => x.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.Completed));
+                    UpdateEntities(allReceivers);
+                    _log.LogDebug("Start BulkAddLogEntryToReceivers");
+                    BulkAddLogEntryToReceivers(reportQueueItem, ReceiverStatusLogEnum.Completed);
+                    _log.LogDebug("End SendReceiptToSubmitterWhenAllReceiversAreProcessed");
 
+                    _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
+                }
+                else
+                {
+                    var failedStep = result.Where(x => x.Step.Equals(DistributionStep.Failed)
+                                                        || x.Step.Equals(DistributionStep.UnableToReachReceiver)
+                                                        || x.Step.Equals(DistributionStep.UnkownErrorOccurred)).Select(y => y.Step).First();
+                    throw new SendNotificationException("Error: Failed during sending of submittal receipt", failedStep);
+                }
+
+
+            }
+            catch (SendNotificationException ex)
+            {
+                base._log.LogError($"{GetType().Name}. Error: {ex.Text}: {ex.DistriutionStep}");
+                throw ex;
             }
             catch (Exception ex)
             {

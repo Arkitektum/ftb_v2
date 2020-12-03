@@ -16,14 +16,14 @@ namespace Altinn.Distribution
             var results = new List<DistributionResult>();
             
             //Prefill
-            results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Ok", Step = DistriutionStep.Sent });
+            results.Add(new DistributionResult(DistributionComponent.Prefill) { Message = "Ok", Step = DistributionStep.Sent });
             var prefillSleepMs = new Random(5).Next(100, 600);
             await Task.Delay(prefillSleepMs);
 
             //Thread.Sleep(prefillSleepMs);
 
             //Correspondence
-            results.Add(new DistributionResult(DistributionComponent.Correspondence) { Message = "Ok", Step = DistriutionStep.Sent });
+            results.Add(new DistributionResult(DistributionComponent.Correspondence) { Message = "Ok", Step = DistributionStep.Sent });
             var correspondenceSleepMs = new Random(5).Next(100, 600);
             //Thread.Sleep(correspondenceSleepMs);
             await Task.Delay(prefillSleepMs);

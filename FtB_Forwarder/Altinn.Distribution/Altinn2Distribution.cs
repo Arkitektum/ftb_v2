@@ -29,7 +29,7 @@ namespace Altinn.Distribution
             var prefillResults = await _prefillAdapter.SendPrefill(altinnMessage);
             results.AddRange(prefillResults);
 
-            if (prefillResults.Where(p => p.Step == Common.DistriutionStep.Sent).FirstOrDefault() != null)
+            if (prefillResults.Where(p => p.Step == Common.DistributionStep.Sent).FirstOrDefault() != null)
             {
                 //Send correspondence
                 //prefillResult.PrefillReferenceId
