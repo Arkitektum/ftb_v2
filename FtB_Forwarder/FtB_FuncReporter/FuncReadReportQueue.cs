@@ -1,5 +1,7 @@
 ﻿using FtB_Common.BusinessModels;
 using FtB_ProcessStrategies;
+using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.ServiceBus.Core;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -21,21 +23,25 @@ namespace FtB_FuncReporter
         }
 
         [FunctionName("FuncReadReportQueue")]
-        public async Task Run([ServiceBusTrigger("%ReportQueueName%", Connection = "QueueConnectionString")] string myQueueItem)
+        public async Task Run([ServiceBusTrigger("%ReportQueueName%", Connection = "QueueConnectionString")] Message message, MessageReceiver messageReceiver, string lockToken)
         {
-            try
+            var myQueueItem = System.Text.Encoding.Default.GetString(message.Body);
+            ReportQueueItem reportQueueItem = JsonConvert.DeserializeObject<ReportQueueItem>(myQueueItem);
+            using (var scope = _logger.BeginScope(new Dictionary<string, string> { { "ArchiveReference", reportQueueItem.ArchiveReference }, { "ReceiverId", reportQueueItem.Receiver.Id } }))
             {
-                ReportQueueItem reportQueueItem = JsonConvert.DeserializeObject<ReportQueueItem>(myQueueItem);
-                using (var scope = _logger.BeginScope(new Dictionary<string, string> { { "ArchiveReference", reportQueueItem.ArchiveReference }, { "ReceiverId", reportQueueItem.Receiver.Id } }))
+                _logger.LogInformation($"{GetType().Name}: {reportQueueItem.Receiver.Id }: C# ServiceBus queue trigger function processed message: {myQueueItem}");
+
+                try
                 {
-                    _logger.LogInformation($"{GetType().Name}: {reportQueueItem.Receiver.Id }: C# ServiceBus queue trigger function processed message: {myQueueItem}");
                     var result = await _queueProcessor.ExecuteProcessingStrategyAsync(reportQueueItem);
+                    await messageReceiver.CompleteAsync(lockToken);
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"{GetType().Name}: Something went wrong. Exception: {ex}");
-                throw; //Do this to make sure the message is not removed from the SendQueue. It will retry, and then end up in DeadLetterQueue
+                catch (Exception ex)
+                {
+                    _logger.LogError($"{GetType().Name}: Something went wrong. Exception: {ex}");
+                    await messageReceiver.DeadLetterAsync(lockToken);
+                    throw; //Do this to make sure the message is not removed from the SendQueue. It will retry, and then end up in DeadLetterQueue
+                }
             }
         }
     }

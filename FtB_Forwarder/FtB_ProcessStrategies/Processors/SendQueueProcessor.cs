@@ -25,11 +25,11 @@ namespace FtB_ProcessStrategies
             _dbUnitOfWork = dbUnitOfWork;
         }
 
-        public async Task<ReportQueueItem> ExecuteProcessingStrategy(SendQueueItem sendQueueItem)
+        public async Task<ReportQueueItem> ExecuteProcessingStrategyAsync(SendQueueItem sendQueueItem)
         {
             try
             {
-                _log.LogDebug("_dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
+                _log.LogDebug($"{GetType().Name}: _dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
                 
                 _dbUnitOfWork.SetArhiveReference(sendQueueItem.ArchiveReference);
                 string serviceCode = await _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
@@ -40,7 +40,7 @@ namespace FtB_ProcessStrategies
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, "An error occured while processing: {0}", sendQueueItem?.ArchiveReference);
+                _log.LogError(ex, $"{GetType().Name}: An error occured while processing: {0}", sendQueueItem?.ArchiveReference);
                 throw;
             }
             finally
