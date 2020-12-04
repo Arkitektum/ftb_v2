@@ -144,7 +144,7 @@ namespace FtB_FormLogic
                 IEnumerable<(string attachmentType, string fileName)> listOfAttachmentsInSubmittal = await _blobOperations.GetListOfBlobsWithMetadataType(BlobStorageEnum.Public, publicContainerName, blobStorageTypes);
                 string tableRowsAsHtml = "<tr><td>" + string.Join("</td></tr><tr><td>", listOfAttachmentsInSubmittal.Select(p => p.attachmentType + "</td><td>" + p.fileName)) + "</td></tr>";
                 htmlTemplate = htmlTemplate.Replace("<vedlegg />", tableRowsAsHtml);
-                var successfullyNotifiedCount = await GetReceiverSuccessfullyNotifiedCount(reportQueueItem);
+                var successfullyNotifiedCount = await GetReceiverSuccessfullyNotifiedCountAsync(reportQueueItem);
                 htmlTemplate = htmlTemplate.Replace("<antallVarsledeMottakere />", successfullyNotifiedCount.ToString());
 
                 var listOfReservedReporteeNames = await GetReservedReporteeNames();
@@ -167,7 +167,7 @@ namespace FtB_FormLogic
 
         private async Task<IEnumerable<string>> GetReservedReporteeNames()
         {
-            var allReceiversInSubmittal = await _tableStorage.GetTableEntities<ReceiverEntity>(ArchiveReference);
+            var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<ReceiverEntity>(ArchiveReference);
 
             var reservedReporteeReceiverIds = allReceiversInSubmittal
                     .Where(x => x.ProcessOutcome == Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.ReservedReportee))

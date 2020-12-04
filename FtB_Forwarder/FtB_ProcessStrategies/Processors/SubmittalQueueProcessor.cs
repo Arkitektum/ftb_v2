@@ -21,22 +21,16 @@ namespace FtB_ProcessStrategies
         {
             _formatIdToFormMapper = formatIdToFormMapper;
             _blobOperations = blobOperations;
-
             _log = log;
         }
         public async Task<IEnumerable<SendQueueItem>> ExecuteProcessingStrategy(SubmittalQueueItem submittalQueueItem)
         {
             try
             {
-                //Check if queue item has already been received
-
-
-
-                //string serviceCode = _blobOperations.GetServiceCodeFromStoredBlob(submittalQueueItem.ArchiveReference);
                 string formatId = await _blobOperations.GetFormatIdFromStoredBlob(submittalQueueItem.ArchiveReference);
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<IEnumerable<SendQueueItem>, SubmittalQueueItem>(formatId, FormLogicProcessingContext.Prepare);
                 
-                return await formLogicBeingProcessed.Execute(submittalQueueItem);
+                return await formLogicBeingProcessed.ExecuteAsync(submittalQueueItem);
             }
             catch (Azure.RequestFailedException rfEx)
             {
@@ -45,7 +39,6 @@ namespace FtB_ProcessStrategies
             }
             catch (Exception)
             {
-
                 throw;
             }
 

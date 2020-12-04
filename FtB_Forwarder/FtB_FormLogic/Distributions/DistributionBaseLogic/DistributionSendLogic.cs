@@ -29,16 +29,16 @@ namespace FtB_FormLogic
             _distributionAdapter = distributionAdapter;
         }
 
-        public override async Task<ReportQueueItem> Execute(SendQueueItem sendQueueItem)
+        public override async Task<ReportQueueItem> ExecuteAsync(SendQueueItem sendQueueItem)
         {
             _log.LogDebug("_dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
-            var returnReportQueueItem = await base.Execute(sendQueueItem);
+            var returnReportQueueItem = await base.ExecuteAsync(sendQueueItem);
             _log.LogDebug("Maps prefill data for {0}", sendQueueItem.Receiver.Id);
             MapPrefillData(sendQueueItem.Receiver.Id);
             await MapDistributionMessage();
             
-            await UpdateReceiverProcessStage(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processing);
-            await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillCreated);
+            await UpdateReceiverProcessStageAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processing);
+            await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillCreated);
             
             //Which sendData to use
             var prefillData = prefillSendData.FirstOrDefault();
@@ -92,22 +92,22 @@ namespace FtB_FormLogic
                     distributionForm.DistributionStatus = DistributionStatus.error;
                     distributionForm.ErrorMessage = "Send manuelt";
 
-                    await UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Failed);
-                    await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSendingFailed);
+                    await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Failed);
+                    await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSendingFailed);
                 }
                 else if (result.Where(r => r.Step == DistributionStep.ReservedReportee).Any())
                 {
-                    await UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
-                    await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReservedReportee);
+                    await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
+                    await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReservedReportee);
                 }
                 else
                 {
                     _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon behandling ferdig");
-                    await UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Sent);
-                    await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSent);
+                    await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Sent);
+                    await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSent);
                 }
 
-                await UpdateReceiverProcessStage(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processed);
+                await UpdateReceiverProcessStageAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processed);
 
             }
             //TODO - Has been temp used for testing of ReservedReportee
@@ -195,7 +195,7 @@ namespace FtB_FormLogic
             _log.LogDebug($"{GetType().Name}: PersistPrefill for archiveReference {sendQueueItem.ArchiveReference}....");
             _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(DistributionMessage.PrefilledXmlDataString), metaData);
             
-            await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
+            await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
         }
 
         protected virtual async Task PersistMessage(SendQueueItem sendQueueItem)
@@ -204,7 +204,7 @@ namespace FtB_FormLogic
             _log.LogDebug($"{GetType().Name}: PersistMessage for archiveReference {sendQueueItem.ArchiveReference}....");
             _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Message-{Guid.NewGuid()}", Encoding.Default.GetBytes(SerializeUtil.Serialize(DistributionMessage.NotificationMessage.MessageData)), metaData);
             
-            await AddToReceiverProcessLog(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
+            await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
         }
 
         protected abstract void MapPrefillData(string receiverId);

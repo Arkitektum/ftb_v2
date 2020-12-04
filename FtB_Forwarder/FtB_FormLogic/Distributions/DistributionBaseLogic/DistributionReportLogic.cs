@@ -46,27 +46,26 @@ namespace FtB_FormLogic
             throw new NotImplementedException();
         }
 
-        public override async Task<string> Execute(ReportQueueItem reportQueueItem)
+        public override async Task<string> ExecuteAsync(ReportQueueItem reportQueueItem)
         {
-            var returnItem = await base.Execute(reportQueueItem);
-            await UpdateReceiverProcessStage(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverProcessStageEnum.ReadyForReporting);
-            await AddToReceiverProcessLog(reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReadyForReporting);
+            var returnItem = await base.ExecuteAsync(reportQueueItem);
+            await UpdateReceiverProcessStageAsync(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverProcessStageEnum.ReadyForReporting);
+            await AddToReceiverProcessLogAsync(reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReadyForReporting);
 
-            if (await ReadyForSubmittalReporting(reportQueueItem))
+            if (await ReadyForSubmittalReportingAsync(reportQueueItem))
             {
-                await SendReceiptToSubmitterWhenAllReceiversAreProcessed(reportQueueItem);
+                await SendReceiptToSubmitterWhenAllReceiversAreProcessedAsync(reportQueueItem);
             }
 
             return returnItem;
         }
 
-        //TODO: async method makes it hang when exception occurs.....
-        private async Task SendReceiptToSubmitterWhenAllReceiversAreProcessed(ReportQueueItem reportQueueItem)
+        private async Task SendReceiptToSubmitterWhenAllReceiversAreProcessedAsync(ReportQueueItem reportQueueItem)
         {
             try
             {
                 _log.LogDebug($"Start SendReceiptToSubmitterWhenAllReceiversAreProcessed. Queue item: {reportQueueItem.ReceiverLogPartitionKey}");
-                SubmittalEntity submittalEntity = await _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
+                SubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
                 submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
                 base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
                 var notificationMessage = new AltinnNotificationMessage();
@@ -116,13 +115,13 @@ namespace FtB_FormLogic
 
                 if (!sendingFailed)
                 {
-                    var updatedSubmittalEntity = _tableStorage.UpdateEntityRecord<SubmittalEntity>(submittalEntity);
+                    var updatedSubmittalEntity = _tableStorage.UpdateEntityRecordAsync<SubmittalEntity>(submittalEntity);
                     _log.LogDebug("Start Update all receiver entities");
-                    var allReceivers = await _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference.ToLower());
+                    var allReceivers = await _tableStorage.GetTableEntitiesAsync<ReceiverEntity>(reportQueueItem.ArchiveReference.ToLower());
                     allReceivers.ToList().ForEach(x => x.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.Completed));
-                    await UpdateEntities(allReceivers);
+                    await UpdateEntitiesAsync(allReceivers);
                     _log.LogDebug("Start BulkAddLogEntryToReceivers");
-                    await BulkAddLogEntryToReceivers(reportQueueItem, ReceiverStatusLogEnum.Completed);
+                    await BulkAddLogEntryToReceiversAsync(reportQueueItem, ReceiverStatusLogEnum.Completed);
                     _log.LogDebug("End SendReceiptToSubmitterWhenAllReceiversAreProcessed");
                     //await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
                 }
@@ -134,9 +133,7 @@ namespace FtB_FormLogic
                     throw new SendNotificationException("Error: Failed during sending of submittal receipt", failedStep);
                 }
                 
-                await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
-
-
+                //await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
             }
             catch (SendNotificationException ex)
             {
@@ -148,6 +145,12 @@ namespace FtB_FormLogic
                 base._log.LogError(ex, "Error occurred when creating and sending receipt");
                 throw;
             }
+            finally
+            {
+                await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
+            }
+
+
         }
 
         protected virtual (string Filename, string Name) GetFileNameForMainForm()

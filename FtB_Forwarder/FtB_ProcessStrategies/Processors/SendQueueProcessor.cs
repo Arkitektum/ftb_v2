@@ -35,10 +35,7 @@ namespace FtB_ProcessStrategies
                 string serviceCode = await _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
                 string formatId = await _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<ReportQueueItem, SendQueueItem>(formatId, FormLogicProcessingContext.Send);
-
-                _log.LogDebug("Executes form logic");
-                                
-                var result = await formLogicBeingProcessed.Execute(sendQueueItem);  
+                var result = await formLogicBeingProcessed.ExecuteAsync(sendQueueItem);  
                 return result;
             }
             catch (Exception ex)

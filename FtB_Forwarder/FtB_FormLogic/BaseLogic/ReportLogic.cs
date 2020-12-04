@@ -24,12 +24,15 @@ namespace FtB_FormLogic
         {
         }
 
-        protected async Task<bool> ReadyForSubmittalReporting(ReportQueueItem reportQueueItem)
+        protected async Task<bool> ReadyForSubmittalReportingAsync(ReportQueueItem reportQueueItem)
         {
-            if (await AllReceiversReadyForReporting(reportQueueItem))
+            SubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
+            bool submittalAlreadyReported = (submittalEntity.Status == Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed));
+
+            if (await AllReceiversReadyForReportingAsync(reportQueueItem) && !submittalAlreadyReported)
             {
                 _log.LogDebug($"{GetType().Name}: Trying to set blob lease by ArchiveReference {reportQueueItem.ArchiveReference}-{reportQueueItem.ReceiverSequenceNumber}....");
-                return await SetReportingFlagForSubmittal(reportQueueItem.ArchiveReference.ToLower());
+                return await SetReportingFlagForSubmittalAsync(reportQueueItem.ArchiveReference.ToLower());
             }
             else
             {
@@ -43,33 +46,33 @@ namespace FtB_FormLogic
         /// This is due to a preceeding process already ha acqired the lease, and is therefore sending the submittal receipt
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> SetReportingFlagForSubmittal(string containerName)
+        private async Task<bool> SetReportingFlagForSubmittalAsync(string containerName)
         {
             return await _blobOperations.AcquireContainerLease(containerName, BLOB_CONTAINER_LEASE_DURATION_MAX);
         }
 
-        private async Task<bool> AllReceiversReadyForReporting(ReportQueueItem reportQueueItem)
+        private async Task<bool> AllReceiversReadyForReportingAsync(ReportQueueItem reportQueueItem)
         {
-            SubmittalEntity submittalEntity = await _tableStorage.GetTableEntity<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
+            SubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
             var totalNumberOfReceivers = submittalEntity.ReceiverCount;
-            var allReceiversInSubmittal = await _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference);
+            var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<ReceiverEntity>(reportQueueItem.ArchiveReference);
             //Get number of receivers with process-stage = Done, and compare this number to the totalNumberOfReceivers
             var receiversReadyForReporting = allReceiversInSubmittal.Where(x => x.ProcessStage.Equals(Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.ReadyForReporting))).Count();
 
             return receiversReadyForReporting == totalNumberOfReceivers;
         }
 
-        protected async Task<int> GetReceiverSuccessfullyNotifiedCount(ReportQueueItem reportQueueItem)
+        protected async Task<int> GetReceiverSuccessfullyNotifiedCountAsync(ReportQueueItem reportQueueItem)
         {
-            var allReceiversInSubmittal = await _tableStorage.GetTableEntities<ReceiverEntity>(reportQueueItem.ArchiveReference);
+            var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<ReceiverEntity>(reportQueueItem.ArchiveReference);
 
             return allReceiversInSubmittal.Where(x => x.ProcessOutcome.Equals(Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.Sent))).Count();
         }
 
-        public virtual async Task<string> Execute(ReportQueueItem reportQueueItem)
+        public virtual async Task<string> ExecuteAsync(ReportQueueItem reportQueueItem)
         {
             _log.LogDebug($"{GetType().Name}: 'Execute' for ArchiveReference {reportQueueItem.ArchiveReference}-{reportQueueItem.ReceiverSequenceNumber}....");
-            await base.LoadData(reportQueueItem.ArchiveReference);
+            await base.LoadDataAsync(reportQueueItem.ArchiveReference);
 
             return reportQueueItem.ArchiveReference;
         }

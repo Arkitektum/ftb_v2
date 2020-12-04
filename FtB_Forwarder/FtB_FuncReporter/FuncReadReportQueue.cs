@@ -28,13 +28,13 @@ namespace FtB_FuncReporter
                 ReportQueueItem reportQueueItem = JsonConvert.DeserializeObject<ReportQueueItem>(myQueueItem);
                 using (var scope = _logger.BeginScope(new Dictionary<string, string> { { "ArchiveReference", reportQueueItem.ArchiveReference }, { "ReceiverId", reportQueueItem.Receiver.Id } }))
                 {
-                    _logger.LogInformation($"{reportQueueItem.Receiver.Id }: C# ServiceBus queue trigger function processed message: {myQueueItem}");
-                    var result = await _queueProcessor.ExecuteProcessingStrategy(reportQueueItem);
+                    _logger.LogInformation($"{GetType().Name}: {reportQueueItem.Receiver.Id }: C# ServiceBus queue trigger function processed message: {myQueueItem}");
+                    var result = await _queueProcessor.ExecuteProcessingStrategyAsync(reportQueueItem);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong. Exception: {ex}");
+                _logger.LogError($"{GetType().Name}: Something went wrong. Exception: {ex}");
                 throw; //Do this to make sure the message is not removed from the SendQueue. It will retry, and then end up in DeadLetterQueue
             }
         }

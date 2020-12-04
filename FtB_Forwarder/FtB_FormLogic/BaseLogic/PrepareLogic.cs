@@ -50,11 +50,11 @@ namespace FtB_FormLogic
             _receivers = distinctList.Select(s => new Receiver() { Id = s.Id, Type = s.Type }).ToList();
         }
 
-        public virtual async Task<IEnumerable<SendQueueItem>> Execute(SubmittalQueueItem submittalQueueItem)
+        public virtual async Task<IEnumerable<SendQueueItem>> ExecuteAsync(SubmittalQueueItem submittalQueueItem)
         {
             _log.LogDebug($"{GetType().Name}: Processing logic for archveReference {submittalQueueItem.ArchiveReference}....");
             
-            await base.LoadData(submittalQueueItem.ArchiveReference);
+            await base.LoadDataAsync(submittalQueueItem.ArchiveReference);
 
             SetReceivers();
 
@@ -80,8 +80,8 @@ namespace FtB_FormLogic
 
             _log.LogDebug($"Created {receiverEntities.Count()} receiver entities for {submittalQueueItem.ArchiveReference}");
 
-            await BulkInsertEntities(receiverEntities);
-            await ParallelInsertEntities(receiverLogEntities);
+            await BulkInsertEntitiesAsync(receiverEntities);
+            await ParallelInsertEntitiesAsync(receiverLogEntities);
 
             return sendQueueItems;
         }

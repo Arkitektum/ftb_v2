@@ -23,12 +23,12 @@ namespace FtB_ProcessStrategies
             _formatIdToFormMapper = formatIdToFormMapper;
         }
 
-        public async Task<string> ExecuteProcessingStrategy(ReportQueueItem reportQueueItem)
+        public async Task<string> ExecuteProcessingStrategyAsync(ReportQueueItem reportQueueItem)
         {
             string formatId = await _blobOperations.GetFormatIdFromStoredBlob(reportQueueItem.ArchiveReference);
             var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<string, ReportQueueItem>(formatId, FormLogicProcessingContext.Report);
                         
-            return await formLogicBeingProcessed.Execute(reportQueueItem);
+            return await formLogicBeingProcessed.ExecuteAsync(reportQueueItem);
         }
     }
 }

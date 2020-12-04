@@ -21,7 +21,7 @@ namespace FtB_Common.Storage
         private readonly ILogger<BlobOperations> _log;
         private PrivateBlobStorage _privateBlobStorage;
         private PublicBlobStorage _publicBlobStorage;
-        private string _blobContainerLeaseId;
+        private string _containerLeaseId;
 
         public BlobOperations(ILogger<BlobOperations> logger, PrivateBlobStorage privateBlobStorage, PublicBlobStorage publicBlobStorage)
         {
@@ -38,29 +38,30 @@ namespace FtB_Common.Storage
 
                 BlobLeaseClient blobLeaseClient = containerClient.GetBlobLeaseClient();
                 var blobLeaseResponse = await blobLeaseClient.AcquireAsync(TimeSpan.FromSeconds(seconds));
-                _blobContainerLeaseId = blobLeaseClient.LeaseId;
+                _containerLeaseId = blobLeaseClient.LeaseId;
                 var httpStatusCode = blobLeaseResponse.GetRawResponse().Status;
                 if (httpStatusCode == 201)
                 {
-                    _log.LogInformation($"Blob in container {containerName} successfully leased with LeaseId={_blobContainerLeaseId}.");
+                    _log.LogInformation($"Container {containerName} successfully leased with LeaseId={_containerLeaseId}.");
                     return true;
                 }
-                _log.LogError($"Blob in container {containerName} failed for leasing.");
+                _log.LogError($"Container {containerName} failed for leasing.");
 
                 return false;
             }
             catch (RequestFailedException rfx)
             {
                 if (rfx.Status == 409)
+                {
+                    _log.LogInformation(rfx, $"Container {containerName} failed for leasing. HTTp-status: {rfx.Status}. Returning false.");
                     return false;
-
-                _log.LogError(rfx, $"Exception: Blob in container {containerName} failed for leasing.");
+                }
+                _log.LogError(rfx, $"Exception: Container {containerName} failed for leasing. HTTp-status: {rfx.Status}. Throwing exception.");
                 throw;
-
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, $"Exception: Blob in container {containerName} failed for leasing.");
+                _log.LogError(ex, $"Exception: Container {containerName} failed for leasing.");
                 throw;
             }
         }
@@ -70,21 +71,21 @@ namespace FtB_Common.Storage
             try
             {
                 var containerClient = _privateBlobStorage.GetBlobContainerClient(containerName);
-                BlobLeaseClient blobLeaseClient = containerClient.GetBlobLeaseClient(_blobContainerLeaseId);
+                BlobLeaseClient blobLeaseClient = containerClient.GetBlobLeaseClient(_containerLeaseId);
                 Response<ReleasedObjectInfo> releaseObjectInfo = await blobLeaseClient.ReleaseAsync();
                 var xx = releaseObjectInfo.GetRawResponse().Status;
                 if (xx == 200)
                 {
-                    _log.LogInformation($"Blob with LeaseId {_blobContainerLeaseId} in container {containerName} successfully released.");
+                    _log.LogInformation($"LeaseId {_containerLeaseId} for container {containerName} successfully released.");
                     return true;
                 }
-                _log.LogError($"Blob with LeaseId {_blobContainerLeaseId} in container {containerName} failed for releasing.");
+                _log.LogError($"LeaseId {_containerLeaseId} for container {containerName} failed for releasing.");
 
                 return false;
             }
             catch (Exception ex)
             {
-                _log.LogError($"Exception: Blob with LeaseId {_blobContainerLeaseId} in container {containerName} failed for releasing. Message: {ex.Message}");
+                _log.LogError($"Exception: LeaseId {_containerLeaseId} for container {containerName} failed for releasing. Message: {ex.Message}");
                 return false;
             }
         }

@@ -19,9 +19,9 @@ namespace FtB_FormLogic
             this.log = log;
         }
 
-        public override async Task<IEnumerable<SendQueueItem>> Execute(SubmittalQueueItem submittalQueueItem)
+        public override async Task<IEnumerable<SendQueueItem>> ExecuteAsync(SubmittalQueueItem submittalQueueItem)
         {
-            return await base.Execute(submittalQueueItem);
+            return await base.ExecuteAsync(submittalQueueItem);
         }
     }
 }

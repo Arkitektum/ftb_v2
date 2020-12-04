@@ -16,10 +16,10 @@ namespace FtB_FormLogic
         {
         }
 
-        public virtual async Task<ReportQueueItem> Execute(SendQueueItem sendQueueItem)
+        public virtual async Task<ReportQueueItem> ExecuteAsync(SendQueueItem sendQueueItem)
         {
             this.Receiver = sendQueueItem.Receiver;
-            await base.LoadData(sendQueueItem.ArchiveReference);
+            await base.LoadDataAsync(sendQueueItem.ArchiveReference);
 
             return new ReportQueueItem() { ArchiveReference = sendQueueItem.ArchiveReference, ReceiverLogPartitionKey = sendQueueItem.ReceiverLogPartitionKey, 
                                            ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber, Receiver = sendQueueItem.Receiver };

@@ -92,7 +92,7 @@ namespace FtB_Common.Storage
             }
         }
 
-        public async Task InsertEntityRecords<T>(IEnumerable<ITableEntity> entities)
+        public async Task InsertEntityRecordsAsync<T>(IEnumerable<ITableEntity> entities)
         {
             try
             {
@@ -125,7 +125,7 @@ namespace FtB_Common.Storage
             }
         }
 
-        public async Task EnsureTableExists<T>()
+        public async Task EnsureTableExistsAsync<T>()
         {
             string tableNameFromType = GetTableName<T>();
             CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
@@ -134,14 +134,14 @@ namespace FtB_Common.Storage
                 await cloudTable.CreateIfNotExistsAsync();
         }
 
-        public async Task UpdateEntities<T>(IEnumerable<T> entities) where T : ITableEntity
+        public async Task UpdateEntitiesAsync<T>(IEnumerable<T> entities) where T : ITableEntity
         {
             try
             {
                 string tableNameFromType = GetTableName<T>();
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
 
-                var tasks = entities.Select(async (x) => await UpdateEntity(x, cloudTable));
+                var tasks = entities.Select(async (x) => await UpdateEntityAsync(x, cloudTable));
                 await Task.WhenAll(tasks);
 
                 //Parallel.ForEach(entities, entity =>
@@ -162,7 +162,7 @@ namespace FtB_Common.Storage
             }
         }
 
-        private async Task<TableResult> UpdateEntity<T>(T entity, CloudTable cloudTable) where T : ITableEntity
+        private async Task<TableResult> UpdateEntityAsync<T>(T entity, CloudTable cloudTable) where T : ITableEntity
         {
             TableOperation operation = TableOperation.Replace(entity);
             return await cloudTable.ExecuteAsync(operation);
@@ -170,7 +170,7 @@ namespace FtB_Common.Storage
         }
 
 
-        public async Task<TableEntity> UpdateEntityRecord<T>(TableEntity entity)
+        public async Task<TableEntity> UpdateEntityRecordAsync<T>(TableEntity entity)
         {
             try
             {
@@ -192,7 +192,7 @@ namespace FtB_Common.Storage
             }
         }
 
-        public async Task<T> GetTableEntity<T>(string partitionKey, string rowKey) where T : ITableEntity
+        public async Task<T> GetTableEntityAsync<T>(string partitionKey, string rowKey) where T : ITableEntity
         {
             try
             {
@@ -208,7 +208,7 @@ namespace FtB_Common.Storage
             }
         }
 
-        public async Task<IEnumerable<T>> GetTableEntities<T>(string partitionKey) where T : ITableEntity, new()
+        public async Task<IEnumerable<T>> GetTableEntitiesAsync<T>(string partitionKey) where T : ITableEntity, new()
         {
             try
             {
