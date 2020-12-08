@@ -33,6 +33,10 @@ namespace FtB_FormLogic
         {
             _log.LogDebug("_dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
             var returnReportQueueItem = await base.ExecuteAsync(sendQueueItem);
+
+            if (returnReportQueueItem == null) //State machine thingy should handle this..
+                return returnReportQueueItem;
+
             _log.LogDebug("Maps prefill data for {0}", sendQueueItem.Receiver.Id);
             MapPrefillData(sendQueueItem.Receiver.Id);
             await MapDistributionMessage();
@@ -189,25 +193,23 @@ namespace FtB_FormLogic
             }
         }
 
-        protected virtual async Task PersistPrefill(SendQueueItem sendQueueItem)
-        {
-            var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
-            _log.LogDebug($"{GetType().Name}: PersistPrefill for archiveReference {sendQueueItem.ArchiveReference}....");
-            _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(DistributionMessage.PrefilledXmlDataString), metaData);
-            
-            await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
-        }
+        //protected virtual async Task PersistPrefill(SendQueueItem sendQueueItem)
+        //{
+        //    var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("PrefillReceiver", sendQueueItem.Receiver.Id) };
+        //    _log.LogDebug($"{GetType().Name}: PersistPrefill for archiveReference {sendQueueItem.ArchiveReference}....");
+        //    _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Prefill-{Guid.NewGuid()}", Encoding.Default.GetBytes(DistributionMessage.PrefilledXmlDataString), metaData);
+        //    await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
+        //}
 
-        protected virtual async Task PersistMessage(SendQueueItem sendQueueItem)
-        {
-            var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("DistributionMessageReceiver", sendQueueItem.Receiver.Id) };
-            _log.LogDebug($"{GetType().Name}: PersistMessage for archiveReference {sendQueueItem.ArchiveReference}....");
-            _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Message-{Guid.NewGuid()}", Encoding.Default.GetBytes(SerializeUtil.Serialize(DistributionMessage.NotificationMessage.MessageData)), metaData);
-            
-            await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
-        }
+    //protected virtual async Task PersistMessage(SendQueueItem sendQueueItem)
+    //{
+    //    var metaData = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("DistributionMessageReceiver", sendQueueItem.Receiver.Id) };
+    //    _log.LogDebug($"{GetType().Name}: PersistMessage for archiveReference {sendQueueItem.ArchiveReference}....");
+    //    _repo.AddBytesAsBlob(sendQueueItem.ArchiveReference, $"Message-{Guid.NewGuid()}", Encoding.Default.GetBytes(SerializeUtil.Serialize(DistributionMessage.NotificationMessage.MessageData)), metaData);
+    //   await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
+    //}
 
-        protected abstract void MapPrefillData(string receiverId);
+    protected abstract void MapPrefillData(string receiverId);
 
         protected virtual async Task MapDistributionMessage()
         {

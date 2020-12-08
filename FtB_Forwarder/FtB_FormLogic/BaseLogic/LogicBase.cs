@@ -113,7 +113,7 @@ namespace FtB_FormLogic
         }
 
 
-        protected async Task UpdateReceiverProcessStageAsync(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverProcessStageEnum processStageEnum)
+        protected virtual async Task UpdateReceiverProcessStageAsync(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverProcessStageEnum processStageEnum)
         {
             try
             {
@@ -121,6 +121,7 @@ namespace FtB_FormLogic
                 receiverEntity.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum);
                 var result = _tableStorage.UpdateEntityRecordAsync<ReceiverEntity>(receiverEntity);
                 //_log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum)}.....");
+                
             }
             catch (Exception ex)
             {
@@ -144,7 +145,7 @@ namespace FtB_FormLogic
             }
         }
 
-        protected async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, ReceiverStatusLogEnum statusEnum)
+        protected virtual async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, ReceiverStatusLogEnum statusEnum)
         {
             try
             {

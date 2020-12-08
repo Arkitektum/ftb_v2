@@ -26,13 +26,9 @@ namespace FtB_FormLogic
 
         protected async Task<bool> ReadyForSubmittalReportingAsync(ReportQueueItem reportQueueItem)
         {
-            SubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
-            bool submittalAlreadyReported = (submittalEntity.Status == Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed));
-
-            if (await AllReceiversReadyForReportingAsync(reportQueueItem) && !submittalAlreadyReported)
+            if (await AllReceiversReadyForReporting(reportQueueItem))
             {
-                _log.LogDebug($"{GetType().Name}: Trying to set blob lease by ArchiveReference {reportQueueItem.ArchiveReference}-{reportQueueItem.ReceiverSequenceNumber}....");
-                return await SetReportingFlagForSubmittalAsync(reportQueueItem.ArchiveReference.ToLower());
+                return await SetReportingFlagForSubmittal(reportQueueItem.ArchiveReference.ToLower());
             }
             else
             {
@@ -46,12 +42,12 @@ namespace FtB_FormLogic
         /// This is due to a preceeding process already ha acqired the lease, and is therefore sending the submittal receipt
         /// </summary>
         /// <returns></returns>
-        private async Task<bool> SetReportingFlagForSubmittalAsync(string containerName)
+        private async Task<bool> SetReportingFlagForSubmittal(string containerName)
         {
             return await _blobOperations.AcquireContainerLease(containerName, BLOB_CONTAINER_LEASE_DURATION_MAX);
         }
 
-        private async Task<bool> AllReceiversReadyForReportingAsync(ReportQueueItem reportQueueItem)
+        private async Task<bool> AllReceiversReadyForReporting(ReportQueueItem reportQueueItem)
         {
             SubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
             var totalNumberOfReceivers = submittalEntity.ReceiverCount;
@@ -71,7 +67,6 @@ namespace FtB_FormLogic
 
         public virtual async Task<string> ExecuteAsync(ReportQueueItem reportQueueItem)
         {
-            _log.LogDebug($"{GetType().Name}: 'Execute' for ArchiveReference {reportQueueItem.ArchiveReference}-{reportQueueItem.ReceiverSequenceNumber}....");
             await base.LoadDataAsync(reportQueueItem.ArchiveReference);
 
             return reportQueueItem.ArchiveReference;

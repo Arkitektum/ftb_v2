@@ -14,7 +14,8 @@ namespace Altinn.Distribution
         {
             services.AddAltinn2PrefillService(configuration);
             services.AddAltinn2CorrespondenceService(configuration);
-            services.AddScoped<IDistributionAdapter, Altinn2Distribution>();
+            //services.AddScoped<IDistributionAdapter, Altinn2Distribution>();
+            services.AddScoped<IDistributionAdapter, AlinnIntegrationTestDistribution>();
 
             return services;
         }

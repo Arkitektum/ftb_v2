@@ -8,10 +8,10 @@ namespace FtB_Common.Enums
     {
         Created,
         PrefillCreated,
-        PrefillPersisted,
-        PrefillSent,
+        //PrefillPersisted,
+        //PrefillSent,
         PrefillSendingFailed,
-        CorrespondenceCreated,
+        //CorrespondenceCreated,
         CorrespondenceSendingFailed,
         CorrespondenceSent,
         ReservedReportee,
