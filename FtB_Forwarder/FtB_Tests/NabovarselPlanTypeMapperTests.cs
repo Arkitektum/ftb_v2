@@ -12,7 +12,7 @@ namespace FtB_Tests
         public void Forslagstiller_success()
         {
             var nabovarsel = new no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType();
-            nabovarsel.forslagsstiller = new no.kxml.skjema.dibk.nabovarselPlan.ForslagsstillerType()
+            nabovarsel.forslagsstiller = new no.kxml.skjema.dibk.nabovarselPlan.PartType()
             {
                 adresse = new no.kxml.skjema.dibk.nabovarselPlan.EnkelAdresseType()
                 {
@@ -35,7 +35,7 @@ namespace FtB_Tests
                 organisasjonsnummer = "98765432"
             };
 
-            var result = NabovarselPlanMappers.GetNabovarselForslagsstillerTypeMapper().Map<no.kxml.skjema.dibk.nabovarselPlan.ForslagsstillerType, no.kxml.skjema.dibk.nabovarselsvarPlan.ForslagsstillerType>(nabovarsel.forslagsstiller);
+            var result = NabovarselPlanMappers.GetNabovarselForslagsstillerTypeMapper().Map<no.kxml.skjema.dibk.nabovarselPlan.PartType, no.kxml.skjema.dibk.nabovarselsvarPlan.PartType>(nabovarsel.forslagsstiller);
             Assert.IsNotNull(result);
         }
 

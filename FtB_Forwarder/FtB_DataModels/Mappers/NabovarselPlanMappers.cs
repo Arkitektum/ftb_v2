@@ -8,7 +8,7 @@ namespace FtB_DataModels.Mappers
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.ForslagsstillerType, no.kxml.skjema.dibk.nabovarselsvarPlan.ForslagsstillerType>();
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.PartType, no.kxml.skjema.dibk.nabovarselsvarPlan.PartType>();
                 cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.EnkelAdresseType, no.kxml.skjema.dibk.nabovarselsvarPlan.EnkelAdresseType>();
                 cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.KodeType, no.kxml.skjema.dibk.nabovarselsvarPlan.KodeType>();
                 cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.KontaktpersonType, no.kxml.skjema.dibk.nabovarselsvarPlan.KontaktpersonType>();

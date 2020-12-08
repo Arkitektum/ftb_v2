@@ -32,7 +32,7 @@ namespace FtB_FormLogic
                 var svarPaaNabovarsel = new no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType();
 
                 svarPaaNabovarsel.forslagsstiller = NabovarselPlanMappers.GetNabovarselForslagsstillerTypeMapper()
-                   .Map<ForslagsstillerType, no.kxml.skjema.dibk.nabovarselsvarPlan.ForslagsstillerType>(form.forslagsstiller);
+                   .Map<PartType, no.kxml.skjema.dibk.nabovarselsvarPlan.PartType>(form.forslagsstiller);
 
                 svarPaaNabovarsel.forslagsstiller.epost = form.forslagsstiller.kontaktperson != null ? form.forslagsstiller.kontaktperson.epost : form.forslagsstiller.epost;
                 svarPaaNabovarsel.forslagsstiller.telefon = form.forslagsstiller.kontaktperson != null ? form.forslagsstiller.kontaktperson.telefonnummer : form.forslagsstiller.telefon;

@@ -89,7 +89,7 @@ namespace FtB_FormLogic
         }
 
 
-        public string GetPrefillNotificationBody(no.kxml.skjema.dibk.nabovarselsvarPlan.ForslagsstillerType forslagsstiller, no.kxml.skjema.dibk.nabovarselsvarPlan.BeroertPartType beroertPart, DateTime? fristForInnspill, string kommune)
+        public string GetPrefillNotificationBody(no.kxml.skjema.dibk.nabovarselsvarPlan.PartType forslagsstiller, no.kxml.skjema.dibk.nabovarselsvarPlan.BeroertPartType beroertPart, DateTime? fristForInnspill, string kommune)
         {
             var message = new StringBuilder();
             string datoFristInnspill = String.Empty;
@@ -152,7 +152,7 @@ namespace FtB_FormLogic
             return notificationBuilder.ToString();
         }
 
-        public static string GetEmailNotificationBody(string orgnr, string nabo, string kommunenavn, string plannavn, string fristForInnspill, no.kxml.skjema.dibk.nabovarselPlan.ForslagsstillerType forslagsstiller)
+        public static string GetEmailNotificationBody(string orgnr, string nabo, string kommunenavn, string plannavn, string fristForInnspill, no.kxml.skjema.dibk.nabovarselPlan.PartType forslagsstiller)
         {
             string evtOrgnr = "";
             if (!string.IsNullOrEmpty(orgnr)) evtOrgnr = $"(org.nr. {orgnr})";
@@ -210,7 +210,7 @@ namespace FtB_FormLogic
             return notificationBuilder.ToString();
         }
 
-        private static string Epost(no.kxml.skjema.dibk.nabovarselPlan.ForslagsstillerType forslagsstiller)
+        private static string Epost(no.kxml.skjema.dibk.nabovarselPlan.PartType forslagsstiller)
         {
             string epost = "";
             if (!string.IsNullOrEmpty(forslagsstiller.kontaktperson.epost))
@@ -225,7 +225,7 @@ namespace FtB_FormLogic
             return epost;
         }
 
-        private static string Telefon(no.kxml.skjema.dibk.nabovarselPlan.ForslagsstillerType forslagsstiller)
+        private static string Telefon(no.kxml.skjema.dibk.nabovarselPlan.PartType forslagsstiller)
         {
             string telefon = "";
             if (!string.IsNullOrEmpty(forslagsstiller.kontaktperson.telefonnummer))
