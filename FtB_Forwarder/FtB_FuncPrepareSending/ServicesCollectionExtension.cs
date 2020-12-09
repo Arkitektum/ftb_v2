@@ -15,6 +15,7 @@ namespace FtB_FuncPrepareSending
         {
             services.AddScoped<FormatIdToFormMapper>();
             services.AddScoped<VarselOppstartPlanarbeidPrepareLogic>();
+            services.AddScoped<SvarVarselOppstartPlanarbeidPrepareLogic>();
             services.AddScoped<IFormDataRepo, FormDataRepository>();
             services.AddScoped<ITableStorage, TableStorage>();
             services.AddScoped<IBlobOperations, BlobOperations>();

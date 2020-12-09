@@ -9,10 +9,10 @@ namespace FtB_DataModels.Mappers
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.PartType, FtB_DataModels.Datamodels.NabovarelPlan.ForslagsstillerType>();
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.EnkelAdresseType, FtB_DataModels.Datamodels.NabovarelPlan.EnkelAdresseType >();
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.KodeType, FtB_DataModels.Datamodels.NabovarelPlan.KodeType>();
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.KontaktpersonType, FtB_DataModels.Datamodels.NabovarelPlan.KontaktpersonType>();
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.PartType, FtB_DataModels.Datamodels.NabovarselPlan.PartType>();
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.EnkelAdresseType, FtB_DataModels.Datamodels.NabovarselPlan.EnkelAdresseType >();
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.KodeType, FtB_DataModels.Datamodels.NabovarselPlan.KodeType>();
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.KontaktpersonType, FtB_DataModels.Datamodels.NabovarselPlan.KontaktpersonType>();
 
             });
             return config.CreateMapper();
@@ -23,18 +23,18 @@ namespace FtB_DataModels.Mappers
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AllowNullCollections = true;
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.BeroertPartType, FtB_DataModels.Datamodels.NabovarelPlan.BeroertPartType>()
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.BeroertPartType, FtB_DataModels.Datamodels.NabovarselPlan.BeroertPartType>()
                 //.ForMember(dest => dest.gjelderEiendom.gjeldereiendom, opt => opt.MapFrom(src => src.gjelderEiendom.ToList()))
                 
                 ;
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.GjelderEiendomType[], FtB_DataModels.Datamodels.NabovarelPlan.GjelderEiendomListe>();
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.GjelderEiendomType, FtB_DataModels.Datamodels.NabovarelPlan.GjelderEiendomType>();
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.MatrikkelnummerType, FtB_DataModels.Datamodels.NabovarelPlan.MatrikkelnummerType>();
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.EiendommensAdresseType, FtB_DataModels.Datamodels.NabovarelPlan.EiendommensAdresseType>();
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.GjelderEiendomType[], FtB_DataModels.Datamodels.NabovarselPlan.GjelderEiendomListe>();
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.GjelderEiendomType, FtB_DataModels.Datamodels.NabovarselPlan.GjelderEiendomType>();
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.MatrikkelnummerType, FtB_DataModels.Datamodels.NabovarselPlan.MatrikkelnummerType>();
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.EiendommensAdresseType, FtB_DataModels.Datamodels.NabovarselPlan.EiendommensAdresseType>();
                 
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.KodeType, FtB_DataModels.Datamodels.NabovarelPlan.KodeType>();
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.EnkelAdresseType, FtB_DataModels.Datamodels.NabovarelPlan.EnkelAdresseType>();
-                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.KontaktpersonType, FtB_DataModels.Datamodels.NabovarelPlan.KontaktpersonType>()
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.KodeType, FtB_DataModels.Datamodels.NabovarselPlan.KodeType>();
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.EnkelAdresseType, FtB_DataModels.Datamodels.NabovarselPlan.EnkelAdresseType>();
+                cfg.CreateMap<no.kxml.skjema.dibk.nabovarselPlan.KontaktpersonType, FtB_DataModels.Datamodels.NabovarselPlan.KontaktpersonType>()
                 
                 
                 ;
@@ -47,7 +47,7 @@ namespace FtB_DataModels.Mappers
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap< FtB_DataModels.Datamodels.NabovarelPlan.BeroertPartType, BerortPart>()
+                cfg.CreateMap< FtB_DataModels.Datamodels.NabovarselPlan.BeroertPartType, BerortPart>()
                 .ForMember(dest => dest.Ssn, opt => opt.MapFrom(src => src.foedselsnummer))
                 .ForMember(dest => dest.Orgnr, opt => opt.MapFrom(src => src.organisasjonsnummer))
                 .ForMember(dest => dest.Epost, opt => opt.MapFrom(src => src.epost))

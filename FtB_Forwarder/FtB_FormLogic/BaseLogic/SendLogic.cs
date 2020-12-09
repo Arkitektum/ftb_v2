@@ -35,7 +35,6 @@ namespace FtB_FormLogic
             {
                 await base.LoadDataAsync(sendQueueItem.ArchiveReference);
 
-
                 return new ReportQueueItem()
                 {
                     ArchiveReference = sendQueueItem.ArchiveReference,

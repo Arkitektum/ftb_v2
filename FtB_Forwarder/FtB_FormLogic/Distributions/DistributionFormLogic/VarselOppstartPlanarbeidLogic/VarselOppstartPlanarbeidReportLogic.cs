@@ -23,7 +23,6 @@ namespace FtB_FormLogic
     [FormDataFormat(DataFormatId = "6325", DataFormatVersion = "44824", ProcessingContext = FormLogicProcessingContext.Report)]
     public class VarselOppstartPlanarbeidReportLogic : DistributionReportLogic<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
-        private readonly IBlobOperations _blobOperations;
         private readonly IHtmlUtils _htmlUtils;
 
         public VarselOppstartPlanarbeidReportLogic(IFormDataRepo repo,
@@ -36,7 +35,6 @@ namespace FtB_FormLogic
                                                    HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
             : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils, htmlToPdfConverterHttpClient)
         {
-            _blobOperations = blobOperations;
             _htmlUtils = htmlUtils;
         }
         public override AltinnReceiver GetReceiver()

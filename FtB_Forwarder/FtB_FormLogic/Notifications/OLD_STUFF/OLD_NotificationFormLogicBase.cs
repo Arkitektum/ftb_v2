@@ -7,9 +7,9 @@ using System.Text;
 
 namespace FtB_FormLogic
 {
-    public class NotificationFormLogicBase<T> : FormLogicBase<T>
+    public class OLD_NotificationFormLogicBase<T> : FormLogicBase<T>
     {
-        public NotificationFormLogicBase(IFormDataRepo dataRepo) : base(dataRepo)
+        public OLD_NotificationFormLogicBase(IFormDataRepo dataRepo) : base(dataRepo)
         {
 
         }

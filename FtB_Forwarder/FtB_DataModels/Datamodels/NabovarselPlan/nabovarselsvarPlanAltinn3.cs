@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.ComponentModel.DataAnnotations;
-namespace FtB_DataModels.Datamodels.NabovarelPlan
+namespace FtB_DataModels.Datamodels.NabovarselPlan
 {
     public class SvarPaaNabovarselPlanType
     {
@@ -22,7 +22,7 @@ namespace FtB_DataModels.Datamodels.NabovarelPlan
         [XmlElement("fraSluttbrukersystem")]
         public string fraSluttbrukersystem { get; set; }
         [XmlElement("forslagsstiller")]
-        public ForslagsstillerType forslagsstiller { get; set; }
+        public PartType forslagsstiller { get; set; }
         [XmlElement("saksnummer")]
         public string saksnummer { get; set; }
         [XmlElement("signatur")]
@@ -151,7 +151,7 @@ namespace FtB_DataModels.Datamodels.NabovarelPlan
         [XmlElement("epost")]
         public string epost { get; set; }
     }
-    public class ForslagsstillerType
+    public class PartType
     {
         [XmlElement("partstype")]
         public KodeType partstype { get; set; }
