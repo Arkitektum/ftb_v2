@@ -30,7 +30,7 @@ namespace FtB_FormLogic
 
             distributionForm.Signed = DateTime.Now;
             distributionForm.DistributionStatus = Ftb_DbModels.DistributionStatus.signed;
-            distributionForm.SignedArchiveReference = sendQueueItem.ArchiveReference;
+            distributionForm.SignedArchiveReference = sendQueueItem.ArchiveReference.ToUpper();
             await _dbUnitOfWork.DistributionForms.Update(distributionForm.InitialArchiveReference, distributionId, distributionForm);
 
             return returnReportQueueItem;
