@@ -23,7 +23,8 @@ namespace FtB_FormLogic
         public override async Task<IEnumerable<SendQueueItem>> ExecuteAsync(SubmittalQueueItem submittalQueueItem)
         {
             var returnValue = await base.ExecuteAsync(submittalQueueItem);
-            await CreateNotificationSubmittalDatabaseStatus(submittalQueueItem.ArchiveReference, Sender.Id);
+            await CreateNotificationReceiverDatabaseStatus(submittalQueueItem.ArchiveReference, Sender.Id);
+            
             var sendQueueItems = await CreateNotificationSendQueueItem(submittalQueueItem);
 
             var queueList = new List<SendQueueItem>();
@@ -32,31 +33,10 @@ namespace FtB_FormLogic
             return queueList;
         }
 
-        private async Task CreateNotificationSubmittalDatabaseStatus(string archiveReference, string senderId)
-        {
-            try
-            {
-                var entity = new NotificationSubmittalEntity(archiveReference, senderId, DateTime.Now);
-                await _tableStorage.InsertEntityRecordAsync<NotificationSubmittalEntity>(entity);
-                _log.LogDebug($"Create submittal database status for {archiveReference}.");
-            }
-            catch (Exception ex)
-            {
-                _log.LogError(ex, $"Error creating submittal record for archiveReference={archiveReference}.");
-                throw;
-            }
-        }
-
         private async Task<SendQueueItem> CreateNotificationSendQueueItem(SubmittalQueueItem submittalQueueItem)
         {
             var sendQueueItems = new List<SendQueueItem>();
             string rowKey = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}";
-
-            var receiverEntity = new NotificationReceiverEntity(ArchiveReference, ArchiveReference, Receivers[0].Id, ReceiverProcessStageEnum.Created, DateTime.Now);
-            await _tableStorage.InsertEntityRecordAsync<NotificationReceiverEntity>(receiverEntity);
-
-            var receiverLogEntity = new NotificationReceiverLogEntity(ArchiveReference, rowKey, Receivers[0].Id, ReceiverStatusLogEnum.Created);
-            await _tableStorage.InsertEntityRecordAsync<NotificationReceiverLogEntity>(receiverLogEntity);
 
             return new SendQueueItem()
             {
@@ -65,6 +45,11 @@ namespace FtB_FormLogic
                 Receiver = Receivers[0],
                 Sender = Sender
             };
+        }
+
+        protected virtual async Task CreateNotificationReceiverDatabaseStatus(string archiveReference, string senderId)
+        { 
+            throw new Exception("Not to be implemented"); 
         }
 
     }

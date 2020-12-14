@@ -33,13 +33,6 @@ namespace FtB_FormLogic
         public override async Task<string> ExecuteAsync(ReportQueueItem reportQueueItem)
         {
             var returnItem = await base.ExecuteAsync(reportQueueItem);
-            //await UpdateReceiverProcessStageAsync(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverProcessStageEnum.ReadyForReporting);
-            //await AddToReceiverProcessLogAsync(reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReadyForReporting);
-
-            //if (await ReadyForSubmittalReportingAsync(reportQueueItem))
-            //{
-            //    await SendReceiptToSubmitterWhenAllReceiversAreProcessedAsync(reportQueueItem);
-            //}
 
             return returnItem;
         }

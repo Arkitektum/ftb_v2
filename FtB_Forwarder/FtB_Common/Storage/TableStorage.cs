@@ -258,10 +258,7 @@ namespace FtB_Common.Storage
             {
                 return _notificationReceiverTable;
             }
-            else if (typeof(T) == typeof(NotificationSubmittalEntity))
-            {
-                return _notificationSubmittalTable;
-            }
+
             throw new Exception("Illegal table storage name");
         }
 

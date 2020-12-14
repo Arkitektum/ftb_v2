@@ -1,4 +1,5 @@
 ﻿using Altinn.Common.Interfaces;
+using FtB_Common.BusinessModels;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -27,6 +29,14 @@ namespace FtB_FormLogic
             : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils, htmlToPdfConverterHttpClient)
         {
             _htmlUtils = htmlUtils;
+        }
+
+        public override async Task<string> ExecuteAsync(ReportQueueItem reportQueueItem)
+        {
+            var returnValue = await base.ExecuteAsync(reportQueueItem);
+            //Log comment
+
+            return returnValue;
         }
     }
 }

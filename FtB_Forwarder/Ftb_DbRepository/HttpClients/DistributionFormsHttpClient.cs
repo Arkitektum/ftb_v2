@@ -36,8 +36,6 @@ namespace Ftb_Repositories.HttpClients
             var json = JsonSerializer.Serialize(distributionForms);
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            //Client.BaseAddress = new Uri(_settings.Value.Uri);
-            //Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
             var result = await Client.PostAsync(requestUri, stringContent);
         }
 
@@ -47,8 +45,6 @@ namespace Ftb_Repositories.HttpClients
 
             var requestUri = $"{archiveReference}/distributions";
 
-            //Client.BaseAddress = new Uri(_settings.Value.Uri);
-            //Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
             var result = await Client.GetAsync(requestUri);
 
             IEnumerable<DistributionForm> retVal = null;
@@ -63,12 +59,15 @@ namespace Ftb_Repositories.HttpClients
 
         public async Task<DistributionForm> Get(Guid id)
         {
-            _log.LogDebug($"Get(Guid) distributionForm for id {id.ToString()}.");
-            
+            _log.LogDebug($"Get(Guid) distributionForm for id {id}.");
+
+            if (id == null)
+            {
+                throw new ArgumentNullException("Id cannot be null");
+            }
+
             var requestUri = $"distributions/{id}";
 
-            //Client.BaseAddress = new Uri(_settings.Value.Uri);
-            //Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
             var result = await Client.GetAsync(requestUri);
 
             DistributionForm retVal = null;
@@ -77,7 +76,7 @@ namespace Ftb_Repositories.HttpClients
                 var content = await result.Content.ReadAsStringAsync();
                 retVal = JsonSerializer.Deserialize<DistributionForm>(content);
             }
-            _log.LogDebug($"Returning distributionForm for id {retVal.Id.ToString()}.");
+            _log.LogDebug($"Returning distributionForm for id {retVal.Id}.");
 
             return retVal;
         }
@@ -91,8 +90,6 @@ namespace Ftb_Repositories.HttpClients
             var json = JsonSerializer.Serialize(distributionForm);
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            //Client.BaseAddress = new Uri(_settings.Value.Uri);
-            //Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
             var result = await Client.PutAsync(requestUri, stringContent);
             _log.LogDebug($"Put (update) gave result {result.StatusCode.ToString()}.");
 

@@ -8,9 +8,11 @@
     "QueueConnectionString": "Endpoint=xx",
     "SubmittalQueueName": "sbq-submittal",
     "SendingQueueName": "sbq-send",
+
     "FormProcessAPISettings:Uri": "xx",
     "FormProcessAPISettings:BasicAuthUserName": "xx",
     "FormProcessAPISettings:BasicAuthPassword": "xx",
+
     "EncryptionSettings:CertificateThumbprint": "xx",
 
     "TableStorage:DistributionSubmittalTable": "ftbDistributionSubmittal",

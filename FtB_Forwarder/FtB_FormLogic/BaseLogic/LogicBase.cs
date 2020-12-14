@@ -77,7 +77,7 @@ namespace FtB_FormLogic
         protected async Task BulkInsertEntitiesAsync(IEnumerable<DistributionReceiverEntity> entities)
         {
             _log.LogDebug($"Bulk insert receiver entities");
-            await _tableStorage.InsertEntityRecordsAsync<DistributionReceiverEntity>(entities);            
+            await _tableStorage.InsertEntityRecordsAsync<DistributionReceiverEntity>(entities);
         }
 
         public async Task<ReceiverStatusLogEnum> GetReceiverLastLogStatusAsync(string partitionKey)
@@ -95,9 +95,9 @@ namespace FtB_FormLogic
         }
 
         protected async Task BulkAddLogEntryToReceiversAsync(ReportQueueItem reportQueueItem, ReceiverStatusLogEnum statusEnum)
-        {            
+        {
             DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(reportQueueItem.ArchiveReference.ToLower(), reportQueueItem.ArchiveReference.ToLower());
-            
+
             var partititonKey = reportQueueItem.ArchiveReference.ToLower();
 
             var receivers = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(partititonKey);
@@ -121,7 +121,7 @@ namespace FtB_FormLogic
                 receiverEntity.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum);
                 var result = _tableStorage.UpdateEntityRecordAsync<DistributionReceiverEntity>(receiverEntity);
                 //_log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum)}.....");
-                
+
             }
             catch (Exception ex)
             {
@@ -150,7 +150,7 @@ namespace FtB_FormLogic
             try
             {
                 DistributionReceiverLogEntity receiverEntity = new DistributionReceiverLogEntity(receiverPartitionKey, $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum);
-               // _log.LogDebug($"ID={receiverPartitionKey}. Added receiver status for {archiveReference} and receiverID {receiverID}. Status: {receiverEntity.Status}.....");
+                // _log.LogDebug($"ID={receiverPartitionKey}. Added receiver status for {archiveReference} and receiverID {receiverID}. Status: {receiverEntity.Status}.....");
                 await _tableStorage.InsertEntityRecordAsync<DistributionReceiverLogEntity>(receiverEntity);
             }
             catch (Exception ex)
@@ -158,6 +158,12 @@ namespace FtB_FormLogic
                 _log.LogError(ex, $"Error adding receiver record for ID={receiverPartitionKey} and receiverID {receiverID}");
                 throw;
             }
+        }
+
+        protected string FormatAddress(string addresselinje1, string postnr, string poststed)
+        {
+            return $"{addresselinje1}, {postnr} - {poststed}";
+
         }
     }
 }
