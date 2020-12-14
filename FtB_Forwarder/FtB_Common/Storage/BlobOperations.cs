@@ -122,7 +122,7 @@ namespace FtB_Common.Storage
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -187,7 +187,7 @@ namespace FtB_Common.Storage
                 }
                 throw new ArgumentException($"Formdata i container {containerName} finnes ikke i BlobStorage");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

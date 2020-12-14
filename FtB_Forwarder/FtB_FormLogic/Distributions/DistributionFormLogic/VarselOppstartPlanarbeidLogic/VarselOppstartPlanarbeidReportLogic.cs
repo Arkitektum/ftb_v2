@@ -165,7 +165,7 @@ namespace FtB_FormLogic
 
         private async Task<IEnumerable<string>> GetReservedReporteeNames()
         {
-            var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<ReceiverEntity>(ArchiveReference);
+            var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(ArchiveReference);
 
             var reservedReporteeReceiverIds = allReceiversInSubmittal
                     .Where(x => x.ProcessOutcome == Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.ReservedReportee))

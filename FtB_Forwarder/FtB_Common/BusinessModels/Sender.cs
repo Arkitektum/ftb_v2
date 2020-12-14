@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FtB_Common.BusinessModels
 {
-    public class Receiver : Actor
+    public class Sender : Actor
     {
     }
 }

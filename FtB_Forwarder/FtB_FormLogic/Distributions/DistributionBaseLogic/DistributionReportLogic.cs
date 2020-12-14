@@ -65,7 +65,7 @@ namespace FtB_FormLogic
             try
             {
                 _log.LogDebug($"Start SendReceiptToSubmitterWhenAllReceiversAreProcessed. Queue item: {reportQueueItem.ReceiverLogPartitionKey}");
-                SubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
+                DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
                 submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
                 base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
                 var notificationMessage = new AltinnNotificationMessage();
@@ -115,9 +115,9 @@ namespace FtB_FormLogic
 
                 if (!sendingFailed)
                 {
-                    var updatedSubmittalEntity = _tableStorage.UpdateEntityRecordAsync<SubmittalEntity>(submittalEntity);
+                    var updatedSubmittalEntity = _tableStorage.UpdateEntityRecordAsync<DistributionSubmittalEntity>(submittalEntity);
                     _log.LogDebug("Start Update all receiver entities");
-                    var allReceivers = await _tableStorage.GetTableEntitiesAsync<ReceiverEntity>(reportQueueItem.ArchiveReference.ToLower());
+                    var allReceivers = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(reportQueueItem.ArchiveReference.ToLower());
                     allReceivers.ToList().ForEach(x => x.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.Completed));
                     await UpdateEntitiesAsync(allReceivers);
                     _log.LogDebug("Start BulkAddLogEntryToReceivers");

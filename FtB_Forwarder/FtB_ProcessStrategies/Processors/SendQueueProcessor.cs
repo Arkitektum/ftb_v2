@@ -31,7 +31,7 @@ namespace FtB_ProcessStrategies
             {
                 _log.LogDebug($"{GetType().Name}: _dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
                 
-                _dbUnitOfWork.SetArhiveReference(sendQueueItem.ArchiveReference);
+                //_dbUnitOfWork.SetArchiveReference(sendQueueItem.ArchiveReference); //Moved to DistributionSendLogic
                 string serviceCode = await _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
                 string formatId = await _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<ReportQueueItem, SendQueueItem>(formatId, FormLogicProcessingContext.Send);
@@ -45,6 +45,7 @@ namespace FtB_ProcessStrategies
             }
             finally
             {
+                //TODO: ???Kanskje skummelt å lagre alle endringer i distributionforms, metadata, dersom ting går feil? Alle Logentries er ok å lagre..
                 //?????????????????
                 await _dbUnitOfWork.Save();
             }

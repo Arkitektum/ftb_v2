@@ -27,14 +27,6 @@ namespace FtB_FuncPrepareSending
             services.AddScoped<IDecryptionFactory, DecryptionFactory>();
             services.Configure<EncryptionSettings>(configuration.GetSection("EncryptionSettings"));
 
-            //Test reporter
-            //services.AddScoped<TestPrepareStrategy>();
-            //services.AddScoped<Func<StrategyTypeEnum, IStrategy<List<SendQueueItem>, SubmittalQueueItem>>>(serviceProvider => key =>
-            //{
-            //    if (key == StrategyTypeEnum.Distribution)
-            //        return serviceProvider.GetService<TestPrepareStrategy>();
-            //    else return null;
-            //});
 
             return services;
         }

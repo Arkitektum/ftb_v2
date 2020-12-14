@@ -22,12 +22,13 @@ namespace Ftb_Repositories
         {
             _logger = logger;
             _distributionFormsClient = distributionFormsClient;
+            _logger.LogDebug($"DistributionFormsRepository - constructor.");
         }
         public void SetArchiveReference(string archiveReference)
         {
             _archiveReference = archiveReference;
         }
-        public async Task< IEnumerable<DistributionForm>> Get()
+        public async Task<IEnumerable<DistributionForm>> Get()
         {
             if (_distributionForms.Count == 0)
                 foreach (var item in await _distributionFormsClient.Get(_archiveReference))
@@ -35,6 +36,19 @@ namespace Ftb_Repositories
 
             return _distributionForms;
         }
+
+        public async Task<DistributionForm> Get(Guid id)
+        {
+            return await _distributionFormsClient.Get(id);
+        }
+
+        public async Task Update(string archiveReference, Guid id, DistributionForm updatedDistributionForm)
+        {
+            _logger.LogInformation($"Updates distribution form for archiveReference {archiveReference} with id={id.ToString()}");
+            //_distributionForms.Add(updatedDistributionForm);
+            await _distributionFormsClient.Put(archiveReference, id, updatedDistributionForm);
+        }
+
 
         public async Task<IEnumerable<DistributionForm>> GetWithChildren(Guid id)
         {

@@ -15,7 +15,7 @@ namespace FtB_FormLogic.OTSFormLogic
         {
         }
 
-        protected override Receiver Receiver { get => new Receiver() { Id = "910748548", Type = ReceiverType.Foretak }; set => base.Receiver = value; }
+        protected override Actor Receiver { get => new Actor() { Id = "910748548", Type = ActorType.Foretak }; set => base.Receiver = value; }
 
 
     }

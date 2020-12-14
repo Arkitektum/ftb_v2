@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FtB_Common.BusinessModels
 {
-    public enum ReceiverType
+    public enum ActorType
     {
         Privatperson,
         Foretak

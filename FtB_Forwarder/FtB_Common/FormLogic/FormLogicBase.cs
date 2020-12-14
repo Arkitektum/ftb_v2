@@ -16,15 +16,15 @@ namespace FtB_Common.FormLogic
         public FormLogicBase(IFormDataRepo repo)
         {
             _repo = repo;
-            Receivers = new List<Receiver>();
+            Receivers = new List<Actor>();
         }
         public string Name { get; protected set; }
-        public ReceiverType ReceiverType { get; set; }
+        public ActorType ReceiverType { get; set; }
         public string DataFormatId { get; set; }
         public string DataFormatVersion { get; set; }
         public string SchemaFile { get; set; }
         public string ArchiveReference { get; set; }
-        public virtual List<Receiver> Receivers { get; set; }
+        public virtual List<Actor> Receivers { get; set; }
         public virtual string DistributionData { get ; set ; }
 
         public abstract void InitiateForm();

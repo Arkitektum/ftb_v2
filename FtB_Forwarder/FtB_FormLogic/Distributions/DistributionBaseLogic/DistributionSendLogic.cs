@@ -32,7 +32,24 @@ namespace FtB_FormLogic
         public override async Task<ReportQueueItem> ExecuteAsync(SendQueueItem sendQueueItem)
         {
             _log.LogDebug("_dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
+            
+            _dbUnitOfWork.SetArchiveReference(sendQueueItem.ArchiveReference);
+
             var returnReportQueueItem = await base.ExecuteAsync(sendQueueItem);
+
+            this.Receiver = sendQueueItem.Receiver;
+
+            //Check state
+            this.State = await base.GetReceiverLastLogStatusAsync(sendQueueItem.ReceiverLogPartitionKey);
+
+            if (!(this.State == ReceiverStatusLogEnum.Created
+                || this.State == ReceiverStatusLogEnum.PrefillCreated
+                || this.State == ReceiverStatusLogEnum.PrefillSendingFailed
+                || this.State == ReceiverStatusLogEnum.CorrespondenceSendingFailed))
+            {
+
+                return returnReportQueueItem;
+            }
 
             if (returnReportQueueItem == null) //State machine thingy should handle this..
                 return returnReportQueueItem;
@@ -51,7 +68,11 @@ namespace FtB_FormLogic
             prefillData.InitialExternalSystemReference = DistributionMessage.DistributionFormReferenceId.ToString();
             _log.LogDebug("Creates distribution form with reference {0} for {1} - {2}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
 
-            _dbUnitOfWork.DistributionForms.Add(new DistributionForm() { Id = DistributionMessage.DistributionFormReferenceId, ExternalSystemReference = prefillData.ExternalSystemReference, InitialExternalSystemReference = prefillData.InitialExternalSystemReference, DistributionType = prefillData.PrefillFormName });
+            _dbUnitOfWork.DistributionForms.Add(new DistributionForm() { Id = DistributionMessage.DistributionFormReferenceId, 
+                                                                         InitialExternalSystemReference = prefillData.InitialExternalSystemReference, 
+                                                                         ExternalSystemReference = prefillData.ExternalSystemReference, 
+                                                                         DistributionType = prefillData.PrefillFormName });
+
             var distributionForm = (await _dbUnitOfWork.DistributionForms.Get())
                                         .Where(d => d.Id == DistributionMessage.DistributionFormReferenceId).FirstOrDefault();
 

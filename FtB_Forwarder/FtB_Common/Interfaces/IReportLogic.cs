@@ -7,6 +7,6 @@ namespace FtB_Common.Interfaces
 {
     public interface IReportLogic
     {
-        void SetSubmitterReportContent(SubmittalEntity submittalEntity);
+        void SetSubmitterReportContent(DistributionSubmittalEntity submittalEntity);
     }
 }

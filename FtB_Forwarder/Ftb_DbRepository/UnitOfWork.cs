@@ -14,11 +14,12 @@ namespace Ftb_Repositories
             LogEntries = logEntryRepository;
             FormMetadata = formMetadataRepository;
             DistributionForms = distributionFormRepository;
+            _logger.LogDebug($"DbUnitOfWork - constructor.");
         }
 
         private string _archiveReference;
 
-        public void SetArhiveReference(string archiveReference)
+        public void SetArchiveReference(string archiveReference)
         {
             _logger.LogDebug("Setting archive reference in unit of work");
             _archiveReference = archiveReference;

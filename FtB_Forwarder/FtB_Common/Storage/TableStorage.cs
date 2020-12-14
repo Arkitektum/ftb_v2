@@ -15,16 +15,26 @@ namespace FtB_Common.Storage
     {
         private CloudStorageAccount _storageAccount;
         private CloudTableClient _cloudTableClient;
-        private readonly string _submittalTable;
-        private readonly string _receiverTable;
-        private readonly string _receiverLogTable;
+        private readonly string _distributionSubmittalTable;
+        private readonly string _distributionReceiverTable;
+        private readonly string _distributionReceiverLogTable;
+        private readonly string _notificationSubmittalTable;
+        private readonly string _notificationReceiverTable;
+        private readonly string _notificationReceiverLogTable;
+
+        
 
         public TableStorage(IConfiguration configuration)
         {
             _storageAccount = CreateStorageAccountFromConnectionString(configuration["PrivateAzureStorageConnectionString"]);
-            _submittalTable = configuration["TableStorage:SubmittalTable"];
-            _receiverTable = configuration["TableStorage:ReceiverTable"];
-            _receiverLogTable = configuration["TableStorage:ReceiverLogTable"];
+            _distributionSubmittalTable = configuration["TableStorage:DistributionSubmittalTable"];
+            _distributionReceiverTable = configuration["TableStorage:DistributionReceiverTable"];
+            _distributionReceiverLogTable = configuration["TableStorage:DistributionReceiverLogTable"];
+
+            _notificationSubmittalTable = configuration["TableStorage:NotificationSubmittalTable"];
+            _notificationReceiverTable = configuration["TableStorage:NotificationReceiverTable"];
+            _notificationReceiverLogTable = configuration["TableStorage:NotificationReceiverLogTable"];
+
             _cloudTableClient = _storageAccount.CreateCloudTableClient();
         }
 
@@ -65,7 +75,7 @@ namespace FtB_Common.Storage
                 var insertedEntity = (TableEntity)result.Result;
                 return insertedEntity;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -86,7 +96,7 @@ namespace FtB_Common.Storage
                 var insertedEntity = (TableEntity)result.Result;
                 return insertedEntity;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -119,7 +129,7 @@ namespace FtB_Common.Storage
                     batchResults.Add(result);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -202,7 +212,7 @@ namespace FtB_Common.Storage
                 TableResult result = await cloudTable.ExecuteAsync(retrieveOperation);
                 return (T)result.Result;
             }
-            catch (StorageException e)
+            catch (StorageException)
             {
                 throw;
             }
@@ -220,7 +230,7 @@ namespace FtB_Common.Storage
 
                 return lst;
             }
-            catch (StorageException e)
+            catch (StorageException)
             {
                 throw;
             }
@@ -228,17 +238,29 @@ namespace FtB_Common.Storage
 
         private string GetTableName<T>()
         {
-            if (typeof(T) == typeof(ReceiverLogEntity))
+            if (typeof(T) == typeof(DistributionReceiverLogEntity))
             {
-                return _receiverLogTable;
+                return _distributionReceiverLogTable;
             }
-            else if (typeof(T) == typeof(ReceiverEntity))
+            else if (typeof(T) == typeof(DistributionReceiverEntity))
             {
-                return _receiverTable;
+                return _distributionReceiverTable;
             }
-            else if (typeof(T) == typeof(SubmittalEntity))
+            else if (typeof(T) == typeof(DistributionSubmittalEntity))
             {
-                return _submittalTable;
+                return _distributionSubmittalTable;
+            }
+            if (typeof(T) == typeof(NotificationReceiverLogEntity))
+            {
+                return _notificationReceiverLogTable;
+            }
+            else if (typeof(T) == typeof(NotificationReceiverEntity))
+            {
+                return _notificationReceiverTable;
+            }
+            else if (typeof(T) == typeof(NotificationSubmittalEntity))
+            {
+                return _notificationSubmittalTable;
             }
             throw new Exception("Illegal table storage name");
         }

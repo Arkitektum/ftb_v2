@@ -31,8 +31,12 @@
 
     "HtmlUtilSettings:HtmlTemplateAssembly": "FtB_FormLogic",
 
-    "TableStorage:SubmittalTable": "ftbSubmittal",
-    "TableStorage:ReceiverTable": "ftbReceiver",
-    "TableStorage:ReceiverLogTable": "ftbReceiverLog"
+    "TableStorage:DistributionSubmittalTable": "ftbDistributionSubmittal",
+    "TableStorage:DistributionReceiverTable": "ftbDistributionReceiver",
+    "TableStorage:DistributionReceiverLogTable": "ftbDistributionReceiverLog",
+
+    "TableStorage:NotificationSubmittalTable": "ftbNotificationSubmittal",
+    "TableStorage:NotificationReceiverTable": "ftbNotificationReceiver",
+    "TableStorage:NotificationReceiverLogTable": "ftbNotificationReceiverLog"
   }
 }

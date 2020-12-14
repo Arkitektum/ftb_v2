@@ -20,7 +20,8 @@ namespace FtB_FormLogic
             _blobOperations = blobOperations;
         }
 
-        public virtual void SetSubmitterReportContent(SubmittalEntity submittalEntity)
+        //TODO: Relocate methods to DistributionReportLogic
+        public virtual void SetSubmitterReportContent(DistributionSubmittalEntity submittalEntity)
         {
         }
 
@@ -49,9 +50,9 @@ namespace FtB_FormLogic
 
         private async Task<bool> AllReceiversReadyForReporting(ReportQueueItem reportQueueItem)
         {
-            SubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<SubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
+            DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
             var totalNumberOfReceivers = submittalEntity.ReceiverCount;
-            var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<ReceiverEntity>(reportQueueItem.ArchiveReference);
+            var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(reportQueueItem.ArchiveReference);
             //Get number of receivers with process-stage = Done, and compare this number to the totalNumberOfReceivers
             var receiversReadyForReporting = allReceiversInSubmittal.Where(x => x.ProcessStage.Equals(Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.ReadyForReporting))).Count();
 
@@ -60,11 +61,17 @@ namespace FtB_FormLogic
 
         protected async Task<int> GetReceiverSuccessfullyNotifiedCountAsync(ReportQueueItem reportQueueItem)
         {
-            var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<ReceiverEntity>(reportQueueItem.ArchiveReference);
+            var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(reportQueueItem.ArchiveReference);
 
             return allReceiversInSubmittal.Where(x => x.ProcessOutcome.Equals(Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.Sent))).Count();
         }
+        public virtual async Task PreExecuteAsync(ReportQueueItem reportQueueItem)
+        {
+        }
 
+        public virtual async Task PostExecuteAsync(ReportQueueItem reportQueueItem)
+        {
+        }
         public virtual async Task<string> ExecuteAsync(ReportQueueItem reportQueueItem)
         {
             await base.LoadDataAsync(reportQueueItem.ArchiveReference);

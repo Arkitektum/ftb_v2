@@ -12,7 +12,7 @@ namespace FtB_FormLogic
     public abstract class SendLogic<T> : LogicBase<T>, IFormLogic<ReportQueueItem, SendQueueItem>
     {
 
-        protected virtual Receiver Receiver { get; set; }
+        protected virtual Actor Receiver { get; set; }
 
         protected ReceiverStatusLogEnum State {get;set;}
 
@@ -20,30 +20,28 @@ namespace FtB_FormLogic
             : base(repo, tableStorage, log, dbUnitOfWork)
         {
         }
+        public virtual async Task PreExecuteAsync(SendQueueItem sendQueueItem)
+        {
+        }
 
+        public virtual async Task PostExecuteAsync(SendQueueItem sendQueueItem)
+        {
+        }
         public virtual async Task<ReportQueueItem> ExecuteAsync(SendQueueItem sendQueueItem)
         {
+            await base.LoadDataAsync(sendQueueItem.ArchiveReference);
+
             this.Receiver = sendQueueItem.Receiver;
-
-            //Check state
-            this.State = await base.GetReceiverLastLogStatusAsync(sendQueueItem.ReceiverLogPartitionKey);
-
-            if (this.State == ReceiverStatusLogEnum.Created 
-                || this.State == ReceiverStatusLogEnum.PrefillCreated
-                || this.State == ReceiverStatusLogEnum.PrefillSendingFailed
-                || this.State == ReceiverStatusLogEnum.CorrespondenceSendingFailed)
-            {
-                await base.LoadDataAsync(sendQueueItem.ArchiveReference);
 
                 return new ReportQueueItem()
                 {
                     ArchiveReference = sendQueueItem.ArchiveReference,
                     ReceiverLogPartitionKey = sendQueueItem.ReceiverLogPartitionKey,
                     ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber,
+                    Sender = sendQueueItem.Sender,
                     Receiver = sendQueueItem.Receiver
                 };
-            }
-            return null;
+
         }
 
         protected override async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, ReceiverStatusLogEnum statusEnum)

@@ -10,6 +10,7 @@ namespace FtB_Common.BusinessModels
         public string ArchiveReference { get; set; }
         public string ReceiverSequenceNumber { get; set; }
         public string ReceiverLogPartitionKey { get; set; }
-        public Receiver Receiver { get; set; }
+        public Actor Receiver { get; set; }
+        public Actor Sender { get; set; }
     }
 }

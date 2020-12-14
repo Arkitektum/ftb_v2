@@ -9,31 +9,33 @@ using IStorageEntity = FtB_Common.Interfaces.IStorageEntity;
 
 namespace FtB_Common.BusinessModels
 {
-    public class SubmittalEntity : TableEntity, IStorageEntity
+    public class DistributionSubmittalEntity : TableEntity, IStorageEntity
     {
+        public string SenderId { get; set; }
         public int ReceiverCount { get; set; }
         public DateTime CreatedTimeStamp { get; set; }
         public string Status { get; set; }
-        public SubmittalEntity()
+        public DistributionSubmittalEntity()
         {
         }
 
-        public SubmittalEntity(string archiveReference, int receiverCount, DateTime createdTimestamp)
+        public DistributionSubmittalEntity(string archiveReference, string senderId, int receiverCount, DateTime createdTimestamp)
         {
             PartitionKey = archiveReference;
             RowKey = archiveReference;
+            SenderId = senderId;
             ReceiverCount = receiverCount;
             Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Created);
             CreatedTimeStamp = createdTimestamp;
         }
 
-        public SubmittalEntity(string archiveReference, SubmittalStatusEnum status)
+        public DistributionSubmittalEntity(string archiveReference, SubmittalStatusEnum status)
         {
             PartitionKey = archiveReference;
             RowKey = archiveReference;
             Status = Enum.GetName(typeof(SubmittalStatusEnum), status);
         }
-        public SubmittalEntity(string archiveReference)
+        public DistributionSubmittalEntity(string archiveReference)
         {
             PartitionKey = archiveReference;
             RowKey = archiveReference;

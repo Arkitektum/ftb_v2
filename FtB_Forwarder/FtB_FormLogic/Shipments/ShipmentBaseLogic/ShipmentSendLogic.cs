@@ -10,7 +10,7 @@ namespace FtB_FormLogic
     {
         private readonly ISvarUtAdapter svarUtAdapter;
 
-        protected override Receiver Receiver { get => base.Receiver; set => base.Receiver = value; }
+        protected override Actor Receiver { get => base.Receiver; set => base.Receiver = value; }
 
 
         public ShipmentSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, ISvarUtAdapter svarUtAdapter, DbUnitOfWork dbUnitOfWork) : 

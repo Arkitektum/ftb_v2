@@ -5,13 +5,13 @@ using System;
 
 namespace FtB_Common.BusinessModels
 {
-    public class ReceiverLogEntity : TableEntity, IStorageEntity
+    public class NotificationReceiverLogEntity : TableEntity, IStorageEntity
     {
         public string ReceiverId { get; set; }
         public string Status { get; set; }
-        public ReceiverLogEntity() { }
+        public NotificationReceiverLogEntity() { }
         
-        public ReceiverLogEntity(string partitionKey, string rowKey, string receiverId, ReceiverStatusLogEnum status)
+        public NotificationReceiverLogEntity(string partitionKey, string rowKey, string receiverId, ReceiverStatusLogEnum status)
         {
             PartitionKey = partitionKey;
             RowKey = rowKey;

@@ -35,6 +35,7 @@ namespace FtB_FuncReporter
             builder.Services.AddScoped<IHtmlUtils, HtmlUtils>();
             builder.Services.AddScoped<FormatIdToFormMapper>();
             builder.Services.AddScoped<VarselOppstartPlanarbeidReportLogic>();
+            builder.Services.AddScoped<SvarVarselOppstartPlanarbeidReportLogic>();
             builder.Services.AddScoped<IFormDataRepo, FormDataRepository>();
             builder.Services.AddScoped<ITableStorage, TableStorage>();
             builder.Services.AddAltinnNotification(configuration);

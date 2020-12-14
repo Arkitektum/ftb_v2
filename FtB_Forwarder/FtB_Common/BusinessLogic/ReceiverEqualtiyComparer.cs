@@ -7,7 +7,7 @@ using System.Text;
 
 namespace FtB_Common.BusinessLogic
 {
-    public class ReceiverEqualtiyComparer : IEqualityComparer<ReceiverInternal>
+    public class ReceiverEqualtiyComparer : IEqualityComparer<ActorInternal>
     {
         //private readonly IDecryption _decryption;
 
@@ -15,14 +15,14 @@ namespace FtB_Common.BusinessLogic
         //{
         //    _decryption = decryptionFactory.GetDecryptor();
         //}
-        public bool Equals([AllowNull] ReceiverInternal x, [AllowNull] ReceiverInternal y)
+        public bool Equals([AllowNull] ActorInternal x, [AllowNull] ActorInternal y)
         {
             bool result = x.DecryptedId.Equals(y.DecryptedId, StringComparison.InvariantCultureIgnoreCase);
             //bool result = _decryption.DecryptText(x.Id).Equals(_decryption.DecryptText(y.Id), StringComparison.InvariantCultureIgnoreCase);
             return result;
         }
 
-        public int GetHashCode([DisallowNull] ReceiverInternal obj)
+        public int GetHashCode([DisallowNull] ActorInternal obj)
         {
             return obj.DecryptedId.GetHashCode();
         }

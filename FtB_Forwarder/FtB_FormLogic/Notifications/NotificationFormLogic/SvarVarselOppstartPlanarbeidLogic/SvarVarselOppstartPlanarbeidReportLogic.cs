@@ -1,4 +1,5 @@
 ﻿using Altinn.Common.Interfaces;
+using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using Ftb_Repositories;
@@ -10,6 +11,7 @@ using System.Text;
 
 namespace FtB_FormLogic
 {
+    [FormDataFormat(DataFormatId = "6326", DataFormatVersion = "44843", ProcessingContext = FormLogicProcessingContext.Report)]
     public class SvarVarselOppstartPlanarbeidReportLogic : NotificationReportLogic<no.kxml.skjema.dibk.nabovarselsvarPlan.SvarPaaNabovarselPlanType>
     {
         private readonly IHtmlUtils _htmlUtils;

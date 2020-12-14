@@ -37,10 +37,10 @@ namespace FtB_FormLogic
             FormData = SerializeUtil.DeserializeFromString<T>(data);
         }
 
-        protected async Task ParallelInsertEntitiesAsync(IEnumerable<ReceiverLogEntity> entities)
+        protected async Task ParallelInsertEntitiesAsync(IEnumerable<DistributionReceiverLogEntity> entities)
         {
             _log.LogDebug($"Parallel insert receiver log entities");
-            await _tableStorage.EnsureTableExistsAsync<ReceiverLogEntity>();
+            await _tableStorage.EnsureTableExistsAsync<DistributionReceiverLogEntity>();
 
             var list = entities.ToList();
 
@@ -52,7 +52,7 @@ namespace FtB_FormLogic
             {
                 for (int i = range.Item1; i < range.Item2; i++)
                 {
-                    _tableStorage.InsertEntityRecord<ReceiverLogEntity>(list[i]);
+                    _tableStorage.InsertEntityRecord<DistributionReceiverLogEntity>(list[i]);
                 }
             });
 
@@ -74,15 +74,15 @@ namespace FtB_FormLogic
             //}
         }
 
-        protected async Task BulkInsertEntitiesAsync(IEnumerable<ReceiverEntity> entities)
+        protected async Task BulkInsertEntitiesAsync(IEnumerable<DistributionReceiverEntity> entities)
         {
             _log.LogDebug($"Bulk insert receiver entities");
-            await _tableStorage.InsertEntityRecordsAsync<ReceiverEntity>(entities);            
+            await _tableStorage.InsertEntityRecordsAsync<DistributionReceiverEntity>(entities);            
         }
 
         public async Task<ReceiverStatusLogEnum> GetReceiverLastLogStatusAsync(string partitionKey)
         {
-            var receiverRows = await _tableStorage.GetTableEntitiesAsync<ReceiverLogEntity>(partitionKey);
+            var receiverRows = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverLogEntity>(partitionKey);
             var lastRow = receiverRows.OrderByDescending(x => x.RowKey).First();
 
             return (ReceiverStatusLogEnum)Enum.Parse(typeof(ReceiverStatusLogEnum), lastRow.Status);
@@ -90,24 +90,24 @@ namespace FtB_FormLogic
 
         public async Task<string> GetReceiverIDFromStorageAsync(string partitionKey, string rowKey)
         {
-            var receiverEntity = await _tableStorage.GetTableEntityAsync<ReceiverEntity>(partitionKey, rowKey);
+            var receiverEntity = await _tableStorage.GetTableEntityAsync<DistributionReceiverEntity>(partitionKey, rowKey);
             return receiverEntity.ReceiverId;
         }
 
         protected async Task BulkAddLogEntryToReceiversAsync(ReportQueueItem reportQueueItem, ReceiverStatusLogEnum statusEnum)
         {            
-            SubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<SubmittalEntity>(reportQueueItem.ArchiveReference.ToLower(), reportQueueItem.ArchiveReference.ToLower());
+            DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(reportQueueItem.ArchiveReference.ToLower(), reportQueueItem.ArchiveReference.ToLower());
             
             var partititonKey = reportQueueItem.ArchiveReference.ToLower();
 
-            var receivers = await _tableStorage.GetTableEntitiesAsync<ReceiverEntity>(partititonKey);
+            var receivers = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(partititonKey);
 
             var tasks = receivers.Select(s => AddToReceiverProcessLogAsync(s.ReceiverLogPartitionKey, s.ReceiverId, statusEnum));
 
             await Task.WhenAll(tasks);
         }
 
-        protected async Task UpdateEntitiesAsync(IEnumerable<ReceiverEntity> entities)
+        protected async Task UpdateEntitiesAsync(IEnumerable<DistributionReceiverEntity> entities)
         {
             await _tableStorage.UpdateEntitiesAsync(entities);
         }
@@ -117,9 +117,9 @@ namespace FtB_FormLogic
         {
             try
             {
-                var receiverEntity = await _tableStorage.GetTableEntityAsync<ReceiverEntity>(archiveReference, receiverSequenceNumber);
+                var receiverEntity = await _tableStorage.GetTableEntityAsync<DistributionReceiverEntity>(archiveReference, receiverSequenceNumber);
                 receiverEntity.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum);
-                var result = _tableStorage.UpdateEntityRecordAsync<ReceiverEntity>(receiverEntity);
+                var result = _tableStorage.UpdateEntityRecordAsync<DistributionReceiverEntity>(receiverEntity);
                 //_log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum)}.....");
                 
             }
@@ -133,9 +133,9 @@ namespace FtB_FormLogic
         {
             try
             {
-                var receiverEntity = await _tableStorage.GetTableEntityAsync<ReceiverEntity>(archiveReference, receiverSequenceNumber);
+                var receiverEntity = await _tableStorage.GetTableEntityAsync<DistributionReceiverEntity>(archiveReference, receiverSequenceNumber);
                 receiverEntity.ProcessOutcome = Enum.GetName(typeof(ReceiverProcessOutcomeEnum), processOutcomeEnum);
-                var result = await _tableStorage.UpdateEntityRecordAsync<ReceiverEntity>(receiverEntity);
+                var result = await _tableStorage.UpdateEntityRecordAsync<DistributionReceiverEntity>(receiverEntity);
                 //_log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processOutcomeEnum)}.....");
             }
             catch (Exception ex)
@@ -149,9 +149,9 @@ namespace FtB_FormLogic
         {
             try
             {
-                ReceiverLogEntity receiverEntity = new ReceiverLogEntity(receiverPartitionKey, $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum);
+                DistributionReceiverLogEntity receiverEntity = new DistributionReceiverLogEntity(receiverPartitionKey, $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum);
                // _log.LogDebug($"ID={receiverPartitionKey}. Added receiver status for {archiveReference} and receiverID {receiverID}. Status: {receiverEntity.Status}.....");
-                await _tableStorage.InsertEntityRecordAsync<ReceiverLogEntity>(receiverEntity);
+                await _tableStorage.InsertEntityRecordAsync<DistributionReceiverLogEntity>(receiverEntity);
             }
             catch (Exception ex)
             {
