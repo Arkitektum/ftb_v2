@@ -296,7 +296,7 @@ namespace FtB_Common.Storage
             {
                 var blobBlock = _publicBlobStorage.GetBlockBlobClient(containerName, blobItem.Name);
                 BlobProperties properties = await blobBlock.GetPropertiesAsync();
-                var matchingMetadataElements = properties.Metadata?.Where(m => metaDataFilter.All(f => m.Key == f.Key && m.Value == f.Value)).ToList();
+                var matchingMetadataElements = properties.Metadata?.Where(m => metaDataFilter.Any(f => m.Key == f.Key && m.Value == f.Value)).ToList();
                 foreach (var metadataElement in matchingMetadataElements)
                 {
                     blobUrls.Add((blobItem.Name, blobBlock.Uri.AbsoluteUri, metadataElement.Value));

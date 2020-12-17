@@ -70,7 +70,7 @@ namespace FtB_FormLogic
             metadataList.Add(new KeyValuePair<string, string>("ReceiversArchiveReference", receiversArchiveReference));
             await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Public,
                                                                 publicContainer,
-                                                                $"Uttalelse_{validReceiverFilename}_{DateTime.Now.ToString("yyyyMMddHHmmssffff")}.pdf",
+                                                                $"Uttalelse_{validReceiverFilename}_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.pdf",
                                                                 pdfDoc,
                                                                 "application/pdf",
                                                                 metadataList);

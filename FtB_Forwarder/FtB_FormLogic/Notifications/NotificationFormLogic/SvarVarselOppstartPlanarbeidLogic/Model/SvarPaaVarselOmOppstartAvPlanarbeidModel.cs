@@ -12,6 +12,7 @@ namespace FtB_FormLogic
         public string PlanId { get; set; }
         public string PlanNavn { get; set; }
         public string InitialArchiveReference { get; set; }
+        public DateTime FristForInnspill { get; set; }
         public List<SvarPaaVarselOmOppstartAvPlanarbeidReceiverModel> Receivers { get; set; }
         public List<AttachmentBinary> Attachments { get; set; }
     }

@@ -108,6 +108,7 @@ namespace FtB_ProcessStrategies
             {
                 SvarPaaVarselOmOppstartAvPlanarbeidModel svar = new SvarPaaVarselOmOppstartAvPlanarbeidModel();
                 svar.InitialArchiveReference = distributionSubmittalEntity.PartitionKey;
+                svar.FristForInnspill = distributionSubmittalEntity.ReplyDeadline;
                 svar.Id = distributionSubmittalEntity.SenderId;
                 svar.Type = AltinnReceiverType.Foretak;
                 svar.Receivers = new List<SvarPaaVarselOmOppstartAvPlanarbeidReceiverModel>();
@@ -160,8 +161,8 @@ namespace FtB_ProcessStrategies
                 var reportAttachment = new AttachmentBinary()
                 {
                     BinaryContent = PDFInbytes,
-                    Filename = $"Uttalelser-{validFilename}-{DateTime.Now.ToString("dd. MMM yyyy, kl.HH.mm")}.pdf",
-                    Name = $"Uttalelser pr. {DateTime.Now.ToString("dd MMM yyyy")}",
+                    Filename = $"Uttalelser_{validFilename}_{DateTime.Now.ToString("dd.MM.yyyy, kl.HH.mm")}.pdf",
+                    Name = $"Uttalelser pr. {DateTime.Now.ToString("dd.MM.yyyy")}",
                     ArchiveReference = answer.InitialArchiveReference
                 };
                 
@@ -249,6 +250,8 @@ namespace FtB_ProcessStrategies
 
                 string htmlBody = _htmlUtils.GetHtmlFromTemplate("FtB_FormLogic.Notifications.NotificationFormLogic.SvarVarselOppstartPlanarbeidLogic.SvarVarselOppstartPlanarbeidReportMessageBody.html");
 
+                var fristForInnspill = answer.FristForInnspill;
+                htmlBody = htmlBody.Replace("<fristForInnspill />", fristForInnspill.ToString("dd.MM.yyyy"));
                 htmlBody = htmlBody.Replace("<arkivReferanse />", archiveReference.ToUpper());
                 htmlBody = htmlBody.Replace("<planId />", planId);
                 htmlBody = htmlBody.Replace("<planNavn />", planNavn);
