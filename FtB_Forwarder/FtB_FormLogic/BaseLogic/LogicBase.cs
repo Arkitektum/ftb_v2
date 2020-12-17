@@ -80,12 +80,12 @@ namespace FtB_FormLogic
             await _tableStorage.InsertEntityRecordsAsync<DistributionReceiverEntity>(entities);
         }
 
-        public async Task<ReceiverStatusLogEnum> GetReceiverLastLogStatusAsync(string partitionKey)
+        public async Task<DistributionReceiverStatusLogEnum> GetReceiverLastLogStatusAsync(string partitionKey)
         {
             var receiverRows = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverLogEntity>(partitionKey);
             var lastRow = receiverRows.OrderByDescending(x => x.RowKey).First();
 
-            return (ReceiverStatusLogEnum)Enum.Parse(typeof(ReceiverStatusLogEnum), lastRow.Status);
+            return (DistributionReceiverStatusLogEnum)Enum.Parse(typeof(DistributionReceiverStatusLogEnum), lastRow.Status);
         }
 
         public async Task<string> GetReceiverIDFromStorageAsync(string partitionKey, string rowKey)
@@ -94,7 +94,7 @@ namespace FtB_FormLogic
             return receiverEntity.ReceiverId;
         }
 
-        protected async Task BulkAddLogEntryToReceiversAsync(string archiveReference, ReceiverStatusLogEnum statusEnum)
+        protected async Task BulkAddLogEntryToReceiversAsync(string archiveReference, DistributionReceiverStatusLogEnum statusEnum)
         {
             DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(archiveReference.ToLower(), archiveReference.ToLower());
 
@@ -145,7 +145,7 @@ namespace FtB_FormLogic
             }
         }
 
-        protected virtual async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, ReceiverStatusLogEnum statusEnum)
+        protected virtual async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, DistributionReceiverStatusLogEnum statusEnum)
         {
             try
             {

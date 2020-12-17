@@ -56,7 +56,7 @@ namespace FtB_FormLogic
             var returnItem = await base.ExecuteAsync(reportQueueItem);
 
             await UpdateReceiverProcessStageAsync(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, DistributionReceiverProcessStageEnum.ReadyForReporting);
-            await AddToReceiverProcessLogAsync(reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReadyForReporting);
+            await AddToReceiverProcessLogAsync(reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.ReadyForReporting);
 
             if (await ReadyForSubmittalReportingAsync(reportQueueItem))
             {
@@ -127,7 +127,7 @@ namespace FtB_FormLogic
                     allReceivers.ToList().ForEach(x => x.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Completed));
                     await UpdateEntitiesAsync(allReceivers);
                     _log.LogDebug("Start BulkAddLogEntryToReceivers");
-                    await BulkAddLogEntryToReceiversAsync(reportQueueItem.ArchiveReference, ReceiverStatusLogEnum.Completed);
+                    await BulkAddLogEntryToReceiversAsync(reportQueueItem.ArchiveReference, DistributionReceiverStatusLogEnum.Completed);
                     _log.LogDebug("End SendReceiptToSubmitterWhenAllReceiversAreProcessed");
                     //await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
                 }

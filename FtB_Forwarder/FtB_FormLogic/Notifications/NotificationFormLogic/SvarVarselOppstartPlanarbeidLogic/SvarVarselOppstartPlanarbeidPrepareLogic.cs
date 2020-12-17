@@ -32,7 +32,7 @@ namespace FtB_FormLogic
             _log.LogDebug($"{GetType().Name}: Got initialArchiveReference {initialArchiveReference} for distributionId {FormData.hovedinnsendingsnummer}");
 
             await MakePDFReplyPublicAccessible(submittalQueueItem.ArchiveReference, initialArchiveReference, FormData.beroertPart.navn);
-            await CreateNotificationReceiverDatabaseStatus(submittalQueueItem.ArchiveReference);
+            await CreateNotificationSenderDatabaseStatus(submittalQueueItem.ArchiveReference);
             
             return returnValue;
         }
@@ -53,6 +53,23 @@ namespace FtB_FormLogic
 
         public override void SetSender()
         {
+            Enum.TryParse(this.FormData.beroertPart.partstype.kodeverdi, out ActorType senderType);
+            string id;
+            if (senderType.Equals(ActorType.Privatperson))
+            {
+                id = this.FormData.beroertPart.foedselsnummer;
+            }
+            else
+            {
+                id = this.FormData.beroertPart.organisasjonsnummer;
+            }
+
+            Sender = new Actor() { Id = id, Type = senderType };
+        }
+
+        public override void SetReceivers()
+        {
+
             Enum.TryParse(FormData.forslagsstiller.partstype.kodeverdi, out ActorType receiverType);
             string id;
             if (receiverType.Equals(ActorType.Privatperson))
@@ -64,51 +81,36 @@ namespace FtB_FormLogic
                 id = FormData.forslagsstiller.organisasjonsnummer;
             }
 
-            Sender = new Actor() { Id = id, Type = receiverType };
-        }
-        public override void SetReceivers()
-        {
             var receivers = new List<Actor>();
-
-            Enum.TryParse(this.FormData.beroertPart.partstype.kodeverdi, out ActorType receiverType);
-            string id;
-            if (receiverType.Equals(ActorType.Privatperson))
-            {
-                id = this.FormData.beroertPart.foedselsnummer;
-            }
-            else
-            {
-                id = this.FormData.beroertPart.organisasjonsnummer;
-            }
             receivers.Add(new Actor() { Type = receiverType, Id = id });
 
             base.SetReceivers(receivers);
         }
 
-        private async Task CreateNotificationReceiverDatabaseStatus(string archiveReference)
+        private async Task CreateNotificationSenderDatabaseStatus(string archiveReference)
         {
             try
             {
-                _log.LogDebug($"{GetType().Name}: Creating NotificationReceiverEntity database record for {archiveReference}");
+                _log.LogDebug($"{GetType().Name}: Creating NotificationSenderEntity database record for {archiveReference}");
 
                 var InitialArchiveReference = await GetInitialArchiveReferenceAsync(FormData.hovedinnsendingsnummer);
 
-                var receiverEntity = new NotificationReceiverEntity(InitialArchiveReference.ToLower(), ArchiveReference.ToLower(), Receivers[0].Id, NotificationReceiverProcessStageEnum.Created, DateTime.Now);
-                receiverEntity.PlanId = FormData.planid;
-                receiverEntity.PlanNavn = FormData.planNavn;
-                receiverEntity.Reply = FormData.beroertPart.kommentar;
-                receiverEntity.ReceiverName = FormData.beroertPart.navn;
-                receiverEntity.ReceiverPhone = FormData.beroertPart.telefon;
-                receiverEntity.ReceiverEmail = FormData.beroertPart.epost;
-                receiverEntity.SenderId = Sender.Id;
+                var senderEntity = new NotificationSenderEntity(InitialArchiveReference.ToLower(), ArchiveReference.ToLower(), Sender.Id, NotificationSenderProcessStageEnum.Created, DateTime.Now);
+                senderEntity.PlanId = FormData.planid;
+                senderEntity.PlanNavn = FormData.planNavn;
+                senderEntity.Reply = FormData.beroertPart.kommentar;
+                senderEntity.SenderName = FormData.beroertPart.navn;
+                senderEntity.SenderPhone = FormData.beroertPart.telefon;
+                senderEntity.SenderEmail = FormData.beroertPart.epost;
+                senderEntity.ReceiverId = Receivers[0].Id;
 
-                await _tableStorage.InsertEntityRecordAsync<NotificationReceiverEntity>(receiverEntity);
+                await _tableStorage.InsertEntityRecordAsync<NotificationSenderEntity>(senderEntity);
 
                 string rowKey = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}";
-                var receiverLogEntity = new NotificationReceiverLogEntity(ArchiveReference, rowKey, Receivers[0].Id, ReceiverStatusLogEnum.Created);
-                await _tableStorage.InsertEntityRecordAsync<NotificationReceiverLogEntity>(receiverLogEntity);
+                var senderLogEntity = new NotificationSenderLogEntity(ArchiveReference, rowKey, Sender.Id, NotificationSenderStatusLogEnum.Created);
+                await _tableStorage.InsertEntityRecordAsync<NotificationSenderLogEntity>(senderLogEntity);
 
-                _log.LogDebug($"Create NotificationReceiverEntity database record for {archiveReference}.");
+                _log.LogDebug($"Create NotificationSenderEntity database record for {archiveReference}.");
             }
             catch (Exception ex)
             {

@@ -14,7 +14,7 @@ namespace FtB_FormLogic
 
         protected virtual Actor Receiver { get; set; }
 
-        protected ReceiverStatusLogEnum State {get;set;}
+        protected DistributionReceiverStatusLogEnum State {get;set;}
 
         public SendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork)
             : base(repo, tableStorage, log, dbUnitOfWork)
@@ -44,7 +44,7 @@ namespace FtB_FormLogic
 
         }
 
-        protected override async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, ReceiverStatusLogEnum statusEnum)
+        protected override async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, DistributionReceiverStatusLogEnum statusEnum)
         {
             this.State = statusEnum;
             await base.AddToReceiverProcessLogAsync(receiverPartitionKey, receiverID, statusEnum);

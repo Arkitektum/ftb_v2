@@ -60,17 +60,17 @@ namespace FtB_FormLogic
             };
         }
 
-        protected async Task CopyPDFToPublicBlobStorage(byte[] pdfDoc, string receiverName, string publicContainer, string receiversArchiveReference)
+        protected async Task CopyPDFToPublicBlobStorage(byte[] pdfDoc, string senderName, string publicContainer, string sendersArchiveReference)
         {
             char[] invalidFileNameChars = System.IO.Path.GetInvalidFileNameChars();
-            var validReceiverFilename = new string(receiverName.Where(ch => !invalidFileNameChars.Contains(ch)).ToArray());
+            var validSenderFilename = new string(senderName.Where(ch => !invalidFileNameChars.Contains(ch)).ToArray());
             
             var metadataList = new List<KeyValuePair<string, string>>();
             metadataList.Add(new KeyValuePair<string, string>("AttachmentTypeName", "SvarNabovarselPlan"));
-            metadataList.Add(new KeyValuePair<string, string>("ReceiversArchiveReference", receiversArchiveReference));
+            metadataList.Add(new KeyValuePair<string, string>("SendersArchiveReference", sendersArchiveReference));
             await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Public,
                                                                 publicContainer,
-                                                                $"Uttalelse_{validReceiverFilename}_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.pdf",
+                                                                $"Uttalelse_{validSenderFilename}_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.pdf",
                                                                 pdfDoc,
                                                                 "application/pdf",
                                                                 metadataList);

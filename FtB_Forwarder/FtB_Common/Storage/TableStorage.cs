@@ -20,8 +20,8 @@ namespace FtB_Common.Storage
         private readonly string _distributionReceiverTable;
         private readonly string _distributionReceiverLogTable;
         private readonly string _notificationSubmittalTable;
-        private readonly string _notificationReceiverTable;
-        private readonly string _notificationReceiverLogTable;
+        private readonly string _notificationSenderTable;
+        private readonly string _notificationSenderLogTable;
 
         
 
@@ -32,8 +32,8 @@ namespace FtB_Common.Storage
             _distributionReceiverTable = configuration["TableStorage:DistributionReceiverTable"];
             _distributionReceiverLogTable = configuration["TableStorage:DistributionReceiverLogTable"];
 
-            _notificationReceiverTable = configuration["TableStorage:NotificationReceiverTable"];
-            _notificationReceiverLogTable = configuration["TableStorage:NotificationReceiverLogTable"];
+            _notificationSenderTable = configuration["TableStorage:NotificationSenderTable"];
+            _notificationSenderLogTable = configuration["TableStorage:NotificationSenderLogTable"];
 
             _cloudTableClient = _storageAccount.CreateCloudTableClient();
         }
@@ -179,7 +179,6 @@ namespace FtB_Common.Storage
 
         }
 
-
         public async Task<TableEntity> UpdateEntityRecordAsync<T>(TableEntity entity)
         {
             try
@@ -271,9 +270,6 @@ namespace FtB_Common.Storage
             }
         }
 
-
-
-
         private string GetTableName<T>()
         {
             if (typeof(T) == typeof(DistributionReceiverLogEntity))
@@ -288,13 +284,13 @@ namespace FtB_Common.Storage
             {
                 return _distributionSubmittalTable;
             }
-            else if (typeof(T) == typeof(NotificationReceiverEntity))
+            else if (typeof(T) == typeof(NotificationSenderEntity))
             {
-                return _notificationReceiverTable;
+                return _notificationSenderTable;
             }
-            else if (typeof(T) == typeof(NotificationReceiverLogEntity))
+            else if (typeof(T) == typeof(NotificationSenderLogEntity))
             {
-                return _notificationReceiverLogTable;
+                return _notificationSenderLogTable;
             }
 
             throw new Exception("Illegal table storage name");

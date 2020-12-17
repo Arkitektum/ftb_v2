@@ -4,13 +4,13 @@ using System.Text;
 
 namespace FtB_Common.Enums
 {
-    public enum ReceiverStatusLogEnum
+    public enum DistributionReceiverStatusLogEnum
     {
         Created,
         PrefillCreated,
         //PrefillPersisted,
         //PrefillSent,
-        PrefillSendingFailed,
+        //PrefillSendingFailed,
         //CorrespondenceCreated,
         CorrespondenceSendingFailed,
         CorrespondenceSent,

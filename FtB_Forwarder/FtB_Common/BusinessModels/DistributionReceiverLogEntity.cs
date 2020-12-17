@@ -11,12 +11,12 @@ namespace FtB_Common.BusinessModels
         public string Status { get; set; }
         public DistributionReceiverLogEntity() { }
         
-        public DistributionReceiverLogEntity(string partitionKey, string rowKey, string receiverId, ReceiverStatusLogEnum status)
+        public DistributionReceiverLogEntity(string partitionKey, string rowKey, string receiverId, DistributionReceiverStatusLogEnum status)
         {
             PartitionKey = partitionKey;
             RowKey = rowKey;
             ReceiverId = receiverId;
-            Status = Enum.GetName(typeof(ReceiverStatusLogEnum), status);
+            Status = Enum.GetName(typeof(DistributionReceiverStatusLogEnum), status);
         }
     }
 }

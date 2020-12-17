@@ -52,29 +52,16 @@ namespace FtB_ProcessStrategies
 
             foreach (var distributionSubmittalEntity in distributionSubmittalEntities)
             {
-                var answerToSubmitter = await GetAnswersFromSubmittalReceivers(distributionSubmittalEntity);
-                _log.LogDebug($"Number of answers for {distributionSubmittalEntity.PartitionKey} found: {((answerToSubmitter == null) || (answerToSubmitter.Receivers.Count() == 0) ? "0" : answerToSubmitter.Receivers.Count().ToString())}");
+                var answerToDistributionSubmitter = await GetNotificationSenderReplies(distributionSubmittalEntity);
+                _log.LogDebug($"Number of answers for {distributionSubmittalEntity.PartitionKey} found: {((answerToDistributionSubmitter == null) || (answerToDistributionSubmitter.Senders.Count() == 0) ? "0" : answerToDistributionSubmitter.Senders.Count().ToString())}");
 
-                if (answerToSubmitter != null)
+                if (answerToDistributionSubmitter != null)
                 {
-                    var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(answerToSubmitter.InitialArchiveReference.ToLower());
-                    _log.LogDebug($"Reporting PDF replies to submitter for archiveReference {answerToSubmitter.InitialArchiveReference }");
-                    await SendReceiptToSubmitterWhenSomeReceiversHaveRepliedAsync(answerToSubmitter, publicBlobContainer);
+                    var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(answerToDistributionSubmitter.InitialArchiveReference.ToLower());
+                    _log.LogDebug($"Reporting PDF replies to submitter for archiveReference {answerToDistributionSubmitter.InitialArchiveReference }");
+                    await SendRepliesReportToDistributionSubmitterAsync(answerToDistributionSubmitter, publicBlobContainer);
                 }
             }
-        }
-
-
-        private IEnumerable<AttachmentBinary> ConvertBlobsToAltinnAttachments(IEnumerable<(byte[], string)> blobs)
-        {
-            var att = new List<AttachmentBinary>();
-            foreach (var blob in blobs)
-            {
-                att.Add(new AttachmentBinary() { BinaryContent = blob.Item1, Filename = "Svar.pdf", AttachmentTypeName = "PDF", 
-                                                 Type = "application/pdf", Name = "Svar på varsel om oppstart av planarbeid" });
-            }
-
-            return att;
         }
 
         private async Task<IEnumerable<DistributionSubmittalEntity>> GetDistributionSubmittalEntities()
@@ -86,13 +73,13 @@ namespace FtB_ProcessStrategies
             return distributionSubmittalEntities;
         }
 
-        private async Task<SvarPaaVarselOmOppstartAvPlanarbeidModel> GetAnswersFromSubmittalReceivers(DistributionSubmittalEntity distributionSubmittalEntity)
+        private async Task<SvarPaaVarselOmOppstartAvPlanarbeidModel> GetNotificationSenderReplies(DistributionSubmittalEntity distributionSubmittalEntity)
         {
             var filters = new List<KeyValuePair<string, string>>();
             filters.Add(new KeyValuePair<string, string>("PartitionKey", distributionSubmittalEntity.PartitionKey));
-            filters.Add(new KeyValuePair<string, string>("ProcessStage", Enum.GetName(typeof(NotificationReceiverProcessStageEnum), NotificationReceiverProcessStageEnum.Created)));
+            filters.Add(new KeyValuePair<string, string>("ProcessStage", Enum.GetName(typeof(NotificationSenderProcessStageEnum), NotificationSenderProcessStageEnum.Created)));
 
-            var notificationReceiverEntities = _tableStorage.GetTableEntitiesWithFilters<NotificationReceiverEntity>(filters);
+            var notificationSendersReadyToReport = _tableStorage.GetTableEntitiesWithFilters<NotificationSenderEntity>(filters);
 
             bool fristUtgaatt = DateTime.Now.Date > distributionSubmittalEntity.ReplyDeadline.Date;
 
@@ -104,47 +91,47 @@ namespace FtB_ProcessStrategies
 
                 return null;
             }
-            else if (notificationReceiverEntities != null && notificationReceiverEntities.GetEnumerator().MoveNext())
+            else if (notificationSendersReadyToReport != null && notificationSendersReadyToReport.GetEnumerator().MoveNext())
             {
-                SvarPaaVarselOmOppstartAvPlanarbeidModel svar = new SvarPaaVarselOmOppstartAvPlanarbeidModel();
-                svar.InitialArchiveReference = distributionSubmittalEntity.PartitionKey;
-                svar.FristForInnspill = distributionSubmittalEntity.ReplyDeadline;
-                svar.Id = distributionSubmittalEntity.SenderId;
-                svar.Type = AltinnReceiverType.Foretak;
-                svar.Receivers = new List<SvarPaaVarselOmOppstartAvPlanarbeidReceiverModel>();
+                SvarPaaVarselOmOppstartAvPlanarbeidModel reportData = new SvarPaaVarselOmOppstartAvPlanarbeidModel();
+                reportData.InitialArchiveReference = distributionSubmittalEntity.PartitionKey;
+                reportData.FristForInnspill = distributionSubmittalEntity.ReplyDeadline;
+                reportData.Id = distributionSubmittalEntity.SenderId;
+                reportData.AltinnReceiverType = AltinnReceiverType.Foretak;
+                reportData.Senders = new List<SvarPaaVarselOmOppstartAvPlanarbeidSenderModel>();
                 
-                foreach (var notificationReceiverEntity in notificationReceiverEntities)
+                foreach (var notificationSender in notificationSendersReadyToReport)
                 {
-                    svar.PlanId = notificationReceiverEntity.PlanId;
-                    svar.PlanNavn = notificationReceiverEntity.PlanNavn;
+                    reportData.PlanId = notificationSender.PlanId;
+                    reportData.PlanNavn = notificationSender.PlanNavn;
 
-                    var receiver = new SvarPaaVarselOmOppstartAvPlanarbeidReceiverModel();
-                    receiver.ReceiverName = notificationReceiverEntity.ReceiverName;
-                    receiver.ReceiverPhone = notificationReceiverEntity.ReceiverPhone;
-                    receiver.ReceiverEmail = notificationReceiverEntity.ReceiverEmail;
-                    receiver.Reply = notificationReceiverEntity.Reply;
-                    receiver.ReceiversArchiveReference = notificationReceiverEntity.RowKey;
-                    svar.Receivers.Add(receiver);
+                    var sender = new SvarPaaVarselOmOppstartAvPlanarbeidSenderModel();
+                    sender.SenderName = notificationSender.SenderName;
+                    sender.SenderPhone = notificationSender.SenderPhone;
+                    sender.SenderEmail = notificationSender.SenderEmail;
+                    sender.Reply = notificationSender.Reply;
+                    sender.SendersArchiveReference = notificationSender.RowKey;
+                    reportData.Senders.Add(sender);
                 }
             
-                return svar;
+                return reportData;
             }
 
             return null;
         }
 
-        private async Task SendReceiptToSubmitterWhenSomeReceiversHaveRepliedAsync(SvarPaaVarselOmOppstartAvPlanarbeidModel answer, string publicContainer)
+        private async Task SendRepliesReportToDistributionSubmitterAsync(SvarPaaVarselOmOppstartAvPlanarbeidModel answer, string publicContainer)
         {
             try
             {
-                _log.LogDebug($"Start SendReceiptToSubmitterWhenSomReceiversHaveRepliedAsync for planId: {answer.PlanId}");
+                _log.LogDebug($"Start SendRepliesReportToDistributionSubmitterAsync for planId: {answer.PlanId}");
 
                 DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(answer.InitialArchiveReference, answer.InitialArchiveReference);
                 submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.ReportingInProgress);
                 _log.LogInformation($"{GetType().Name}. ArchiveReference={answer.InitialArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. Reporting in progress...");
                 var notificationMessage = new AltinnNotificationMessage();
                 notificationMessage.ArchiveReference = answer.InitialArchiveReference;
-                notificationMessage.Receiver = new AltinnReceiver() { Id = answer.Id, Type = answer.Type };
+                notificationMessage.Receiver = new AltinnReceiver() { Id = answer.Id, Type = answer.AltinnReceiverType };
 
                 var reportHtml = GetReport(answer);
                 _log.LogDebug("Start converting the attachment report to PDF");
@@ -182,27 +169,26 @@ namespace FtB_ProcessStrategies
                 if (!sendingFailed)
                 {
                     _log.LogDebug($"Successfully sent report of replies to submitter for archiveReference {answer.InitialArchiveReference}.");
-                    var allReceiversForSubmittal = await _tableStorage.GetTableEntitiesAsync<NotificationReceiverEntity>(answer.InitialArchiveReference.ToLower());
-                    var entitiesToUpdate = new List<NotificationReceiverEntity>();
-                    foreach (var receiver in answer.Receivers)
+                    var entitiesToUpdate = new List<NotificationSenderEntity>();
+                    foreach (var sender in answer.Senders)
                     {
                         var filters = new List<KeyValuePair<string, string>>();
                         filters.Add(new KeyValuePair<string, string>("PartitionKey", answer.InitialArchiveReference));
-                        filters.Add(new KeyValuePair<string, string>("RowKey", receiver.ReceiversArchiveReference));
+                        filters.Add(new KeyValuePair<string, string>("RowKey", sender.SendersArchiveReference));
 
-                        var notificationReceiverEntity = await _tableStorage.GetTableEntityAsync<NotificationReceiverEntity>(answer.InitialArchiveReference, receiver.ReceiversArchiveReference);
+                        var notificationSenderEntity = await _tableStorage.GetTableEntityAsync<NotificationSenderEntity>(answer.InitialArchiveReference, sender.SendersArchiveReference);
 
-                        notificationReceiverEntity.ProcessStage = Enum.GetName(typeof(NotificationReceiverProcessStageEnum), NotificationReceiverProcessStageEnum.Reported);
-                        entitiesToUpdate.Add(notificationReceiverEntity);
+                        notificationSenderEntity.ProcessStage = Enum.GetName(typeof(NotificationSenderProcessStageEnum), NotificationSenderProcessStageEnum.Reported);
+                        entitiesToUpdate.Add(notificationSenderEntity);
                     }
 
                     await _tableStorage.UpdateEntitiesAsync(entitiesToUpdate);
 
-                    var tasks = entitiesToUpdate.Select(s => AddToReceiverProcessLogAsync(s.RowKey, s.ReceiverId, ReceiverStatusLogEnum.Completed));
+                    var tasks = entitiesToUpdate.Select(s => AddToSenderProcessLogAsync(s.RowKey, s.SenderId, NotificationSenderStatusLogEnum.Completed)); //Completed
 
-                    _log.LogDebug("Start AddToReceiverProcessLogAsync");
+                    _log.LogDebug("Start AddToSenderProcessLogAsync");
                     await Task.WhenAll(tasks);
-                    _log.LogDebug("End SendReceiptToSubmitterWhenSomeReceiversHaveRepliedAsync");
+                    _log.LogDebug("End SendRepliesReportToDistributionSubmitterAsync");
                 }
                 else
                 {
@@ -226,16 +212,16 @@ namespace FtB_ProcessStrategies
             }
         }
 
-        protected virtual async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, ReceiverStatusLogEnum statusEnum)
+        protected virtual async Task AddToSenderProcessLogAsync(string initialArchiveReference, string senderId, NotificationSenderStatusLogEnum statusEnum)
         {
             try
             {
-                NotificationReceiverLogEntity receiverEntity = new NotificationReceiverLogEntity(receiverPartitionKey, $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum);
-                await _tableStorage.InsertEntityRecordAsync<NotificationReceiverLogEntity>(receiverEntity);
+                NotificationSenderLogEntity senderEntity = new NotificationSenderLogEntity(initialArchiveReference, $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", senderId, statusEnum);
+                await _tableStorage.InsertEntityRecordAsync<NotificationSenderLogEntity>(senderEntity);
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, $"Error adding receiver record for ID={receiverPartitionKey} and receiverID {receiverID}");
+                _log.LogError(ex, $"Error adding sender record for ID={initialArchiveReference} and senderId {senderId}");
                 throw;
             }
         }
@@ -258,9 +244,9 @@ namespace FtB_ProcessStrategies
 
                 var metadataList = new List<KeyValuePair<string, string>>();
 
-                foreach (var receiver in answer.Receivers)
+                foreach (var sender in answer.Senders)
                 {
-                    metadataList.Add(new KeyValuePair<string, string>("ReceiversArchiveReference", receiver.ReceiversArchiveReference));
+                    metadataList.Add(new KeyValuePair<string, string>("SendersArchiveReference", sender.SendersArchiveReference));
 
                 }
                 
@@ -298,7 +284,7 @@ namespace FtB_ProcessStrategies
             try
             {
                 string arkivReferanse = answer.InitialArchiveReference;
-                var tableRowsAsHtml = string.Join("", answer.Receivers.Select(p => "<tr><td>" + p.ReceiverName + "</td><td>" + p.ReceiverPhone + "</td><td>" + p.ReceiverEmail + "</td></tr>"
+                var tableRowsAsHtml = string.Join("", answer.Senders.Select(p => "<tr><td>" + p.SenderName + "</td><td>" + p.SenderPhone + "</td><td>" + p.SenderEmail + "</td></tr>"
                                                                                        + "<tr><td colspan='3'><label>Uttalelse</label></td></tr>"
                                                                                        + "<tr><td colspan='3'>" + p.Reply + "</td></tr>"
                                                                                        + "<tr><td colspan='3'><hr></td></tr>"));

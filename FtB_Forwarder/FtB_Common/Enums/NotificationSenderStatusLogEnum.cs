@@ -4,9 +4,9 @@ using System.Text;
 
 namespace FtB_Common.Enums
 {
-    public enum NotificationReceiverProcessStageEnum
+    public enum NotificationSenderStatusLogEnum
     {
         Created,
-        Reported
+        Completed
     }
 }
