@@ -297,8 +297,6 @@ namespace FtB_ProcessStrategies
         {
             try
             {
-                string planNavn = answer.PlanNavn;
-                string planId = answer.PlanId;
                 string arkivReferanse = answer.InitialArchiveReference;
                 var tableRowsAsHtml = string.Join("", answer.Receivers.Select(p => "<tr><td>" + p.ReceiverName + "</td><td>" + p.ReceiverPhone + "</td><td>" + p.ReceiverEmail + "</td></tr>"
                                                                                        + "<tr><td colspan='3'><label>Uttalelse</label></td></tr>"
@@ -306,9 +304,10 @@ namespace FtB_ProcessStrategies
                                                                                        + "<tr><td colspan='3'><hr></td></tr>"));
 
                 string htmlTemplate = _htmlUtils.GetHtmlFromTemplate("FtB_FormLogic.Notifications.NotificationFormLogic.SvarVarselOppstartPlanarbeidLogic.SvarVarselOppstartPlanarbeidReport.html");
-                htmlTemplate = htmlTemplate.Replace("<planId />", planId);
-                htmlTemplate = htmlTemplate.Replace("<planNavn />", planNavn);
+                htmlTemplate = htmlTemplate.Replace("<planId />", answer.PlanId);
+                htmlTemplate = htmlTemplate.Replace("<planNavn />", answer.PlanNavn);
                 htmlTemplate = htmlTemplate.Replace("<arkivReferanse />", arkivReferanse.ToUpper());
+                htmlTemplate = htmlTemplate.Replace("<fristForInnspill />", answer.FristForInnspill.ToString("dd.MM.yyyy"));
                 htmlTemplate = htmlTemplate.Replace("<svarFraBeroertPart />", tableRowsAsHtml);
 
                 return htmlTemplate;
