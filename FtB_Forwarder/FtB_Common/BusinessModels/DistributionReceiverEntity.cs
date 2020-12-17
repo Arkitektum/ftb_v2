@@ -14,12 +14,12 @@ namespace FtB_Common.BusinessModels
         public string ReceiverLogPartitionKey { get; set; }
         public DistributionReceiverEntity() { }
         
-        public DistributionReceiverEntity(string partitionKey, string rowKey, string receiverId, ReceiverProcessStageEnum status, DateTime createdTimestamp, string receiverLogPartitionKey)
+        public DistributionReceiverEntity(string partitionKey, string rowKey, string receiverId, DistributionReceiverProcessStageEnum status, DateTime createdTimestamp, string receiverLogPartitionKey)
         {
             PartitionKey = partitionKey;
             RowKey = rowKey;
             ReceiverId = receiverId;
-            ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), status);
+            ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), status);
             CreatedTimeStamp = createdTimestamp;
             ReceiverLogPartitionKey = receiverLogPartitionKey;
         }

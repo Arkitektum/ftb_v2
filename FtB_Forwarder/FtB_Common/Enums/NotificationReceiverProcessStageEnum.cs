@@ -4,12 +4,9 @@ using System.Text;
 
 namespace FtB_Common.Enums
 {
-    public enum SubmittalStatusEnum
+    public enum NotificationReceiverProcessStageEnum
     {
         Created,
-        Processing,
-        ReportingInProgress,
-        Completed,
         Reported
     }
 }

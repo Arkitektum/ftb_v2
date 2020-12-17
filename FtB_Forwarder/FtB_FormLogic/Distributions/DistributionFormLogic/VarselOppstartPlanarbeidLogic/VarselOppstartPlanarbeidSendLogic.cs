@@ -66,7 +66,7 @@ namespace FtB_FormLogic
 
             //Add list of URL attachments to body
             var metadataList = new List<KeyValuePair<string, string>>();            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.SubmittalAttachment)));            var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(base.ArchiveReference);
-            var urlToPublicAttachments = await _blobOperations.GetBlobUrlsFromPublicStorageByMetadata(publicBlobContainer, metadataList);
+            var urlToPublicAttachments = await _blobOperations.GetBlobUrlsFromPublicStorageByMetadataAsync(publicBlobContainer, metadataList);
             StringBuilder urlListAsHtml = new StringBuilder();
             foreach (var attachmentInfo in urlToPublicAttachments)
             {

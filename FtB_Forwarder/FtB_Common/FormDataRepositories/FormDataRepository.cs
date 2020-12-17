@@ -21,9 +21,11 @@ namespace FtB_Common.FormDataRepositories
             return await _blobOperations.GetFormdata(archiveReference);
         }
 
-        public void AddBytesAsBlob(string containerName, string fileName, byte[] fileBytes, IEnumerable<KeyValuePair<string, string>> metadata = null)
+        public async Task AddBytesAsBlob(string containerName, string fileName, byte[] fileBytes, IEnumerable<KeyValuePair<string, string>> metadata = null)
         {
-            _blobOperations.AddByteStreamToBlobStorage( Enums.BlobStorageEnum.Private, containerName, fileName, fileBytes, null, metadata);
+            await _blobOperations.AddByteStreamToBlobStorage( Enums.BlobStorageEnum.Private, containerName, fileName, fileBytes, null, metadata);
         }
+
+
     }
 }

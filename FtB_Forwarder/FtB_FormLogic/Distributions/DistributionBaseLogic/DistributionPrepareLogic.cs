@@ -45,7 +45,7 @@ namespace FtB_FormLogic
                 string receiverLogPartitionKey = $"{ArchiveReference}-{i.ToString()}";
                 string rowKey = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}";
 
-                receiverEntities.Add(new DistributionReceiverEntity(ArchiveReference, i.ToString(), Receivers[i].Id, ReceiverProcessStageEnum.Created, DateTime.Now, receiverLogPartitionKey));
+                receiverEntities.Add(new DistributionReceiverEntity(ArchiveReference, i.ToString(), Receivers[i].Id, DistributionReceiverProcessStageEnum.Created, DateTime.Now, receiverLogPartitionKey));
                 receiverLogEntities.Add(new DistributionReceiverLogEntity(receiverLogPartitionKey, rowKey, Receivers[i].Id, ReceiverStatusLogEnum.Created));
 
                 sendQueueItems.Add(new SendQueueItem()
@@ -65,7 +65,7 @@ namespace FtB_FormLogic
 
             return sendQueueItems;
         }
-        private async Task CreateDistributionSubmittalDatabaseStatus(string archiveReference, string senderId, int receiverCount)
+        protected virtual async Task CreateDistributionSubmittalDatabaseStatus(string archiveReference, string senderId, int receiverCount)
         {
             try
             {

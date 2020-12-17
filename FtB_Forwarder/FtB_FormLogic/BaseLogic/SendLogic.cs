@@ -33,14 +33,14 @@ namespace FtB_FormLogic
 
             this.Receiver = sendQueueItem.Receiver;
 
-                return new ReportQueueItem()
-                {
-                    ArchiveReference = sendQueueItem.ArchiveReference,
-                    ReceiverLogPartitionKey = sendQueueItem.ReceiverLogPartitionKey,
-                    ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber,
-                    Sender = sendQueueItem.Sender,
-                    Receiver = sendQueueItem.Receiver
-                };
+            return new ReportQueueItem()
+            {
+                ArchiveReference = sendQueueItem.ArchiveReference,
+                ReceiverLogPartitionKey = sendQueueItem.ReceiverLogPartitionKey,
+                ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber,
+                Sender = sendQueueItem.Sender,
+                Receiver = sendQueueItem.Receiver
+            };
 
         }
 
@@ -50,7 +50,7 @@ namespace FtB_FormLogic
             await base.AddToReceiverProcessLogAsync(receiverPartitionKey, receiverID, statusEnum);
         }
 
-        protected override Task UpdateReceiverProcessStageAsync(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverProcessStageEnum processStageEnum)
+        protected override Task UpdateReceiverProcessStageAsync(string archiveReference, string receiverSequenceNumber, string receiverID, DistributionReceiverProcessStageEnum processStageEnum)
         {
             var task = base.UpdateReceiverProcessStageAsync(archiveReference, receiverSequenceNumber, receiverID, processStageEnum);
             

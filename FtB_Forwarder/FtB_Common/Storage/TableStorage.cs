@@ -8,6 +8,7 @@ using FtB_Common.Interfaces;
 using FtB_Common.Exceptions;
 using FtB_Common.BusinessModels;
 using System.Linq;
+using System.Threading;
 
 namespace FtB_Common.Storage
 {
@@ -31,7 +32,6 @@ namespace FtB_Common.Storage
             _distributionReceiverTable = configuration["TableStorage:DistributionReceiverTable"];
             _distributionReceiverLogTable = configuration["TableStorage:DistributionReceiverLogTable"];
 
-            _notificationSubmittalTable = configuration["TableStorage:NotificationSubmittalTable"];
             _notificationReceiverTable = configuration["TableStorage:NotificationReceiverTable"];
             _notificationReceiverLogTable = configuration["TableStorage:NotificationReceiverLogTable"];
 
@@ -91,7 +91,7 @@ namespace FtB_Common.Storage
                 if (!await cloudTable.ExistsAsync())
                     await cloudTable.CreateIfNotExistsAsync();
 
-                var insertOperation = TableOperation.Insert(entity);
+                var insertOperation = TableOperation.InsertOrReplace(entity);
                 var result = await cloudTable.ExecuteAsync(insertOperation);
                 var insertedEntity = (TableEntity)result.Result;
                 return insertedEntity;
@@ -226,15 +226,53 @@ namespace FtB_Common.Storage
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
                 var condition = TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, partitionKey);
                 var query = new TableQuery<T>().Where(condition);
-                var lst = cloudTable.ExecuteQuery(query);
+                var entities = cloudTable.ExecuteQuery(query);
 
-                return lst;
+                return entities;
             }
             catch (StorageException)
             {
                 throw;
             }
         }
+
+        public IEnumerable<T> GetTableEntitiesWithStatusFilter<T>(string status) where T : ITableEntity, new()
+        {
+            var filters = new List<KeyValuePair<string, string>>();
+            filters.Add(new KeyValuePair<string, string>("Status", status));
+
+            return GetTableEntitiesWithFilters<T>(filters);
+        }
+        public IEnumerable<T> GetTableEntitiesWithFilters<T>(IEnumerable<KeyValuePair<string, string>> filter) where T : ITableEntity, new()
+        {
+            try
+            {
+                string tableNameFromType = GetTableName<T>();
+                CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
+                if (filter.Count() > 0)
+                {
+                    var finalFilter = TableQuery.GenerateFilterCondition(filter.ToList()[0].Key, QueryComparisons.Equal, filter.ToList()[0].Value);
+                    for (int i = 1; i < filter.Count(); i++)
+                    {
+                        var conditionExtra = TableQuery.GenerateFilterCondition(filter.ToList()[i].Key, QueryComparisons.Equal, filter.ToList()[i].Value);
+                        finalFilter = TableQuery.CombineFilters(finalFilter, TableOperators.And, conditionExtra);
+                    }
+                
+                    var query = new TableQuery<T>().Where(finalFilter);
+                    var lst = cloudTable.ExecuteQuery(query);
+
+                    return lst;
+                }
+                throw new ArgumentOutOfRangeException("No valid arguments for filter.");
+            }
+            catch (StorageException)
+            {
+                throw;
+            }
+        }
+
+
+
 
         private string GetTableName<T>()
         {
@@ -250,13 +288,13 @@ namespace FtB_Common.Storage
             {
                 return _distributionSubmittalTable;
             }
-            if (typeof(T) == typeof(NotificationReceiverLogEntity))
-            {
-                return _notificationReceiverLogTable;
-            }
             else if (typeof(T) == typeof(NotificationReceiverEntity))
             {
                 return _notificationReceiverTable;
+            }
+            else if (typeof(T) == typeof(NotificationReceiverLogEntity))
+            {
+                return _notificationReceiverLogTable;
             }
 
             throw new Exception("Illegal table storage name");

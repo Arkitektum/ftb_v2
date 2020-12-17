@@ -22,6 +22,10 @@ namespace Ftb_Repositories.HttpClients
             _client = httpClient;
             _settings = settings;
             _log = log;
+            _client.BaseAddress = new Uri(_settings.Value.UriAddress);
+            _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/pdf"));
+            _client.DefaultRequestHeaders.Add("User-Agent", "Arbeidsflyt/2");
+            _client.DefaultRequestHeaders.Add("X-API-KEY", _settings.Value.APIKey);
         }
 
         public async Task<byte[]> Get(string html)
@@ -29,14 +33,10 @@ namespace Ftb_Repositories.HttpClients
             try
             {
                 byte[] PDFInbytes;
-                _client.BaseAddress = new Uri(_settings.Value.UriAddress);
                 html = RemoveNewLinesAndBackslash(html);
 
                 HttpContent requestContent = new StringContent($"{{\"htmlData\":\"{html}\"}}", UTF8Encoding.UTF8);//, "application/json");
                 requestContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-                _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/pdf"));
-                _client.DefaultRequestHeaders.Add("User-Agent", "Arbeidsflyt/2");
-                _client.DefaultRequestHeaders.Add("X-API-KEY", _settings.Value.APIKey);
 
                 var response = await _client.PostAsync(_settings.Value.API, requestContent);
                 if (response.IsSuccessStatusCode)

@@ -3,6 +3,7 @@ using FtB_Common.Encryption;
 using FtB_Common.Enums;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
+using FtB_Common.Storage;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,11 +17,39 @@ namespace FtB_FormLogic
     {
         public SvarVarselOppstartPlanarbeidPrepareLogic(IFormDataRepo repo,
                                                         ITableStorage tableStorage,
+                                                        IBlobOperations blobOperations,
                                                         ILogger<VarselOppstartPlanarbeidPrepareLogic> log,
                                                         DbUnitOfWork dbUnitOfWork,
                                                         IDecryptionFactory decryptionFactory) :
-            base(repo, tableStorage, log, dbUnitOfWork, decryptionFactory)
+            base(repo, tableStorage, blobOperations, log, dbUnitOfWork, decryptionFactory)
         { }
+
+        public override async Task<IEnumerable<SendQueueItem>> ExecuteAsync(SubmittalQueueItem submittalQueueItem)
+        {
+            var returnValue = await base.ExecuteAsync(submittalQueueItem);
+
+            var initialArchiveReference = await GetInitialArchiveReferenceAsync(FormData.hovedinnsendingsnummer);
+            _log.LogDebug($"{GetType().Name}: Got initialArchiveReference {initialArchiveReference} for distributionId {FormData.hovedinnsendingsnummer}");
+
+            await MakePDFReplyPublicAccessible(submittalQueueItem.ArchiveReference, initialArchiveReference, FormData.beroertPart.navn);
+            await CreateNotificationReceiverDatabaseStatus(submittalQueueItem.ArchiveReference);
+            
+            return returnValue;
+        }
+
+        private async Task MakePDFReplyPublicAccessible(string neighboursArchiveReference, string initialArchiveReference, string partyName)
+        {
+            _log.LogDebug($"{GetType().Name}: Calling GetPublicBlobContainerName for ArchiveReference {initialArchiveReference}");
+            var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(initialArchiveReference);
+
+            _log.LogDebug($"{GetType().Name}: Retrieved PDF for archiveReference {neighboursArchiveReference}");
+            var PDFdoc = GetPDFReplyFromPrivateBlobStorageAsync(neighboursArchiveReference).Result;
+            
+            _log.LogDebug($"{GetType().Name}: Copying PDF from initialArchiveReference {initialArchiveReference} to PublicBlobStorage {publicBlobContainer} for archiveReference {neighboursArchiveReference}");
+            await CopyPDFToPublicBlobStorage(PDFdoc, partyName, publicBlobContainer, neighboursArchiveReference);
+
+            _log.LogDebug($"{GetType().Name}: Successfully copied PDF for archiveReference {neighboursArchiveReference} and party {partyName}");
+        }
 
         public override void SetSender()
         {
@@ -56,18 +85,20 @@ namespace FtB_FormLogic
             base.SetReceivers(receivers);
         }
 
-        protected override async Task CreateNotificationReceiverDatabaseStatus(string archiveReference, string senderId)
+        private async Task CreateNotificationReceiverDatabaseStatus(string archiveReference)
         {
             try
             {
-                var distributionForm = await _dbUnitOfWork.DistributionForms.Get(Guid.Parse(FormData.hovedinnsendingsnummer.ToUpper()));
-                var InitialArchiveReference = distributionForm.InitialArchiveReference;
-                var receiverEntity = new NotificationReceiverEntity(InitialArchiveReference, ArchiveReference, Receivers[0].Id, ReceiverProcessStageEnum.Created, DateTime.Now);
+                _log.LogDebug($"{GetType().Name}: Creating NotificationReceiverEntity database record for {archiveReference}");
+
+                var InitialArchiveReference = await GetInitialArchiveReferenceAsync(FormData.hovedinnsendingsnummer);
+
+                var receiverEntity = new NotificationReceiverEntity(InitialArchiveReference.ToLower(), ArchiveReference.ToLower(), Receivers[0].Id, NotificationReceiverProcessStageEnum.Created, DateTime.Now);
                 receiverEntity.PlanId = FormData.planid;
                 receiverEntity.PlanNavn = FormData.planNavn;
                 receiverEntity.Reply = FormData.beroertPart.kommentar;
                 receiverEntity.ReceiverName = FormData.beroertPart.navn;
-                receiverEntity.ReceiverAddress = FormatAddress(FormData.beroertPart.adresse.adresselinje1, FormData.beroertPart.adresse.postnr,FormData.beroertPart.adresse.poststed);
+                receiverEntity.ReceiverPhone = FormData.beroertPart.telefon;
                 receiverEntity.ReceiverEmail = FormData.beroertPart.epost;
                 receiverEntity.SenderId = Sender.Id;
 
@@ -77,7 +108,7 @@ namespace FtB_FormLogic
                 var receiverLogEntity = new NotificationReceiverLogEntity(ArchiveReference, rowKey, Receivers[0].Id, ReceiverStatusLogEnum.Created);
                 await _tableStorage.InsertEntityRecordAsync<NotificationReceiverLogEntity>(receiverLogEntity);
 
-                _log.LogDebug($"Create submittal database status for {archiveReference}.");
+                _log.LogDebug($"Create NotificationReceiverEntity database record for {archiveReference}.");
             }
             catch (Exception ex)
             {

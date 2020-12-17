@@ -24,9 +24,14 @@ namespace FtB_FormLogic
     {
         private readonly HtmlToPdfConverterHttpClient _htmlToPdfConverterHttpClient;
         private readonly INotificationAdapter _notificationAdapter;
-        public DistributionReportLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log
-                                , INotificationAdapter notificationAdapter, IBlobOperations blobOperations
-                                , DbUnitOfWork dbUnitOfWork, IHtmlUtils htmlUtils, HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
+        public DistributionReportLogic(IFormDataRepo repo, 
+                                       ITableStorage tableStorage, 
+                                       ILogger log,
+                                       INotificationAdapter notificationAdapter, 
+                                       IBlobOperations blobOperations,
+                                       DbUnitOfWork dbUnitOfWork, 
+                                       IHtmlUtils htmlUtils, 
+                                       HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
             : base(repo, tableStorage, blobOperations, log, dbUnitOfWork)
         {
             _htmlToPdfConverterHttpClient = htmlToPdfConverterHttpClient;
@@ -49,7 +54,8 @@ namespace FtB_FormLogic
         public override async Task<string> ExecuteAsync(ReportQueueItem reportQueueItem)
         {
             var returnItem = await base.ExecuteAsync(reportQueueItem);
-            await UpdateReceiverProcessStageAsync(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, ReceiverProcessStageEnum.ReadyForReporting);
+
+            await UpdateReceiverProcessStageAsync(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, DistributionReceiverProcessStageEnum.ReadyForReporting);
             await AddToReceiverProcessLogAsync(reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReadyForReporting);
 
             if (await ReadyForSubmittalReportingAsync(reportQueueItem))
@@ -118,10 +124,10 @@ namespace FtB_FormLogic
                     var updatedSubmittalEntity = _tableStorage.UpdateEntityRecordAsync<DistributionSubmittalEntity>(submittalEntity);
                     _log.LogDebug("Start Update all receiver entities");
                     var allReceivers = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(reportQueueItem.ArchiveReference.ToLower());
-                    allReceivers.ToList().ForEach(x => x.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.Completed));
+                    allReceivers.ToList().ForEach(x => x.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Completed));
                     await UpdateEntitiesAsync(allReceivers);
                     _log.LogDebug("Start BulkAddLogEntryToReceivers");
-                    await BulkAddLogEntryToReceiversAsync(reportQueueItem, ReceiverStatusLogEnum.Completed);
+                    await BulkAddLogEntryToReceiversAsync(reportQueueItem.ArchiveReference, ReceiverStatusLogEnum.Completed);
                     _log.LogDebug("End SendReceiptToSubmitterWhenAllReceiversAreProcessed");
                     //await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
                 }
@@ -132,8 +138,6 @@ namespace FtB_FormLogic
                                                         || x.Step.Equals(DistributionStep.UnkownErrorOccurred)).Select(y => y.Step).First();
                     throw new SendNotificationException("Error: Failed during sending of submittal receipt", failedStep);
                 }
-                
-                //await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
             }
             catch (SendNotificationException ex)
             {
@@ -149,8 +153,6 @@ namespace FtB_FormLogic
             {
                 await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
             }
-
-
         }
 
         protected virtual (string Filename, string Name) GetFileNameForMainForm()

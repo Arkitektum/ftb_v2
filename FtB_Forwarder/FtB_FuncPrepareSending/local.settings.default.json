@@ -19,7 +19,6 @@
     "TableStorage:DistributionReceiverTable": "ftbDistributionReceiver",
     "TableStorage:DistributionReceiverLogTable": "ftbDistributionReceiverLog",
 
-    "TableStorage:NotificationSubmittalTable": "ftbNotificationSubmittal",
     "TableStorage:NotificationReceiverTable": "ftbNotificationReceiver",
     "TableStorage:NotificationReceiverLogTable": "ftbNotificationReceiverLog"
   }

@@ -25,6 +25,17 @@ namespace FtB_FormLogic
             _log.LogDebug("_dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
             var returnReportQueueItem = await base.ExecuteAsync(sendQueueItem);
 
+            returnReportQueueItem = new ReportQueueItem()
+            {
+                ArchiveReference = sendQueueItem.ArchiveReference,
+                ReceiverLogPartitionKey = sendQueueItem.ReceiverLogPartitionKey,
+                ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber,
+                Sender = sendQueueItem.Sender,
+                Receiver = sendQueueItem.Receiver
+            };
+            
+            //TODO: Flytte til prepare funskjon?
+
             var distributionId = GetHovedinnsendingsNummer();
             var distributionForm = await _dbUnitOfWork.DistributionForms.Get(distributionId);
 

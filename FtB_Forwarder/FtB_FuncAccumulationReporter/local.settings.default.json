@@ -6,17 +6,9 @@
     "AzureWebJobsFeatureFlags": "EnableEnhancedScopes",
     "PrivateAzureStorageConnectionString": "xx",
     "PublicAzureStorageConnectionString": "xx",
-    "QueueConnectionString": "Endpoint=xx",
-    "SendingQueueName": "sbq-send",
-    "ReportQueueName": "sbq-report",
-
-    "PrefillConnectionSettings:UserName": "xx",
-    "PrefillConnectionSettings:Password": "xx",
-    "PrefillConnectionSettings:EndpointUrl": "xx",
-    "PrefillConnectionSettings:ServiceOwnerCode": "DIBK",
 
     "CorrespondenceConnectionSettings:UserName": "xx",
-    "CorrespondenceConnectionSettings:Password": "xx",
+    "CorrespondenceConnectionSettings:Password": "x",
     "CorrespondenceConnectionSettings:EndpointUrl": "xx",
     "CorrespondenceConnectionSettings:ServiceOwnerCode": "DIBK",
 
@@ -29,6 +21,10 @@
     "FormProcessAPISettings:BasicAuthUserName": "xx",
     "FormProcessAPISettings:BasicAuthPassword": "xx",
 
+    "HtmlToPdfConverterSettings:UriAddress": "xx",
+    "HtmlToPdfConverterSettings:API": "PDF",
+    "HtmlToPdfConverterSettings:APIKey": "",
+
     "HtmlUtilSettings:HtmlTemplateAssembly": "FtB_FormLogic",
 
     "TableStorage:DistributionSubmittalTable": "ftbDistributionSubmittal",
@@ -37,5 +33,6 @@
 
     "TableStorage:NotificationReceiverTable": "ftbNotificationReceiver",
     "TableStorage:NotificationReceiverLogTable": "ftbNotificationReceiverLog"
+
   }
 }

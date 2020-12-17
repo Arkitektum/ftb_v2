@@ -94,11 +94,11 @@ namespace FtB_FormLogic
             return receiverEntity.ReceiverId;
         }
 
-        protected async Task BulkAddLogEntryToReceiversAsync(ReportQueueItem reportQueueItem, ReceiverStatusLogEnum statusEnum)
+        protected async Task BulkAddLogEntryToReceiversAsync(string archiveReference, ReceiverStatusLogEnum statusEnum)
         {
-            DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(reportQueueItem.ArchiveReference.ToLower(), reportQueueItem.ArchiveReference.ToLower());
+            DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(archiveReference.ToLower(), archiveReference.ToLower());
 
-            var partititonKey = reportQueueItem.ArchiveReference.ToLower();
+            var partititonKey = archiveReference.ToLower();
 
             var receivers = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(partititonKey);
 
@@ -113,12 +113,12 @@ namespace FtB_FormLogic
         }
 
 
-        protected virtual async Task UpdateReceiverProcessStageAsync(string archiveReference, string receiverSequenceNumber, string receiverID, ReceiverProcessStageEnum processStageEnum)
+        protected virtual async Task UpdateReceiverProcessStageAsync(string archiveReference, string receiverSequenceNumber, string receiverID, DistributionReceiverProcessStageEnum processStageEnum)
         {
             try
             {
                 var receiverEntity = await _tableStorage.GetTableEntityAsync<DistributionReceiverEntity>(archiveReference, receiverSequenceNumber);
-                receiverEntity.ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum);
+                receiverEntity.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), processStageEnum);
                 var result = _tableStorage.UpdateEntityRecordAsync<DistributionReceiverEntity>(receiverEntity);
                 //_log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum)}.....");
 
@@ -158,12 +158,6 @@ namespace FtB_FormLogic
                 _log.LogError(ex, $"Error adding receiver record for ID={receiverPartitionKey} and receiverID {receiverID}");
                 throw;
             }
-        }
-
-        protected string FormatAddress(string addresselinje1, string postnr, string poststed)
-        {
-            return $"{addresselinje1}, {postnr} - {poststed}";
-
         }
     }
 }

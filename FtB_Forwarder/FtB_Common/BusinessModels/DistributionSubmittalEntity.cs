@@ -12,6 +12,7 @@ namespace FtB_Common.BusinessModels
     public class DistributionSubmittalEntity : TableEntity, IStorageEntity
     {
         public string SenderId { get; set; }
+        public DateTime ReplyDeadline { get; set; }
         public int ReceiverCount { get; set; }
         public DateTime CreatedTimeStamp { get; set; }
         public string Status { get; set; }

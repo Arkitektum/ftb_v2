@@ -39,6 +39,16 @@ namespace FtB_FormLogic
 
             this.Receiver = sendQueueItem.Receiver;
 
+            returnReportQueueItem = new ReportQueueItem()
+            {
+                ArchiveReference = sendQueueItem.ArchiveReference,
+                ReceiverLogPartitionKey = sendQueueItem.ReceiverLogPartitionKey,
+                ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber,
+                Sender = sendQueueItem.Sender,
+                Receiver = sendQueueItem.Receiver
+            };
+
+
             //Check state
             this.State = await base.GetReceiverLastLogStatusAsync(sendQueueItem.ReceiverLogPartitionKey);
 
@@ -58,7 +68,7 @@ namespace FtB_FormLogic
             MapPrefillData(sendQueueItem.Receiver.Id);
             await MapDistributionMessage();
             
-            await UpdateReceiverProcessStageAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processing);
+            await UpdateReceiverProcessStageAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, DistributionReceiverProcessStageEnum.Processing);
             await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillCreated);
             
             //Which sendData to use
@@ -104,6 +114,7 @@ namespace FtB_FormLogic
             }
             else
             {
+                _log.LogDebug("Sending distribution form with reference {0} for {1} - {2}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
                 var result = await _distributionAdapter.SendDistribution(DistributionMessage);
 
                 //Remember "postdistribution metadata SendPrefillServiceV2 line 152 - 162
@@ -114,6 +125,7 @@ namespace FtB_FormLogic
 
                 if (result.Where(r => r.Step == DistributionStep.Failed || r.Step == DistributionStep.UnkownErrorOccurred || r.Step == DistributionStep.UnableToReachReceiver).Any())
                 {
+                    _log.LogError("Sending distribution form with reference {0} for {1} - {2} failed", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
                     distributionForm.DistributionStatus = DistributionStatus.error;
                     distributionForm.ErrorMessage = "Send manuelt";
 
@@ -122,17 +134,19 @@ namespace FtB_FormLogic
                 }
                 else if (result.Where(r => r.Step == DistributionStep.ReservedReportee).Any())
                 {
+                    _log.LogInformation("Sending distribution form with reference {0} for {1} - {2} was prevented due to ReservedReportee", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
                     await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
                     await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.ReservedReportee);
                 }
                 else
                 {
+                    _log.LogInformation("Sending distribution form with reference {0} for {1} - {2} was ok. Steps {3}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference, result.Select(x => x.Step).ToList());
                     _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon behandling ferdig");
                     await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Sent);
                     await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.CorrespondenceSent);
                 }
 
-                await UpdateReceiverProcessStageAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessStageEnum.Processed);
+                await UpdateReceiverProcessStageAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, DistributionReceiverProcessStageEnum.Processed);
 
             }
             //TODO - Has been temp used for testing of ReservedReportee

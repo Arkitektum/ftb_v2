@@ -4,12 +4,13 @@ using System.Text;
 
 namespace FtB_Common.Enums
 {
-    public enum ReceiverProcessStageEnum
+    public enum DistributionReceiverProcessStageEnum
     {
         Created,
         Processing,
         Processed,
         ReadyForReporting,
-        Completed
+        Completed,
+        Reported
     }
 }

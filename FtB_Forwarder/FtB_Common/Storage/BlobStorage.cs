@@ -15,11 +15,7 @@ namespace FtB_Common.Storage
 
         public BlobContainerClient GetBlobContainerClient(string containerName)
         {
-            if (_containerClient == null)
-            {
-                _containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-            }
-            return _containerClient;
+            return _blobServiceClient.GetBlobContainerClient(containerName);
         }
 
         public abstract BlockBlobClient GetBlockBlobClient(string containerName, string blobName);

@@ -54,7 +54,7 @@ namespace FtB_FormLogic
             var totalNumberOfReceivers = submittalEntity.ReceiverCount;
             var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(reportQueueItem.ArchiveReference);
             //Get number of receivers with process-stage = Done, and compare this number to the totalNumberOfReceivers
-            var receiversReadyForReporting = allReceiversInSubmittal.Where(x => x.ProcessStage.Equals(Enum.GetName(typeof(ReceiverProcessStageEnum), ReceiverProcessStageEnum.ReadyForReporting))).Count();
+            var receiversReadyForReporting = allReceiversInSubmittal.Where(x => x.ProcessStage.Equals(Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.ReadyForReporting))).Count();
 
             return receiversReadyForReporting == totalNumberOfReceivers;
         }

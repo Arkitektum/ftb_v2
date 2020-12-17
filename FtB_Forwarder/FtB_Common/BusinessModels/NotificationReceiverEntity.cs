@@ -16,17 +16,17 @@ namespace FtB_Common.BusinessModels
         public string PlanNavn { get; set; }
         public string Reply { get; set; }
         public string ReceiverName { get; set; }
-        public string ReceiverAddress { get; set; }
+        public string ReceiverPhone { get; set; }
         public string ReceiverEmail { get; set; }
 
         public NotificationReceiverEntity() { }
         
-        public NotificationReceiverEntity(string partitionKey, string rowKey, string receiverId, ReceiverProcessStageEnum status, DateTime createdTimestamp)
+        public NotificationReceiverEntity(string partitionKey, string rowKey, string receiverId, NotificationReceiverProcessStageEnum status, DateTime createdTimestamp)
         {
             PartitionKey = partitionKey;
             RowKey = rowKey;
             ReceiverId = receiverId;
-            ProcessStage = Enum.GetName(typeof(ReceiverProcessStageEnum), status);
+            ProcessStage = Enum.GetName(typeof(NotificationReceiverProcessStageEnum), status);
             CreatedTimeStamp = createdTimestamp;
         }
     }

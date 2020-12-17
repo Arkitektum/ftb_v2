@@ -17,5 +17,7 @@ namespace FtB_Common.Interfaces
         Task<T> GetTableEntityAsync<T>(string partitionKey, string rowKey) where T : ITableEntity;
         Task<IEnumerable<T>> GetTableEntitiesAsync<T>(string partitionKey) where T : ITableEntity, new();
         Task EnsureTableExistsAsync<T>();
+        IEnumerable<T> GetTableEntitiesWithStatusFilter<T>(string status) where T : ITableEntity, new();
+        IEnumerable<T> GetTableEntitiesWithFilters<T>(IEnumerable<KeyValuePair<string, string>> filter) where T : ITableEntity, new();
     }
 }

@@ -5,15 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceipt - Copy.html" />
     <None Remove="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceipt.html" />
     <None Remove="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceiptMessageBody - Copy.html" />
     <None Remove="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceiptMessageBody.html" />
+    <None Remove="Notifications\NotificationFormLogic\SvarVarselOppstartPlanarbeidLogic\SvarVarselOppstartPlanarbeidReportMessageBody.html" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Notifications\NotificationFormLogic\SvarVarselOppstartPlanarbeidLogic\SvarVarselOppstartPlanarbeidReport.html" />
     <EmbeddedResource Include="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceipt.html" />
     <EmbeddedResource Include="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Send\VarselOppstartPlanarbeidPrefillNotificationBody.html" />
     <EmbeddedResource Include="Distributions\DistributionFormLogic\VarselOppstartPlanarbeidLogic\Report\VarselOppstartPlanarbeidReceiptMessageBody.html" />
+    <EmbeddedResource Include="Notifications\NotificationFormLogic\SvarVarselOppstartPlanarbeidLogic\SvarVarselOppstartPlanarbeidReportMessageBody.html" />
   </ItemGroup>
 
   <ItemGroup>
