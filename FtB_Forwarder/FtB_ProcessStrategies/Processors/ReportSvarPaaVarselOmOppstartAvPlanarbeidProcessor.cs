@@ -96,7 +96,7 @@ namespace FtB_ProcessStrategies
                 SvarPaaVarselOmOppstartAvPlanarbeidModel reportData = new SvarPaaVarselOmOppstartAvPlanarbeidModel();
                 reportData.InitialArchiveReference = distributionSubmittalEntity.PartitionKey;
                 reportData.FristForInnspill = distributionSubmittalEntity.ReplyDeadline;
-                reportData.Id = distributionSubmittalEntity.SenderId;
+                reportData.ReceiverId = distributionSubmittalEntity.SenderId;
                 reportData.AltinnReceiverType = AltinnReceiverType.Foretak;
                 reportData.Senders = new List<SvarPaaVarselOmOppstartAvPlanarbeidSenderModel>();
                 
@@ -131,7 +131,7 @@ namespace FtB_ProcessStrategies
                 _log.LogInformation($"{GetType().Name}. ArchiveReference={answer.InitialArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. Reporting in progress...");
                 var notificationMessage = new AltinnNotificationMessage();
                 notificationMessage.ArchiveReference = answer.InitialArchiveReference;
-                notificationMessage.Receiver = new AltinnReceiver() { Id = answer.Id, Type = answer.AltinnReceiverType };
+                notificationMessage.Receiver = new AltinnReceiver() { Id = answer.ReceiverId, Type = answer.AltinnReceiverType };
 
                 var reportHtml = GetReport(answer);
                 _log.LogDebug("Start converting the attachment report to PDF");
@@ -155,8 +155,14 @@ namespace FtB_ProcessStrategies
                 
                 notificationMessage.Attachments = new List<Attachment>() { reportAttachment };
                 _log.LogInformation($"{GetType().Name}. ArchiveReference={answer.InitialArchiveReference}. Sending report (notification).");
-                _log.LogDebug("Start SendNotification");
-               
+                _log.LogDebug($"Start SendNotification, with {notificationMessage.Attachments.Count()} attachments");
+
+                foreach (var att in notificationMessage.Attachments)
+                {
+                    _log.LogDebug($"Attachment to send: Filename={att.Filename}");
+                }
+
+
                 IEnumerable<DistributionResult> result = _notificationAdapter.SendNotification(notificationMessage);
 
                 var sendingFailed = result.Any(x => x.DistributionComponent.Equals(DistributionComponent.Correspondence)

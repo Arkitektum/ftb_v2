@@ -65,6 +65,7 @@ namespace FtB_FormLogic
             }
 
             Sender = new Actor() { Id = id, Type = senderType };
+            _log.LogDebug($"SetSender: {FormData.beroertPart.navn}, Id: {id}");
         }
 
         public override void SetReceivers()
@@ -85,6 +86,8 @@ namespace FtB_FormLogic
             receivers.Add(new Actor() { Type = receiverType, Id = id });
 
             base.SetReceivers(receivers);
+            _log.LogDebug($"SetReceiver: {FormData.forslagsstiller.navn}, Id: {id}");
+
         }
 
         private async Task CreateNotificationSenderDatabaseStatus(string archiveReference)

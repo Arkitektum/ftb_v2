@@ -15,19 +15,20 @@ namespace Altinn2.Adapters
     public class CorrespondenceAdapter : ICorrespondenceAdapter
     {
         private readonly ILogger<CorrespondenceAdapter> _logger;
-        private readonly IOptions<CorrespondenceBuilderSettings> _settings;
-        private readonly ICorrespondenceBuilder _correspondenceBuilder;
+        private readonly IOptions<CorrespondenceBuilderSettings> _correspondenceBuilderSettings;
+        private ICorrespondenceBuilder _correspondenceBuilder;
         private readonly ICorrespondenceClient _correspondenceClient;
 
-        public CorrespondenceAdapter(ILogger<CorrespondenceAdapter> logger, ICorrespondenceBuilder correspondenceBuilder, ICorrespondenceClient correspondenceClient)
+        public CorrespondenceAdapter(ILogger<CorrespondenceAdapter> logger, IOptions<CorrespondenceBuilderSettings> correspondenceSettings, ICorrespondenceClient correspondenceClient)
         {
             _logger = logger;
-            _correspondenceBuilder = correspondenceBuilder;
+            _correspondenceBuilderSettings = correspondenceSettings;
             _correspondenceClient = correspondenceClient;
         }
         public async Task<IEnumerable<DistributionResult>> SendMessage(AltinnMessageBase altinnMessage, string externalShipmentReference)
         {
             var correspondenceResults = new List<DistributionResult>();
+            _correspondenceBuilder = new CorrespondenceBuilder(_correspondenceBuilderSettings);
 
             _correspondenceBuilder.SetUpCorrespondence(altinnMessage.Receiver.Id, altinnMessage.ArchiveReference);
 

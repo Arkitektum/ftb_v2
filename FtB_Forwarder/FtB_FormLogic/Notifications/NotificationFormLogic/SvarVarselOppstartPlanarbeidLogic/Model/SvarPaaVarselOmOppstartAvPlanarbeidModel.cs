@@ -8,7 +8,7 @@ namespace FtB_FormLogic
     public class SvarPaaVarselOmOppstartAvPlanarbeidModel
     {
         public AltinnReceiverType AltinnReceiverType { get; set; }
-        public string Id { get; set; }
+        public string ReceiverId { get; set; }
         public string PlanId { get; set; }
         public string PlanNavn { get; set; }
         public string InitialArchiveReference { get; set; }

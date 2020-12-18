@@ -36,6 +36,8 @@ namespace FtB_FormLogic
             }
         
             Sender = new Actor() { Id = id, Type = receiverType };
+            _log.LogDebug($"SetSender: {FormData.forslagsstiller.navn}, Id: {id}");
+
         }
         public override void SetReceivers()
         {
@@ -54,6 +56,8 @@ namespace FtB_FormLogic
                     id = beroertPart.organisasjonsnummer;
                 }
                 receivers.Add(new Actor() { Type = receiverType, Id = id });
+
+                _log.LogDebug($"Set receiver: {beroertPart.navn}, Id: {id}");
             }
 
             base.SetReceivers(receivers);
