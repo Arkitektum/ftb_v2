@@ -148,7 +148,7 @@ namespace FtB_ProcessStrategies
                 var reportAttachment = new AttachmentBinary()
                 {
                     BinaryContent = PDFInbytes,
-                    Filename = $"Uttalelser_{validFilename}_{DateTime.Now.ToString("dd.MM.yyyy, kl.HH.mm")}.pdf",
+                    Filename = $"Uttalelser_{validFilename}_{DateTime.Now.ToString("dd.MM.yyyy, kl.HH.mm.ss")}.pdf",
                     Name = $"Uttalelser pr. {DateTime.Now.ToString("dd.MM.yyyy")}",
                     ArchiveReference = answer.InitialArchiveReference
                 };
