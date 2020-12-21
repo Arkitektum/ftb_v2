@@ -109,7 +109,7 @@ namespace FtB_FormLogic
 
                 notificationMessage.Attachments = new List<Attachment>() { receiptAttachment, mainFormAttachment };
                 _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
-                _log.LogDebug("Start SendNotification");
+                _log.LogDebug($"Start SendNotification to receiverId {notificationMessage.Receiver.Id}");
                 IEnumerable<DistributionResult> result = _notificationAdapter.SendNotification(notificationMessage);
                 
                 var sendingFailed = result.Any(x => x.DistributionComponent.Equals(DistributionComponent.Correspondence)
