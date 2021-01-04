@@ -1,17 +1,15 @@
 ﻿using Altinn.Common;
 using Altinn.Common.Interfaces;
 using Altinn.Common.Models;
-using FtB_Common.Enums;
 using FtB_Common.BusinessModels;
+using FtB_Common.Enums;
 using FtB_Common.Interfaces;
-using FtB_Common.Utils;
 using Ftb_DbModels;
 using Ftb_Repositories;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;using System.Text;
-using System.Threading.Tasks;
+using System.Linq;using System.Threading.Tasks;
 
 namespace FtB_FormLogic
 {
@@ -30,9 +28,7 @@ namespace FtB_FormLogic
         }
 
         public override async Task<ReportQueueItem> ExecuteAsync(SendQueueItem sendQueueItem)
-        {
-            _log.LogDebug("_dbUnitOfWork hash {0}", _dbUnitOfWork.GetHashCode());
-            
+        {            
             _dbUnitOfWork.SetArchiveReference(sendQueueItem.ArchiveReference);
 
             var returnReportQueueItem = await base.ExecuteAsync(sendQueueItem);
