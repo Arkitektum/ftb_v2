@@ -37,7 +37,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Altinn", "Altinn", "{578BF0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Distribution", "Altinn.Distribution\Altinn.Distribution.csproj", "{B48E1719-5E50-4C81-BB6F-16F14570246C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FtB_FuncAccumulationReporter", "FtB_FuncAccumulationReporter\FtB_FuncAccumulationReporter.csproj", "{12A72BD7-74FC-40D7-A799-DCD03BFDCF94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncSvarVarselOmOppstartAvPlanarbeidReporter", "FtB_FuncSvarVarselOmOppstartAvPlanarbeidReporter\FtB_FuncSvarVarselOmOppstartAvPlanarbeidReporter.csproj", "{12A72BD7-74FC-40D7-A799-DCD03BFDCF94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -34,14 +34,19 @@ namespace FtB_FuncPrepareSending
                 _logger.LogInformation($"C# ServiceBus queue trigger function processed message: {submittalQueueItem.ArchiveReference}");
 
                 var results = await _queueProcessor.ExecuteProcessingStrategy(submittalQueueItem);
-                var tasks = new List<Task>();
 
-                foreach (var item in results)
+                //TODO: Code review with ØTS; Is it OK to use <null> as an instruction to say: NO MORE ENQUEUING... ?
+                if (results != null)
                 {
-                    tasks.Add(queueCollector.AddAsync(item));
+                    var tasks = new List<Task>();
+
+                    foreach (var item in results)
+                    {
+                        tasks.Add(queueCollector.AddAsync(item));
+                    }
+                    await Task.WhenAll(tasks);
+                    //await queueCollector.FlushAsync();                }
                 }
-                await Task.WhenAll(tasks);
-//                await queueCollector.FlushAsync();
             }
         }
     }

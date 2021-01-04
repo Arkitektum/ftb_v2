@@ -104,7 +104,7 @@ namespace FtB_FormLogic
                 var mess = new MessageDataType()
                 {
                     //TODO: Remove "AF-Ver.2: " and ({DateTime.Now.ToString("HH:mm:ss")}) from MessageTitle
-                    MessageTitle = $"AF-Ver.2: Kvittering - varsel for oppstart av reguleringsplanarbeid, {byggested} ({DateTime.Now.ToString("HH:mm:ss")})",
+                    MessageTitle = $"AF-Ver.2: Kvittering - varsel om oppstart av reguleringsplanarbeid, {byggested} ({DateTime.Now.ToString("HH:mm:ss")})",
                     MessageSummary = "Trykk på vedleggene under for å laste ned varselet og kvittering med liste over hvilke berørte parter som har blitt varslet",
                     MessageBody = htmlBody
                 };

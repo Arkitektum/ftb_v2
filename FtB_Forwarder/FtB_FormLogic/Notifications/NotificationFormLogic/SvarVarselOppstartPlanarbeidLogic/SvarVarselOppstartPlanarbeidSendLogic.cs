@@ -17,15 +17,6 @@ namespace FtB_FormLogic
                                                  DbUnitOfWork dbUnitOfWork
             )
             : base(repo, tableStorage, log, dbUnitOfWork)
-        {
-
-        }
-
-        protected override Guid GetHovedinnsendingsNummer()
-        {
-            if (Guid.TryParse(FormData.hovedinnsendingsnummer, out var newGuid))
-                return newGuid;
-            throw new ArgumentOutOfRangeException($"Illegal distribution id. Could not parse {FormData.hovedinnsendingsnummer}");
-        }
+        { }
     }
 }

@@ -26,7 +26,7 @@ namespace FtB_FormLogic
 
         public override async Task<IEnumerable<SendQueueItem>> ExecuteAsync(SubmittalQueueItem submittalQueueItem)
         {
-            var returnValue = await base.ExecuteAsync(submittalQueueItem);
+            await base.ExecuteAsync(submittalQueueItem);
 
             var initialArchiveReference = await GetInitialArchiveReferenceAsync(FormData.hovedinnsendingsnummer);
             _log.LogDebug($"{GetType().Name}: Got initialArchiveReference {initialArchiveReference} for distributionId {FormData.hovedinnsendingsnummer}");
@@ -34,7 +34,9 @@ namespace FtB_FormLogic
             await MakePDFReplyPublicAccessible(submittalQueueItem.ArchiveReference, initialArchiveReference, FormData.beroertPart.navn);
             await CreateNotificationSenderDatabaseStatus(submittalQueueItem.ArchiveReference);
             
-            return returnValue;
+            //At the end of processing this method, processing is completed for this schema (FormLogic), 
+            //thus returning null (meaning put no element on the queue)
+            return null;
         }
 
         private async Task MakePDFReplyPublicAccessible(string neighboursArchiveReference, string initialArchiveReference, string partyName)
@@ -54,40 +56,19 @@ namespace FtB_FormLogic
         public override void SetSender()
         {
             Enum.TryParse(this.FormData.beroertPart.partstype.kodeverdi, out ActorType senderType);
-            string id;
-            if (senderType.Equals(ActorType.Privatperson))
-            {
-                id = this.FormData.beroertPart.foedselsnummer;
-            }
-            else
-            {
-                id = this.FormData.beroertPart.organisasjonsnummer;
-            }
-
+            string id = (senderType.Equals(ActorType.Privatperson) ? FormData.beroertPart.foedselsnummer : FormData.beroertPart.organisasjonsnummer);
             Sender = new Actor() { Id = id, Type = senderType };
             _log.LogDebug($"SetSender: {FormData.beroertPart.navn}, Id: {id}");
         }
 
         public override void SetReceivers()
         {
-
             Enum.TryParse(FormData.forslagsstiller.partstype.kodeverdi, out ActorType receiverType);
-            string id;
-            if (receiverType.Equals(ActorType.Privatperson))
-            {
-                id = FormData.forslagsstiller.foedselsnummer;
-            }
-            else
-            {
-                id = FormData.forslagsstiller.organisasjonsnummer;
-            }
-
+            string id = (receiverType.Equals(ActorType.Privatperson) ? FormData.forslagsstiller.foedselsnummer : FormData.forslagsstiller.organisasjonsnummer);
             var receivers = new List<Actor>();
             receivers.Add(new Actor() { Type = receiverType, Id = id });
-
             base.SetReceivers(receivers);
             _log.LogDebug($"SetReceiver: {FormData.forslagsstiller.navn}, Id: {id}");
-
         }
 
         private async Task CreateNotificationSenderDatabaseStatus(string archiveReference)
@@ -121,5 +102,13 @@ namespace FtB_FormLogic
                 throw;
             }
         }
+
+        protected override Guid GetHovedinnsendingsNummer()
+        {
+            if (Guid.TryParse(FormData.hovedinnsendingsnummer, out var newGuid))
+                return newGuid;
+            throw new ArgumentOutOfRangeException($"Illegal distribution id. Could not parse {FormData.hovedinnsendingsnummer}");
+        }
+
     }
 }

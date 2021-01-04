@@ -43,25 +43,35 @@ namespace FtB_ProcessStrategies
             _log = log;
         }
 
-        public async Task ExecuteProcessingStrategyAsync()
+        public async Task<IEnumerable<Tuple<string,string>>> ExecuteProcessingStrategyAsync()
         {
             _log.LogDebug("Getting distributionSubmittalEntities..");
             IEnumerable<DistributionSubmittalEntity> distributionSubmittalEntities = await GetDistributionSubmittalEntities();
 
             _log.LogDebug($"Number of distributionSubmittalEntities found: {distributionSubmittalEntities.Count()}");
-
-            foreach (var distributionSubmittalEntity in distributionSubmittalEntities)
+            if (distributionSubmittalEntities.ToList().Count > 0)
             {
-                var answerToDistributionSubmitter = await GetNotificationSenderReplies(distributionSubmittalEntity);
-                _log.LogDebug($"Number of answers for {distributionSubmittalEntity.PartitionKey} found: {((answerToDistributionSubmitter == null) || (answerToDistributionSubmitter.Senders.Count() == 0) ? "0" : answerToDistributionSubmitter.Senders.Count().ToString())}");
+                var reportingSubmitters = new List<Tuple<string, string>>();
 
-                if (answerToDistributionSubmitter != null)
+                foreach (var distributionSubmittalEntity in distributionSubmittalEntities)
                 {
-                    var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(answerToDistributionSubmitter.InitialArchiveReference.ToLower());
-                    _log.LogDebug($"Reporting PDF replies to submitter for archiveReference {answerToDistributionSubmitter.InitialArchiveReference }");
-                    await SendRepliesReportToDistributionSubmitterAsync(answerToDistributionSubmitter, publicBlobContainer);
+                    var answerToDistributionSubmitter = await GetNotificationSenderReplies(distributionSubmittalEntity);
+                    _log.LogDebug($"Number of answers for {distributionSubmittalEntity.PartitionKey} found: {((answerToDistributionSubmitter == null) || (answerToDistributionSubmitter.Senders.Count() == 0) ? "0" : answerToDistributionSubmitter.Senders.Count().ToString())}");
+
+                    if (answerToDistributionSubmitter != null)
+                    {
+                        var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(answerToDistributionSubmitter.InitialArchiveReference.ToLower());
+                        _log.LogDebug($"Reporting PDF replies to submitter for archiveReference {answerToDistributionSubmitter.InitialArchiveReference }");
+                        await SendRepliesReportToDistributionSubmitterAsync(answerToDistributionSubmitter, publicBlobContainer);
+                        
+                        reportingSubmitters.Add(Tuple.Create(distributionSubmittalEntity.SenderId, distributionSubmittalEntity.PartitionKey));
+                    }
                 }
+
+                return reportingSubmitters;
             }
+
+            return null;
         }
 
         private async Task<IEnumerable<DistributionSubmittalEntity>> GetDistributionSubmittalEntities()
@@ -120,48 +130,20 @@ namespace FtB_ProcessStrategies
             return null;
         }
 
-        private async Task SendRepliesReportToDistributionSubmitterAsync(SvarPaaVarselOmOppstartAvPlanarbeidModel answer, string publicContainer)
+
+        private async Task SendRepliesReportToDistributionSubmitterAsync(SvarPaaVarselOmOppstartAvPlanarbeidModel repliesToPlanNotice, string publicContainer)
         {
             try
             {
-                _log.LogDebug($"Start SendRepliesReportToDistributionSubmitterAsync for planId: {answer.PlanId}");
+                _log.LogDebug($"Start SendRepliesReportToDistributionSubmitterAsync for planId: {repliesToPlanNotice.PlanId}");
 
-                DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(answer.InitialArchiveReference, answer.InitialArchiveReference);
+                DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(repliesToPlanNotice.InitialArchiveReference, repliesToPlanNotice.InitialArchiveReference);
                 submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.ReportingInProgress);
-                _log.LogInformation($"{GetType().Name}. ArchiveReference={answer.InitialArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. Reporting in progress...");
-                var notificationMessage = new AltinnNotificationMessage();
-                notificationMessage.ArchiveReference = answer.InitialArchiveReference;
-                notificationMessage.Receiver = new AltinnReceiver() { Id = answer.ReceiverId, Type = answer.AltinnReceiverType };
+                _log.LogInformation($"{GetType().Name}. ArchiveReference={repliesToPlanNotice.InitialArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. Reporting in progress...");
 
-                var reportHtml = GetReport(answer);
-                _log.LogDebug("Start converting the attachment report to PDF");
-                byte[] PDFInbytes = await _htmlToPdfConverterHttpClient.Get(reportHtml);
-                _log.LogDebug("Converted to PDF");
+                var notificationMessage = await BuildNotificationMessage(repliesToPlanNotice, publicContainer);
 
-                _log.LogDebug("Getting the Altinn report message");
-                var messageData = GetReportMessage(answer, publicContainer);
-
-                char[] invalidFileNameChars = System.IO.Path.GetInvalidFileNameChars();
-                var validFilename = new string(answer.PlanNavn.Where(ch => !invalidFileNameChars.Contains(ch)).ToArray());
-                
-                notificationMessage.MessageData = messageData;
-                var reportAttachment = new AttachmentBinary()
-                {
-                    BinaryContent = PDFInbytes,
-                    Filename = $"Uttalelser_{validFilename}_{DateTime.Now.ToString("dd.MM.yyyy, kl.HH.mm.ss")}.pdf",
-                    Name = $"Uttalelser pr. {DateTime.Now.ToString("dd.MM.yyyy")}",
-                    ArchiveReference = answer.InitialArchiveReference
-                };
-                
-                notificationMessage.Attachments = new List<Attachment>() { reportAttachment };
-                _log.LogInformation($"{GetType().Name}. ArchiveReference={answer.InitialArchiveReference}. Sending report (notification).");
-                _log.LogDebug($"Start SendNotification, with {notificationMessage.Attachments.Count()} attachments");
-
-                foreach (var att in notificationMessage.Attachments)
-                {
-                    _log.LogDebug($"Attachment to send: Filename={att.Filename}");
-                }
-
+                _log.LogInformation($"Start SendNotification for archiveReference {repliesToPlanNotice.InitialArchiveReference}, with {notificationMessage.Attachments.Count()} attachments");
 
                 IEnumerable<DistributionResult> result = _notificationAdapter.SendNotification(notificationMessage);
 
@@ -174,15 +156,15 @@ namespace FtB_ProcessStrategies
 
                 if (!sendingFailed)
                 {
-                    _log.LogDebug($"Successfully sent report of replies to submitter for archiveReference {answer.InitialArchiveReference}.");
+                    _log.LogDebug($"Successfully sent report of replies to submitter for archiveReference {repliesToPlanNotice.InitialArchiveReference}.");
                     var entitiesToUpdate = new List<NotificationSenderEntity>();
-                    foreach (var sender in answer.Senders)
+                    foreach (var sender in repliesToPlanNotice.Senders)
                     {
                         var filters = new List<KeyValuePair<string, string>>();
-                        filters.Add(new KeyValuePair<string, string>("PartitionKey", answer.InitialArchiveReference));
+                        filters.Add(new KeyValuePair<string, string>("PartitionKey", repliesToPlanNotice.InitialArchiveReference));
                         filters.Add(new KeyValuePair<string, string>("RowKey", sender.SendersArchiveReference));
 
-                        var notificationSenderEntity = await _tableStorage.GetTableEntityAsync<NotificationSenderEntity>(answer.InitialArchiveReference, sender.SendersArchiveReference);
+                        var notificationSenderEntity = await _tableStorage.GetTableEntityAsync<NotificationSenderEntity>(repliesToPlanNotice.InitialArchiveReference, sender.SendersArchiveReference);
 
                         notificationSenderEntity.ProcessStage = Enum.GetName(typeof(NotificationSenderProcessStageEnum), NotificationSenderProcessStageEnum.Reported);
                         entitiesToUpdate.Add(notificationSenderEntity);
@@ -198,7 +180,7 @@ namespace FtB_ProcessStrategies
                 }
                 else
                 {
-                    _log.LogDebug($"Sending of report of replies to submitter for archiveReference {answer.InitialArchiveReference} failed.");
+                    _log.LogDebug($"Sending of report of replies to submitter for archiveReference {repliesToPlanNotice.InitialArchiveReference} failed.");
                     var failedStep = result.Where(x => x.Step.Equals(DistributionStep.Failed)
                                                         || x.Step.Equals(DistributionStep.UnableToReachReceiver)
                                                         || x.Step.Equals(DistributionStep.UnkownErrorOccurred)).Select(y => y.Step).First();
@@ -216,6 +198,41 @@ namespace FtB_ProcessStrategies
                 _log.LogError(ex, "Error occurred when creating and sending receipt");
                 throw;
             }
+        }
+
+        private async Task<AltinnNotificationMessage> BuildNotificationMessage(SvarPaaVarselOmOppstartAvPlanarbeidModel repliesToPlanNotice, string publicContainer)
+        {
+            var notificationMessage = new AltinnNotificationMessage();
+            notificationMessage.ArchiveReference = repliesToPlanNotice.InitialArchiveReference;
+            notificationMessage.Receiver = new AltinnReceiver() { Id = repliesToPlanNotice.ReceiverId, Type = repliesToPlanNotice.AltinnReceiverType };
+
+            var reportHtml = GetReport(repliesToPlanNotice);
+            _log.LogDebug("Start converting the attachment report to PDF");
+            byte[] PDFInbytes = await _htmlToPdfConverterHttpClient.Get(reportHtml);
+            _log.LogDebug("Converted to PDF");
+
+            _log.LogDebug("Getting the Altinn report message");
+            var messageData = GetReportMessage(repliesToPlanNotice, publicContainer);
+
+            char[] invalidFileNameChars = System.IO.Path.GetInvalidFileNameChars();
+            var validFilename = new string(repliesToPlanNotice.PlanNavn.Where(ch => !invalidFileNameChars.Contains(ch)).ToArray());
+
+            notificationMessage.MessageData = messageData;
+            var reportAttachment = new AttachmentBinary()
+            {
+                BinaryContent = PDFInbytes,
+                Filename = $"Uttalelser_{validFilename}_{DateTime.Now.ToString("dd.MM.yyyy, kl.HH.mm.ss")}.pdf",
+                Name = $"Uttalelser pr. {DateTime.Now.ToString("dd.MM.yyyy")}",
+                ArchiveReference = repliesToPlanNotice.InitialArchiveReference
+            };
+
+            notificationMessage.Attachments = new List<Attachment>() { reportAttachment };
+            
+            foreach (var att in notificationMessage.Attachments)
+            {
+                _log.LogDebug($"Attachment in notificationMessage for archiveReference {notificationMessage.ArchiveReference}: Filename={att.Filename}");
+            }
+            return notificationMessage;
         }
 
         protected virtual async Task AddToSenderProcessLogAsync(string initialArchiveReference, string senderId, NotificationSenderStatusLogEnum statusEnum)
@@ -270,7 +287,7 @@ namespace FtB_ProcessStrategies
                 var mess = new MessageDataType()
                 {
                     //TODO: Remove "AF-Ver.2: " and ({DateTime.Now.ToString("HH:mm:ss")}) from MessageTitle
-                    MessageTitle = $"AF-Ver.2: Rapport - svar fra berørte parter ang. varsel for oppstart av planarbeid, {planNavn} ({DateTime.Now.ToString("HH:mm:ss")})",
+                    MessageTitle = $"AF-Ver.2: Rapport - svar fra berørte parter ang. varsel om oppstart av planarbeid, {planNavn} ({DateTime.Now.ToString("HH:mm:ss")})",
                     MessageSummary = "Trykk på vedleggene under for å åpne rapporten eller svarene fra de berørte partene",
                     MessageBody = htmlBody
                 };

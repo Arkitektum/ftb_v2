@@ -10,10 +10,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Ftb_DbModels;
 
 namespace FtB_FormLogic
 {
-    public class NotificationPrepareLogic<T> : PrepareLogic<T>
+    public abstract class NotificationPrepareLogic<T> : PrepareLogic<T>
     {
         protected readonly IBlobOperations _blobOperations;
 
@@ -30,13 +31,10 @@ namespace FtB_FormLogic
         public override async Task<IEnumerable<SendQueueItem>> ExecuteAsync(SubmittalQueueItem submittalQueueItem)
         {
             var returnValue = await base.ExecuteAsync(submittalQueueItem);
-            
-            
-            var sendQueueItems = await CreateNotificationSendQueueItem(submittalQueueItem);
-
+            var sendQueueItems = CreateNotificationSendQueueItem(submittalQueueItem);
             var queueList = new List<SendQueueItem>();
             queueList.Add(sendQueueItems);
-
+            await UpdateDistributionForms();
             return queueList;
         }
 
@@ -46,11 +44,8 @@ namespace FtB_FormLogic
             
             return distributionForm.InitialArchiveReference;
         }
-        private async Task<SendQueueItem> CreateNotificationSendQueueItem(SubmittalQueueItem submittalQueueItem)
+        private SendQueueItem CreateNotificationSendQueueItem(SubmittalQueueItem submittalQueueItem)
         {
-            var sendQueueItems = new List<SendQueueItem>();
-            string rowKey = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}";
-
             return new SendQueueItem()
             {
                 ArchiveReference = ArchiveReference,
@@ -58,6 +53,17 @@ namespace FtB_FormLogic
                 Receiver = Receivers[0],
                 Sender = Sender
             };
+        }
+
+        public async Task UpdateDistributionForms()
+        {
+            var distributionId = GetHovedinnsendingsNummer();
+            var distributionForm = await _dbUnitOfWork.DistributionForms.Get(distributionId);
+            distributionForm.Signed = DateTime.Now;
+            distributionForm.DistributionStatus = DistributionStatus.signed;
+            distributionForm.SignedArchiveReference = ArchiveReference.ToUpper();
+
+            await _dbUnitOfWork.DistributionForms.Update(distributionForm.InitialArchiveReference, distributionId, distributionForm);
         }
 
         protected async Task CopyPDFToPublicBlobStorage(byte[] pdfDoc, string senderName, string publicContainer, string sendersArchiveReference)
@@ -82,6 +88,8 @@ namespace FtB_FormLogic
 
             return await _blobOperations.GetBlobAsBytesByMetadata(BlobStorageEnum.Private, archiveReference.ToLower(), metadataList);
         }
+
+        protected abstract Guid GetHovedinnsendingsNummer();
 
     }
 }
