@@ -43,7 +43,6 @@ namespace FtB_FuncSender
 
             builder.Services.AddScoped<FormatIdToFormMapper>();
             builder.Services.AddScoped<VarselOppstartPlanarbeidSendLogic>();
-            builder.Services.AddScoped<SvarVarselOppstartPlanarbeidSendLogic>();
             builder.Services.AddScoped<IFormDataRepo, FormDataRepository>();
             builder.Services.AddScoped<ITableStorage, TableStorage>();
 
