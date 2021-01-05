@@ -76,10 +76,10 @@ namespace FtB_ProcessStrategies
 
         private async Task<IEnumerable<DistributionSubmittalEntity>> GetDistributionSubmittalEntities()
         {
-            var distributionSubmittalEntitiesCompleted = _tableStorage.GetTableEntitiesWithStatusFilter<DistributionSubmittalEntity>(Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed));
-            var distributionSubmittalEntitiesReportingInProgress = _tableStorage.GetTableEntitiesWithStatusFilter<DistributionSubmittalEntity>(Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.ReportingInProgress));
+            var distributionSubmittalEntitiesDistributed = _tableStorage.GetTableEntitiesWithStatusFilter<DistributionSubmittalEntity>(Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Distributed));
+            var distributionSubmittalEntitiesReportingInProgress = _tableStorage.GetTableEntitiesWithStatusFilter<DistributionSubmittalEntity>(Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.ReportingInProgress));
 
-            IEnumerable<DistributionSubmittalEntity> distributionSubmittalEntities = distributionSubmittalEntitiesCompleted.Select(x => x).Concat(distributionSubmittalEntitiesReportingInProgress.Select(y => y));
+            IEnumerable<DistributionSubmittalEntity> distributionSubmittalEntities = distributionSubmittalEntitiesDistributed.Select(x => x).Concat(distributionSubmittalEntitiesReportingInProgress.Select(y => y));
             return distributionSubmittalEntities;
         }
 
@@ -96,7 +96,7 @@ namespace FtB_ProcessStrategies
             if (fristUtgaatt)
             {
                 var entity = _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(distributionSubmittalEntity.PartitionKey, distributionSubmittalEntity.PartitionKey).Result;
-                entity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Reported);
+                entity.Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Reported);
                 await _tableStorage.UpdateEntityRecordAsync<DistributionSubmittalEntity>(entity);
 
                 return null;
@@ -138,7 +138,7 @@ namespace FtB_ProcessStrategies
                 _log.LogDebug($"Start SendRepliesReportToDistributionSubmitterAsync for planId: {repliesToPlanNotice.PlanId}");
 
                 DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(repliesToPlanNotice.InitialArchiveReference, repliesToPlanNotice.InitialArchiveReference);
-                submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.ReportingInProgress);
+                submittalEntity.Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.ReportingInProgress);
                 _log.LogInformation($"{GetType().Name}. ArchiveReference={repliesToPlanNotice.InitialArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. Reporting in progress...");
 
                 var notificationMessage = await BuildNotificationMessage(repliesToPlanNotice, publicContainer);

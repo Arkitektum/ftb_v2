@@ -26,15 +26,15 @@ namespace FtB_Common.BusinessModels
             RowKey = archiveReference;
             SenderId = senderId;
             ReceiverCount = receiverCount;
-            Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Created);
+            Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Created);
             CreatedTimeStamp = createdTimestamp;
         }
 
-        public DistributionSubmittalEntity(string archiveReference, SubmittalStatusEnum status)
+        public DistributionSubmittalEntity(string archiveReference, DistributionSubmittalStatusEnum status)
         {
             PartitionKey = archiveReference;
             RowKey = archiveReference;
-            Status = Enum.GetName(typeof(SubmittalStatusEnum), status);
+            Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), status);
         }
         public DistributionSubmittalEntity(string archiveReference)
         {

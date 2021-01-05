@@ -7,10 +7,9 @@ namespace FtB_Common.Enums
     public enum DistributionReceiverProcessStageEnum
     {
         Created,
-        Processing,
-        Processed,
+        Distributing,
+        Distributed,
         ReadyForReporting,
-        Completed,
-        Reported
+        Reported,
     }
 }

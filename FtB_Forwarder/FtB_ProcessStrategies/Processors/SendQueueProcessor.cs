@@ -1,4 +1,5 @@
 ﻿using FtB_Common.BusinessModels;
+using FtB_Common.Exceptions;
 using FtB_Common.FormLogic;
 //using FtB_Common.Mappers;
 using FtB_Common.Storage;
@@ -35,8 +36,14 @@ namespace FtB_ProcessStrategies
                 string serviceCode = await _blobOperations.GetServiceCodeFromStoredBlob(sendQueueItem.ArchiveReference);
                 string formatId = await _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<ReportQueueItem, SendQueueItem>(formatId, FormLogicProcessingContext.Send);
-                var result = await formLogicBeingProcessed.ExecuteAsync(sendQueueItem);  
+                var result = await formLogicBeingProcessed.ExecuteAsync(sendQueueItem);
+                await _dbUnitOfWork.SaveDistributionForms();
                 return result;
+            }
+            catch (DistributionSendExeception dsex)
+            {
+                _log.LogError($"{GetType().Name}: An error occured while distribution for archiveReference {sendQueueItem?.ArchiveReference}. DistributionFormReferenceId {dsex.DistributionFormReferenceId}");
+                throw;
             }
             catch (Exception ex)
             {
@@ -47,7 +54,7 @@ namespace FtB_ProcessStrategies
             {
                 //TODO: ???Kanskje skummelt å lagre alle endringer i distributionforms, metadata, dersom ting går feil? Alle Logentries er ok å lagre..
                 //?????????????????
-                await _dbUnitOfWork.Save();
+                await _dbUnitOfWork.SaveLogEntries();
             }
         }
     }

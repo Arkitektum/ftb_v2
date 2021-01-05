@@ -67,17 +67,7 @@ namespace FtB_FormLogic
         }
         protected virtual async Task CreateDistributionSubmittalDatabaseStatus(string archiveReference, string senderId, int receiverCount)
         {
-            try
-            {
-                var entity = new DistributionSubmittalEntity(archiveReference, senderId, receiverCount, DateTime.Now);
-                await _tableStorage.InsertEntityRecordAsync<DistributionSubmittalEntity>(entity);
-                _log.LogDebug($"Create submittal database status for {archiveReference} with receiver count: {receiverCount}.");
-            }
-            catch (Exception ex)
-            {
-                _log.LogError(ex, $"Error creating submittal record for archiveReference={archiveReference}.");
-                throw;
-            }
+            throw new NotImplementedException();
         }
 
     }

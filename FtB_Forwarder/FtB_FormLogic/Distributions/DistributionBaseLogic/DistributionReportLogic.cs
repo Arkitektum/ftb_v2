@@ -72,7 +72,7 @@ namespace FtB_FormLogic
             {
                 _log.LogDebug($"Start SendReceiptToSubmitterWhenAllReceiversAreProcessed. Queue item: {reportQueueItem.ReceiverLogPartitionKey}");
                 DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
-                submittalEntity.Status = Enum.GetName(typeof(SubmittalStatusEnum), SubmittalStatusEnum.Completed);
+                submittalEntity.Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Distributed);
                 base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
                 var notificationMessage = new AltinnNotificationMessage();
                 notificationMessage.ArchiveReference = ArchiveReference;
@@ -124,7 +124,7 @@ namespace FtB_FormLogic
                     var updatedSubmittalEntity = _tableStorage.UpdateEntityRecordAsync<DistributionSubmittalEntity>(submittalEntity);
                     _log.LogDebug("Start Update all receiver entities");
                     var allReceivers = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(reportQueueItem.ArchiveReference.ToLower());
-                    allReceivers.ToList().ForEach(x => x.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Completed));
+                    allReceivers.ToList().ForEach(x => x.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Reported));
                     await UpdateEntitiesAsync(allReceivers);
                     _log.LogDebug("Start BulkAddLogEntryToReceivers");
                     await BulkAddLogEntryToReceiversAsync(reportQueueItem.ArchiveReference, DistributionReceiverStatusLogEnum.Completed);
