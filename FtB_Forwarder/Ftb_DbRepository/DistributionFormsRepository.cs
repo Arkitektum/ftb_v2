@@ -22,7 +22,6 @@ namespace Ftb_Repositories
         {
             _logger = logger;
             _distributionFormsClient = distributionFormsClient;
-            _logger.LogDebug($"DistributionFormsRepository - constructor.");
         }
         public void SetArchiveReference(string archiveReference)
         {

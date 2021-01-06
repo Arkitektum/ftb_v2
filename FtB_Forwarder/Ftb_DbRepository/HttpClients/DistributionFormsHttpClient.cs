@@ -12,8 +12,7 @@ namespace Ftb_Repositories.HttpClients
 {
     public class DistributionFormsHttpClient
     {
-        public HttpClient Client {get;}
-        private readonly IOptions<FormProcessAPISettings> _settings;
+        public HttpClient Client {get;}        
         private readonly ILogger _log;
 
         public DistributionFormsHttpClient(HttpClient httpClient, 
@@ -21,10 +20,9 @@ namespace Ftb_Repositories.HttpClients
                                            ILogger<DistributionFormsHttpClient> log)
         {
             Client = httpClient;
-            _settings = settings;
             _log = log;
-            Client.BaseAddress = new Uri(_settings.Value.Uri);
-            Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
+            Client.BaseAddress = new Uri(settings.Value.Uri);
+            Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(settings.Value);
             _log.LogDebug($"DistributionFormsHttpClient - constructor.");
         }
 
@@ -92,8 +90,6 @@ namespace Ftb_Repositories.HttpClients
 
             var result = await Client.PutAsync(requestUri, stringContent);
             _log.LogDebug($"Put (update) gave result {result.StatusCode.ToString()}.");
-
         }
-
     }
 }

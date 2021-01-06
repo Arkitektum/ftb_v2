@@ -12,12 +12,12 @@ namespace Ftb_Repositories.HttpClients
     {
         public HttpClient Client { get; }
         
-        private readonly IOptions<FormProcessAPISettings> _settings;
 
         public FormMetadataHttpClient(HttpClient httpClient, IOptions<FormProcessAPISettings> settings)
         {
             Client = httpClient;
-            _settings = settings;
+            Client.BaseAddress = new Uri(settings.Value.Uri);
+            Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(settings.Value);
         }
 
         public async Task Update(FormMetadata formMetadata)
@@ -26,17 +26,12 @@ namespace Ftb_Repositories.HttpClients
             var json = JsonSerializer.Serialize(formMetadata);
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            Client.BaseAddress = new Uri(_settings.Value.Uri);
-            Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
-            var result = await Client.PostAsync(requestUri, stringContent);
+            var result = await Client.PutAsync(requestUri, stringContent);
         }
 
         public async Task< FormMetadata> Get(string archiveReference)
         {
             var requestUri = $"{archiveReference}/formmetadata";
-
-            Client.BaseAddress = new Uri(_settings.Value.Uri);
-            Client.DefaultRequestHeaders.Authorization = BasicAuthenticationHelper.GetAuthenticationHeader(_settings.Value);
             var result = await Client.GetAsync(requestUri);
 
             FormMetadata retVal = null;

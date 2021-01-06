@@ -53,6 +53,8 @@ namespace FtB_FormLogic
 
         public override async Task<string> ExecuteAsync(ReportQueueItem reportQueueItem)
         {
+            _dbUnitOfWork.SetArchiveReference(reportQueueItem.ArchiveReference);
+
             var returnItem = await base.ExecuteAsync(reportQueueItem);
 
             await UpdateReceiverProcessStageAsync(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, DistributionReceiverProcessStageEnum.ReadyForReporting);
@@ -130,12 +132,15 @@ namespace FtB_FormLogic
                     await BulkAddLogEntryToReceiversAsync(reportQueueItem.ArchiveReference, DistributionReceiverStatusLogEnum.Completed);
                     _log.LogDebug("End SendReceiptToSubmitterWhenAllReceiversAreProcessed");
                     //await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
+
+                    await ReportFormProcessStatus("Ok");
                 }
                 else
                 {
                     var failedStep = result.Where(x => x.Step.Equals(DistributionStep.Failed)
                                                         || x.Step.Equals(DistributionStep.UnableToReachReceiver)
                                                         || x.Step.Equals(DistributionStep.UnkownErrorOccurred)).Select(y => y.Step).First();
+                                        
                     throw new SendNotificationException("Error: Failed during sending of submittal receipt", failedStep);
                 }
             }
@@ -153,6 +158,14 @@ namespace FtB_FormLogic
             {
                 await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
             }
+        }
+
+        private async Task ReportFormProcessStatus(string status)
+        {
+            var formMetadata = await _dbUnitOfWork.FormMetadata.Get();
+            formMetadata.Status = "Ok";
+            _dbUnitOfWork.FormMetadata.Update(formMetadata);
+            await _dbUnitOfWork.FormMetadata.Save();
         }
 
         protected virtual (string Filename, string Name) GetFileNameForMainForm()
