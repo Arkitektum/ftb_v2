@@ -51,7 +51,7 @@ namespace Ftb_Repositories.HttpClients
 
                 return PDFInbytes;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

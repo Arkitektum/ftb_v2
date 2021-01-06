@@ -31,16 +31,17 @@ namespace FtB_FormLogic
         {
             await base.LoadDataAsync(sendQueueItem.ArchiveReference);
 
-            this.Receiver = sendQueueItem.Receiver;
+            //this.Receiver = sendQueueItem.Receiver;
 
-            return new ReportQueueItem()
-            {
-                ArchiveReference = sendQueueItem.ArchiveReference,
-                ReceiverLogPartitionKey = sendQueueItem.ReceiverLogPartitionKey,
-                ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber,
-                Sender = sendQueueItem.Sender,
-                Receiver = sendQueueItem.Receiver
-            };
+            //return new ReportQueueItem()
+            //{
+            //    ArchiveReference = sendQueueItem.ArchiveReference,
+            //    ReceiverLogPartitionKey = sendQueueItem.ReceiverLogPartitionKey,
+            //    ReceiverSequenceNumber = sendQueueItem.ReceiverSequenceNumber,
+            //    Sender = sendQueueItem.Sender,
+            //    Receiver = sendQueueItem.Receiver
+            //};
+            return null;
 
         }
 

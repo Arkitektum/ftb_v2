@@ -8,6 +8,7 @@ using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using FtB_FormLogic;
+using Ftb_Repositories;
 using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using System;
@@ -27,13 +28,15 @@ namespace FtB_ProcessStrategies
         private readonly IHtmlUtils _htmlUtils;
         private readonly HtmlToPdfConverterHttpClient _htmlToPdfConverterHttpClient;
         private readonly ILogger _log;
+        private readonly DbUnitOfWork _dbUnitOfWork;
 
         public ReportSvarPaaVarselOmOppstartAvPlanarbeidProcessor(IBlobOperations blobOperations,
                                                                   ITableStorage tableStorage,
                                                                   INotificationAdapter notificationAdapter,
                                                                   IHtmlUtils htmlUtils,
                                                                   HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient,
-                                                                  ILogger<ReportSvarPaaVarselOmOppstartAvPlanarbeidProcessor> log)
+                                                                  ILogger<ReportSvarPaaVarselOmOppstartAvPlanarbeidProcessor> log,
+                                                                  DbUnitOfWork dbUnitOfWork)
         {
             _blobOperations = blobOperations;
             _tableStorage = tableStorage;
@@ -41,6 +44,7 @@ namespace FtB_ProcessStrategies
             _htmlUtils = htmlUtils;
             _htmlToPdfConverterHttpClient = htmlToPdfConverterHttpClient;
             _log = log;
+            _dbUnitOfWork = dbUnitOfWork;
         }
 
         public async Task<IEnumerable<Tuple<string,string>>> ExecuteProcessingStrategyAsync()
@@ -55,13 +59,17 @@ namespace FtB_ProcessStrategies
 
                 foreach (var distributionSubmittalEntity in distributionSubmittalEntities)
                 {
+                    var archiveReference = distributionSubmittalEntity.PartitionKey;
+                    _dbUnitOfWork.SetArchiveReference(archiveReference);
+
                     var answerToDistributionSubmitter = await GetNotificationSenderReplies(distributionSubmittalEntity);
                     _log.LogDebug($"Number of answers for {distributionSubmittalEntity.PartitionKey} found: {((answerToDistributionSubmitter == null) || (answerToDistributionSubmitter.Senders.Count() == 0) ? "0" : answerToDistributionSubmitter.Senders.Count().ToString())}");
 
                     if (answerToDistributionSubmitter != null)
                     {
+                        _dbUnitOfWork.LogEntries.AddInfo($"Sender rapport om svar fra berørte parter på varsel om oppstart av planarbeid til forslagstiller med id {distributionSubmittalEntity.SenderId}");
                         var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(answerToDistributionSubmitter.InitialArchiveReference.ToLower());
-                        _log.LogDebug($"Reporting PDF replies to submitter for archiveReference {answerToDistributionSubmitter.InitialArchiveReference }");
+                        _log.LogDebug($"Reporting PDF replies to submitter with senderId {distributionSubmittalEntity.SenderId} for archiveReference {answerToDistributionSubmitter.InitialArchiveReference}");
                         await SendRepliesReportToDistributionSubmitterAsync(answerToDistributionSubmitter, publicBlobContainer);
                         
                         reportingSubmitters.Add(Tuple.Create(distributionSubmittalEntity.SenderId, distributionSubmittalEntity.PartitionKey));

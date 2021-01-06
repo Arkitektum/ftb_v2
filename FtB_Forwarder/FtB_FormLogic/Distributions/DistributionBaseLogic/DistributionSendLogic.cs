@@ -32,11 +32,19 @@ namespace FtB_FormLogic
         {            
             _dbUnitOfWork.SetArchiveReference(sendQueueItem.ArchiveReference);
 
-            var returnReportQueueItem = await base.ExecuteAsync(sendQueueItem);
+            //var returnReportQueueItem = await base.ExecuteAsync(sendQueueItem);
+            await base.ExecuteAsync(sendQueueItem);
 
             this.Receiver = sendQueueItem.Receiver;
 
-            returnReportQueueItem = new ReportQueueItem()
+            if (Receiver == null || string.IsNullOrEmpty(Receiver.Id))
+            {
+                _dbUnitOfWork.LogEntries.AddError("Fant ikke personnummer/organisasjonsnummer");
+                _dbUnitOfWork.LogEntries.AddErrorInternal($"ArchiveReference {sendQueueItem.ArchiveReference} - Fant ikke personnummer/organisasjonsnummer i Receiver", "AltinnPrefill");
+                throw new Exception($"ArchiveReference {sendQueueItem.ArchiveReference} - Fant ikke personnummer/organisasjonsnummer i Receiver");
+            }
+
+            var returnReportQueueItem = new ReportQueueItem()
             {
                 ArchiveReference = sendQueueItem.ArchiveReference,
                 ReceiverLogPartitionKey = sendQueueItem.ReceiverLogPartitionKey,
@@ -61,76 +69,11 @@ namespace FtB_FormLogic
 
             var prefillData = PrefillSendData.FirstOrDefault();
 
-            var distributionForm = await CreateDistributionForm(prefillData); 
+            await CreateDistributionForm(prefillData);
             // NOTE:The distributionForm will not be saved if distribution sending fails
 
-            if (Receiver == null || string.IsNullOrEmpty(Receiver.Id))
-            {
-                _dbUnitOfWork.LogEntries.AddError("Fant ikke personnummer/organisasjonsnummer");
-                _dbUnitOfWork.LogEntries.AddErrorInternal($"Dist id {prefillData.InitialExternalSystemReference} - Fant ikke personnummer/organisasjonsnummer i Receiver", "AltinnPrefill");
-            }
-            else
-            {
-                _log.LogDebug("Sending distribution form with reference {0} for {1} - {2}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
-                
-                //***********************************
-                // Sending the distribution
-                //***********************************
-                var result = await _distributionAdapter.SendDistribution(DistributionMessage);
+            await SendDistribution(sendQueueItem, prefillData);
 
-                //Remember "postdistribution metadata SendPrefillServiceV2 line 152 - 162
-
-                //Log results
-                LogPrefillProcessing(result, prefillData);
-                LogDistributionProcessingResults(result, prefillData);
-
-                if (result.Where(r => r.Step == DistributionStep.Failed || r.Step == DistributionStep.UnkownErrorOccurred || r.Step == DistributionStep.UnableToReachReceiver).Any())
-                {
-                    _log.LogError("Sending distribution form with reference {0} for {1} - {2} failed", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
-                    distributionForm.DistributionStatus = DistributionStatus.error;
-                    distributionForm.ErrorMessage = "Send manuelt";
-
-                    await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, 
-                                                            sendQueueItem.ReceiverSequenceNumber, 
-                                                            sendQueueItem.Receiver.Id, 
-                                                            ReceiverProcessOutcomeEnum.Failed);
-
-                    await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, 
-                                                       sendQueueItem.Receiver.Id, 
-                                                       DistributionReceiverStatusLogEnum.CorrespondenceSendingFailed);
-
-                    throw new DistributionSendExeception(prefillData.InitialExternalSystemReference, 
-                                                         prefillData.ExternalSystemReference, 
-                                                         DistributionMessage.DistributionFormReferenceId, 
-                                                         "CorrespondenceSendingFailed");
-                }
-                else if (result.Where(r => r.Step == DistributionStep.ReservedReportee).Any())
-                {
-                    _log.LogInformation("Sending distribution form with reference {0} for {1} - {2} was prevented due to ReservedReportee", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
-                    await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
-                    await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.ReservedReportee);
-                }
-                else
-                {
-                    _log.LogInformation("Sending distribution form with reference {0} for {1} - {2} was ok. Steps {3}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference, result.Select(x => x.Step).ToList());
-                    _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon behandling ferdig");
-                    
-                    await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, 
-                                                            sendQueueItem.ReceiverSequenceNumber, 
-                                                            sendQueueItem.Receiver.Id, 
-                                                            ReceiverProcessOutcomeEnum.Sent);
-
-                    await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, 
-                                                       sendQueueItem.Receiver.Id, 
-                                                       DistributionReceiverStatusLogEnum.CorrespondenceSent);
-                }
-
-                await UpdateReceiverProcessStageAsync(sendQueueItem.ArchiveReference, 
-                                                      sendQueueItem.ReceiverSequenceNumber, 
-                                                      sendQueueItem.Receiver.Id, 
-                                                      DistributionReceiverProcessStageEnum.Distributed);
-
-            }
             //TODO - Has been temp used for testing of ReservedReportee
             //if (sendQueueItem.Receiver.Id.Equals("910041126"))
             //{
@@ -140,8 +83,65 @@ namespace FtB_FormLogic
             return returnReportQueueItem;
         }
 
+        private async Task SendDistribution(SendQueueItem sendQueueItem, IPrefillData prefillData)
+        {
+            _log.LogDebug("Sending distribution form with reference {0} for {1} - {2}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
+            var result = await _distributionAdapter.SendDistribution(DistributionMessage);
 
-        private async Task<DistributionForm> CreateDistributionForm(IPrefillData prefillData)
+            //Remember "postdistribution metadata SendPrefillServiceV2 line 152 - 162
+
+            //Log results
+            LogPrefillProcessing(result, prefillData);
+            LogDistributionProcessingResults(result, prefillData);
+
+            if (result.Where(r => r.Step == DistributionStep.Failed || r.Step == DistributionStep.UnkownErrorOccurred || r.Step == DistributionStep.UnableToReachReceiver).Any())
+            {
+                _log.LogError("Sending distribution form with reference {0} for {1} - {2} failed", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
+                //distributionForm.DistributionStatus = DistributionStatus.error;
+                //distributionForm.ErrorMessage = "Send manuelt";
+
+                await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference,
+                                                        sendQueueItem.ReceiverSequenceNumber,
+                                                        sendQueueItem.Receiver.Id,
+                                                        ReceiverProcessOutcomeEnum.Failed);
+
+                await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey,
+                                                    sendQueueItem.Receiver.Id,
+                                                    DistributionReceiverStatusLogEnum.CorrespondenceSendingFailed);
+
+                throw new DistributionSendExeception(prefillData.InitialExternalSystemReference,
+                                                        prefillData.ExternalSystemReference,
+                                                        DistributionMessage.DistributionFormReferenceId,
+                                                        "CorrespondenceSendingFailed");
+            }
+            else if (result.Where(r => r.Step == DistributionStep.ReservedReportee).Any())
+            {
+                _log.LogInformation("Sending distribution form with reference {0} for {1} - {2} was prevented due to ReservedReportee", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
+                await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
+                await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.ReservedReportee);
+            }
+            else
+            {
+                _log.LogInformation("Sending distribution form with reference {0} for {1} - {2} was ok. Steps {3}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference, result.Select(x => x.Step).ToList());
+                _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon behandling ferdig");
+
+                await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference,
+                                                        sendQueueItem.ReceiverSequenceNumber,
+                                                        sendQueueItem.Receiver.Id,
+                                                        ReceiverProcessOutcomeEnum.Sent);
+
+                await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey,
+                                                    sendQueueItem.Receiver.Id,
+                                                    DistributionReceiverStatusLogEnum.CorrespondenceSent);
+            }
+
+            await UpdateReceiverProcessStageAsync(sendQueueItem.ArchiveReference,
+                                                    sendQueueItem.ReceiverSequenceNumber,
+                                                    sendQueueItem.Receiver.Id,
+                                                    DistributionReceiverProcessStageEnum.Distributed);
+        }
+
+        private async Task CreateDistributionForm(IPrefillData prefillData)
         {
             //Which sendData to use
             prefillData.InitialExternalSystemReference = DistributionMessage.DistributionFormReferenceId.ToString();
@@ -179,7 +179,7 @@ namespace FtB_FormLogic
             _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon av {prefillData.PrefillFormName} til tjeneste {prefillData.PrefillServiceCode}/{prefillData.PrefillServiceEditionCode}");
             distributionForm.SubmitAndInstantiatePrefilled = DateTime.Now;
 
-            return distributionForm;
+            //return distributionForm;
         }
 
         private async Task MapFormDataToLogicData(SendQueueItem sendQueueItem)
