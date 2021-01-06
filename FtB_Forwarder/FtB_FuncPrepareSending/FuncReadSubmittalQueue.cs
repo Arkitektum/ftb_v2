@@ -35,7 +35,6 @@ namespace FtB_FuncPrepareSending
 
                 var results = await _queueProcessor.ExecuteProcessingStrategy(submittalQueueItem);
 
-                //TODO: Code review with ØTS; Is it OK to use <null> as an instruction to say: NO MORE ENQUEUING... ?
                 if (results != null)
                 {
                     var tasks = new List<Task>();

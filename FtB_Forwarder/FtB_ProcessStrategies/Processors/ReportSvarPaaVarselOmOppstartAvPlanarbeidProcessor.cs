@@ -294,8 +294,7 @@ namespace FtB_ProcessStrategies
 
                 var mess = new MessageDataType()
                 {
-                    //TODO: Remove "AF-Ver.2: " and ({DateTime.Now.ToString("HH:mm:ss")}) from MessageTitle
-                    MessageTitle = $"AF-Ver.2: Rapport - svar fra berørte parter ang. varsel om oppstart av planarbeid, {planNavn} ({DateTime.Now.ToString("HH:mm:ss")})",
+                    MessageTitle = $"Rapport - svar fra berørte parter ang. varsel om oppstart av planarbeid, {planNavn}",
                     MessageSummary = "Trykk på vedleggene under for å åpne rapporten eller svarene fra de berørte partene",
                     MessageBody = htmlBody
                 };
