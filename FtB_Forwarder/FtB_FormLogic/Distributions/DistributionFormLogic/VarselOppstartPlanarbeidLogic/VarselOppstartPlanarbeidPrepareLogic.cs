@@ -1,5 +1,6 @@
 ﻿using FtB_Common.BusinessModels;
 using FtB_Common.Encryption;
+using FtB_Common.Enums;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
@@ -24,9 +25,9 @@ namespace FtB_FormLogic
 
         public override void SetSender()
         {
-            Enum.TryParse(FormData.forslagsstiller.partstype.kodeverdi, out ActorType receiverType);
+            Enum.TryParse(EnumExtentions.GetValueFromDescription<ActorType>(FormData.forslagsstiller.partstype.kodeverdi).ToString(), out ActorType senderType);
             string id;
-            if (receiverType.Equals(ActorType.Privatperson))
+            if (senderType.Equals(ActorType.Privatperson))
             {
                 id = FormData.forslagsstiller.foedselsnummer;
             }
@@ -35,7 +36,7 @@ namespace FtB_FormLogic
                 id = FormData.forslagsstiller.organisasjonsnummer;
             }
         
-            Sender = new Actor() { Id = id, Type = receiverType };
+            Sender = new Actor() { Id = id, Type = senderType };
             _log.LogDebug($"SetSender: {FormData.forslagsstiller.navn}, Id: {id}");
 
         }
@@ -45,7 +46,7 @@ namespace FtB_FormLogic
 
             foreach (var beroertPart in this.FormData.beroerteParter)
             {
-                Enum.TryParse(beroertPart.partstype.kodeverdi, out ActorType receiverType);
+                Enum.TryParse(EnumExtentions.GetValueFromDescription<ActorType>(beroertPart.partstype.kodeverdi).ToString(), out ActorType receiverType);
                 string id;
                 if (receiverType.Equals(ActorType.Privatperson))
                 {

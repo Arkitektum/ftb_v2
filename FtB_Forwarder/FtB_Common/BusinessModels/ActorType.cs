@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.ComponentModel;
 
 namespace FtB_Common.BusinessModels
 {
     public enum ActorType
     {
         Privatperson,
-        Foretak
+        Foretak,
+        [Description("Offentlig myndighet")]
+        OffentligMyndighet
     }
 }

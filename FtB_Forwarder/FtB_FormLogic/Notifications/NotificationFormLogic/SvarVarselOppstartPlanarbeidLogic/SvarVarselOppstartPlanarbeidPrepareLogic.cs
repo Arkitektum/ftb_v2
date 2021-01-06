@@ -55,7 +55,7 @@ namespace FtB_FormLogic
 
         public override void SetSender()
         {
-            Enum.TryParse(this.FormData.beroertPart.partstype.kodeverdi, out ActorType senderType);
+            Enum.TryParse(EnumExtentions.GetValueFromDescription<ActorType>(FormData.beroertPart.partstype.kodeverdi).ToString(), out ActorType senderType);
             string id = (senderType.Equals(ActorType.Privatperson) ? FormData.beroertPart.foedselsnummer : FormData.beroertPart.organisasjonsnummer);
             Sender = new Actor() { Id = id, Type = senderType };
             _log.LogDebug($"SetSender: {FormData.beroertPart.navn}, Id: {id}");
@@ -63,7 +63,7 @@ namespace FtB_FormLogic
 
         public override void SetReceivers()
         {
-            Enum.TryParse(FormData.forslagsstiller.partstype.kodeverdi, out ActorType receiverType);
+            Enum.TryParse(EnumExtentions.GetValueFromDescription<ActorType>(FormData.forslagsstiller.partstype.kodeverdi).ToString(), out ActorType receiverType);
             string id = (receiverType.Equals(ActorType.Privatperson) ? FormData.forslagsstiller.foedselsnummer : FormData.forslagsstiller.organisasjonsnummer);
             var receivers = new List<Actor>();
             receivers.Add(new Actor() { Type = receiverType, Id = id });
