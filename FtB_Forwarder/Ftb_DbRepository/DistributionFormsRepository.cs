@@ -27,35 +27,41 @@ namespace Ftb_Repositories
         {
             _archiveReference = archiveReference;
         }
-        public async Task<IEnumerable<DistributionForm>> Get()
+        public async Task<IEnumerable<DistributionForm>> GetAll()
         {
             if (_distributionForms.Count == 0)
-                foreach (var item in await _distributionFormsClient.Get(_archiveReference))
+                foreach (var item in await _distributionFormsClient.GetAll(_archiveReference))
                     _distributionForms.Add(item);
 
             return _distributionForms;
         }
 
-        public async Task<DistributionForm> Get(Guid id)
+        public async Task<DistributionForm> Get(string id)
         {
-            return await _distributionFormsClient.Get(id);
+            var result = _distributionForms.Where(d => d.Id.ToString().Equals(id)).FirstOrDefault();
+            if (result == null)
+            {
+                result = await _distributionFormsClient.Get(id);
+            }
+
+            return result;
         }
 
         public async Task Update(string archiveReference, Guid id, DistributionForm updatedDistributionForm)
         {
-            _logger.LogInformation($"Updates distribution form for archiveReference {archiveReference} with id={id.ToString()}");
+            _logger.LogInformation($"Updates distribution form for archiveReference {archiveReference} with id={id}");
             //_distributionForms.Add(updatedDistributionForm);
             await _distributionFormsClient.Put(archiveReference, id, updatedDistributionForm);
         }
 
 
-        public async Task<IEnumerable<DistributionForm>> GetWithChildren(Guid id)
+        public async Task<IEnumerable<DistributionForm>> GetWithChildren(string id)
         {
             if (_distributionForms.Count == 0)
-                foreach (var item in await _distributionFormsClient.Get(_archiveReference))
+                foreach (var item in await _distributionFormsClient.GetAll(_archiveReference))
                     _distributionForms.Add(item);
 
-            return _distributionForms.Where(d => d.Id == id || d.DistributionReference == id);
+            return _distributionForms.Where(d => d.Id.ToString().Equals(id) || d.DistributionReference.ToString().Equals(id));
         }
 
         public void Add(DistributionForm distributionForm)

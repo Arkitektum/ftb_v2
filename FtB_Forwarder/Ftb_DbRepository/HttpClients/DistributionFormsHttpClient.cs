@@ -37,7 +37,7 @@ namespace Ftb_Repositories.HttpClients
             var result = await Client.PostAsync(requestUri, stringContent);
         }
 
-        public async Task<IEnumerable<DistributionForm>> Get(string archiveReference)
+        public async Task<IEnumerable<DistributionForm>> GetAll(string archiveReference)
         {
             _log.LogDebug($"Get(string) distributionForm for archiveReference {archiveReference}.");
 
@@ -55,7 +55,7 @@ namespace Ftb_Repositories.HttpClients
             return retVal;
         }
 
-        public async Task<DistributionForm> Get(Guid id)
+        public async Task<DistributionForm> Get(string id)
         {
             _log.LogDebug($"Get(Guid) distributionForm for id {id}.");
 

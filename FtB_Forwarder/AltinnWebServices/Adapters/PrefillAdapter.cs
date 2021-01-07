@@ -112,9 +112,14 @@ namespace Altinn2.Adapters
                     prefillFinalResult.Message = receiptExternal.ReceiptText;
                     prefillFinalResult.Step = DistributionStep.UnableToReachReceiver;
                 }
+                else if (receiptExternal.ReceiptText.Contains("Invalid Reportee"))
+                {
+                    prefillFinalResult.Message = "Invalid Reportee";
+                    prefillFinalResult.Step = DistributionStep.UnableToReachReceiver;
+                }
                 else
                 {
-                    prefillFinalResult.Message = "Unknown error occurred while sending prefill";
+                    prefillFinalResult.Message = $"Unknown error occurred while sending prefill: {receiptExternal.ReceiptText} ";
                     prefillFinalResult.Step = DistributionStep.UnkownErrorOccurred;
                 }
             else

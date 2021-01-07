@@ -40,7 +40,7 @@ namespace FtB_FormLogic
 
         protected async Task<string> GetInitialArchiveReferenceAsync(string distributionId)
         {
-            var distributionForm = await _dbUnitOfWork.DistributionForms.Get(Guid.Parse(distributionId.ToUpper()));
+            var distributionForm = await _dbUnitOfWork.DistributionForms.Get(distributionId.ToUpper());
             
             return distributionForm.InitialArchiveReference;
         }
@@ -58,7 +58,7 @@ namespace FtB_FormLogic
         public async Task UpdateDistributionForms()
         {
             var distributionId = GetHovedinnsendingsNummer();
-            var distributionForm = await _dbUnitOfWork.DistributionForms.Get(distributionId);
+            var distributionForm = await _dbUnitOfWork.DistributionForms.Get(distributionId.ToString());
             distributionForm.Signed = DateTime.Now;
             distributionForm.DistributionStatus = DistributionStatus.signed;
             distributionForm.SignedArchiveReference = ArchiveReference.ToUpper();

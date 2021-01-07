@@ -94,7 +94,8 @@ namespace FtB_FormLogic
             LogPrefillProcessing(result, prefillData);
             LogDistributionProcessingResults(result, prefillData);
 
-            if (result.Where(r => r.Step == DistributionStep.Failed || r.Step == DistributionStep.UnkownErrorOccurred || r.Step == DistributionStep.UnableToReachReceiver).Any())
+            //if (result.Where(r => r.Step == DistributionStep.Failed || r.Step == DistributionStep.UnkownErrorOccurred || r.Step == DistributionStep.UnableToReachReceiver).Any())
+            if (result.Where(r => r.Step == DistributionStep.Failed || r.Step == DistributionStep.UnkownErrorOccurred).Any())
             {
                 _log.LogError("Sending distribution form with reference {0} for {1} - {2} failed", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
                 //distributionForm.DistributionStatus = DistributionStatus.error;
@@ -155,7 +156,7 @@ namespace FtB_FormLogic
                 DistributionType = prefillData.PrefillFormName
             });
 
-            var distributionForm = (await _dbUnitOfWork.DistributionForms.Get())
+            var distributionForm = (await _dbUnitOfWork.DistributionForms.GetAll())
                                         .Where(d => d.Id == DistributionMessage.DistributionFormReferenceId).FirstOrDefault();
 
             //Creates combined distribution data structure -- BØR GJERAST ANLEIS.... BORT MED SEG!
@@ -206,12 +207,7 @@ namespace FtB_FormLogic
                         _dbUnitOfWork.LogEntries.AddInfo($"Altinn kvittering for preutfylling til {Receiver.PresentationId} er OK");
                         _dbUnitOfWork.LogEntries.AddInfoInternal($"Dist id {prefill.InitialExternalSystemReference} - Distribusjon/correspondence komplett", "Correspondence");
                         _dbUnitOfWork.LogEntries.AddInfo($"Altinn {prefill.PrefillFormName} laget til ({Receiver.PresentationId}), Altinn kvitteringsid: TODO LEGG INN receiptExternal.ReceiptId");
-                        /*
-                    _logEntryService.Save(new LogEntry(distributionServiceFormData.ArchiveReference, $"Altinn kvittering for preutfylling til {reporteePresentation} er OK", "Info"));
-                    _logEntryService.Save(new LogEntry(distributionServiceFormData.ArchiveReference, $"Dist id {prefillFormData.GetPrefillKey()} - Distribusjon/correspondence komplett", LogEntry.Info, LogEntry.InternalMsg));                         
-                         */
-
-
+                      
                         break;
                     case DistributionStep.Failed:
                         _dbUnitOfWork.LogEntries.AddError($"Dist id {prefill.InitialExternalSystemReference} - Feil ved Altinn utsendelse av melding til {Receiver.PresentationId} ");
@@ -232,7 +228,7 @@ namespace FtB_FormLogic
                 }
             }
         }
-        private void LogPrefillProcessing(IEnumerable<DistributionResult> distributionResults, IPrefillData prefill)
+        private async Task LogPrefillProcessing(IEnumerable<DistributionResult> distributionResults, IPrefillData prefill)
         {
             var prefillResults = distributionResults.Where(p => p.DistributionComponent == DistributionComponent.Prefill).ToList();
             foreach (var prefillResult in prefillResults)
@@ -246,15 +242,20 @@ namespace FtB_FormLogic
                         _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefill.InitialExternalSystemReference} - Prefill sendt til Altinn");
                         break;
                     case DistributionStep.Failed:
-                        _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefill.InitialExternalSystemReference} - Sender prefill kall til Altinn");
+                        _dbUnitOfWork.LogEntries.AddError($"Dist id {prefill.InitialExternalSystemReference} - {prefillResult.Message}");
                         break;
                     case DistributionStep.UnkownErrorOccurred:
-                        _dbUnitOfWork.LogEntries.AddInfo($"Unntak ved Altinn utsendelse av {prefill.PrefillFormName} til {Receiver.PresentationId}", "Prefill");
+                        _dbUnitOfWork.LogEntries.AddError($"Unntak ved Altinn utsendelse av {prefill.PrefillFormName} til {Receiver.PresentationId}");
                         break;
                     case DistributionStep.ReservedReportee:
                         _dbUnitOfWork.LogEntries.AddInfoInternal($"Dist id {prefill.InitialExternalSystemReference} - Nabovarsel print pga. reservasjon", "Prefill");
                         break;
                     case DistributionStep.UnableToReachReceiver:
+                        _dbUnitOfWork.LogEntries.AddError($"Mottaker kunne ikke nås i Altinn {Receiver.PresentationId} : {prefillResult.Message}");
+                        var df = await _dbUnitOfWork.DistributionForms.Get(prefill.InitialExternalSystemReference);
+                        df.DistributionStatus = DistributionStatus.error;
+                        df.ErrorMessage = prefillResult.Message;
+
                         break;
                     default:
                         break;
@@ -282,7 +283,6 @@ namespace FtB_FormLogic
 
         protected virtual async Task MapDistributionMessage()
         {
-            _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {PrefillSendData.FirstOrDefault()?.ExternalSystemReference}");
         }
 
         //protected abstract void AddAttachmentsToDistribution(SendQueueItem sendQueueItem);
