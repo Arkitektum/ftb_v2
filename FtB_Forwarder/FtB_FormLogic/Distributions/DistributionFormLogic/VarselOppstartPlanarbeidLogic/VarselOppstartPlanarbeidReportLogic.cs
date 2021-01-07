@@ -32,8 +32,9 @@ namespace FtB_FormLogic
                                                    INotificationAdapter notificationAdapter,
                                                    DbUnitOfWork dbUnitOfWork,
                                                    IHtmlUtils htmlUtils,
-                                                   HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
-            : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils, htmlToPdfConverterHttpClient)
+                                                   HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient,
+                                                   FileDownloadHttpClient fileDownloadHttpClient)
+            : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils, htmlToPdfConverterHttpClient, fileDownloadHttpClient)
         {
             _htmlUtils = htmlUtils;
         }

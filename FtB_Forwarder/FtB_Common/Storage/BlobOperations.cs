@@ -30,6 +30,10 @@ namespace FtB_Common.Storage
             _publicBlobStorage = publicBlobStorage;
         }
 
+        public string GetBlobUri(BlobStorageEnum blobStorageEnum)
+        {
+            return blobStorageEnum == BlobStorageEnum.Private ? _privateBlobStorage.GetBlobUri().ToString() : _publicBlobStorage.GetBlobUri().ToString();
+        }
         public async Task<bool> AcquireContainerLease(string containerName, int seconds)
         {
             try
@@ -193,21 +197,26 @@ namespace FtB_Common.Storage
             }
         }
 
-        public async Task AddByteStreamToBlobStorage(BlobStorageEnum storageEnum, string containerName, string identifier, byte[] fileBytes, string mimeType, IEnumerable<KeyValuePair<string, string>> metadata = null)
+        public async Task AddByteStreamToBlobStorage(BlobStorageEnum storageEnum, string containerName, string blobName, byte[] fileBytes, string mimeType, IEnumerable<KeyValuePair<string, string>> metadata = null)
         {
-            var dict = new Dictionary<string, string>();
-            foreach (var item in metadata)
-                dict.Add(item.Key, item.Value);
-
             BlobStorage storage = GetBlobStorage(storageEnum);
+            
+            var client = storage.GetBlockBlobClient(containerName, blobName);
+            await storage.CreateContainerIfNotExistsAsync(containerName);
 
-            var client = storage.GetBlockBlobClient(containerName, identifier);
             using (var stream = new MemoryStream(fileBytes, false))
             {
                 client.Upload(stream);
             }
 
-            client.SetMetadata(dict);
+            if (metadata != null)
+            {
+                var dict = new Dictionary<string, string>();
+                foreach (var item in metadata)
+                    dict.Add(item.Key, item.Value);
+
+                client.SetMetadata(dict);
+            }
         }
         private BlobStorage GetBlobStorage(BlobStorageEnum storageEnum)
         {

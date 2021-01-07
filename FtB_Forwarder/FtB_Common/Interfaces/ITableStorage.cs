@@ -13,7 +13,7 @@ namespace FtB_Common.Interfaces
         TableEntity InsertEntityRecord<T>(ITableEntity tableEntity);
         Task InsertEntityRecordsAsync<T>(IEnumerable<ITableEntity> entities);
         Task<TableEntity> UpdateEntityRecordAsync<T>(TableEntity entity);
-        Task UpdateEntitiesAsync<T>(IEnumerable<T> entities) where T : ITableEntity;
+        Task<bool> UpdateEntitiesAsync<T>(IEnumerable<T> entities) where T : ITableEntity;
         Task<T> GetTableEntityAsync<T>(string partitionKey, string rowKey) where T : ITableEntity;
         Task<IEnumerable<T>> GetTableEntitiesAsync<T>(string partitionKey) where T : ITableEntity, new();
         Task EnsureTableExistsAsync<T>();

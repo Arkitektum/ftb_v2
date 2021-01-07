@@ -9,6 +9,7 @@ using FtB_Common.Exceptions;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using FtB_Common.Utils;
+using Ftb_DbModels;
 using Ftb_Repositories;
 using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,7 @@ namespace FtB_FormLogic
     public class DistributionReportLogic<T> : ReportLogic<T>
     {
         private readonly HtmlToPdfConverterHttpClient _htmlToPdfConverterHttpClient;
+        private readonly FileDownloadHttpClient _fileDownloadHttpClient;
         private readonly INotificationAdapter _notificationAdapter;
         public DistributionReportLogic(IFormDataRepo repo, 
                                        ITableStorage tableStorage, 
@@ -31,10 +33,12 @@ namespace FtB_FormLogic
                                        IBlobOperations blobOperations,
                                        DbUnitOfWork dbUnitOfWork, 
                                        IHtmlUtils htmlUtils, 
-                                       HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient)
+                                       HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient,
+                                       FileDownloadHttpClient fileDownloadHttpClient)
             : base(repo, tableStorage, blobOperations, log, dbUnitOfWork)
         {
             _htmlToPdfConverterHttpClient = htmlToPdfConverterHttpClient;
+            _fileDownloadHttpClient = fileDownloadHttpClient;
             _notificationAdapter = notificationAdapter;
         }
 
@@ -74,7 +78,10 @@ namespace FtB_FormLogic
             {
                 _log.LogDebug($"Start SendReceiptToSubmitterWhenAllReceiversAreProcessed. Queue item: {reportQueueItem.ReceiverLogPartitionKey}");
                 DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(reportQueueItem.ArchiveReference, reportQueueItem.ArchiveReference);
-                submittalEntity.Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Distributed);
+                bool receiptAlreadySentToSubmitter = submittalEntity.Status == Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Distributed)
+                                                  || submittalEntity.Status == Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.ReceiptSentToSubmitter);
+
+                
                 base._log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. All receivers has been processed.");
                 var notificationMessage = new AltinnNotificationMessage();
                 notificationMessage.ArchiveReference = ArchiveReference;
@@ -110,39 +117,86 @@ namespace FtB_FormLogic
                 };
 
                 notificationMessage.Attachments = new List<Attachment>() { receiptAttachment, mainFormAttachment };
-                _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
-                _log.LogDebug($"Start SendNotification to receiverId {notificationMessage.Receiver.Id}");
-                IEnumerable<DistributionResult> result = _notificationAdapter.SendNotification(notificationMessage);
+
+                if (!receiptAlreadySentToSubmitter)
+                {
+                    _log.LogInformation($"{GetType().Name}. ArchiveReference={reportQueueItem.ArchiveReference}. Sending receipt (notification).");
+                    _log.LogDebug($"Start SendNotification to receiverId {notificationMessage.Receiver.Id}");
+                    IEnumerable<DistributionResult> result = _notificationAdapter.SendNotification(notificationMessage);
+
+                    var sendingSucceded = !result.Any(x => x.DistributionComponent.Equals(DistributionComponent.Correspondence)
+                                                       && (
+                                                              x.Step.Equals(DistributionStep.Failed)
+                                                            || x.Step.Equals(DistributionStep.UnableToReachReceiver)
+                                                            || x.Step.Equals(DistributionStep.UnkownErrorOccurred)
+                                                            ));
+                    if (!sendingSucceded)
+                    {
+                        var failedStep = result.Where(x => x.Step.Equals(DistributionStep.Failed)
+                                                            || x.Step.Equals(DistributionStep.UnableToReachReceiver)
+                                                            || x.Step.Equals(DistributionStep.UnkownErrorOccurred)).Select(y => y.Step).First();
+
+                        throw new SendNotificationException("Error: Failed during sending of submittal receipt", failedStep);
+                    }
+
+                    submittalEntity.Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.ReceiptSentToSubmitter);
+                    await _tableStorage.UpdateEntityRecordAsync<DistributionSubmittalEntity>(submittalEntity);
+                }
+
+                if (!await FileDownloadStatusExists(reportQueueItem.ArchiveReference.ToUpper()))
+                {
+                    _log.LogDebug($"Inserting into FileDownloadStatus for {reportQueueItem.ArchiveReference.ToUpper()}");
+                    var guid = Guid.NewGuid();
+                    var mainFormFileDownload = await PersistBlobAndCreateFileDownload(reportQueueItem.ArchiveReference,
+                                                                                        guid,
+                                                                                        "Nabovarsel",
+                                                                                        "nabovarsel.pdf",
+                                                                                        FileTypesForDownload.Nabovarsel,
+                                                                                        "application/pdf",
+                                                                                        mainFormAttachment.BinaryContent);
+
+                    var receiptFileDownload = await PersistBlobAndCreateFileDownload(reportQueueItem.ArchiveReference,
+                                                                                        guid,
+                                                                                        "Nabovarsel",
+                                                                                        "nabovarsel_kvittering.pdf",
+                                                                                        FileTypesForDownload.KvitteringNabovarsel,
+                                                                                        "application/pdf",
+                                                                                        receiptAttachment.BinaryContent);
+
+                    bool postSuccessful = await AddToFileDownloads(reportQueueItem.ArchiveReference, mainFormFileDownload);
+                    if (!postSuccessful)
+                    {
+                        throw new FileDownloadStatusException($"Insert i FileDownloadStatus feilet for {reportQueueItem.ArchiveReference} og {mainFormFileDownload.Filename}");
+                    }
+
+                    postSuccessful = await AddToFileDownloads(reportQueueItem.ArchiveReference, receiptFileDownload);
+                    
+                    if (!postSuccessful)
+                    {
+                        throw new FileDownloadStatusException($"Insert i FileDownloadStatus feilet for {reportQueueItem.ArchiveReference} og {receiptFileDownload.Filename}");
+                    }
+                }
+
+                _log.LogDebug("Start Update all receiver entities");
+                var allReceivers = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(reportQueueItem.ArchiveReference.ToLower());
+                //allReceivers.ToList().ForEach(x => x.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Reported));
+
+                List<DistributionReceiverEntity> updatedEntities = new List<DistributionReceiverEntity>();
+                foreach (var receiver in allReceivers)
+                {
+                    receiver.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Reported);
+                    updatedEntities.Add(receiver);
+                }
+
+                var success = await UpdateEntitiesAsync(updatedEntities);
+                _log.LogDebug("Start BulkAddLogEntryToReceivers");
+                await BulkAddLogEntryToReceiversAsync(reportQueueItem.ArchiveReference, DistributionReceiverStatusLogEnum.Completed);
                 
-                var sendingFailed = result.Any(x => x.DistributionComponent.Equals(DistributionComponent.Correspondence)
-                                                   && (
-                                                          x.Step.Equals(DistributionStep.Failed)
-                                                        || x.Step.Equals(DistributionStep.UnableToReachReceiver)
-                                                        || x.Step.Equals(DistributionStep.UnkownErrorOccurred)
-                                                        ));
-
-                if (!sendingFailed)
-                {
-                    var updatedSubmittalEntity = _tableStorage.UpdateEntityRecordAsync<DistributionSubmittalEntity>(submittalEntity);
-                    _log.LogDebug("Start Update all receiver entities");
-                    var allReceivers = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(reportQueueItem.ArchiveReference.ToLower());
-                    allReceivers.ToList().ForEach(x => x.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Reported));
-                    await UpdateEntitiesAsync(allReceivers);
-                    _log.LogDebug("Start BulkAddLogEntryToReceivers");
-                    await BulkAddLogEntryToReceiversAsync(reportQueueItem.ArchiveReference, DistributionReceiverStatusLogEnum.Completed);
-                    _log.LogDebug("End SendReceiptToSubmitterWhenAllReceiversAreProcessed");
-                    //await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
-
-                    await ReportFormProcessStatus("Ok");
-                }
-                else
-                {
-                    var failedStep = result.Where(x => x.Step.Equals(DistributionStep.Failed)
-                                                        || x.Step.Equals(DistributionStep.UnableToReachReceiver)
-                                                        || x.Step.Equals(DistributionStep.UnkownErrorOccurred)).Select(y => y.Step).First();
-                                        
-                    throw new SendNotificationException("Error: Failed during sending of submittal receipt", failedStep);
-                }
+                //await _blobOperations.ReleaseContainerLease(reportQueueItem.ArchiveReference.ToLower());
+                submittalEntity.Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Distributed);
+                await _tableStorage.UpdateEntityRecordAsync<DistributionSubmittalEntity>(submittalEntity);
+                await ReportFormProcessStatus("Ok");
+                _log.LogDebug("End SendReceiptToSubmitterWhenAllReceiversAreProcessed");
             }
             catch (SendNotificationException ex)
             {
@@ -160,10 +214,46 @@ namespace FtB_FormLogic
             }
         }
 
+
+        public async Task<FileDownloadStatus> PersistBlobAndCreateFileDownload(string archiveReference,
+                                                                        Guid guid,
+                                                                        string formName,
+                                                                        string fileName,
+                                                                        FileTypesForDownload fileType,
+                                                                        string mimeType,
+                                                                        byte[] pdfByteStream)
+        {
+            _log.LogDebug($"Adding file {fileName} to blob storage {guid.ToString()}");
+            await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Private, 
+                                                             guid.ToString().ToLower(), 
+                                                             fileName, 
+                                                             pdfByteStream, 
+                                                             mimeType,
+                                                             null);
+
+            var blobLink = $"{_blobOperations.GetBlobUri(BlobStorageEnum.Private)}{guid}/{fileName}";
+            var fileRecord = new FileDownloadStatus(archiveReference.ToUpper(), guid, fileType, fileName, blobLink, mimeType, formName);
+
+            return fileRecord;
+        }
+
+        private async Task<bool> AddToFileDownloads(string archiveReference, FileDownloadStatus fileDownload)
+        {
+            _log.LogDebug($"Adding record to FileDownloadStatus for {archiveReference.ToUpper()} and blob {fileDownload.BlobLink}");
+            return await _fileDownloadHttpClient.Post(archiveReference, fileDownload);
+        }
+
+        private async Task<bool> FileDownloadStatusExists(string archiveReference)
+        {
+            var listOfFileDownloadRecords = await _fileDownloadHttpClient.GetAll(archiveReference);
+            
+            return listOfFileDownloadRecords != null && listOfFileDownloadRecords.ToList().Count > 0;
+        }
+
         private async Task ReportFormProcessStatus(string status)
         {
             var formMetadata = await _dbUnitOfWork.FormMetadata.Get();
-            formMetadata.Status = "Ok";
+            formMetadata.Status = status;
             _dbUnitOfWork.FormMetadata.Update(formMetadata);
             await _dbUnitOfWork.FormMetadata.Save();
         }

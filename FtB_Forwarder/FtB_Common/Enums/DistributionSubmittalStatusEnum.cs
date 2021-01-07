@@ -8,8 +8,9 @@ namespace FtB_Common.Enums
     {
         Created,
         Processing,
-        ReportingInProgress,
+        ReceiptSentToSubmitter,
         Distributed,
+        ReportingInProgress,
         Reported
     }
 }

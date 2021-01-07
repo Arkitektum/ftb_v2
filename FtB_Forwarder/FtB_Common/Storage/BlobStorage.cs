@@ -2,6 +2,7 @@
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Microsoft.Extensions.Configuration;
+using System.Threading.Tasks;
 
 namespace FtB_Common.Storage
 {
@@ -18,6 +19,12 @@ namespace FtB_Common.Storage
             return _blobServiceClient.GetBlobContainerClient(containerName);
         }
 
+        public System.Uri GetBlobUri()
+        {
+            return _blobServiceClient.Uri;
+        }
+
+        public abstract Task CreateContainerIfNotExistsAsync(string containerName);
         public abstract BlockBlobClient GetBlockBlobClient(string containerName, string blobName);
 
         public Azure.Pageable<BlobItem> GetBlobContainerItems(string containerName)

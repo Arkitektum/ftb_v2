@@ -107,9 +107,9 @@ namespace FtB_FormLogic
             await Task.WhenAll(tasks);
         }
 
-        protected async Task UpdateEntitiesAsync(IEnumerable<DistributionReceiverEntity> entities)
+        protected async Task<bool> UpdateEntitiesAsync(IEnumerable<DistributionReceiverEntity> entities)
         {
-            await _tableStorage.UpdateEntitiesAsync(entities);
+            return await _tableStorage.UpdateEntitiesAsync(entities);
         }
 
 

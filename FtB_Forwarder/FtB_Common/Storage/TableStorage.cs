@@ -19,11 +19,8 @@ namespace FtB_Common.Storage
         private readonly string _distributionSubmittalTable;
         private readonly string _distributionReceiverTable;
         private readonly string _distributionReceiverLogTable;
-        private readonly string _notificationSubmittalTable;
         private readonly string _notificationSenderTable;
         private readonly string _notificationSenderLogTable;
-
-        
 
         public TableStorage(IConfiguration configuration)
         {
@@ -144,7 +141,7 @@ namespace FtB_Common.Storage
                 await cloudTable.CreateIfNotExistsAsync();
         }
 
-        public async Task UpdateEntitiesAsync<T>(IEnumerable<T> entities) where T : ITableEntity
+        public async Task<bool> UpdateEntitiesAsync<T>(IEnumerable<T> entities) where T : ITableEntity
         {
             try
             {
@@ -152,7 +149,9 @@ namespace FtB_Common.Storage
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
 
                 var tasks = entities.Select(async (x) => await UpdateEntityAsync(x, cloudTable));
-                await Task.WhenAll(tasks);
+                var success =  await Task.WhenAll(tasks);
+
+                return success.All(x => true);
 
                 //Parallel.ForEach(entities, entity =>
                 //{
@@ -172,11 +171,12 @@ namespace FtB_Common.Storage
             }
         }
 
-        private async Task<TableResult> UpdateEntityAsync<T>(T entity, CloudTable cloudTable) where T : ITableEntity
+        private async Task<bool> UpdateEntityAsync<T>(T entity, CloudTable cloudTable) where T : ITableEntity
         {
             TableOperation operation = TableOperation.Replace(entity);
-            return await cloudTable.ExecuteAsync(operation);
+            var tableResult = await cloudTable.ExecuteAsync(operation);
 
+            return tableResult.HttpStatusCode == 204;
         }
 
         public async Task<TableEntity> UpdateEntityRecordAsync<T>(TableEntity entity)

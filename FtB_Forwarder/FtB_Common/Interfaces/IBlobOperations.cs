@@ -13,7 +13,7 @@ namespace FtB_Common.Storage
         Task<int> GetFormatVersionIdFromStoredBlob(string containerName);
         Task<string> GetServiceCodeFromStoredBlob(string containerName);
         Task<string> GetFormdata(string archiveReference);
-        Task AddByteStreamToBlobStorage(BlobStorageEnum storageEnum, string containerName, string identifier, byte[] fileBytes, string mimeType, IEnumerable<KeyValuePair<string, string>> metadata = null);
+        Task AddByteStreamToBlobStorage(BlobStorageEnum storageEnum, string containerName, string blobName, byte[] fileBytes, string mimeType, IEnumerable<KeyValuePair<string, string>> metadata = null);
         string GetBlobASStringByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaData);
         Task<byte[]> GetBlobAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, KeyValuePair<string, string> metaDataFilter);
         IEnumerable<byte[]> GetBlobsAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter);
@@ -23,6 +23,6 @@ namespace FtB_Common.Storage
         string GetPublicBlobContainerName(string containerName);
         Task<bool> AcquireContainerLease(string containerName, int seconds);
         Task<bool> ReleaseContainerLease(string containerName);
-
+        string GetBlobUri(BlobStorageEnum blobStorageEnum);
     }
 }
