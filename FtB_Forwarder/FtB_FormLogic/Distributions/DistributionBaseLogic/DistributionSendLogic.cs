@@ -121,6 +121,12 @@ namespace FtB_FormLogic
                 await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
                 await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.ReservedReportee);
             }
+            else if (result.Where(r => r.Step == DistributionStep.UnableToReachReceiver).Any())
+            {
+                _log.LogInformation("Sending distribution form with reference {0} for {1} - {2} failed due to unable to reach receiver (non-existing)", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
+                await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Failed);
+                await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.CorrespondenceSendingFailed);
+            }
             else
             {
                 _log.LogInformation("Sending distribution form with reference {0} for {1} - {2} was ok. Steps {3}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference, result.Select(x => x.Step).ToList());

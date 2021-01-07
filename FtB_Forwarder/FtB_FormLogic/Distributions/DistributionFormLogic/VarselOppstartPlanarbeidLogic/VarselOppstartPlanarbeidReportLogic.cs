@@ -144,13 +144,13 @@ namespace FtB_FormLogic
                 var successfullyNotifiedCount = await GetReceiverSuccessfullyNotifiedCountAsync(reportQueueItem);
                 htmlTemplate = htmlTemplate.Replace("<antallVarsledeMottakere />", successfullyNotifiedCount.ToString());
 
-                var listOfReservedReporteeNames = await GetReservedReporteeNames();
-                var deniersASHtml = new StringBuilder();
-                foreach (var denier in listOfReservedReporteeNames)
+                var listOfNotReachableReceiverNames = await GetNotReachableReceivers();
+                var receiversASHtml = new StringBuilder();
+                foreach (var receiver in listOfNotReachableReceiverNames)
                 {
-                    deniersASHtml.Append($"{denier}<br />");
+                    receiversASHtml.Append($"{receiver}<br />");
                 }
-                htmlTemplate = htmlTemplate.Replace("<naboerSomIkkeKunneVarsles />", deniersASHtml.ToString());
+                htmlTemplate = htmlTemplate.Replace("<naboerSomIkkeKunneVarsles />", receiversASHtml.ToString());
 
                 return htmlTemplate;
             }
@@ -162,12 +162,13 @@ namespace FtB_FormLogic
             }
         }
 
-        private async Task<IEnumerable<string>> GetReservedReporteeNames()
+        private async Task<IEnumerable<string>> GetNotReachableReceivers()
         {
             var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(ArchiveReference);
 
             var reservedReporteeReceiverIds = allReceiversInSubmittal
-                    .Where(x => x.ProcessOutcome == Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.ReservedReportee))
+                    .Where(x => x.ProcessOutcome == Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.ReservedReportee)
+                                || x.ProcessOutcome == Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.Failed))
                     .Select( x => x.ReceiverId).ToList();
 
             var socialSecurityNumbers = FormData.beroerteParter
