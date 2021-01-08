@@ -29,7 +29,7 @@ namespace FtB_FormLogic
         }
 
         public override async Task<ReportQueueItem> ExecuteAsync(SendQueueItem sendQueueItem)
-        {            
+        {
             _dbUnitOfWork.SetArchiveReference(sendQueueItem.ArchiveReference);
 
             //var returnReportQueueItem = await base.ExecuteAsync(sendQueueItem);
@@ -159,7 +159,8 @@ namespace FtB_FormLogic
                 Id = DistributionMessage.DistributionFormReferenceId,
                 InitialExternalSystemReference = prefillData.InitialExternalSystemReference,
                 ExternalSystemReference = prefillData.ExternalSystemReference,
-                DistributionType = prefillData.PrefillFormName
+                DistributionType = prefillData.PrefillFormName,
+                //SubmitAndInstantiatePrefilledFormTaskReceiptId = prefillData.
             });
 
             var distributionForm = (await _dbUnitOfWork.DistributionForms.GetAll())
@@ -199,6 +200,7 @@ namespace FtB_FormLogic
             await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.PrefillCreated);
         }
 
+        //TODO: This could/should/must be done in a simpler way
         private void LogDistributionProcessingResults(IEnumerable<DistributionResult> distributionResults, IPrefillData prefill)
         {
             var correspondenceResults = distributionResults.Where(p => p.DistributionComponent == DistributionComponent.Correspondence).ToList();
@@ -212,8 +214,14 @@ namespace FtB_FormLogic
                     case DistributionStep.Sent:
                         _dbUnitOfWork.LogEntries.AddInfo($"Altinn kvittering for preutfylling til {Receiver.PresentationId} er OK");
                         _dbUnitOfWork.LogEntries.AddInfoInternal($"Dist id {prefill.InitialExternalSystemReference} - Distribusjon/correspondence komplett", "Correspondence");
-                        _dbUnitOfWork.LogEntries.AddInfo($"Altinn {prefill.PrefillFormName} laget til ({Receiver.PresentationId}), Altinn kvitteringsid: TODO LEGG INN receiptExternal.ReceiptId");
-                      
+
+                        var res = distributionResults.Where(p => p.DistributionComponent == DistributionComponent.Prefill && p.Step == DistributionStep.Sent).FirstOrDefault() as PrefillSentResult;
+                        var altinnReceiptId = string.Empty;
+                        if (res != null)
+                            altinnReceiptId = res.PrefillAltinnReceiptId;
+
+                        _dbUnitOfWork.LogEntries.AddInfo($"Altinn {prefill.PrefillFormName} laget til ({Receiver.PresentationId}), Altinn kvitteringsid: {altinnReceiptId}");
+
                         break;
                     case DistributionStep.Failed:
                         _dbUnitOfWork.LogEntries.AddError($"Dist id {prefill.InitialExternalSystemReference} - Feil ved Altinn utsendelse av melding til {Receiver.PresentationId} ");
@@ -234,6 +242,8 @@ namespace FtB_FormLogic
                 }
             }
         }
+
+        //TODO: This could/should/must be done in a simpler way
         private async Task LogPrefillProcessing(IEnumerable<DistributionResult> distributionResults, IPrefillData prefill)
         {
             var prefillResults = distributionResults.Where(p => p.DistributionComponent == DistributionComponent.Prefill).ToList();
@@ -246,6 +256,14 @@ namespace FtB_FormLogic
                         break;
                     case DistributionStep.Sent:
                         _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefill.InitialExternalSystemReference} - Prefill sendt til Altinn");
+
+                        var prefillSentResult = prefillResult as PrefillSentResult;
+                        if (prefillSentResult != null)
+                        {
+                            var dfOk = await _dbUnitOfWork.DistributionForms.Get(prefill.InitialExternalSystemReference);
+                            dfOk.SubmitAndInstantiatePrefilledFormTaskReceiptId = prefillSentResult.PrefillAltinnReceiptId;
+                            dfOk.SubmitAndInstantiatePrefilled = prefillSentResult.PrefillAltinnReceivedTime;
+                        }
                         break;
                     case DistributionStep.Failed:
                         _dbUnitOfWork.LogEntries.AddError($"Dist id {prefill.InitialExternalSystemReference} - {prefillResult.Message}");
@@ -258,9 +276,9 @@ namespace FtB_FormLogic
                         break;
                     case DistributionStep.UnableToReachReceiver:
                         _dbUnitOfWork.LogEntries.AddError($"Mottaker kunne ikke nås i Altinn {Receiver.PresentationId} : {prefillResult.Message}");
-                        var df = await _dbUnitOfWork.DistributionForms.Get(prefill.InitialExternalSystemReference);
-                        df.DistributionStatus = DistributionStatus.error;
-                        df.ErrorMessage = prefillResult.Message;
+                        var dfError = await _dbUnitOfWork.DistributionForms.Get(prefill.InitialExternalSystemReference);
+                        dfError.DistributionStatus = DistributionStatus.error;
+                        dfError.ErrorMessage = prefillResult.Message;
 
                         break;
                     default:

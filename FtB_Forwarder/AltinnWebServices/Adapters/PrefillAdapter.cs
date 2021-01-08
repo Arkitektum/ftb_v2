@@ -98,6 +98,8 @@ namespace Altinn2.Adapters
                 prefillFinalResult = new PrefillSentResult() { PrefillReferenceId = receiptExternal.References.Where(r => r.ReferenceTypeName == ReferenceType.WorkFlowReference).First().ReferenceValue };
                 prefillFinalResult.Message = "Ok - Prefill sent";
                 prefillFinalResult.Step = DistributionStep.Sent;
+                prefillFinalResult.PrefillAltinnReceiptId = receiptExternal.ReceiptId.ToString();
+                prefillFinalResult.PrefillAltinnReceivedTime = receiptExternal.LastChanged;
             }
             else if (receiptExternal != null && receiptExternal.ReceiptStatusCode != ReceiptStatusEnum.OK)
                 if (receiptExternal.ReceiptText.Contains("Reportee is reserved against electronic communication"))
