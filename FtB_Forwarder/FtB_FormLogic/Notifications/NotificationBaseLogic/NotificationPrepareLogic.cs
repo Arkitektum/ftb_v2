@@ -90,7 +90,7 @@ namespace FtB_FormLogic
                 FileAccessCount = 0,
                 Filename = "SvarNabovarselPlan.xml",
                 FileType = FileTypesForDownloadEnum.MaskinlesbarXml,
-                FormName = "",
+                FormName = "VarselOppstartPlanarbeid",
                 Guid = targetContainerName,
                 IsDeleted = false,
                 MimeType = mainFormData.ContentType
@@ -117,7 +117,7 @@ namespace FtB_FormLogic
                 FileAccessCount = 0,
                 Filename = "SvarNabovarselPlan.pdf",
                 FileType = FileTypesForDownloadEnum.Nabovarsel,
-                FormName = "",
+                FormName = "VarselOppstartPlanarbeid",
                 Guid = targetContainerName,
                 IsDeleted = false,
                 MimeType = mainFormPdfData.ContentType
@@ -132,18 +132,17 @@ namespace FtB_FormLogic
             */
             metadataList = new List<KeyValuePair<string, string>>();
             metadataList.Add(new KeyValuePair<string, string>("Type", "SubmittalAttachment"));
-            metadataList.Add(new KeyValuePair<string, string>("attachmenttypename", "Annet"));
+            //metadataList.Add(new KeyValuePair<string, string>("attachmenttypename", "Annet"));
 
             var attachments = _blobOperations.GetBlobContentsAsBytesByMetadata(BlobStorageEnum.Private, sourceContainerName, metadataList).ToList();
 
-            for (int i = 0; i < attachments.Count(); i++)
-            {
-                var item = attachments[i];
+            foreach (var attachment in attachments)
+            {                
 
                 //This is probably not the correct order...
-                var fileName = $"Vedlegg{i}.{item.FileName}";
+                var fileName = $"Vedlegg.{attachment.FileName}";
 
-                var attachmentUri = await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Private, targetContainerName.ToString(), fileName, item.ByteContent, item.ContentType);
+                var attachmentUri = await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Private, targetContainerName.ToString(), fileName, attachment.ByteContent, attachment.ContentType);
 
                 var attachmentFds = new FileDownloadStatus()
                 {
@@ -152,10 +151,10 @@ namespace FtB_FormLogic
                     FileAccessCount = 0,
                     Filename = fileName,
                     FileType = FileTypesForDownloadEnum.Nabomerknader,
-                    FormName = "",
+                    FormName = "VarselOppstartPlanarbeid",
                     Guid = targetContainerName,
                     IsDeleted = false,
-                    MimeType = item.ContentType
+                    MimeType = attachment.ContentType
                 };
 
                 await _fileDownloadHttpClient.Post(archiveReference, attachmentFds);
