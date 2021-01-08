@@ -5,5 +5,7 @@
         public CorrespondenceResult() : base(DistributionComponent.Correspondence)
         {
         }
+
+        public string CorrespondenceAltinnReceiptId { get; set; }
     }
 }

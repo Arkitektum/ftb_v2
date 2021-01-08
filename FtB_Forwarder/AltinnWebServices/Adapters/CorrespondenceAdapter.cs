@@ -78,7 +78,11 @@ namespace Altinn2.Adapters
 
                 correspondenceResult.Message = correspondenceResponse.ReceiptText;
                 if (correspondenceResponse.ReceiptStatusCode == ReceiptStatusEnum.OK)
+                {
                     correspondenceResult.Step = DistributionStep.Sent;
+                    correspondenceResult.CorrespondenceAltinnReceiptId = correspondenceResponse.ReceiptId.ToString();
+                    
+                }
                 else
                 {
                     correspondenceResult.Step = DistributionStep.Failed;
