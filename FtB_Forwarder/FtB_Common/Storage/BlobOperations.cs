@@ -15,6 +15,12 @@ using System.Threading.Tasks;
 
 namespace FtB_Common.Storage
 {
+    public class BlobContent
+    { 
+        public byte[] ByteContent { get; set; }
+        public string ContentType { get; set; }
+        public string FileName { get; set; }
+    }
     public class BlobOperations : IBlobOperations
     {
         private ArchivedItemInformation _archivedItem;
@@ -197,7 +203,7 @@ namespace FtB_Common.Storage
             }
         }
 
-        public async Task AddByteStreamToBlobStorage(BlobStorageEnum storageEnum, string containerName, string blobName, byte[] fileBytes, string mimeType, IEnumerable<KeyValuePair<string, string>> metadata = null)
+        public async Task<string> AddByteStreamToBlobStorage(BlobStorageEnum storageEnum, string containerName, string blobName, byte[] fileBytes, string mimeType, IEnumerable<KeyValuePair<string, string>> metadata = null)
         {
             BlobStorage storage = GetBlobStorage(storageEnum);
             
@@ -217,6 +223,10 @@ namespace FtB_Common.Storage
 
                 client.SetMetadata(dict);
             }
+
+            var uri = client.Uri;
+
+            return uri.ToString();
         }
         private BlobStorage GetBlobStorage(BlobStorageEnum storageEnum)
         {
@@ -244,6 +254,8 @@ namespace FtB_Common.Storage
             }
             return data;
         }
+
+        
 
         public IEnumerable<byte[]> GetBlobsAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
         {
@@ -287,11 +299,64 @@ namespace FtB_Common.Storage
                     using (var binReader = new BinaryReader(response.Value.Content))
                     {
                         filecontent = binReader.ReadBytes(Convert.ToInt32(contentLenght));
-                    }
+                    }                    
                 }
             }
-
             return filecontent;
+        }
+
+        public IEnumerable<BlobContent> GetBlobContentsAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
+        {
+            var retVal = new List<BlobContent>();
+            BlobStorage storage = GetBlobStorage(storageEnum);
+            var blobItems = storage.GetBlobContainerItems(containerName);
+            List<byte[]> blobs = new List<byte[]>();
+            foreach (var blobItem in blobItems)
+            {
+                var blobBlock = storage.GetBlockBlobClient(containerName, blobItem.Name);
+                BlobProperties properties = blobBlock.GetPropertiesAsync().GetAwaiter().GetResult();
+                var matchingMetadataElements = properties.Metadata?.Where(m => metaDataFilter.Any(f => m.Key.Equals(f.Key, StringComparison.InvariantCultureIgnoreCase) && m.Value.Equals(f.Value, StringComparison.InvariantCultureIgnoreCase))).ToList();
+                if(matchingMetadataElements?.Count > 0)
+                {
+                    var blobContent = new BlobContent();
+                    var response = blobBlock.Download();
+                    var contentLenght = response.Value.ContentLength;
+                    blobContent.ContentType = response.Value.ContentType;
+                    blobContent.FileName = blobBlock.Name;
+                    using (var binReader = new BinaryReader(response.Value.Content))
+                    {
+                        blobContent.ByteContent = binReader.ReadBytes(Convert.ToInt32(contentLenght));
+                    }
+                    retVal.Add(blobContent);
+                }
+            }
+            return retVal;
+        }
+
+        public async Task<BlobContent> GetBlobContentAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, KeyValuePair<string, string> metaDataFilter)
+        {
+            var retVal = new BlobContent();
+            BlobStorage storage = GetBlobStorage(storageEnum);
+            var blobItems = storage.GetBlobContainerItems(containerName);
+            
+            foreach (var blobItem in blobItems)
+            {
+                var blobBlock = storage.GetBlockBlobClient(containerName, blobItem.Name);
+                BlobProperties properties = blobBlock.GetPropertiesAsync().GetAwaiter().GetResult();
+                var matchingMetadataElements = properties.Metadata?.Any(m => m.Key == metaDataFilter.Key && m.Value == metaDataFilter.Value);
+                if ((bool)matchingMetadataElements)
+                {
+                    var response = blobBlock.Download();
+                    var contentLenght = response.Value.ContentLength;
+                    using (var binReader = new BinaryReader(response.Value.Content))
+                    {
+                        retVal.ByteContent = binReader.ReadBytes(Convert.ToInt32(contentLenght));
+                    }
+                    retVal.ContentType = response.Value.ContentType;
+                    retVal.FileName = blobBlock.Name;
+                }
+            }
+            return retVal;
         }
 
 

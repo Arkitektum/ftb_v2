@@ -7,6 +7,7 @@ using FtB_Common.Exceptions;
 using FtB_Common.Interfaces;
 using Ftb_DbModels;
 using Ftb_Repositories;
+using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,8 @@ namespace FtB_FormLogic
         public AltinnDistributionMessage DistributionMessage { get; set; }
 
 
-        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IDistributionAdapter distributionAdapter, DbUnitOfWork dbUnitOfWork)
-            : base(repo, tableStorage, log, dbUnitOfWork)
+        public DistributionSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, IDistributionAdapter distributionAdapter, DbUnitOfWork dbUnitOfWork, FileDownloadStatusHttpClient fileDownloadHttpClient)
+            : base(repo, tableStorage, log, dbUnitOfWork, fileDownloadHttpClient)
         {
             _distributionAdapter = distributionAdapter;
         }

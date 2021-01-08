@@ -3,6 +3,7 @@ using FtB_Common.Encryption;
 using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
+using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,8 @@ namespace FtB_FormLogic
         private readonly ILogger log;
         protected  override  List<Actor> Receivers { get => base.Receivers; set => base.Receivers = value; }
 
-        public DistributionPrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory) 
-            : base(repo, tableStorage, log, dbUnitOfWork, decryptionFactory)
+        public DistributionPrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory, FileDownloadStatusHttpClient fileDownloadHttpClient) 
+            : base(repo, tableStorage, log, dbUnitOfWork, decryptionFactory, fileDownloadHttpClient)
         {
             this.log = log;
         }

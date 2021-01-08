@@ -1,6 +1,7 @@
 ﻿using FtB_Common.BusinessModels;
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
+using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
@@ -13,8 +14,8 @@ namespace FtB_FormLogic
         protected override Actor Receiver { get => base.Receiver; set => base.Receiver = value; }
 
 
-        public ShipmentSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, ISvarUtAdapter svarUtAdapter, DbUnitOfWork dbUnitOfWork) : 
-            base(repo, tableStorage, log, dbUnitOfWork)
+        public ShipmentSendLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, ISvarUtAdapter svarUtAdapter, DbUnitOfWork dbUnitOfWork, FileDownloadStatusHttpClient fileDownloadHttpClient) : 
+            base(repo, tableStorage, log, dbUnitOfWork, fileDownloadHttpClient)
         {
             this.svarUtAdapter = svarUtAdapter;
         }

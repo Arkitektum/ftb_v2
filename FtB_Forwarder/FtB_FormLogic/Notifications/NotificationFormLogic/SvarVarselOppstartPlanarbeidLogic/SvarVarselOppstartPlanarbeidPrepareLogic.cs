@@ -5,6 +5,7 @@ using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using Ftb_Repositories;
+using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -20,8 +21,9 @@ namespace FtB_FormLogic
                                                         IBlobOperations blobOperations,
                                                         ILogger<VarselOppstartPlanarbeidPrepareLogic> log,
                                                         DbUnitOfWork dbUnitOfWork,
-                                                        IDecryptionFactory decryptionFactory) :
-            base(repo, tableStorage, blobOperations, log, dbUnitOfWork, decryptionFactory)
+                                                        IDecryptionFactory decryptionFactory,
+                                                        FileDownloadStatusHttpClient fileDownloadHttpClient) :
+            base(repo, tableStorage, blobOperations, log, dbUnitOfWork, decryptionFactory, fileDownloadHttpClient)
         { }
 
         public override async Task<IEnumerable<SendQueueItem>> ExecuteAsync(SubmittalQueueItem submittalQueueItem)

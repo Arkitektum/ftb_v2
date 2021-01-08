@@ -28,25 +28,25 @@ namespace FtB_FuncPrepareSending
             [ServiceBus("%SendingQueueName%", Connection = "QueueConnectionString", EntityType = EntityType.Queue)] IAsyncCollector<SendQueueItem> queueCollector)
         {
             SubmittalQueueItem submittalQueueItem = JsonConvert.DeserializeObject<SubmittalQueueItem>(myQueueItem);
-
-            using (var scope = _logger.BeginScope(new Dictionary<string, string> { { "ArchiveReference", submittalQueueItem.ArchiveReference } }))
-            {
-                _logger.LogInformation($"C# ServiceBus queue trigger function processed message: {submittalQueueItem.ArchiveReference}");
-
-                var results = await _queueProcessor.ExecuteProcessingStrategy(submittalQueueItem);
-
-                if (results != null)
+            if (submittalQueueItem?.ArchiveReference != null)
+                using (var scope = _logger.BeginScope(new Dictionary<string, string> { { "ArchiveReference", submittalQueueItem.ArchiveReference } }))
                 {
-                    var tasks = new List<Task>();
+                    _logger.LogInformation($"C# ServiceBus queue trigger function processed message: {submittalQueueItem.ArchiveReference}");
 
-                    foreach (var item in results)
+                    var results = await _queueProcessor.ExecuteProcessingStrategy(submittalQueueItem);
+
+                    if (results != null)
                     {
-                        tasks.Add(queueCollector.AddAsync(item));
+                        var tasks = new List<Task>();
+
+                        foreach (var item in results)
+                        {
+                            tasks.Add(queueCollector.AddAsync(item));
+                        }
+                        await Task.WhenAll(tasks);
+                        //await queueCollector.FlushAsync();                }
                     }
-                    await Task.WhenAll(tasks);
-                    //await queueCollector.FlushAsync();                }
                 }
-            }
         }
     }
 }

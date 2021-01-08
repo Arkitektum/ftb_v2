@@ -1,7 +1,5 @@
 ﻿using Altinn.Common.Models;
-using Azure.Storage.Blobs.Specialized;
 using FtB_Common.Enums;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,7 +11,7 @@ namespace FtB_Common.Storage
         Task<int> GetFormatVersionIdFromStoredBlob(string containerName);
         Task<string> GetServiceCodeFromStoredBlob(string containerName);
         Task<string> GetFormdata(string archiveReference);
-        Task AddByteStreamToBlobStorage(BlobStorageEnum storageEnum, string containerName, string blobName, byte[] fileBytes, string mimeType, IEnumerable<KeyValuePair<string, string>> metadata = null);
+        Task<string> AddByteStreamToBlobStorage(BlobStorageEnum storageEnum, string containerName, string blobName, byte[] fileBytes, string mimeType, IEnumerable<KeyValuePair<string, string>> metadata = null);
         string GetBlobASStringByMetadata(string containerName, IEnumerable<KeyValuePair<string, string>> metaData);
         Task<byte[]> GetBlobAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, KeyValuePair<string, string> metaDataFilter);
         IEnumerable<byte[]> GetBlobsAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter);
@@ -24,5 +22,7 @@ namespace FtB_Common.Storage
         Task<bool> AcquireContainerLease(string containerName, int seconds);
         Task<bool> ReleaseContainerLease(string containerName);
         string GetBlobUri(BlobStorageEnum blobStorageEnum);
+        Task<BlobContent> GetBlobContentAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, KeyValuePair<string, string> metaDataFilter);
+        IEnumerable<BlobContent> GetBlobContentsAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter);
     }
 }

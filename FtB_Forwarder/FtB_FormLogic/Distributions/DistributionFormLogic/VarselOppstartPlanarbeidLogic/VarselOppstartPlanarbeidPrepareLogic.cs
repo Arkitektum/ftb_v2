@@ -4,6 +4,7 @@ using FtB_Common.Enums;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
+using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -18,8 +19,9 @@ namespace FtB_FormLogic
                                                     ITableStorage tableStorage, 
                                                     ILogger<VarselOppstartPlanarbeidPrepareLogic> log, 
                                                     DbUnitOfWork dbUnitOfWork, 
-                                                    IDecryptionFactory decryptionFactory) : 
-            base(repo, tableStorage, log, dbUnitOfWork, decryptionFactory)
+                                                    IDecryptionFactory decryptionFactory,
+                                                    FileDownloadStatusHttpClient fileDownloadHttpClient) : 
+            base(repo, tableStorage, log, dbUnitOfWork, decryptionFactory, fileDownloadHttpClient)
         { }
 
 

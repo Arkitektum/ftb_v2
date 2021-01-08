@@ -7,6 +7,7 @@ using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using Ftb_DbModels;
 using Ftb_Repositories;
+using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using no.kxml.skjema.dibk.nabovarselPlan;
 using no.kxml.skjema.dibk.nabovarselsvarPlan;
@@ -30,9 +31,10 @@ namespace FtB_FormLogic
                                                  ILogger<VarselOppstartPlanarbeidSendLogic> log,
                                                  IDistributionAdapter distributionAdapter,
                                                  IDistributionDataMapper<NabovarselPlanType> distributionDataMapper,
-                                                 VarselOppstartPlanarbeidPrefillMapper prefillMapper, DbUnitOfWork dbUnitOfWork
+                                                 VarselOppstartPlanarbeidPrefillMapper prefillMapper, DbUnitOfWork dbUnitOfWork,
+                                                 FileDownloadStatusHttpClient fileDownloadHttpClient
             )
-            : base(repo, tableStorage, log, distributionAdapter, dbUnitOfWork)
+            : base(repo, tableStorage, log, distributionAdapter, dbUnitOfWork, fileDownloadHttpClient)
         {
             _blobOperations = blobOperations;
             _distributionDataMapper = distributionDataMapper;

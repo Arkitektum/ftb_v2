@@ -5,6 +5,7 @@ using FtB_Common.Encryption;
 using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using Ftb_Repositories;
+using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -25,8 +26,8 @@ namespace FtB_FormLogic
             set { _receivers = value; }
         }
 
-        public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory)
-            : base(repo, tableStorage, log, dbUnitOfWork)
+        public PrepareLogic(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork, IDecryptionFactory decryptionFactory, FileDownloadStatusHttpClient fileDownloadHttpClient)
+            : base(repo, tableStorage, log, dbUnitOfWork, fileDownloadHttpClient)
         {
             _decryptionFactory = decryptionFactory;
         }
