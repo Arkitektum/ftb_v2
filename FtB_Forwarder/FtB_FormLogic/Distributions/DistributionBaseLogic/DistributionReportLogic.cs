@@ -179,16 +179,12 @@ namespace FtB_FormLogic
 
                 _log.LogDebug("Start Update all receiver entities");
                 var allReceivers = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(reportQueueItem.ArchiveReference.ToLower());
-                //allReceivers.ToList().ForEach(x => x.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Reported));
-
-                List<DistributionReceiverEntity> updatedEntities = new List<DistributionReceiverEntity>();
-                foreach (var receiver in allReceivers)
-                {
-                    receiver.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Reported);
-                    updatedEntities.Add(receiver);
-                }
-
+                var updatedEntities = allReceivers.Select(receiver => { receiver.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Reported); return receiver; }).ToList();
                 var success = await UpdateEntitiesAsync(updatedEntities);
+                if (!success)
+                {
+                    throw new Exception($"Update av DistributionReceiverEntity til ProcessStage=Reported feilet for {reportQueueItem.ArchiveReference}");
+                }
                 _log.LogDebug("Start BulkAddLogEntryToReceivers");
                 await BulkAddLogEntryToReceiversAsync(reportQueueItem.ArchiveReference, DistributionReceiverStatusLogEnum.Completed);
                 
