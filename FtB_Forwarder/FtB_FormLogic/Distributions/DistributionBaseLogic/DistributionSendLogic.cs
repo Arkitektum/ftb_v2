@@ -151,7 +151,7 @@ namespace FtB_FormLogic
         private async Task CreateDistributionForm(IPrefillData prefillData)
         {
             //Which sendData to use
-            prefillData.InitialExternalSystemReference = DistributionMessage.DistributionFormReferenceId.ToString();
+            //prefillData.InitialExternalSystemReference = DistributionMessage.DistributionFormReferenceId.ToString();
             _log.LogDebug("Creates distribution form with reference {0} for {1} - {2}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
 
             _dbUnitOfWork.DistributionForms.Add(new DistributionForm()

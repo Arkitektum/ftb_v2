@@ -18,6 +18,7 @@ namespace FtB_FormLogic
         public AltinnDistributionMessage GetDistributionMessage(IEnumerable<IPrefillData> prefills, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, Guid distributionFormId, string archiveReference)
         {
             var prefill = prefills.First() as VarselOppstartPlanarbeidData;
+            prefill.InitialExternalSystemReference = distributionFormId.ToString();
 
             var distributionMessage = new AltinnDistributionMessage()
             {
