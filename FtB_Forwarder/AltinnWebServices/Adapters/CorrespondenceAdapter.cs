@@ -25,7 +25,7 @@ namespace Altinn2.Adapters
             _correspondenceBuilderSettings = correspondenceSettings;
             _correspondenceClient = correspondenceClient;
         }
-        public async Task<IEnumerable<DistributionResult>> SendMessage(AltinnMessageBase altinnMessage, string externalShipmentReference)
+        public async Task<IEnumerable<DistributionResult>> SendMessageAsync(AltinnMessageBase altinnMessage, string externalShipmentReference)
         {
             var correspondenceResults = new List<DistributionResult>();
             _correspondenceBuilder = new CorrespondenceBuilder(_correspondenceBuilderSettings);
@@ -81,7 +81,6 @@ namespace Altinn2.Adapters
                 {
                     correspondenceResult.Step = DistributionStep.Sent;
                     correspondenceResult.CorrespondenceAltinnReceiptId = correspondenceResponse.ReceiptId.ToString();
-                    
                 }
                 else
                 {
@@ -100,9 +99,9 @@ namespace Altinn2.Adapters
             return correspondenceResults;
         }
 
-        public async Task<IEnumerable<DistributionResult>> SendMessage(AltinnMessageBase altinnMessage)
+        public async Task<IEnumerable<DistributionResult>> SendMessageAsync(AltinnMessageBase altinnMessage)
         {
-            return await SendMessage(altinnMessage, altinnMessage.ArchiveReference);
+            return await SendMessageAsync(altinnMessage, altinnMessage.ArchiveReference);
         }
     }
 }

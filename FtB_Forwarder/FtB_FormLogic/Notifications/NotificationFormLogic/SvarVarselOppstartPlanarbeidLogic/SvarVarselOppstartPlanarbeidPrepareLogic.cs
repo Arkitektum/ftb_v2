@@ -80,6 +80,7 @@ namespace FtB_FormLogic
                 var InitialArchiveReference = await GetInitialArchiveReferenceAsync(FormData.hovedinnsendingsnummer);
 
                 var senderEntity = new NotificationSenderEntity(InitialArchiveReference.ToLower(), ArchiveReference.ToLower(), Sender.Id, NotificationSenderProcessStageEnum.Created, DateTime.Now);
+                senderEntity.InitialExternalSystemReference = FormData.hovedinnsendingsnummer;
                 senderEntity.PlanId = FormData.planid;
                 senderEntity.PlanNavn = FormData.planNavn;
                 senderEntity.Reply = FormData.beroertPart.kommentar;

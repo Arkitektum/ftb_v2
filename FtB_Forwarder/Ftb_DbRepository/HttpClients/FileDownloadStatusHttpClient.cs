@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace Ftb_Repositories.HttpClients
 {
-    public class FileDownloadHttpClient
+    public class FileDownloadStatusHttpClient
     {
         public HttpClient Client { get; }
         private readonly ILogger _log;
 
-        public FileDownloadHttpClient(HttpClient httpClient, IOptions<FormProcessAPISettings> settings, ILogger<DistributionFormsHttpClient> log)
+        public FileDownloadStatusHttpClient(HttpClient httpClient, IOptions<FormProcessAPISettings> settings, ILogger<DistributionFormsHttpClient> log)
         {
             _log = log;
             _log.LogDebug($"FileDownloadStatusHttpClient - constructor.");

@@ -25,7 +25,12 @@ namespace Ftb_Repositories
             _formMetadata = result;
             return result;
         }
-
+        public async Task<FormMetadata> Get(string archiveReference)
+        {
+            var result = await _formMetadataClient.Get(archiveReference);
+            _formMetadata = result;
+            return result;
+        }
         public void Update(FormMetadata formMetadata)
         {
             _formMetadata = formMetadata;

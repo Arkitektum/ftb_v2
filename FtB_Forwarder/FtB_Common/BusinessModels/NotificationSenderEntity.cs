@@ -7,6 +7,7 @@ namespace FtB_Common.BusinessModels
 {
     public class NotificationSenderEntity : TableEntity, IStorageEntity
     {
+        public string InitialExternalSystemReference { get; set; }
         public string SenderId { get; set; }
         public string SenderName { get; set; }
         public string SenderPhone { get; set; }
@@ -20,7 +21,7 @@ namespace FtB_Common.BusinessModels
         public string Reply { get; set; }
 
         public NotificationSenderEntity() { }
-        
+
         public NotificationSenderEntity(string partitionKey, string rowKey, string senderId, NotificationSenderProcessStageEnum status, DateTime createdTimestamp)
         {
             PartitionKey = partitionKey;

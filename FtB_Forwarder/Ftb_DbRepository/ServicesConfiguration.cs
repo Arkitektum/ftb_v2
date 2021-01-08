@@ -13,7 +13,7 @@ namespace Ftb_Repositories
             services.AddHttpClient<DistributionFormsHttpClient>();
             services.AddHttpClient<LogEntryHttpClient>();
             services.AddHttpClient<HtmlToPdfConverterHttpClient>();
-            services.AddHttpClient<FileDownloadHttpClient>();
+            services.AddHttpClient<FileDownloadStatusHttpClient>();
             services.AddScoped<DbUnitOfWork>();
             services.AddScoped<ILogEntryRepository, LogEntryRepository>();
             services.AddScoped<IDistributionFormRepository, DistributionFormsRepository>();

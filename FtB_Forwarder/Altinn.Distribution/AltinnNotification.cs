@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Altinn.Distribution
 {
@@ -19,10 +20,10 @@ namespace Altinn.Distribution
             _correspondenceAdapter = correspondenceAdapter;
         }
 
-        public IEnumerable<DistributionResult> SendNotification(AltinnMessageBase altinnMessage)
+        public async Task<IEnumerable<DistributionResult>> SendNotificationAsync(AltinnMessageBase altinnMessage)
         {
-            var distributionResult = _correspondenceAdapter.SendMessage(altinnMessage);
-            return distributionResult.Result;
+            var distributionResult = await _correspondenceAdapter.SendMessageAsync(altinnMessage);
+            return distributionResult;
         }
     }
 }

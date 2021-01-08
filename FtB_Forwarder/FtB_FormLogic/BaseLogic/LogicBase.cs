@@ -3,7 +3,9 @@ using FtB_Common.BusinessModels;
 using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using FtB_Common.Utils;
+using Ftb_DbModels;
 using Ftb_Repositories;
+using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -18,13 +20,16 @@ namespace FtB_FormLogic
         protected readonly ITableStorage _tableStorage;
         protected readonly ILogger _log;
         protected readonly DbUnitOfWork _dbUnitOfWork;
+        protected readonly FileDownloadStatusHttpClient _fileDownloadHttpClient;
 
-        public LogicBase(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork)
+        public LogicBase(IFormDataRepo repo, ITableStorage tableStorage, ILogger log, DbUnitOfWork dbUnitOfWork,
+                                       FileDownloadStatusHttpClient fileDownloadHttpClient)
         {
             _repo = repo;
             _tableStorage = tableStorage;
             _log = log;
             _dbUnitOfWork = dbUnitOfWork;
+            _fileDownloadHttpClient = fileDownloadHttpClient;
         }
         public string ArchiveReference { get; set; }
         protected readonly IFormDataRepo _repo;
@@ -158,6 +163,23 @@ namespace FtB_FormLogic
                 _log.LogError(ex, $"Error adding receiver record for ID={receiverPartitionKey} and receiverID {receiverID}");
                 throw;
             }
+        }
+
+        protected async Task<bool> AddToFileDownloads(string archiveReference, FileDownloadStatus fileDownload)
+        {
+            _log.LogDebug($"Adding record to FileDownloadStatus for {archiveReference.ToUpper()} and blob {fileDownload.BlobLink}");
+            return await _fileDownloadHttpClient.Post(archiveReference, fileDownload);
+        }
+
+        protected async Task<string> FileDownloadStatusExists(string archiveReference)
+        {
+            var listOfFileDownloadRecords = await _fileDownloadHttpClient.GetAll(archiveReference);
+
+            if (listOfFileDownloadRecords != null && listOfFileDownloadRecords.ToList().Count > 0)
+            {
+                return listOfFileDownloadRecords.ToList()[0].Guid.ToString();
+            }
+            return null;
         }
     }
 }

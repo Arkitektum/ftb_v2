@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FtB_Common.Enums
 {
-    public enum FileTypesForDownload
+    public enum FileTypesForDownloadEnum
     {
         /// <summary>
         /// Svar på nabovarsel pdf

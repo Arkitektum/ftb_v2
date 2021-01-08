@@ -7,6 +7,7 @@ using FtB_Common.Enums;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
+using Ftb_DbModels;
 using FtB_FormLogic;
 using Ftb_Repositories;
 using Ftb_Repositories.HttpClients;
@@ -47,10 +48,10 @@ namespace FtB_ProcessStrategies
             _dbUnitOfWork = dbUnitOfWork;
         }
 
-        public async Task<IEnumerable<Tuple<string,string>>> ExecuteProcessingStrategyAsync()
+        public async Task<IEnumerable<Tuple<string, string>>> ExecuteProcessingStrategyAsync()
         {
             _log.LogDebug("Getting distributionSubmittalEntities..");
-            IEnumerable<DistributionSubmittalEntity> distributionSubmittalEntities = await GetDistributionSubmittalEntities();
+            IEnumerable<DistributionSubmittalEntity> distributionSubmittalEntities = await GetDistributionSubmittalEntitiesToReportFor();
 
             _log.LogDebug($"Number of distributionSubmittalEntities found: {distributionSubmittalEntities.Count()}");
             if (distributionSubmittalEntities.ToList().Count > 0)
@@ -71,7 +72,7 @@ namespace FtB_ProcessStrategies
                         var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(answerToDistributionSubmitter.InitialArchiveReference.ToLower());
                         _log.LogDebug($"Reporting PDF replies to submitter with senderId {distributionSubmittalEntity.SenderId} for archiveReference {answerToDistributionSubmitter.InitialArchiveReference}");
                         await SendRepliesReportToDistributionSubmitterAsync(answerToDistributionSubmitter, publicBlobContainer);
-                        
+
                         reportingSubmitters.Add(Tuple.Create(distributionSubmittalEntity.SenderId, distributionSubmittalEntity.PartitionKey));
                     }
                 }
@@ -82,7 +83,7 @@ namespace FtB_ProcessStrategies
             return null;
         }
 
-        private async Task<IEnumerable<DistributionSubmittalEntity>> GetDistributionSubmittalEntities()
+        private async Task<IEnumerable<DistributionSubmittalEntity>> GetDistributionSubmittalEntitiesToReportFor()
         {
             var distributionSubmittalEntitiesDistributed = _tableStorage.GetTableEntitiesWithStatusFilter<DistributionSubmittalEntity>(Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Distributed));
             var distributionSubmittalEntitiesReportingInProgress = _tableStorage.GetTableEntitiesWithStatusFilter<DistributionSubmittalEntity>(Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.ReportingInProgress));
@@ -117,13 +118,14 @@ namespace FtB_ProcessStrategies
                 reportData.ReceiverId = distributionSubmittalEntity.SenderId;
                 reportData.AltinnReceiverType = AltinnReceiverType.Foretak;
                 reportData.Senders = new List<SvarPaaVarselOmOppstartAvPlanarbeidSenderModel>();
-                
+
                 foreach (var notificationSender in notificationSendersReadyToReport)
                 {
                     reportData.PlanId = notificationSender.PlanId;
                     reportData.PlanNavn = notificationSender.PlanNavn;
 
                     var sender = new SvarPaaVarselOmOppstartAvPlanarbeidSenderModel();
+                    sender.InitialExternalSystemReference = notificationSender.InitialExternalSystemReference;
                     sender.SenderName = notificationSender.SenderName;
                     sender.SenderPhone = notificationSender.SenderPhone;
                     sender.SenderEmail = notificationSender.SenderEmail;
@@ -131,7 +133,7 @@ namespace FtB_ProcessStrategies
                     sender.SendersArchiveReference = notificationSender.RowKey;
                     reportData.Senders.Add(sender);
                 }
-            
+
                 return reportData;
             }
 
@@ -149,25 +151,40 @@ namespace FtB_ProcessStrategies
                 submittalEntity.Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.ReportingInProgress);
                 _log.LogInformation($"{GetType().Name}. ArchiveReference={repliesToPlanNotice.InitialArchiveReference}.  SubmittalStatus: {submittalEntity.Status}. Reporting in progress...");
 
-                var notificationMessage = await BuildNotificationMessage(repliesToPlanNotice, publicContainer);
+                var notificationMessage = await BuildNotificationMessageAsync(repliesToPlanNotice, publicContainer);
 
                 _log.LogInformation($"Start SendNotification for archiveReference {repliesToPlanNotice.InitialArchiveReference}, with {notificationMessage.Attachments.Count()} attachments");
 
-                IEnumerable<DistributionResult> result = _notificationAdapter.SendNotification(notificationMessage);
+                IEnumerable<DistributionResult> distributionResults = await _notificationAdapter.SendNotificationAsync(notificationMessage);
 
-                var sendingFailed = result.Any(x => x.DistributionComponent.Equals(DistributionComponent.Correspondence)
+                var okCorrespondenceResult = distributionResults.Where(p => p.DistributionComponent == DistributionComponent.Correspondence && p.Step == DistributionStep.Sent).FirstOrDefault() as CorrespondenceResult;
+
+                string receiptId = null;
+                if (okCorrespondenceResult != null)
+                {
+                    receiptId = okCorrespondenceResult.CorrespondenceAltinnReceiptId;
+                }
+
+                var sendingFailed = distributionResults.Any(x => x.DistributionComponent.Equals(DistributionComponent.Correspondence)
                                                    && (
                                                           x.Step.Equals(DistributionStep.Failed)
                                                         || x.Step.Equals(DistributionStep.UnableToReachReceiver)
                                                         || x.Step.Equals(DistributionStep.UnkownErrorOccurred)
                                                         ));
 
-                if (!sendingFailed)
+                if (!sendingFailed && receiptId != null)
                 {
                     _log.LogDebug($"Successfully sent report of replies to submitter for archiveReference {repliesToPlanNotice.InitialArchiveReference}.");
                     var entitiesToUpdate = new List<NotificationSenderEntity>();
                     foreach (var sender in repliesToPlanNotice.Senders)
                     {
+                        var distrForm = await _dbUnitOfWork.DistributionForms.Get(sender.InitialExternalSystemReference);
+                        distrForm.DistributionStatus = DistributionStatus.receiptSent;
+                        distrForm.RecieptSent = DateTime.Now;
+                        distrForm.RecieptSentArchiveReference = receiptId;
+
+                        await _dbUnitOfWork.DistributionForms.Update(distrForm.InitialArchiveReference, distrForm.Id, distrForm);
+
                         var filters = new List<KeyValuePair<string, string>>();
                         filters.Add(new KeyValuePair<string, string>("PartitionKey", repliesToPlanNotice.InitialArchiveReference));
                         filters.Add(new KeyValuePair<string, string>("RowKey", sender.SendersArchiveReference));
@@ -180,7 +197,7 @@ namespace FtB_ProcessStrategies
 
                     await _tableStorage.UpdateEntitiesAsync(entitiesToUpdate);
 
-                    var tasks = entitiesToUpdate.Select(s => AddToSenderProcessLogAsync(s.RowKey, s.SenderId, NotificationSenderStatusLogEnum.Completed)); //Completed
+                    var tasks = entitiesToUpdate.Select(s => AddToSenderProcessLogAsync(s.RowKey, s.SenderId, NotificationSenderStatusLogEnum.Completed));
 
                     _log.LogDebug("Start AddToSenderProcessLogAsync");
                     await Task.WhenAll(tasks);
@@ -189,7 +206,7 @@ namespace FtB_ProcessStrategies
                 else
                 {
                     _log.LogDebug($"Sending of report of replies to submitter for archiveReference {repliesToPlanNotice.InitialArchiveReference} failed.");
-                    var failedStep = result.Where(x => x.Step.Equals(DistributionStep.Failed)
+                    var failedStep = distributionResults.Where(x => x.Step.Equals(DistributionStep.Failed)
                                                         || x.Step.Equals(DistributionStep.UnableToReachReceiver)
                                                         || x.Step.Equals(DistributionStep.UnkownErrorOccurred)).Select(y => y.Step).First();
                     throw new SendNotificationException("Error: Failed during sending report of neighbours replies to submitter", failedStep);
@@ -208,13 +225,13 @@ namespace FtB_ProcessStrategies
             }
         }
 
-        private async Task<AltinnNotificationMessage> BuildNotificationMessage(SvarPaaVarselOmOppstartAvPlanarbeidModel repliesToPlanNotice, string publicContainer)
+        private async Task<AltinnNotificationMessage> BuildNotificationMessageAsync(SvarPaaVarselOmOppstartAvPlanarbeidModel repliesToPlanNotice, string publicContainer)
         {
             var notificationMessage = new AltinnNotificationMessage();
             notificationMessage.ArchiveReference = repliesToPlanNotice.InitialArchiveReference;
             notificationMessage.Receiver = new AltinnReceiver() { Id = repliesToPlanNotice.ReceiverId, Type = repliesToPlanNotice.AltinnReceiverType };
 
-            var reportHtml = GetReport(repliesToPlanNotice);
+            var reportHtml = GetAccumulatedRepliesReport(repliesToPlanNotice);
             _log.LogDebug("Start converting the attachment report to PDF");
             byte[] PDFInbytes = await _htmlToPdfConverterHttpClient.Get(reportHtml);
             _log.LogDebug("Converted to PDF");
@@ -235,7 +252,7 @@ namespace FtB_ProcessStrategies
             };
 
             notificationMessage.Attachments = new List<Attachment>() { reportAttachment };
-            
+
             foreach (var att in notificationMessage.Attachments)
             {
                 _log.LogDebug($"Attachment in notificationMessage for archiveReference {notificationMessage.ArchiveReference}: Filename={att.Filename}");
@@ -280,7 +297,7 @@ namespace FtB_ProcessStrategies
                     metadataList.Add(new KeyValuePair<string, string>("SendersArchiveReference", sender.SendersArchiveReference));
 
                 }
-                
+
                 var urlToPublicAttachments = _blobOperations.GetBlobUrlsFromPublicStorageByMetadataAsync(publicContainer, metadataList).Result;
 
                 StringBuilder urlListAsHtml = new StringBuilder();
@@ -309,7 +326,7 @@ namespace FtB_ProcessStrategies
             }
         }
 
-        protected string GetReport(SvarPaaVarselOmOppstartAvPlanarbeidModel answer)
+        protected string GetAccumulatedRepliesReport(SvarPaaVarselOmOppstartAvPlanarbeidModel answer)
         {
             try
             {

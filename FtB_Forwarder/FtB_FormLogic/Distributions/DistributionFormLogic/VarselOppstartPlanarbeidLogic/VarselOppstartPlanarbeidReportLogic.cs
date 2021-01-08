@@ -33,7 +33,7 @@ namespace FtB_FormLogic
                                                    DbUnitOfWork dbUnitOfWork,
                                                    IHtmlUtils htmlUtils,
                                                    HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient,
-                                                   FileDownloadHttpClient fileDownloadHttpClient)
+                                                   FileDownloadStatusHttpClient fileDownloadHttpClient)
             : base(repo, tableStorage, log, notificationAdapter, blobOperations, dbUnitOfWork, htmlUtils, htmlToPdfConverterHttpClient, fileDownloadHttpClient)
         {
             _htmlUtils = htmlUtils;
@@ -119,7 +119,7 @@ namespace FtB_FormLogic
             }
         }
 
-        protected override async Task<string> GetSubmitterReceipt(ReportQueueItem reportQueueItem)
+        protected override async Task<string> GetSubmitterReceipt(string archiveReference)
         {
             try
             {
@@ -132,17 +132,17 @@ namespace FtB_FormLogic
                 htmlTemplate = htmlTemplate.Replace("<planNavn />", planNavn);
                 htmlTemplate = htmlTemplate.Replace("<forslagsstiller />", forslagsstiller);
                 htmlTemplate = htmlTemplate.Replace("<kontaktperson />", kontaktperson);
-                htmlTemplate = htmlTemplate.Replace("<arkivReferanse />", reportQueueItem.ArchiveReference.ToUpper());
+                htmlTemplate = htmlTemplate.Replace("<arkivReferanse />", archiveReference.ToUpper());
                 var blobStorageTypes = new List<BlobStorageMetadataTypeEnum>();
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.MainForm);
                 blobStorageTypes.Add(BlobStorageMetadataTypeEnum.SubmittalAttachment);
 
-                string publicContainerName =  _blobOperations.GetPublicBlobContainerName(reportQueueItem.ArchiveReference.ToLower());
+                string publicContainerName =  _blobOperations.GetPublicBlobContainerName(archiveReference.ToLower());
 
                 IEnumerable<(string attachmentType, string fileName)> listOfAttachmentsInSubmittal = await _blobOperations.GetListOfBlobsWithMetadataType(BlobStorageEnum.Public, publicContainerName, blobStorageTypes);
                 string tableRowsAsHtml = "<tr><td>" + string.Join("</td></tr><tr><td>", listOfAttachmentsInSubmittal.Select(p => p.attachmentType + "</td><td>" + p.fileName)) + "</td></tr>";
                 htmlTemplate = htmlTemplate.Replace("<vedlegg />", tableRowsAsHtml);
-                var successfullyNotifiedCount = await GetReceiverSuccessfullyNotifiedCountAsync(reportQueueItem);
+                var successfullyNotifiedCount = await GetReceiverSuccessfullyNotifiedCountAsync(archiveReference);
                 htmlTemplate = htmlTemplate.Replace("<antallVarsledeMottakere />", successfullyNotifiedCount.ToString());
 
                 var listOfNotReachableReceiverNames = await GetNotReachableReceivers();

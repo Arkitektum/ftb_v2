@@ -3,6 +3,7 @@ using FtB_Common.Enums;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using Ftb_Repositories;
+using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -14,8 +15,9 @@ namespace FtB_FormLogic
     {
         protected readonly IBlobOperations _blobOperations;
         private readonly int BLOB_CONTAINER_LEASE_DURATION_MAX = 60;
-        public ReportLogic(IFormDataRepo repo, ITableStorage tableStorage, IBlobOperations blobOperations, ILogger log, DbUnitOfWork dbUnitOfWork)
-            : base(repo, tableStorage, log, dbUnitOfWork)
+        public ReportLogic(IFormDataRepo repo, ITableStorage tableStorage, IBlobOperations blobOperations, ILogger log, DbUnitOfWork dbUnitOfWork,
+                                       FileDownloadStatusHttpClient fileDownloadHttpClient)
+            : base(repo, tableStorage, log, dbUnitOfWork, fileDownloadHttpClient)
         {
             _blobOperations = blobOperations;
         }
@@ -59,9 +61,9 @@ namespace FtB_FormLogic
             return receiversReadyForReporting == totalNumberOfReceivers;
         }
 
-        protected async Task<int> GetReceiverSuccessfullyNotifiedCountAsync(ReportQueueItem reportQueueItem)
+        protected async Task<int> GetReceiverSuccessfullyNotifiedCountAsync(string archiveReference)
         {
-            var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(reportQueueItem.ArchiveReference);
+            var allReceiversInSubmittal = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(archiveReference);
 
             return allReceiversInSubmittal.Where(x => x.ProcessOutcome.Equals(Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.Sent))).Count();
         }

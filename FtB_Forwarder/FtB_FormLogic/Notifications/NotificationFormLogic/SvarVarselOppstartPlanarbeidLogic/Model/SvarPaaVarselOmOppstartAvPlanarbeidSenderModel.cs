@@ -11,5 +11,6 @@ namespace FtB_FormLogic
         public string SenderEmail { get; set; }
         public string Reply { get; set; }
         public string SendersArchiveReference { get; set; }
+        public string InitialExternalSystemReference { get; set; }
     }
 }

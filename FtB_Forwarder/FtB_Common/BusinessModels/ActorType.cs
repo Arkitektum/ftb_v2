@@ -7,6 +7,7 @@ namespace FtB_Common.BusinessModels
         Privatperson,
         Foretak,
         [Description("Offentlig myndighet")]
-        OffentligMyndighet
+        OffentligMyndighet,
+        Organisasjon
     }
 }

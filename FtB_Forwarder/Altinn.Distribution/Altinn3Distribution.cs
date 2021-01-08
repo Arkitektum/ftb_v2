@@ -33,7 +33,7 @@ namespace Altinn.Distribution
                 //prefillResult.PrefillReferenceId
                 //Transform body!!!!! 
                 //, prefillResult.PrefillReferenceId
-                var correspondenceResults = await _correspondenceAdapter.SendMessage(altinnMessage.NotificationMessage);
+                var correspondenceResults = await _correspondenceAdapter.SendMessageAsync(altinnMessage.NotificationMessage);
 
                 results.AddRange(correspondenceResults); 
             }           
