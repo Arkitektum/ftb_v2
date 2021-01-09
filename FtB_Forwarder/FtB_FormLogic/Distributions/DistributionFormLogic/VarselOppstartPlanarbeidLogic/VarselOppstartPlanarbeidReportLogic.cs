@@ -183,7 +183,7 @@ namespace FtB_FormLogic
                     .Where(x => reservedReporteeReceiverIds.Any(y => y == x.Id))
                     .Select(x => x.navn).ToList();
 
-            return reservedReporteeNames;
+            return reservedReporteeNames.OrderBy(x => x);
         }
 
         protected override (string Filename, string Name) GetFileNameForMainForm()
