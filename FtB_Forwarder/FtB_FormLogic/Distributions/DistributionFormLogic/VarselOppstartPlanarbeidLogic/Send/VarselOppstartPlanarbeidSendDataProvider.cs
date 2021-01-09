@@ -41,10 +41,12 @@ namespace FtB_FormLogic
 
 
             //Add notifications
+            var fristForInnspillFormatted = prefill.FormInstance.fristForInnspill?.ToString("{0:dd.MM.yyyy}");
+
             var smsContent = GetSMSNotificationMessage(prefill.FormInstance.beroertPart.organisasjonsnummer,
                                                         prefill.FormInstance.beroertPart.navn,
                                                         prefill.FormInstance.kommune,
-                                                        prefill.FormInstance.fristForInnspill.ToString(),
+                                                        fristForInnspillFormatted,
                                                         prefill.FormInstance.forslagsstiller.navn,
                                                         archiveReference);
 
@@ -52,7 +54,7 @@ namespace FtB_FormLogic
                                                          prefill.FormInstance.beroertPart.navn,
                                                          prefill.FormInstance.kommune,
                                                          prefill.FormInstance.planNavn,
-                                                         prefill.FormInstance.fristForInnspill.ToString(),
+                                                         fristForInnspillFormatted,
                                                          mainFormData.forslagsstiller);
 
 
@@ -96,7 +98,7 @@ namespace FtB_FormLogic
             string datoFristInnspill = String.Empty;
             if (fristForInnspill.HasValue)
             {
-                datoFristInnspill = string.Format("{0:MM.dd.yyyy}", fristForInnspill);
+                datoFristInnspill = string.Format("{0:dd.MM.yyyy}", fristForInnspill);
             }
             //This is replaced with HTML template
 

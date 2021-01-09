@@ -1,19 +1,14 @@
 ﻿using Altinn.Common.Interfaces;
-using Altinn.Common.Models;
-using FtB_Common.BusinessModels;
-using FtB_Common.Enums;
+using FtB_Common.Enums;
 using FtB_Common.FormLogic;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
-using Ftb_DbModels;
 using Ftb_Repositories;
 using Ftb_Repositories.HttpClients;
 using Microsoft.Extensions.Logging;
 using no.kxml.skjema.dibk.nabovarselPlan;
-using no.kxml.skjema.dibk.nabovarselsvarPlan;
 using System;
-using System.Collections.Generic;
-using System.Linq;using System.Text;
+using System.Collections.Generic;using System.Text;
 using System.Threading.Tasks;
 
 namespace FtB_FormLogic
