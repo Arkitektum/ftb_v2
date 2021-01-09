@@ -30,6 +30,7 @@ namespace FtB_ProcessStrategies
         private readonly HtmlToPdfConverterHttpClient _htmlToPdfConverterHttpClient;
         private readonly ILogger _log;
         private readonly DbUnitOfWork _dbUnitOfWork;
+        private readonly FileDownloadStatusHttpClient _fileDownloadHttpClient;
 
         public ReportSvarPaaVarselOmOppstartAvPlanarbeidProcessor(IBlobOperations blobOperations,
                                                                   ITableStorage tableStorage,
@@ -37,7 +38,8 @@ namespace FtB_ProcessStrategies
                                                                   IHtmlUtils htmlUtils,
                                                                   HtmlToPdfConverterHttpClient htmlToPdfConverterHttpClient,
                                                                   ILogger<ReportSvarPaaVarselOmOppstartAvPlanarbeidProcessor> log,
-                                                                  DbUnitOfWork dbUnitOfWork)
+                                                                  DbUnitOfWork dbUnitOfWork,
+                                                                  FileDownloadStatusHttpClient fileDownloadHttpClient)
         {
             _blobOperations = blobOperations;
             _tableStorage = tableStorage;
@@ -46,6 +48,7 @@ namespace FtB_ProcessStrategies
             _htmlToPdfConverterHttpClient = htmlToPdfConverterHttpClient;
             _log = log;
             _dbUnitOfWork = dbUnitOfWork;
+            _fileDownloadHttpClient = fileDownloadHttpClient;
         }
 
         public async Task<IEnumerable<Tuple<string, string>>> ExecuteProcessingStrategyAsync()
@@ -184,6 +187,28 @@ namespace FtB_ProcessStrategies
                         distrForm.RecieptSentArchiveReference = receiptId;
 
                         await _dbUnitOfWork.DistributionForms.Update(distrForm.InitialArchiveReference, distrForm.Id, distrForm);
+
+                        AttachmentBinary submittersReceipt = (AttachmentBinary)notificationMessage.Attachments.ToList()[0];
+                        var uri = await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Private,
+                                                                                   submittersReceipt.ArchiveReference.ToLower(),
+                                                                                   submittersReceipt.Filename,
+                                                                                   submittersReceipt.BinaryContent,
+                                                                                   submittersReceipt.Type);
+
+                        var fds = new FileDownloadStatus()
+                        {
+                            ArchiveReference = submittersReceipt.ArchiveReference.ToUpper(),
+                            BlobLink = uri,
+                            FileAccessCount = 0,
+                            Filename = submittersReceipt.Filename,
+                            FileType = FileTypesForDownloadEnum.KommentarNabomerknader,
+                            FormName = "VarselOppstartPlanarbeid",
+                            Guid = new Guid(),
+                            IsDeleted = false,
+                            MimeType = "application/pdf"
+                        };
+
+                        await _fileDownloadHttpClient.Post(fds.ArchiveReference, fds);
 
                         var filters = new List<KeyValuePair<string, string>>();
                         filters.Add(new KeyValuePair<string, string>("PartitionKey", repliesToPlanNotice.InitialArchiveReference));
