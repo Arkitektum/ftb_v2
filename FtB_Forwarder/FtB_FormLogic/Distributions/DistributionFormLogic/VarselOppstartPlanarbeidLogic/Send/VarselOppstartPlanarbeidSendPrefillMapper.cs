@@ -40,10 +40,6 @@ namespace FtB_FormLogic
                 svarPaaNabovarsel.beroertPart = NabovarselPlanMappers.GetNabovarselBerortPartMapper()
                     .Map<BeroertPartType, no.kxml.skjema.dibk.nabovarselsvarPlan.BeroertPartType>(beroertPart);
 
-                //Decryption of fødselsnummer.... :(
-                if (!string.IsNullOrEmpty(svarPaaNabovarsel.beroertPart.foedselsnummer) && svarPaaNabovarsel.beroertPart.foedselsnummer.Length > 11)
-                    svarPaaNabovarsel.beroertPart.foedselsnummer = _decryptionFactory.GetDecryptor().DecryptText(svarPaaNabovarsel.beroertPart.foedselsnummer);
-
                 svarPaaNabovarsel.hovedinnsendingsnummer = form.metadata.hovedinnsendingsnummer;
                 svarPaaNabovarsel.fraSluttbrukersystem = form.metadata.fraSluttbrukersystem;
                 svarPaaNabovarsel.planNavn = form.planforslag.plannavn;

@@ -11,9 +11,10 @@ namespace FtB_FormLogic
     {
         //TODO: Rename class or file name
         protected readonly IHtmlUtils _htmlUtils;
-
-        public SendDataProviderBase(IHtmlUtils htmlUtils)
+        private readonly IDecryption _decryptor;
+        public SendDataProviderBase(IHtmlUtils htmlUtils, IDecryptionFactory decryptionFactory)
         {
+            _decryptor = decryptionFactory.GetDecryptor();
             _htmlUtils = htmlUtils;
         }
 
@@ -26,7 +27,7 @@ namespace FtB_FormLogic
 
             if (!string.IsNullOrEmpty(berortPart.Ssn))
             {
-                receiver.Id = berortPart.Ssn;
+                receiver.Id = _decryptor.DecryptText(berortPart.Ssn);
                 receiver.Type = AltinnReceiverType.Privatperson;
             }
             else

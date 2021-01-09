@@ -1,4 +1,5 @@
 ﻿using Altinn.Common.Models;
+using FtB_Common.Encryption;
 using FtB_Common.Interfaces;
 using FtB_DataModels.Mappers;
 using FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Send;
@@ -12,7 +13,7 @@ namespace FtB_FormLogic
 {
     public class VarselOppstartPlanarbeidSendDataProvider : SendDataProviderBase, IDistributionDataMapper<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>
     {
-        public VarselOppstartPlanarbeidSendDataProvider(IHtmlUtils htmlUtils) : base(htmlUtils)
+        public VarselOppstartPlanarbeidSendDataProvider(IHtmlUtils htmlUtils, IDecryptionFactory decryptionFactory) : base(htmlUtils, decryptionFactory)
         {
         }
         public AltinnDistributionMessage GetDistributionMessage(IEnumerable<IPrefillData> prefills, no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType mainFormData, Guid distributionFormId, string archiveReference)
