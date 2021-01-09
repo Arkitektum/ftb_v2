@@ -77,10 +77,9 @@ namespace FtB_FormLogic
             Main form XML
                 metadata: type = FormData
             */
-            var metadataList = new List<KeyValuePair<string, string>>();
-            metadataList.Add(new KeyValuePair<string, string>("Type", "FormData"));
-
-            var mainFormData = await _blobOperations.GetBlobContentAsBytesByMetadata(BlobStorageEnum.Private, sourceContainerName, new KeyValuePair<string, string>("Type", "FormData"));
+            var mainFormXMLDataMetadataList = new List<KeyValuePair<string, string>>();
+            mainFormXMLDataMetadataList.Add(new KeyValuePair<string, string>("Type", "FormData"));
+            var mainFormData = await _blobOperations.GetBlobContentAsBytesByMetadata(BlobStorageEnum.Private, sourceContainerName, mainFormXMLDataMetadataList);
             var uri = await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Private, targetContainerName.ToString(), "SvarNabovarselPlan.xml", mainFormData.ByteContent, mainFormData.ContentType);
 
             var fds = new FileDownloadStatus()
@@ -103,11 +102,10 @@ namespace FtB_FormLogic
                 metadata: attachmenttypename = SvarNabovarselPlan
                           type = MainForm
             */
-            metadataList = new List<KeyValuePair<string, string>>();
-            metadataList.Add(new KeyValuePair<string, string>("Type", "FormData"));
-            metadataList.Add(new KeyValuePair<string, string>("attachmenttypename", "SvarNabovarselPlan"));
+            var mainFormPdfDataMetadataList = new List<KeyValuePair<string, string>>();
+            mainFormPdfDataMetadataList.Add(new KeyValuePair<string, string>("attachmenttypename", "SvarNabovarselPlan"));
 
-            var mainFormPdfData = await _blobOperations.GetBlobContentAsBytesByMetadata(BlobStorageEnum.Private, sourceContainerName, new KeyValuePair<string, string>("Type", "FormData"));
+            var mainFormPdfData = await _blobOperations.GetBlobContentAsBytesByMetadata(BlobStorageEnum.Private, sourceContainerName, mainFormPdfDataMetadataList);
             var mainFormPdfUri = await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Private, targetContainerName.ToString(), "SvarNabovarselPlan.pdf", mainFormPdfData.ByteContent, mainFormPdfData.ContentType);
 
             var mainFormPdfFds = new FileDownloadStatus()
@@ -130,7 +128,7 @@ namespace FtB_FormLogic
                 metadata: attachmenttypename = Annet
                           type = SubmittalAttachment            
             */
-            metadataList = new List<KeyValuePair<string, string>>();
+            var metadataList = new List<KeyValuePair<string, string>>();
             metadataList.Add(new KeyValuePair<string, string>("Type", "SubmittalAttachment"));
             //metadataList.Add(new KeyValuePair<string, string>("attachmenttypename", "Annet"));
 

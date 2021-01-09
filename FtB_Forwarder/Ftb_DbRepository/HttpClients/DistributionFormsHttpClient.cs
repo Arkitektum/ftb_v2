@@ -74,7 +74,7 @@ namespace Ftb_Repositories.HttpClients
                 var content = await result.Content.ReadAsStringAsync();
                 retVal = JsonSerializer.Deserialize<DistributionForm>(content);
             }
-            _log.LogDebug($"Returning distributionForm for id {retVal.Id}.");
+            _log.LogDebug($"Returning distributionForm for id {retVal?.Id}.");
 
             return retVal;
         }

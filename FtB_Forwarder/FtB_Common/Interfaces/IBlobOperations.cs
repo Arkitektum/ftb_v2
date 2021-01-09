@@ -22,7 +22,7 @@ namespace FtB_Common.Storage
         Task<bool> AcquireContainerLease(string containerName, int seconds);
         Task<bool> ReleaseContainerLease(string containerName);
         string GetBlobUri(BlobStorageEnum blobStorageEnum);
-        Task<BlobContent> GetBlobContentAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, KeyValuePair<string, string> metaDataFilter);
+        Task<BlobContent> GetBlobContentAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter);
         IEnumerable<BlobContent> GetBlobContentsAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter);
     }
 }

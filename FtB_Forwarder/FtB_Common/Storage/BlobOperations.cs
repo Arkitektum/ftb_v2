@@ -315,7 +315,10 @@ namespace FtB_Common.Storage
             {
                 var blobBlock = storage.GetBlockBlobClient(containerName, blobItem.Name);
                 BlobProperties properties = blobBlock.GetPropertiesAsync().GetAwaiter().GetResult();
-                var matchingMetadataElements = properties.Metadata?.Where(m => metaDataFilter.Any(f => m.Key.Equals(f.Key, StringComparison.InvariantCultureIgnoreCase) && m.Value.Equals(f.Value, StringComparison.InvariantCultureIgnoreCase))).ToList();
+                var matchingMetadataElements = properties.Metadata?
+                                                 .Where(m => metaDataFilter.Any(f => m.Key.Equals(f.Key, StringComparison.InvariantCultureIgnoreCase) 
+                                                                                  && m.Value.Equals(f.Value, StringComparison.InvariantCultureIgnoreCase)))
+                                                 .ToList();
                 if(matchingMetadataElements?.Count > 0)
                 {
                     var blobContent = new BlobContent();
@@ -333,7 +336,7 @@ namespace FtB_Common.Storage
             return retVal;
         }
 
-        public async Task<BlobContent> GetBlobContentAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, KeyValuePair<string, string> metaDataFilter)
+        public async Task<BlobContent> GetBlobContentAsBytesByMetadata(BlobStorageEnum storageEnum, string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
         {
             var retVal = new BlobContent();
             BlobStorage storage = GetBlobStorage(storageEnum);
@@ -342,9 +345,12 @@ namespace FtB_Common.Storage
             foreach (var blobItem in blobItems)
             {
                 var blobBlock = storage.GetBlockBlobClient(containerName, blobItem.Name);
-                BlobProperties properties = blobBlock.GetPropertiesAsync().GetAwaiter().GetResult();
-                var matchingMetadataElements = properties.Metadata?.Any(m => m.Key == metaDataFilter.Key && m.Value == metaDataFilter.Value);
-                if ((bool)matchingMetadataElements)
+                BlobProperties properties = await blobBlock.GetPropertiesAsync();
+                var matchingMetadataElements = properties.Metadata?
+                                                .Where(m => metaDataFilter.Any(f => m.Key.Equals(f.Key, StringComparison.InvariantCultureIgnoreCase) 
+                                                                                 && m.Value.Equals(f.Value, StringComparison.InvariantCultureIgnoreCase)))
+                                                .ToList();
+                if (matchingMetadataElements?.Count() > 0)
                 {
                     var response = blobBlock.Download();
                     var contentLenght = response.Value.ContentLength;
