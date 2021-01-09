@@ -78,7 +78,7 @@ namespace FtB_FormLogic
                 metadata: type = FormData
             */
             var mainFormXMLDataMetadataList = new List<KeyValuePair<string, string>>();
-            mainFormXMLDataMetadataList.Add(new KeyValuePair<string, string>("Type", "FormData"));
+            mainFormXMLDataMetadataList.Add(new KeyValuePair<string, string>("type", "FormData"));
             var mainFormData = await _blobOperations.GetBlobContentAsBytesByMetadata(BlobStorageEnum.Private, sourceContainerName, mainFormXMLDataMetadataList);
             var uri = await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Private, targetContainerName.ToString(), "SvarNabovarselPlan.xml", mainFormData.ByteContent, mainFormData.ContentType);
 
@@ -103,7 +103,7 @@ namespace FtB_FormLogic
                           type = MainForm
             */
             var mainFormPdfDataMetadataList = new List<KeyValuePair<string, string>>();
-            mainFormPdfDataMetadataList.Add(new KeyValuePair<string, string>("attachmenttypename", "SvarNabovarselPlan"));
+            mainFormPdfDataMetadataList.Add(new KeyValuePair<string, string>("type", "MainForm"));
 
             var mainFormPdfData = await _blobOperations.GetBlobContentAsBytesByMetadata(BlobStorageEnum.Private, sourceContainerName, mainFormPdfDataMetadataList);
             var mainFormPdfUri = await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Private, targetContainerName.ToString(), "SvarNabovarselPlan.pdf", mainFormPdfData.ByteContent, mainFormPdfData.ContentType);
@@ -129,8 +129,7 @@ namespace FtB_FormLogic
                           type = SubmittalAttachment            
             */
             var metadataList = new List<KeyValuePair<string, string>>();
-            metadataList.Add(new KeyValuePair<string, string>("Type", "SubmittalAttachment"));
-            //metadataList.Add(new KeyValuePair<string, string>("attachmenttypename", "Annet"));
+            metadataList.Add(new KeyValuePair<string, string>("type", "SubmittalAttachment"));
 
             var attachments = _blobOperations.GetBlobContentsAsBytesByMetadata(BlobStorageEnum.Private, sourceContainerName, metadataList).ToList();
 
@@ -157,47 +156,6 @@ namespace FtB_FormLogic
 
                 await _fileDownloadHttpClient.Post(archiveReference, attachmentFds);
             }
-
-            //metadataList = new List<KeyValuePair<string, string>>();
-            //metadataList.Add(new KeyValuePair<string, string>("Type", "FormData"));
-            //var attachments = _blobOperations.GetAttachmentsByMetadata(BlobStorageEnum.Private, archiveReference.ToLower(), metadataList);
-
-
-
-
-
-
-            //var mainFormFileDownload = await PersistBlobAndCreateFileDownload(reportQueueItem.ArchiveReference,
-            //                                                        guid,
-            //                                                        "Nabovarsel",
-            //                                                        "nabovarsel.pdf",
-            //                                                        FileTypesForDownloadEnum.Nabovarsel,
-            //                                                        "application/pdf",
-            //                                                        ((AttachmentBinary)notificationMessage.Attachments.Where(x => x.Name == GetFileNameForMainForm().Name).FirstOrDefault()).BinaryContent);
-            //Get all files in blob storage
-            //First; find the containername = archiveReference
-            //Then: all docs: Metadata: 
-            // - AttachmentTypeName=*
-            // - Type=FormData
-
-            //var metadataList = new List<KeyValuePair<string, string>>();
-            //metadataList.Add(new KeyValuePair<string, string>("AttachmentTypeName", "%"));//Tvilsom om funker
-            //metadataList.Add(new KeyValuePair<string, string>("Type", "FormData"));
-
-
-            //var attachments = _blobOperations.GetAttachmentsByMetadata(BlobStorageEnum.Private, archiveReference.ToLower(), metadataList);
-
-            //foreach (var item in collection)
-            //{
-            //    var guid = "";
-            //    var fileRecord = new FileDownloadStatus(archiveReference.ToUpper(), guid, fileType, fileName, blobLink, mimeType, formName);
-
-            //}
-
-
-
-            //_fileDownloadHttpClient.Post(archiveReference, )
-
         }
 
         protected async Task CopyPDFToPublicBlobStorage(byte[] pdfDoc, string senderName, string publicContainer, string sendersArchiveReference)
