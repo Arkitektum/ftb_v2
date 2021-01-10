@@ -42,7 +42,7 @@ namespace FtB_FormLogic
 
 
             //Add notifications
-            var fristForInnspillFormatted = prefill.FormInstance.fristForInnspill?.ToString("{0:dd.MM.yyyy}");
+            var fristForInnspillFormatted = prefill.FormInstance.fristForInnspill?.ToString("dd.MM.yyyy");
 
             var smsContent = GetSMSNotificationMessage(prefill.FormInstance.beroertPart.organisasjonsnummer,
                                                         prefill.FormInstance.beroertPart.navn,
@@ -96,11 +96,8 @@ namespace FtB_FormLogic
         public string GetPrefillNotificationBody(no.kxml.skjema.dibk.nabovarselsvarPlan.PartType forslagsstiller, no.kxml.skjema.dibk.nabovarselsvarPlan.BeroertPartType beroertPart, DateTime? fristForInnspill, string kommune)
         {
             var message = new StringBuilder();
-            string datoFristInnspill = String.Empty;
-            if (fristForInnspill.HasValue)
-            {
-                datoFristInnspill = string.Format("{0:dd.MM.yyyy}", fristForInnspill);
-            }
+            string datoFristInnspill = fristForInnspill?.ToString("dd.MM.yyyy");
+            
             //This is replaced with HTML template
 
             //message.Append($"{forslagsstiller.navn} ønsker å endre  eller bygge i {kommune} kommune.<br>");
