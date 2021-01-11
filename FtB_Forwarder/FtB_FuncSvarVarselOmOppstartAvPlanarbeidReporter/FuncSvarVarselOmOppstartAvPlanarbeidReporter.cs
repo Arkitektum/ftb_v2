@@ -18,7 +18,7 @@ namespace FuncSvarVarselOmOppstartAvPlanarbeidReporter
         private readonly ReportSvarPaaVarselOmOppstartAvPlanarbeidProcessor _reportProcessor;
         private readonly DbUnitOfWork _dbUnitOfWork;
 
-        public FuncSvarVarselOmOppstartAvPlanarbeidReporter(ILogger<FuncSvarVarselOmOppstartAvPlanarbeidReporter> logger, 
+        public FuncSvarVarselOmOppstartAvPlanarbeidReporter(ILogger<FuncSvarVarselOmOppstartAvPlanarbeidReporter> logger,
                                                             ReportSvarPaaVarselOmOppstartAvPlanarbeidProcessor processor,
                                                             DbUnitOfWork dbUnitOfWork)
         {
@@ -39,23 +39,28 @@ namespace FuncSvarVarselOmOppstartAvPlanarbeidReporter
 
                 string reportSubmittals = "";
                 string separator = "";
-                foreach (var submittal in result)
+                if (result != null)
                 {
-                    reportSubmittals = $"{reportSubmittals}{separator}SubmitterId: {submittal.Item1} ArchiveReference: {submittal.Item2}";
-                    separator = ", ";
-                }
+                    foreach (var submittal in result)
+                    {
+                        reportSubmittals = $"{reportSubmittals}{separator}SubmitterId: {submittal.Item1} ArchiveReference: {submittal.Item2}";
+                        separator = ", ";
+                    }
 
+                    await _dbUnitOfWork.SaveLogEntries();
+                }
                 string timeStamp = DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss");
                 string responseMessage = string.IsNullOrEmpty(reportSubmittals)
                     ? "This HTTP triggered function executed successfully, but nothing to report."
                     : $"This HTTP triggered function executed successfully, and the following were reported for: {reportSubmittals}. ";
 
-                await _dbUnitOfWork.SaveLogEntries();
+                
 
                 return new OkObjectResult(timeStamp + ": " + responseMessage);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Unknown error occured in ReportSvarVarselOmOppstartAvPlanarbeid");
                 return new StatusCodeResult(500);
             }
 

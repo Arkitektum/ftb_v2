@@ -31,10 +31,12 @@ namespace Ftb_Repositories
         //}
 
         public async Task Save()
-        {
-            _logger.LogInformation($"Persists {_logEntries.Count()} logentries using REST API");
-            if (_logEntries != null)
+        {            
+            if (_logEntries?.Count > 0)
+            {
+                _logger.LogInformation($"Persists {_logEntries.Count()} logentries using REST API");
                 await _logEntryClient.Post(_archiveReference, _logEntries);
+            }
         }
 
         public void AddInfo(string message)
