@@ -10,8 +10,8 @@
 
     "CorrespondenceConnectionSettings:UserName": "xx",
     "CorrespondenceConnectionSettings:Password": "xx",
-    "CorrespondenceConnectionSettings:BaseAddress": "xx",
-    "CorrespondenceConnectionSettings:EndpointUrl": "xx",
+    "CorrespondenceConnectionSettings:BaseAddress": "https://tt02.altinn.no",
+    "CorrespondenceConnectionSettings:EndpointUrl": "https://tt02.altinn.no/ServiceEngineExternal/CorrespondenceAgencyExternalBasic.svc",
     "CorrespondenceConnectionSettings:ServiceOwnerCode": "DIBK",
 
     "CorrespondenceBuilderSettings:DefaultMessageServiceCode": "4662",
