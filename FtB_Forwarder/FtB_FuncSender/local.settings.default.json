@@ -17,6 +17,7 @@
 
     "CorrespondenceConnectionSettings:UserName": "xx",
     "CorrespondenceConnectionSettings:Password": "xx",
+    "CorrespondenceConnectionSettings:BaseAddress": "xx",
     "CorrespondenceConnectionSettings:EndpointUrl": "xx",
     "CorrespondenceConnectionSettings:ServiceOwnerCode": "DIBK",
 
