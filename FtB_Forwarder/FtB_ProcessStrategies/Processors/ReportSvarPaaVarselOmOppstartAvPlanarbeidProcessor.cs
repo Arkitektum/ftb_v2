@@ -69,6 +69,13 @@ namespace FtB_ProcessStrategies
                     var answerToDistributionSubmitter = await GetNotificationSenderReplies(distributionSubmittalEntity);
                     _log.LogDebug($"Number of answers for {distributionSubmittalEntity.PartitionKey} found: {((answerToDistributionSubmitter == null) || (answerToDistributionSubmitter.Senders.Count() == 0) ? "0" : answerToDistributionSubmitter.Senders.Count().ToString())}");
 
+                    if (distributionSubmittalEntity.Status.Equals(Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Distributed)))
+                    {
+                        distributionSubmittalEntity.Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.ReportingInProgress);
+                        _log.LogInformation($"{GetType().Name}. Setting distributionSubmittal status for archiveReference={archiveReference} to {distributionSubmittalEntity.Status}...");
+                        await _tableStorage.UpdateEntityRecordAsync<DistributionSubmittalEntity>(distributionSubmittalEntity);
+                    }
+
                     if (answerToDistributionSubmitter != null)
                     {
                         _dbUnitOfWork.LogEntries.AddInfo($"Sender rapport om svar fra berørte parter på varsel om oppstart av planarbeid til forslagstiller med id {distributionSubmittalEntity.SenderId}");
@@ -171,12 +178,6 @@ namespace FtB_ProcessStrategies
                 if (!sendingFailed && receiptId != null)
                 {
                     _log.LogDebug($"Successfully sent report of replies to submitter for archiveReference {repliesToPlanNotice.InitialArchiveReference}.");
-
-                    DistributionSubmittalEntity submittalEntity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(repliesToPlanNotice.InitialArchiveReference, repliesToPlanNotice.InitialArchiveReference);
-                    submittalEntity.Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.ReportingInProgress);
-                    _log.LogInformation($"{GetType().Name}. ArchiveReference={repliesToPlanNotice.InitialArchiveReference}.  SubmittalStatus: {submittalEntity.Status}...");
-                    await _tableStorage.UpdateEntityRecordAsync<DistributionSubmittalEntity>(submittalEntity);
-
                     var entitiesToUpdate = new List<NotificationSenderEntity>();
                     foreach (var sender in repliesToPlanNotice.Senders)
                     {
