@@ -108,7 +108,7 @@ namespace FtB_ProcessStrategies
             filters.Add(new KeyValuePair<string, string>("PartitionKey", distributionSubmittalEntity.PartitionKey));
             filters.Add(new KeyValuePair<string, string>("ProcessStage", Enum.GetName(typeof(NotificationSenderProcessStageEnum), NotificationSenderProcessStageEnum.Created)));
 
-            var notificationSendersReadyToReport = _tableStorage.GetTableEntitiesWithFilters<NotificationSenderEntity>(filters);
+            var notificationSendersReadyToReport = _tableStorage.GetTableEntitiesWithFilters<NotificationSenderEntity>(filters).ToList();
 
             bool fristUtgaatt = DateTime.Now.Date > distributionSubmittalEntity.ReplyDeadline.Date;
 
@@ -120,7 +120,7 @@ namespace FtB_ProcessStrategies
 
                 return null;
             }
-            else if (notificationSendersReadyToReport != null && notificationSendersReadyToReport.GetEnumerator().MoveNext())
+            else if (notificationSendersReadyToReport != null && notificationSendersReadyToReport.Count > 0)
             {
                 SvarPaaVarselOmOppstartAvPlanarbeidModel reportData = new SvarPaaVarselOmOppstartAvPlanarbeidModel();
                 reportData.InitialArchiveReference = distributionSubmittalEntity.PartitionKey;
