@@ -369,6 +369,7 @@ namespace FtB_Common.Storage
 
         public async Task<IEnumerable<(string attachmentFileName, string attachmentFileUrl, string attachmentType)>> GetBlobUrlsFromPublicStorageByMetadataAsync(string containerName, IEnumerable<KeyValuePair<string, string>> metaDataFilter)
         {
+            _log.LogDebug("Retreives blobs from container {0}", containerName);
             var blobItems = _publicBlobStorage.GetBlobContainerItems(containerName);
             List<(string attachmentFileName, string attachmentFileUrl, string attachmentType)> blobUrls = new List<(string attachmentFileName, string attachmentFileUrl, string attachmentType)>();
 

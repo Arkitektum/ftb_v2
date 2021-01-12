@@ -42,10 +42,14 @@ namespace FtB_FormLogic
 
         protected override async Task MapDistributionMessage()
         {
+            _log.LogDebug("MapDistributionMessage");
             base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(PrefillSendData, base.FormData, Guid.NewGuid(), base.ArchiveReference);
 
             //Add list of URL attachments to body
-            var metadataList = new List<KeyValuePair<string, string>>();            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.SubmittalAttachment)));            var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(base.ArchiveReference);
+            var metadataList = new List<KeyValuePair<string, string>>();            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.SubmittalAttachment)));
+
+            _log.LogDebug("Retreives from public storage");
+            var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(base.ArchiveReference);
             var urlToPublicAttachments = await _blobOperations.GetBlobUrlsFromPublicStorageByMetadataAsync(publicBlobContainer, metadataList);
             StringBuilder urlListAsHtml = new StringBuilder();
             foreach (var attachmentInfo in urlToPublicAttachments)

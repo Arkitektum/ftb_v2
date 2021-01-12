@@ -197,8 +197,10 @@ namespace FtB_FormLogic
             MapPrefillData(sendQueueItem.Receiver.Id);
             await MapDistributionMessage();
 
+            _log.LogDebug("Ready for settings row status..");
             await UpdateReceiverProcessStageAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, DistributionReceiverProcessStageEnum.Distributing);
             await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.PrefillCreated);
+            _log.LogDebug("Finished settings row status..");
         }
 
         //TODO: This could/should/must be done in a simpler way

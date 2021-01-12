@@ -161,8 +161,8 @@ namespace Altinn2.Adapters.WS.Prefill
 
         public void AddEmailAndSmsNotification(string fromEmail, string toEmail, string subject, string emailContent, string notificationTemplate, string smsContent = null)
         {
-
-            _prefillForm.ValidateButDoNotSendNotification = false;
+            //Used to be sure that the subject can be reached via altinn..
+            _prefillForm.ValidateButDoNotSendNotification = true;
 
             ReceiverEndPointBEList receiverEndPoints = new ReceiverEndPointBEList();
             DateTime notificaitonAtSubmitt = DateTime.Now;
