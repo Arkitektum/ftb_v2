@@ -114,7 +114,7 @@ namespace FtB_ProcessStrategies
 
             if (fristUtgaatt)
             {
-                var entity = _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(distributionSubmittalEntity.PartitionKey, distributionSubmittalEntity.PartitionKey).Result;
+                var entity = await _tableStorage.GetTableEntityAsync<DistributionSubmittalEntity>(distributionSubmittalEntity.PartitionKey, distributionSubmittalEntity.PartitionKey);
                 entity.Status = Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Reported);
                 await _tableStorage.UpdateEntityRecordAsync<DistributionSubmittalEntity>(entity);
 
@@ -186,7 +186,7 @@ namespace FtB_ProcessStrategies
                         distrForm.RecieptSent = DateTime.Now;
                         distrForm.RecieptSentArchiveReference = receiptId;
 
-                        await _dbUnitOfWork.DistributionForms.Update(distrForm.InitialArchiveReference, distrForm.Id, distrForm);
+                        var success = await _dbUnitOfWork.DistributionForms.Update(distrForm.InitialArchiveReference, distrForm.Id, distrForm);
 
                         AttachmentBinary submittersReceipt = (AttachmentBinary)notificationMessage.Attachments.ToList()[0];
                         var uri = await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Private,

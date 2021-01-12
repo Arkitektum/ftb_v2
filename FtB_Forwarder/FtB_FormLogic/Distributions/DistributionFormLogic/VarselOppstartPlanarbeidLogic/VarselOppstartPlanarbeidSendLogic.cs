@@ -40,9 +40,9 @@ namespace FtB_FormLogic
             base.PrefillSendData = _prefillMapper.Map(base.FormData, receiverId);
         }
 
-        protected override async Task MapDistributionMessage()
+        protected override async Task MapDistributionMessage(Guid guid)
         {
-            base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(PrefillSendData, base.FormData, Guid.NewGuid(), base.ArchiveReference);
+            base.DistributionMessage = _distributionDataMapper.GetDistributionMessage(PrefillSendData, base.FormData, guid, base.ArchiveReference);
 
             //Add list of URL attachments to body
             var metadataList = new List<KeyValuePair<string, string>>();            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.MainForm)));            metadataList.Add(new KeyValuePair<string, string>("Type", Enum.GetName(typeof(BlobStorageMetadataTypeEnum), BlobStorageMetadataTypeEnum.SubmittalAttachment)));            var publicBlobContainer = _blobOperations.GetPublicBlobContainerName(base.ArchiveReference);
@@ -54,7 +54,7 @@ namespace FtB_FormLogic
             }
 
             base.DistributionMessage.NotificationMessage.MessageData.MessageBody = base.DistributionMessage.NotificationMessage.MessageData.MessageBody.Replace("<vedleggsliste />", urlListAsHtml.ToString());
-            await base.MapDistributionMessage();
+            await base.MapDistributionMessage(guid);
         }
     }
 }

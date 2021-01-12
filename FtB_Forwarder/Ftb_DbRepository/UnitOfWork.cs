@@ -31,21 +31,21 @@ namespace Ftb_Repositories
         public IFormMetadataRepository FormMetadata { get; }
         public ILogEntryRepository LogEntries { get; }
 
-        public async Task SaveAll()
-        {
-            await SaveFormMetadata();
-            await SaveDistributionForms();
-            await SaveLogEntries();
-        }
+        //public async Task SaveAll()
+        //{
+        //    await SaveFormMetadata();
+        //    await SaveDistributionForms();
+        //    await SaveLogEntries();
+        //}
 
         public async Task SaveFormMetadata()
         {
             await FormMetadata.Save();
         }
 
-        public async Task SaveDistributionForms()
+        public async Task<bool> SaveDistributionForms()
         {
-            await DistributionForms.Save();
+            return await DistributionForms.Save();
         }
 
         public async Task SaveLogEntries()

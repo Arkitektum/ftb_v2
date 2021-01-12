@@ -118,19 +118,19 @@ namespace FtB_FormLogic
         }
 
 
-        protected virtual async Task UpdateReceiverProcessStageAsync(string archiveReference, string receiverSequenceNumber, string receiverID, DistributionReceiverProcessStageEnum processStageEnum)
+        protected virtual async Task UpdateReceiverProcessStageAsync(string archiveReference, string receiverSequenceNumber, DistributionReceiverProcessStageEnum processStageEnum)
         {
             try
             {
                 var receiverEntity = await _tableStorage.GetTableEntityAsync<DistributionReceiverEntity>(archiveReference, receiverSequenceNumber);
                 receiverEntity.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), processStageEnum);
-                var result = _tableStorage.UpdateEntityRecordAsync<DistributionReceiverEntity>(receiverEntity);
-                //_log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processStageEnum)}.....");
+                var result = await _tableStorage.UpdateEntityRecordAsync<DistributionReceiverEntity>(receiverEntity);
+                //_log.LogDebug($"ID={archiveReference}. Updated receiver ProcessStage for receiverSequenceNumber {receiverSequenceNumber}. ProcessStage: {receiverEntity.ProcessStage}.....");
 
             }
             catch (Exception ex)
             {
-                _log.LogError(ex, $"UpdateReceiverProcessStage: ArchveReference={archiveReference}. Error adding receiver record for ID={receiverSequenceNumber} and receiverID {receiverID}");
+                _log.LogError(ex, $"UpdateReceiverProcessStage: ArchveReference={archiveReference}. Error adding receiver record for ID={receiverSequenceNumber}");
                 throw;
             }
         }
@@ -141,7 +141,7 @@ namespace FtB_FormLogic
                 var receiverEntity = await _tableStorage.GetTableEntityAsync<DistributionReceiverEntity>(archiveReference, receiverSequenceNumber);
                 receiverEntity.ProcessOutcome = Enum.GetName(typeof(ReceiverProcessOutcomeEnum), processOutcomeEnum);
                 var result = await _tableStorage.UpdateEntityRecordAsync<DistributionReceiverEntity>(receiverEntity);
-                //_log.LogDebug($"ID={archiveReference}. Updated receiver status for receiverSequenceNumber {receiverSequenceNumber} and receiverID {receiverID}. Status: {Enum.GetName(typeof(ReceiverProcessStageEnum), processOutcomeEnum)}.....");
+                //_log.LogDebug($"ID={archiveReference}. Updated receiver ProcessOutcome for receiverSequenceNumber {receiverSequenceNumber}. ProcessOutcome: {receiverEntity.ProcessOutcome}.....");
             }
             catch (Exception ex)
             {

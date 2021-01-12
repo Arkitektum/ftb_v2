@@ -66,20 +66,50 @@ namespace FtB_FormLogic
             //if (returnReportQueueItem == null) //State machine thingy should handle this..
             //    return returnReportQueueItem;
 
+            //Hva skjer her: 
+            //  - mapping av data, 
+            //  - oppdaterer receiverEnt med Distributing
+            //  - oppretter DistributionMessage
             await MapFormDataToLogicData(sendQueueItem);
-
+            
             var prefillData = PrefillSendData.FirstOrDefault();
 
+            //Hva skjer her: oppretter distributionForms
             await CreateDistributionForm(prefillData);
             // NOTE:The distributionForm will not be saved if distribution sending fails
 
-            await SendDistribution(sendQueueItem, prefillData);
+            var receiverEntity = await _tableStorage.GetTableEntityAsync<DistributionReceiverEntity>(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber);
+            _log.LogDebug($"receiverEntity.ETag for seq {sendQueueItem.ReceiverSequenceNumber}: {receiverEntity.ETag}");
 
-            //TODO - Has been temp used for testing of ReservedReportee
-            //if (sendQueueItem.Receiver.Id.Equals("910041126"))
-            //{
-            //    UpdateReceiverProcessOutcome(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
-            //}
+            if (receiverEntity.ProcessOutcome != Enum.GetName(typeof(ReceiverProcessOutcomeEnum), ReceiverProcessOutcomeEnum.Sent))
+            {
+                await SendDistribution(sendQueueItem, prefillData);
+
+                //_log.LogDebug($"Etter SendDistribution - receiverEntity.ETag for seq {sendQueueItem.ReceiverSequenceNumber}: {receiverEntity.ETag}");
+                //Update receiver entity with DistributionFormReferenceId and SubmitPrefillTaskReceiptId
+                //for later use (resending message from DLQ) if creating distributionForms fails
+                var distributionForm = await _dbUnitOfWork.DistributionForms.Get(DistributionMessage.DistributionFormReferenceId.ToString());
+                var receEntity = await _tableStorage.GetTableEntityAsync<DistributionReceiverEntity>(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber);
+
+                receEntity.SubmitPrefillTaskReceiptId = distributionForm.SubmitAndInstantiatePrefilledFormTaskReceiptId;
+                receEntity.DistributionFormReferenceId = DistributionMessage.DistributionFormReferenceId.ToString();
+
+                await _tableStorage.UpdateEntityRecordAsync<DistributionReceiverEntity>(receEntity);
+                //_log.LogDebug($"Etter UpdateEntityRecordAsync - receEntity.ETag for seq {sendQueueItem.ReceiverSequenceNumber}: {receEntity.ETag}");
+            }
+            else
+            {
+                //Update mother distributionForm with the same receEntity.SubmitPrefillTaskReceiptId. TaskReceiptId will be synched to children
+                var receEntity = await _tableStorage.GetTableEntityAsync<DistributionReceiverEntity>(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber);
+                var mainDistributionForm = (await _dbUnitOfWork.DistributionForms.GetAll())
+                                        .Where(d => d.Id == DistributionMessage.DistributionFormReferenceId).FirstOrDefault();
+                mainDistributionForm.SubmitAndInstantiatePrefilledFormTaskReceiptId = receEntity.SubmitPrefillTaskReceiptId;
+            }
+
+            if (!await _dbUnitOfWork.SaveDistributionForms())
+            {
+                throw new Exception($"Failed during update of DistributionForms for archiveReference {sendQueueItem.ArchiveReference}");
+            }
 
             return returnReportQueueItem;
         }
@@ -88,11 +118,12 @@ namespace FtB_FormLogic
         {
             _log.LogDebug("Sending distribution form with reference {0} for {1} - {2}", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
             var result = await _distributionAdapter.SendDistribution(DistributionMessage);
+            
 
             //Remember "postdistribution metadata SendPrefillServiceV2 line 152 - 162
 
             //Log results
-            LogPrefillProcessing(result, prefillData);
+            await LogPrefillProcessing(result, prefillData);
             LogDistributionProcessingResults(result, prefillData);
 
             //if (result.Where(r => r.Step == DistributionStep.Failed || r.Step == DistributionStep.UnkownErrorOccurred || r.Step == DistributionStep.UnableToReachReceiver).Any())
@@ -145,7 +176,6 @@ namespace FtB_FormLogic
 
             await UpdateReceiverProcessStageAsync(sendQueueItem.ArchiveReference,
                                                     sendQueueItem.ReceiverSequenceNumber,
-                                                    sendQueueItem.Receiver.Id,
                                                     DistributionReceiverProcessStageEnum.Distributed);
         }
 
@@ -161,7 +191,6 @@ namespace FtB_FormLogic
                 InitialExternalSystemReference = prefillData.InitialExternalSystemReference,
                 ExternalSystemReference = prefillData.ExternalSystemReference,
                 DistributionType = prefillData.PrefillFormName,
-                //SubmitAndInstantiatePrefilledFormTaskReceiptId = prefillData.
             });
 
             var distributionForm = (await _dbUnitOfWork.DistributionForms.GetAll())
@@ -187,17 +216,29 @@ namespace FtB_FormLogic
             _dbUnitOfWork.LogEntries.AddInfo($"Starter distribusjon med søknadsystemsreferanse {prefillData.ExternalSystemReference}");
             _dbUnitOfWork.LogEntries.AddInfo($"Dist id {prefillData.InitialExternalSystemReference} - Distribusjon av {prefillData.PrefillFormName} til tjeneste {prefillData.PrefillServiceCode}/{prefillData.PrefillServiceEditionCode}");
             distributionForm.SubmitAndInstantiatePrefilled = DateTime.Now;
-
-            //return distributionForm;
         }
 
         private async Task MapFormDataToLogicData(SendQueueItem sendQueueItem)
         {
             _log.LogDebug("Maps prefill data for {0}", sendQueueItem.Receiver.Id);
             MapPrefillData(sendQueueItem.Receiver.Id);
-            await MapDistributionMessage();
 
-            await UpdateReceiverProcessStageAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, DistributionReceiverProcessStageEnum.Distributing);
+            //Using existing distributionFormsID if it exists. If not, create a new id and persist to DistributionReceiverEntity
+            Guid distributionFormReferenceId;
+            var receiverEntity = await _tableStorage.GetTableEntityAsync<DistributionReceiverEntity>(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber);
+            if (string.IsNullOrEmpty(receiverEntity.DistributionFormReferenceId))
+            {
+                distributionFormReferenceId = Guid.NewGuid();
+            }
+            else
+            {
+                distributionFormReferenceId = Guid.Parse(receiverEntity.DistributionFormReferenceId);
+            }
+
+            await MapDistributionMessage(distributionFormReferenceId);
+
+            receiverEntity.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Distributing);
+            await _tableStorage.UpdateEntityRecordAsync<DistributionReceiverEntity>(receiverEntity);
             await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.PrefillCreated);
         }
 
@@ -222,7 +263,6 @@ namespace FtB_FormLogic
                             altinnReceiptId = res.PrefillAltinnReceiptId;
 
                         _dbUnitOfWork.LogEntries.AddInfo($"Altinn {prefill.PrefillFormName} laget til ({Receiver.PresentationId}), Altinn kvitteringsid: {altinnReceiptId}");
-
                         break;
                     case DistributionStep.Failed:
                         _dbUnitOfWork.LogEntries.AddError($"Dist id {prefill.InitialExternalSystemReference} - Feil ved Altinn utsendelse av melding til {Receiver.PresentationId} ");
@@ -306,7 +346,7 @@ namespace FtB_FormLogic
 
         protected abstract void MapPrefillData(string receiverId);
 
-        protected virtual async Task MapDistributionMessage()
+        protected virtual async Task MapDistributionMessage(Guid guid)
         {
         }
 

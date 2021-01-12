@@ -61,7 +61,7 @@ namespace FtB_FormLogic
 
             var returnItem = await base.ExecuteAsync(reportQueueItem);
 
-            await UpdateReceiverProcessStageAsync(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, reportQueueItem.Receiver.Id, DistributionReceiverProcessStageEnum.ReadyForReporting);
+            await UpdateReceiverProcessStageAsync(reportQueueItem.ArchiveReference, reportQueueItem.ReceiverSequenceNumber, DistributionReceiverProcessStageEnum.ReadyForReporting);
             await AddToReceiverProcessLogAsync(reportQueueItem.ReceiverLogPartitionKey, reportQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.ReadyForReporting);
 
             if (await ReadyForSubmittalReportingAsync(reportQueueItem))

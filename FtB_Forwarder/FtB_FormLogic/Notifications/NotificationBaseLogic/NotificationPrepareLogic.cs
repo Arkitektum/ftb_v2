@@ -66,7 +66,7 @@ namespace FtB_FormLogic
             distributionForm.DistributionStatus = DistributionStatus.signed;
             distributionForm.SignedArchiveReference = ArchiveReference.ToUpper();
 
-            await _dbUnitOfWork.DistributionForms.Update(distributionForm.InitialArchiveReference, distributionId, distributionForm);
+            var success = await _dbUnitOfWork.DistributionForms.Update(distributionForm.InitialArchiveReference, distributionId, distributionForm);
         }
 
         public async Task AddRepliedFilesToFileDownloadStatus(string archiveReference)

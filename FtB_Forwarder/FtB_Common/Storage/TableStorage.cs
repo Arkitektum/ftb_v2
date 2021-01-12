@@ -9,6 +9,7 @@ using FtB_Common.Exceptions;
 using FtB_Common.BusinessModels;
 using System.Linq;
 using System.Threading;
+using Microsoft.Extensions.Logging;
 
 namespace FtB_Common.Storage
 {
@@ -21,8 +22,9 @@ namespace FtB_Common.Storage
         private readonly string _distributionReceiverLogTable;
         private readonly string _notificationSenderTable;
         private readonly string _notificationSenderLogTable;
+        private readonly ILogger<TableStorage> _log;
 
-        public TableStorage(IConfiguration configuration)
+        public TableStorage(IConfiguration configuration, ILogger<TableStorage> log)
         {
             _storageAccount = CreateStorageAccountFromConnectionString(configuration["PrivateAzureStorageConnectionString"]);
             _distributionSubmittalTable = configuration["TableStorage:DistributionSubmittalTable"];
@@ -33,6 +35,7 @@ namespace FtB_Common.Storage
             _notificationSenderLogTable = configuration["TableStorage:NotificationSenderLogTable"];
 
             _cloudTableClient = _storageAccount.CreateCloudTableClient();
+            _log = log;
         }
 
         public static CloudStorageAccount CreateStorageAccountFromConnectionString(string storageConnectionString)
@@ -179,13 +182,21 @@ namespace FtB_Common.Storage
             return tableResult.HttpStatusCode == 204;
         }
 
-        public async Task<TableEntity> UpdateEntityRecordAsync<T>(TableEntity entity)
+        public async Task<TableEntity> UpdateEntityRecordAsync<T>(TableEntity entity) where T : ITableEntity
         {
             try
             {
+
+                //var erw = await GetTableEntityAsync<T>(entity.PartitionKey, entity.RowKey);
+               
+                //_log.LogDebug($"Inne i UpdateEntityRecordAsync: Existing entity: Rowkey(seq)={erw.RowKey} entity.ETag={erw.ETag}");
+                
                 string tableNameFromType = GetTableName<T>();
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
+                //_log.LogDebug($"Inne i UpdateEntityRecordAsync: New entity: Rowkey(seq)={entity.RowKey} entity.ETag={entity.ETag}");
                 TableOperation operation = TableOperation.Replace(entity);
+                //TableOperation operation = TableOperation.Merge(entity);
+
                 TableResult result = await cloudTable.ExecuteAsync(operation);
                 var insertedEntity = (TableEntity)result.Result;
                 return insertedEntity;
@@ -209,6 +220,7 @@ namespace FtB_Common.Storage
                 TableOperation retrieveOperation = TableOperation.Retrieve<T>(partitionKey, rowKey);
                 CloudTable cloudTable = _cloudTableClient.GetTableReference(tableNameFromType);
                 TableResult result = await cloudTable.ExecuteAsync(retrieveOperation);
+                //_log.LogDebug($"Inne i GetTableEntityAsync: Rowkey(seq)={rowKey} entity.ETag={result.Etag}");
                 return (T)result.Result;
             }
             catch (StorageException)

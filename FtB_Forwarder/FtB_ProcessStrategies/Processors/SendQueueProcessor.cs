@@ -37,7 +37,6 @@ namespace FtB_ProcessStrategies
                 string formatId = await _blobOperations.GetFormatIdFromStoredBlob(sendQueueItem.ArchiveReference);
                 var formLogicBeingProcessed = _formatIdToFormMapper.GetFormLogic<ReportQueueItem, SendQueueItem>(formatId, FormLogicProcessingContext.Send);
                 var result = await formLogicBeingProcessed.ExecuteAsync(sendQueueItem);
-                await _dbUnitOfWork.SaveDistributionForms();
                 return result;
             }
             catch (DistributionSendExeception dsex)

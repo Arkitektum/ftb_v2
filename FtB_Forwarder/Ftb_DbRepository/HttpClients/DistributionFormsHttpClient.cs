@@ -26,7 +26,7 @@ namespace Ftb_Repositories.HttpClients
             _log.LogDebug($"DistributionFormsHttpClient - constructor.");
         }
 
-        public async Task Post(string archiveReference, IEnumerable<DistributionForm> distributionForms)
+        public async Task<HttpResponseMessage> Post(string archiveReference, IEnumerable<DistributionForm> distributionForms)
         {
             _log.LogDebug($"Post(string, IEn(DistrForm) for archiveReference {archiveReference}.");
 
@@ -34,7 +34,7 @@ namespace Ftb_Repositories.HttpClients
             var json = JsonSerializer.Serialize(distributionForms);
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var result = await Client.PostAsync(requestUri, stringContent);
+            return await Client.PostAsync(requestUri, stringContent);
         }
 
         public async Task<IEnumerable<DistributionForm>> GetAll(string archiveReference)
@@ -79,7 +79,7 @@ namespace Ftb_Repositories.HttpClients
             return retVal;
         }
 
-        public async Task Put(string archiveReference, Guid distributionId, DistributionForm distributionForm)
+        public async Task<HttpResponseMessage> Put(string archiveReference, Guid distributionId, DistributionForm distributionForm)
         {
             _log.LogDebug($"Put (update) distributionForm for archiveReference {archiveReference}.");
 
@@ -90,6 +90,7 @@ namespace Ftb_Repositories.HttpClients
 
             var result = await Client.PutAsync(requestUri, stringContent);
             _log.LogDebug($"Put (update) gave result {result.StatusCode.ToString()}.");
+            return result;
         }
     }
 }

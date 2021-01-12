@@ -10,9 +10,9 @@ namespace Ftb_Repositories.Interfaces
         void Add(DistributionForm distributionForm);
         Task<IEnumerable<DistributionForm>> GetAll();
         Task<DistributionForm> Get(string id);
-        Task Update(string archiveReference, Guid id, DistributionForm updatedDistributionForm);
+        Task<bool> Update(string archiveReference, Guid id, DistributionForm updatedDistributionForm);
         Task<IEnumerable<DistributionForm>> GetWithChildren(string distributionReference);
         void SetArchiveReference(string archiveReference);
-        Task Save();
+        Task<bool> Save();
     }
 }

@@ -12,6 +12,9 @@ namespace FtB_Common.BusinessModels
         public string ProcessOutcome { get; set; }
         public DateTime CreatedTimeStamp { get; set; }
         public string ReceiverLogPartitionKey { get; set; }
+        public string DistributionFormReferenceId { get; set; }
+        public string SubmitPrefillTaskReceiptId { get; set; }
+        //public string DistributionFormDistributionStatus { get; set; }
         public DistributionReceiverEntity() { }
         
         public DistributionReceiverEntity(string partitionKey, string rowKey, string receiverId, DistributionReceiverProcessStageEnum status, DateTime createdTimestamp, string receiverLogPartitionKey)

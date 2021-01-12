@@ -6,6 +6,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Ftb_Repositories
@@ -47,11 +48,16 @@ namespace Ftb_Repositories
             return result;
         }
 
-        public async Task Update(string archiveReference, Guid id, DistributionForm updatedDistributionForm)
+        public async Task<bool> Update(string archiveReference, Guid id, DistributionForm updatedDistributionForm)
         {
+            HttpResponseMessage result;
             _logger.LogInformation($"Updates distribution form for archiveReference {archiveReference} with id={id}");
-            //_distributionForms.Add(updatedDistributionForm);
-            await _distributionFormsClient.Put(archiveReference, id, updatedDistributionForm);
+            result = await _distributionFormsClient.Put(archiveReference, id, updatedDistributionForm);
+            if (!result.IsSuccessStatusCode)
+            {
+                _logger.LogError($"Updating distribution form returned httpStatusCode {result.StatusCode.ToString()}");
+            }
+            return result.IsSuccessStatusCode;
         }
 
 
@@ -73,16 +79,26 @@ namespace Ftb_Repositories
             _distributionForms.Add(distributionForm);
         }
 
-        public async Task Save()
+        public async Task<bool> Save()
         {
+            HttpResponseMessage result;
             if (_distributionForms?.Count > 0)
             {
                 SynchronizeDistributionData();
                 _logger.LogInformation("Persists distribution forms");
-                await _distributionFormsClient.Post(_archiveReference, _distributionForms);
+                result = await _distributionFormsClient.Post(_archiveReference, _distributionForms);
+                if (!result.IsSuccessStatusCode)
+                {
+                    _logger.LogError($"Persisting distribution forms returned httpStatusCode {result.StatusCode.ToString()}");
+                }
+                return result.IsSuccessStatusCode;
             }
             else
+            {
                 _logger.LogWarning("No forms to persist!");
+                return true;
+            }
+ 
         }
 
         private void SynchronizeDistributionData()
