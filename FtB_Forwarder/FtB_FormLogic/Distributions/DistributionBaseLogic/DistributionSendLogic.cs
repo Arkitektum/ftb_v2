@@ -240,6 +240,7 @@ namespace FtB_FormLogic
             receiverEntity.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Distributing);
             await _tableStorage.UpdateEntityRecordAsync<DistributionReceiverEntity>(receiverEntity);
             await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.PrefillCreated);
+            _log.LogDebug("Finished settings row status..");
         }
 
         //TODO: This could/should/must be done in a simpler way
