@@ -308,19 +308,23 @@ namespace FtB_FormLogic
                         }
                         break;
                     case DistributionStep.Failed:
-                        _dbUnitOfWork.LogEntries.AddError($"Dist id {prefill.InitialExternalSystemReference} - {prefillResult.Message}");
-                        break;
                     case DistributionStep.UnkownErrorOccurred:
                         _dbUnitOfWork.LogEntries.AddError($"Unntak ved Altinn utsendelse av {prefill.PrefillFormName} til {Receiver.PresentationId}");
+                        var dfUnknownError = await _dbUnitOfWork.DistributionForms.Get(prefill.InitialExternalSystemReference);
+                        dfUnknownError.DistributionStatus = DistributionStatus.error;
+                        dfUnknownError.ErrorMessage = "Feil oppstod";
                         break;
                     case DistributionStep.ReservedReportee:
                         _dbUnitOfWork.LogEntries.AddInfoInternal($"Dist id {prefill.InitialExternalSystemReference} - Nabovarsel print pga. reservasjon", "Prefill");
+                        var dfReserved = await _dbUnitOfWork.DistributionForms.Get(prefill.InitialExternalSystemReference);
+                        dfReserved.DistributionStatus = DistributionStatus.error;
+                        dfReserved.ErrorMessage = "Send manuelt";
                         break;
                     case DistributionStep.UnableToReachReceiver:
                         _dbUnitOfWork.LogEntries.AddError($"Mottaker kunne ikke nås i Altinn {Receiver.PresentationId} : {prefillResult.Message}");
                         var dfError = await _dbUnitOfWork.DistributionForms.Get(prefill.InitialExternalSystemReference);
                         dfError.DistributionStatus = DistributionStatus.error;
-                        dfError.ErrorMessage = prefillResult.Message;
+                        dfError.ErrorMessage = "Send manuelt";
 
                         break;
                     default:
