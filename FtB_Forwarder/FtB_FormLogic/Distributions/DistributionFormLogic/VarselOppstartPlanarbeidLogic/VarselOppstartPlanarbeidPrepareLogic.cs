@@ -37,7 +37,7 @@ namespace FtB_FormLogic
             {
                 id = FormData.forslagsstiller.organisasjonsnummer;
             }
-        
+            
             Sender = new Actor() { Id = id, Type = senderType };
             _log.LogDebug($"SetSender: {FormData.forslagsstiller.navn}, Id: {id}");
 
@@ -58,9 +58,12 @@ namespace FtB_FormLogic
                 {
                     id = beroertPart.organisasjonsnummer;
                 }
-                receivers.Add(new Actor() { Type = receiverType, Id = id });
 
-                _log.LogDebug($"Set receiver: {beroertPart.navn}, Id: {id}");
+                string name = !string.IsNullOrEmpty(beroertPart.navn) ? beroertPart.navn : null;
+
+                receivers.Add(new Actor() { Type = receiverType, Id = id, Name = name });
+
+                _log.LogDebug($"Read receiver from formdata. Name:{beroertPart.navn}, Id: {id}");
             }
 
             base.SetReceivers(receivers);

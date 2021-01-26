@@ -46,10 +46,10 @@ namespace FtB_FormLogic
 
         }
 
-        protected override async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, DistributionReceiverStatusLogEnum statusEnum)
+        protected override async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, string receiverName, DistributionReceiverStatusLogEnum statusEnum)
         {
             this.State = statusEnum;
-            await base.AddToReceiverProcessLogAsync(receiverPartitionKey, receiverID, statusEnum);
+            await base.AddToReceiverProcessLogAsync(receiverPartitionKey, receiverID, receiverName, statusEnum);
         }
 
         protected override Task UpdateReceiverProcessStageAsync(string archiveReference, string receiverSequenceNumber, DistributionReceiverProcessStageEnum processStageEnum)

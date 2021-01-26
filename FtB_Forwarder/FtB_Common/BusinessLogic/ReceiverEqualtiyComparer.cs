@@ -17,8 +17,8 @@ namespace FtB_Common.BusinessLogic
         //}
         public bool Equals([AllowNull] ActorInternal x, [AllowNull] ActorInternal y)
         {
-            bool result = x.DecryptedId.Equals(y.DecryptedId, StringComparison.InvariantCultureIgnoreCase);
-            //bool result = _decryption.DecryptText(x.Id).Equals(_decryption.DecryptText(y.Id), StringComparison.InvariantCultureIgnoreCase);
+            bool result = x.DecryptedId.Equals(y.DecryptedId, StringComparison.InvariantCultureIgnoreCase)
+                            && x.Name.Equals(y.Name, StringComparison.InvariantCultureIgnoreCase);
             return result;
         }
 

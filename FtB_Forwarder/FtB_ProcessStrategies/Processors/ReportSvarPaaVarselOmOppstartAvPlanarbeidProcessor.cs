@@ -51,10 +51,43 @@ namespace FtB_ProcessStrategies
             _fileDownloadHttpClient = fileDownloadHttpClient;
         }
 
+        //TODO: See ToDo's below
+        /// <summary>
+        /// What is happening here:
+        /// </summary>
+        /// - Get all DistributionSubmittal To Report For
+        /// - Get all answers for each DistributionSubmittal
+        ///   - If reply due date is passed, set status for DistributionSubmittal to "Reported"
+        ///   - Populate SvarPaaVarselOmOppstartAvPlanarbeidModel with main data for the DistributionSubmitter report
+        ///   - For each answer, populate SvarPaaVarselOmOppstartAvPlanarbeidSenderModel with data from the sender (neighbour)
+        /// - For each DistributionSubmittal
+        ///   - If status is Distributed, set it to "ReportingInProgress"
+        ///   - If more than 0 answers, Send Replies Report To DistributionSubmitter
+        ///     - Build Altinn Notification Message
+        ///       - Get Accumulated Replies Report from HTML template and merge DistributionSubmitter data
+        ///       - Convert the Accumulated Replies Report to PDF, to be used as attachment to the Altinn report message (below)
+        ///       - GetReportMessage
+        ///         - Get SvarVarselOppstartPlanarbeidReportMessageBody HTML template
+        ///         - Merge report main data into template
+        ///         - Get a list of blob URL's of reply PDF's from public bblob storage
+        ///         - Add a list of all replies from neighbours to the *Altinn notofication message* (TODO: What are the size limit for the message? Can this be to big?)
+        ///       - Add message and report attachment to the Altinn Notification Message
+        ///     - Send Altinn Notification Message
+        ///     - Check if sending was successfull, and for each sender
+        ///       - Get the DB distributionForm record for *this* answer and update distributionStatus and receiptfields
+        ///       - Send the PDF report to the archive reference private blob storage (TODO: should me moved above the loop)
+        ///       - Add a DB FileDownloadStatus record with link to the DistributionSubmittal report
+        ///       - Update the senders notification answer entity status (NotificationSenderProcessStageEnum) to "Reported" and add to list
+        ///     - Persist the notification answer entity list (above) to table storage
+        ///     - Add logging "NotificationSenderStatusLogEnum.Completed"
+        ///   - Return list of report receiverID and archiveReference
+        /// <returns></returns>
+
+
         public async Task<IEnumerable<Tuple<string, string>>> ExecuteProcessingStrategyAsync()
         {
             _log.LogDebug("Getting distributionSubmittalEntities..");
-            IEnumerable<DistributionSubmittalEntity> distributionSubmittalEntities = await GetDistributionSubmittalEntitiesToReportFor();
+            IEnumerable<DistributionSubmittalEntity> distributionSubmittalEntities = await GetDistributionSubmittalEntitiesToReportForAsync();
 
             _log.LogDebug($"Number of distributionSubmittalEntities found: {distributionSubmittalEntities.Count()}");
             if (distributionSubmittalEntities.ToList().Count > 0)
@@ -66,7 +99,7 @@ namespace FtB_ProcessStrategies
                     var archiveReference = distributionSubmittalEntity.PartitionKey;
                     _dbUnitOfWork.SetArchiveReference(archiveReference);
 
-                    var answerToDistributionSubmitter = await GetNotificationSenderReplies(distributionSubmittalEntity);
+                    var answerToDistributionSubmitter = await GetNotificationSenderRepliesAsync(distributionSubmittalEntity);
                     _log.LogDebug($"Number of answers for {distributionSubmittalEntity.PartitionKey} found: {((answerToDistributionSubmitter == null) || (answerToDistributionSubmitter.Senders.Count() == 0) ? "0" : answerToDistributionSubmitter.Senders.Count().ToString())}");
 
                     if (distributionSubmittalEntity.Status.Equals(Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Distributed)))
@@ -93,7 +126,7 @@ namespace FtB_ProcessStrategies
             return null;
         }
 
-        private async Task<IEnumerable<DistributionSubmittalEntity>> GetDistributionSubmittalEntitiesToReportFor()
+        private async Task<IEnumerable<DistributionSubmittalEntity>> GetDistributionSubmittalEntitiesToReportForAsync()
         {
             var distributionSubmittalEntitiesDistributed = _tableStorage.GetTableEntitiesWithStatusFilter<DistributionSubmittalEntity>(Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.Distributed));
             var distributionSubmittalEntitiesReportingInProgress = _tableStorage.GetTableEntitiesWithStatusFilter<DistributionSubmittalEntity>(Enum.GetName(typeof(DistributionSubmittalStatusEnum), DistributionSubmittalStatusEnum.ReportingInProgress));
@@ -102,7 +135,7 @@ namespace FtB_ProcessStrategies
             return distributionSubmittalEntities;
         }
 
-        private async Task<SvarPaaVarselOmOppstartAvPlanarbeidModel> GetNotificationSenderReplies(DistributionSubmittalEntity distributionSubmittalEntity)
+        private async Task<SvarPaaVarselOmOppstartAvPlanarbeidModel> GetNotificationSenderRepliesAsync(DistributionSubmittalEntity distributionSubmittalEntity)
         {
             var filters = new List<KeyValuePair<string, string>>();
             filters.Add(new KeyValuePair<string, string>("PartitionKey", distributionSubmittalEntity.PartitionKey));

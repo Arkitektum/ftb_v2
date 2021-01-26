@@ -45,11 +45,13 @@ namespace FtB_FormLogic
             {
                 var receiverInternal = new ActorInternal(receiver);
                 receiverInternal.DecryptedId = receiverInternal.Id.Length > 11 ? _decryptionFactory.GetDecryptor().DecryptText(receiverInternal.Id) : receiver.Id;
+                receiverInternal.Name = receiver.Name;
                 comparrisonSource.Add(receiverInternal);
             }
             //_receivers = comparrisonSource.Distinct(new ReceiverEqualtiyComparer(_decryptionFactory)).ToList<Receiver>();
             var distinctList = comparrisonSource.Distinct(new ReceiverEqualtiyComparer()).ToList();
-            _receivers = distinctList.Select(s => new Actor() { Id = s.Id, Type = s.Type }).ToList();
+            _receivers = distinctList.Select(s => new Actor() { Id = s.Id, Type = s.Type, Name = s.Name }).ToList();
+            _log.LogDebug($"{this.GetType().Name}: Receiver count from form data: {receivers.Count()}. Receiver count after removed duplicates: {_receivers.Count}");
         }
         public virtual async Task PreExecuteAsync(SubmittalQueueItem submittalQueueItem)
         {

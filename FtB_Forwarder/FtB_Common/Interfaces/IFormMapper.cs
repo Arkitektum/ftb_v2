@@ -8,6 +8,6 @@ namespace FtB_FormLogic
     public interface IFormMapper<TFrom>
     {
         //string FormDataString { get; set; }
-        IEnumerable<IPrefillData> Map(TFrom from, string filter);
+        IEnumerable<IPrefillData> Map(TFrom from, string receiverId, string receiverName);
     }
 }

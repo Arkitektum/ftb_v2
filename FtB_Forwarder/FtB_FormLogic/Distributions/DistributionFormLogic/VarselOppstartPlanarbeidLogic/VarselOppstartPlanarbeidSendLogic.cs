@@ -35,9 +35,9 @@ namespace FtB_FormLogic
             _distributionDataMapper = distributionDataMapper;
             _prefillMapper = prefillMapper;
         }
-        protected override void MapPrefillData(string receiverId)
+        protected override void MapPrefillData(string receiverId, string receiverName)
         {
-            base.PrefillSendData = _prefillMapper.Map(base.FormData, receiverId);
+            base.PrefillSendData = _prefillMapper.Map(base.FormData, receiverId, receiverName);
         }
 
         protected override async Task MapDistributionMessage(Guid guid)

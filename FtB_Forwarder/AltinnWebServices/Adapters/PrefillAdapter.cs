@@ -27,7 +27,8 @@ namespace Altinn2.Adapters
         public async Task<IEnumerable<PrefillResult>> SendPrefill(AltinnDistributionMessage altinnDistributionMessage)
         {
             var results = new List<PrefillResult>();
-            _logger.LogDebug($"{GetType().Name}: SendPrefill for receiver {altinnDistributionMessage.NotificationMessage.Receiver.Id}....");
+            _logger.LogDebug($"{GetType().Name}: SendPrefill for scrambled receiver {altinnDistributionMessage.NotificationMessage.Receiver.Id.ScrambleMiddlePartOfString(3)}....");
+
             _prefillFormTaskBuilder.SetupPrefillFormTask(altinnDistributionMessage.PrefillServiceCode,
                     int.Parse(altinnDistributionMessage.PrefillServiceEditionCode),
                     altinnDistributionMessage.NotificationMessage.Receiver.Id,
@@ -74,7 +75,7 @@ namespace Altinn2.Adapters
 
             var prefillFormTask = _prefillFormTaskBuilder.Build();
             results.Add(new PrefillResult() { Step = DistributionStep.PayloadCreated, Message = $"{altinnDistributionMessage.NotificationMessage.Receiver.Id}" });
-            _logger.LogDebug($"PrefillFormTask for {altinnDistributionMessage.NotificationMessage.Receiver.Id} - created");
+            _logger.LogDebug($"PrefillFormTask for scrambled receiver {altinnDistributionMessage.NotificationMessage.Receiver.Id.ScrambleMiddlePartOfString(3)} - created");
 
             // ********** Should have retry for communication errors  *********
 

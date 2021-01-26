@@ -125,6 +125,7 @@ namespace FtB_FormLogic
             //message.Append($"Da trenger du ikke gjøre noe som helst.</p>");
 
             string htmlBody = _htmlUtils.GetHtmlFromTemplate("FtB_FormLogic.Distributions.DistributionFormLogic.VarselOppstartPlanarbeidLogic.Send.VarselOppstartPlanarbeidPrefillNotificationBody.html");
+            htmlBody = htmlBody.Replace("<beroertPart.navn />", beroertPart.navn);
             htmlBody = htmlBody.Replace("<kommune />", kommune);
             htmlBody = htmlBody.Replace("<forslagsstiller.navn />", forslagsstiller.navn);
             htmlBody = htmlBody.Replace("<forslagsstiller.kontaktperson.epost />", forslagsstiller.kontaktperson.epost);

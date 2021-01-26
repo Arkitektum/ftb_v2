@@ -46,8 +46,8 @@ namespace FtB_FormLogic
                 string receiverLogPartitionKey = $"{ArchiveReference}-{i.ToString()}";
                 string rowKey = $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}";
 
-                receiverEntities.Add(new DistributionReceiverEntity(ArchiveReference, i.ToString(), Receivers[i].Id, DistributionReceiverProcessStageEnum.Created, DateTime.Now, receiverLogPartitionKey));
-                receiverLogEntities.Add(new DistributionReceiverLogEntity(receiverLogPartitionKey, rowKey, Receivers[i].Id, DistributionReceiverStatusLogEnum.Created));
+                receiverEntities.Add(new DistributionReceiverEntity(ArchiveReference, i.ToString(), Receivers[i].Id, Receivers[i].Name, DistributionReceiverProcessStageEnum.Created, DateTime.Now, receiverLogPartitionKey));
+                receiverLogEntities.Add(new DistributionReceiverLogEntity(receiverLogPartitionKey, rowKey, Receivers[i].Id, Receivers[i].Name, DistributionReceiverStatusLogEnum.Created));
 
                 sendQueueItems.Add(new SendQueueItem()
                 {

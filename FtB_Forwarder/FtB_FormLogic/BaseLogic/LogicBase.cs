@@ -107,7 +107,7 @@ namespace FtB_FormLogic
 
             var receivers = await _tableStorage.GetTableEntitiesAsync<DistributionReceiverEntity>(partititonKey);
 
-            var tasks = receivers.Select(s => AddToReceiverProcessLogAsync(s.ReceiverLogPartitionKey, s.ReceiverId, statusEnum));
+            var tasks = receivers.Select(s => AddToReceiverProcessLogAsync(s.ReceiverLogPartitionKey, s.ReceiverId, s.ReceiverName, statusEnum));
 
             await Task.WhenAll(tasks);
         }
@@ -150,11 +150,11 @@ namespace FtB_FormLogic
             }
         }
 
-        protected virtual async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, DistributionReceiverStatusLogEnum statusEnum)
+        protected virtual async Task AddToReceiverProcessLogAsync(string receiverPartitionKey, string receiverID, string receiverName, DistributionReceiverStatusLogEnum statusEnum)
         {
             try
             {
-                DistributionReceiverLogEntity receiverEntity = new DistributionReceiverLogEntity(receiverPartitionKey, $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, statusEnum);
+                DistributionReceiverLogEntity receiverEntity = new DistributionReceiverLogEntity(receiverPartitionKey, $"{DateTime.Now.ToString("yyyyMMddHHmmssffff")}", receiverID, receiverName, statusEnum);
                 // _log.LogDebug($"ID={receiverPartitionKey}. Added receiver status for {archiveReference} and receiverID {receiverID}. Status: {receiverEntity.Status}.....");
                 await _tableStorage.InsertEntityRecordAsync<DistributionReceiverLogEntity>(receiverEntity);
             }

@@ -20,7 +20,7 @@ namespace FtB_FormLogic
             _logger = logger;
         }
 
-        public IEnumerable<IPrefillData> Map(NabovarselPlanType form, string receiverId)
+        public IEnumerable<IPrefillData> Map(NabovarselPlanType form, string receiverId, string receiverName)
         {
             //Find all "berort part" for same receiver
             _logger.LogDebug("Retreives decryptor");
@@ -30,8 +30,13 @@ namespace FtB_FormLogic
             var decryptedReceiverId = decryptor.DecryptText(receiverId);
 
             _logger.LogDebug("Finds berorte parter");
-            var berortParter = form.beroerteParter?.Where(b => (b.foedselsnummer != null && decryptor.DecryptText(b.foedselsnummer).Equals(decryptedReceiverId)) 
-                                                                    || (b.organisasjonsnummer != null && b.organisasjonsnummer.Equals(decryptedReceiverId))).ToList();
+            var berortParter = form.beroerteParter?.Where(b => (
+                                                                  (b.foedselsnummer != null && decryptor.DecryptText(b.foedselsnummer).Equals(decryptedReceiverId)) 
+                                                                  || (b.organisasjonsnummer != null && b.organisasjonsnummer.Equals(decryptedReceiverId))
+                                                               )
+                                                               && b.navn.Equals(receiverName)
+                                                          ).ToList();
+
             var svarPaaNabovarsels = new List<VarselOppstartPlanarbeidData>();
             foreach (var beroertPart in berortParter)
             {

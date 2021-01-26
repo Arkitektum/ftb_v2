@@ -4,6 +4,7 @@
     {
         public ActorType Type { get; set; }
         public string Id { get; set; }
+        public string Name { get; set; }
 
         public string PresentationId
         {
@@ -23,6 +24,7 @@
     {
         public ActorType Type { get; set; }
         public string Id { get; set; }
+        public string Name { get; set; }
         public string DecryptedId { get; set; }
 
         public ActorInternal(Actor actor)

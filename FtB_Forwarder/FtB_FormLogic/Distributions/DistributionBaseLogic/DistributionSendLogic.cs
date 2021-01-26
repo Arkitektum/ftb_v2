@@ -74,7 +74,6 @@ namespace FtB_FormLogic
             
             var prefillData = PrefillSendData.FirstOrDefault();
 
-            //Hva skjer her: oppretter distributionForms
             await CreateDistributionForm(prefillData);
             // NOTE:The distributionForm will not be saved if distribution sending fails
 
@@ -140,6 +139,7 @@ namespace FtB_FormLogic
 
                 await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey,
                                                     sendQueueItem.Receiver.Id,
+                                                    sendQueueItem.Receiver.Name,
                                                     DistributionReceiverStatusLogEnum.CorrespondenceSendingFailed);
 
                 throw new DistributionSendExeception(prefillData.InitialExternalSystemReference,
@@ -151,13 +151,13 @@ namespace FtB_FormLogic
             {
                 _log.LogInformation("Sending distribution form with reference {0} for {1} - {2} was prevented due to ReservedReportee", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
                 await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.ReservedReportee);
-                await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.ReservedReportee);
+                await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, sendQueueItem.Receiver.Name, DistributionReceiverStatusLogEnum.ReservedReportee);
             }
             else if (result.Where(r => r.Step == DistributionStep.UnableToReachReceiver).Any())
             {
                 _log.LogInformation("Sending distribution form with reference {0} for {1} - {2} failed due to unable to reach receiver (non-existing)", prefillData.InitialExternalSystemReference, ArchiveReference, prefillData.ExternalSystemReference);
                 await UpdateReceiverProcessOutcomeAsync(sendQueueItem.ArchiveReference, sendQueueItem.ReceiverSequenceNumber, sendQueueItem.Receiver.Id, ReceiverProcessOutcomeEnum.Failed);
-                await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.CorrespondenceSendingFailed);
+                await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, sendQueueItem.Receiver.Name, DistributionReceiverStatusLogEnum.CorrespondenceSendingFailed);
             }
             else
             {
@@ -171,6 +171,7 @@ namespace FtB_FormLogic
 
                 await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey,
                                                     sendQueueItem.Receiver.Id,
+                                                    sendQueueItem.Receiver.Name,
                                                     DistributionReceiverStatusLogEnum.CorrespondenceSent);
             }
 
@@ -221,7 +222,7 @@ namespace FtB_FormLogic
         private async Task MapFormDataToLogicData(SendQueueItem sendQueueItem)
         {
             _log.LogDebug("Maps prefill data for {0}", sendQueueItem.Receiver.Id);
-            MapPrefillData(sendQueueItem.Receiver.Id);
+            MapPrefillData(sendQueueItem.Receiver.Id, sendQueueItem.Receiver.Name);
 
             //Using existing distributionFormsID if it exists. If not, create a new id and persist to DistributionReceiverEntity
             Guid distributionFormReferenceId;
@@ -239,7 +240,7 @@ namespace FtB_FormLogic
 
             receiverEntity.ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), DistributionReceiverProcessStageEnum.Distributing);
             await _tableStorage.UpdateEntityRecordAsync<DistributionReceiverEntity>(receiverEntity);
-            await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, DistributionReceiverStatusLogEnum.PrefillCreated);
+            await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, sendQueueItem.Receiver.Name, DistributionReceiverStatusLogEnum.PrefillCreated);
             _log.LogDebug("Finished settings row status..");
         }
 
@@ -349,7 +350,7 @@ namespace FtB_FormLogic
         //   await AddToReceiverProcessLogAsync(sendQueueItem.ReceiverLogPartitionKey, sendQueueItem.Receiver.Id, ReceiverStatusLogEnum.PrefillPersisted);
         //}
 
-        protected abstract void MapPrefillData(string receiverId);
+        protected abstract void MapPrefillData(string receiverId, string receiverName);
 
         protected virtual async Task MapDistributionMessage(Guid guid)
         {

@@ -8,6 +8,7 @@ namespace FtB_Common.BusinessModels
     public class DistributionReceiverEntity : TableEntity, IStorageEntity
     {
         public string ReceiverId { get; set; }
+        public string ReceiverName { get; set; }
         public string ProcessStage { get; set; }
         public string ProcessOutcome { get; set; }
         public DateTime CreatedTimeStamp { get; set; }
@@ -17,11 +18,12 @@ namespace FtB_Common.BusinessModels
         //public string DistributionFormDistributionStatus { get; set; }
         public DistributionReceiverEntity() { }
         
-        public DistributionReceiverEntity(string partitionKey, string rowKey, string receiverId, DistributionReceiverProcessStageEnum status, DateTime createdTimestamp, string receiverLogPartitionKey)
+        public DistributionReceiverEntity(string partitionKey, string rowKey, string receiverId, string receiverName, DistributionReceiverProcessStageEnum status, DateTime createdTimestamp, string receiverLogPartitionKey)
         {
             PartitionKey = partitionKey;
             RowKey = rowKey;
             ReceiverId = receiverId;
+            ReceiverName = receiverName;
             ProcessStage = Enum.GetName(typeof(DistributionReceiverProcessStageEnum), status);
             CreatedTimeStamp = createdTimestamp;
             ReceiverLogPartitionKey = receiverLogPartitionKey;
