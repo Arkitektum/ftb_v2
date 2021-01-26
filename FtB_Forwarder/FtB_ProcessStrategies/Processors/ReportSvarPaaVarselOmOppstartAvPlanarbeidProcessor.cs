@@ -211,7 +211,30 @@ namespace FtB_ProcessStrategies
                 if (!sendingFailed && receiptId != null)
                 {
                     _log.LogDebug($"Successfully sent report of replies to submitter for archiveReference {repliesToPlanNotice.InitialArchiveReference}.");
+
+                    AttachmentBinary submittersReceipt = (AttachmentBinary)notificationMessage.Attachments.ToList()[0];
+                    var uri = await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Private,
+                                                                               submittersReceipt.ArchiveReference.ToLower(),
+                                                                               submittersReceipt.Filename,
+                                                                               submittersReceipt.BinaryContent,
+                                                                               submittersReceipt.Type);
+
+                    var fds = new FileDownloadStatus()
+                    {
+                        ArchiveReference = submittersReceipt.ArchiveReference.ToUpper(),
+                        BlobLink = uri,
+                        FileAccessCount = 0,
+                        Filename = submittersReceipt.Filename,
+                        FileType = FileTypesForDownloadEnum.KommentarNabomerknader,
+                        FormName = "VarselOppstartPlanarbeid",
+                        Guid = new Guid(),
+                        IsDeleted = false,
+                        MimeType = "application/pdf"
+                    };
+
+                    await _fileDownloadHttpClient.Post(fds.ArchiveReference, fds);
                     var entitiesToUpdate = new List<NotificationSenderEntity>();
+                    
                     foreach (var sender in repliesToPlanNotice.Senders)
                     {
                         var distrForm = await _dbUnitOfWork.DistributionForms.Get(sender.InitialExternalSystemReference);
@@ -221,27 +244,6 @@ namespace FtB_ProcessStrategies
 
                         var success = await _dbUnitOfWork.DistributionForms.Update(distrForm.InitialArchiveReference, distrForm.Id, distrForm);
 
-                        AttachmentBinary submittersReceipt = (AttachmentBinary)notificationMessage.Attachments.ToList()[0];
-                        var uri = await _blobOperations.AddByteStreamToBlobStorage(BlobStorageEnum.Private,
-                                                                                   submittersReceipt.ArchiveReference.ToLower(),
-                                                                                   submittersReceipt.Filename,
-                                                                                   submittersReceipt.BinaryContent,
-                                                                                   submittersReceipt.Type);
-
-                        var fds = new FileDownloadStatus()
-                        {
-                            ArchiveReference = submittersReceipt.ArchiveReference.ToUpper(),
-                            BlobLink = uri,
-                            FileAccessCount = 0,
-                            Filename = submittersReceipt.Filename,
-                            FileType = FileTypesForDownloadEnum.KommentarNabomerknader,
-                            FormName = "VarselOppstartPlanarbeid",
-                            Guid = new Guid(),
-                            IsDeleted = false,
-                            MimeType = "application/pdf"
-                        };
-
-                        await _fileDownloadHttpClient.Post(fds.ArchiveReference, fds);
 
                         var filters = new List<KeyValuePair<string, string>>();
                         filters.Add(new KeyValuePair<string, string>("PartitionKey", repliesToPlanNotice.InitialArchiveReference));
