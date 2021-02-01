@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
@@ -11,13 +11,12 @@
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="4.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.9" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.9" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.11" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Altinn.Distribution\Altinn.Distribution.csproj" />
     <ProjectReference Include="..\FtB_FormLogic\FtB_FormLogic.csproj" />
-    <ProjectReference Include="..\FtB_MessageManager\FtB_MessageManager.csproj" />
     <ProjectReference Include="..\FtB_ProcessStrategies\FtB_ProcessStrategies.csproj" />
   </ItemGroup>
   <ItemGroup>

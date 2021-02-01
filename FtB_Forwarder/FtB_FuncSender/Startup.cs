@@ -8,7 +8,6 @@ using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using FtB_Common.Utils;
 using FtB_FormLogic;
-using FtB_MessageManager;
 using FtB_ProcessStrategies;
 using Ftb_Repositories;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
@@ -45,9 +44,7 @@ namespace FtB_FuncSender
             builder.Services.AddScoped<VarselOppstartPlanarbeidSendLogic>();
             builder.Services.AddScoped<IFormDataRepo, FormDataRepository>();
             builder.Services.AddScoped<ITableStorage, TableStorage>();
-
-            builder.Services.AddScoped<IMessageManager, SlackManager>();
-            
+                        
             builder.Services.AddScoped<IDistributionDataMapper<no.kxml.skjema.dibk.nabovarselPlan.NabovarselPlanType>, VarselOppstartPlanarbeidSendDataProvider>();
             builder.Services.AddAltinn2Distribution(configuration);
 

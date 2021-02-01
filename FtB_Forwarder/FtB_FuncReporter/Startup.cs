@@ -1,11 +1,9 @@
 ﻿using Altinn.Distribution;
-using FtB_Common.Encryption;
 using FtB_Common.FormDataRepositories;
 using FtB_Common.Interfaces;
 using FtB_Common.Storage;
 using FtB_Common.Utils;
 using FtB_FormLogic;
-using FtB_MessageManager;
 using FtB_ProcessStrategies;
 using Ftb_Repositories;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
