@@ -1,15 +1,12 @@
 ﻿using Altinn.Common.Models;
-using FtB_Common.BusinessModels;
 using FtB_Common.Encryption;
 using FtB_Common.Interfaces;
 using FtB_DataModels.Mappers;
-using System.Collections.Generic;
 
 namespace FtB_FormLogic
 {
     public class SendDataProviderBase
-    {
-        //TODO: Rename class or file name
+    {        
         protected readonly IHtmlUtils _htmlUtils;
         private readonly IDecryption _decryptor;
         public SendDataProviderBase(IHtmlUtils htmlUtils, IDecryptionFactory decryptionFactory)
