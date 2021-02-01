@@ -5,21 +5,21 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Common", "FtB_Common\FtB_Common.csproj", "{3646904E-BC65-4152-AFE7-8DBE216930C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncPrepareSending", "FtB_FuncPrepareSending\FtB_FuncPrepareSending.csproj", "{A42B80B8-77DE-48F0-9988-5F512CBE98DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncPrepareSending", "Functions\FtB_FuncPrepareSending\FtB_FuncPrepareSending.csproj", "{A42B80B8-77DE-48F0-9988-5F512CBE98DA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_ProcessStrategies", "FtB_ProcessStrategies\FtB_ProcessStrategies.csproj", "{38E06140-39A7-402D-825E-E32DBD1CB764}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FormLogic", "FtB_FormLogic\FtB_FormLogic.csproj", "{005220A0-051C-470F-9507-6DBE42FB743A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncSender", "FtB_FuncSender\FtB_FuncSender.csproj", "{765AEB19-E5A8-4DAB-89CF-1CDDDAF83B16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncSender", "Functions\FtB_FuncSender\FtB_FuncSender.csproj", "{765AEB19-E5A8-4DAB-89CF-1CDDDAF83B16}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn2.Adapters", "AltinnWebServices\Altinn2.Adapters.csproj", "{AA7B9543-E08C-456C-8D4C-14FDC1D34828}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn2.Adapters", "Altinn\Altinn2.Adapters\Altinn2.Adapters.csproj", "{AA7B9543-E08C-456C-8D4C-14FDC1D34828}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_Tests", "FtB_Tests\FtB_Tests.csproj", "{C49C6D52-CFCF-4C59-A93D-901BDD92F45B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_DataModels", "FtB_DataModels\FtB_DataModels.csproj", "{2CB96F88-6E43-4A47-BBB3-3A8E9C6E61D1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncReporter", "FtB_FuncReporter\FtB_FuncReporter.csproj", "{0F1C5B80-B4E4-4A47-B08D-2FEE2B6F9DAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncReporter", "Functions\FtB_FuncReporter\FtB_FuncReporter.csproj", "{0F1C5B80-B4E4-4A47-B08D-2FEE2B6F9DAE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{53737721-BD6F-4C5D-A34B-B1664C7847FB}"
 EndProject
@@ -27,15 +27,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_DbModels", "Ftb_DbModel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ftb_Repositories", "Ftb_DbRepository\Ftb_Repositories.csproj", "{42E18AC8-5FA1-4DB4-BEC9-23C6ECC0E66C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn3.Adapters", "AltinnServiceAdapters\Altinn3.Adapters.csproj", "{9278F98B-FCA0-4431-AEE3-A25BACD22766}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn3.Adapters", "Altinn\Altinn3.Adapters\Altinn3.Adapters.csproj", "{9278F98B-FCA0-4431-AEE3-A25BACD22766}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Common", "Altinn.Common\Altinn.Common.csproj", "{B8D0790F-CC4A-47F3-9A69-9FDA8806B5F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Common", "Altinn\Altinn.Common\Altinn.Common.csproj", "{B8D0790F-CC4A-47F3-9A69-9FDA8806B5F3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Altinn", "Altinn", "{578BF08A-0003-46D7-8EDF-1BB56C738054}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Distribution", "Altinn.Distribution\Altinn.Distribution.csproj", "{B48E1719-5E50-4C81-BB6F-16F14570246C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Altinn.Distribution", "Altinn\Altinn.Distribution\Altinn.Distribution.csproj", "{B48E1719-5E50-4C81-BB6F-16F14570246C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncSvarVarselOmOppstartAvPlanarbeidReporter", "FtB_FuncSvarVarselOmOppstartAvPlanarbeidReporter\FtB_FuncSvarVarselOmOppstartAvPlanarbeidReporter.csproj", "{12A72BD7-74FC-40D7-A799-DCD03BFDCF94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FtB_FuncSvarVarselOmOppstartAvPlanarbeidReporter", "Functions\FtB_FuncSvarVarselOmOppstartAvPlanarbeidReporter\FtB_FuncSvarVarselOmOppstartAvPlanarbeidReporter.csproj", "{12A72BD7-74FC-40D7-A799-DCD03BFDCF94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,25 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "PrivateAzureStorageConnectionString": "xx",
+    "PublicAzureStorageConnectionString": "xx",
+    "QueueConnectionString": "Endpoint=xx",
+    "SubmittalQueueName": "sbq-submittal",
+    "SendingQueueName": "sbq-send",
+
+    "FormProcessAPISettings:Uri": "xx",
+    "FormProcessAPISettings:BasicAuthUserName": "xx",
+    "FormProcessAPISettings:BasicAuthPassword": "xx",
+
+    "EncryptionSettings:CertificateThumbprint": "xx",
+
+    "TableStorage:DistributionSubmittalTable": "ftbDistributionSubmittal",
+    "TableStorage:DistributionReceiverTable": "ftbDistributionReceiver",
+    "TableStorage:DistributionReceiverLogTable": "ftbDistributionReceiverLog",
+
+    "TableStorage:NotificationSenderTable": "ftbNotificationSender",
+    "TableStorage:NotificationSenderLogTable": "ftbNotificationSenderLog"
+  }
+}

@@ -30,11 +30,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Altinn.Common\Altinn.Common.csproj" />
+    <Folder Include="Mappers\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Mappers\" />
+    <ProjectReference Include="..\Altinn\Altinn.Common\Altinn.Common.csproj" />
   </ItemGroup>
 
 </Project>

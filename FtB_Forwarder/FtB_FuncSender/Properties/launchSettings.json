@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "FtB_FuncSender": {
-      "commandName": "Project",
-      "commandLineArgs": "host start --port 7802"
-    }
-  }
-}
